@@ -1,17 +1,16 @@
-# FundBlick – Public Preview 0.3
+# FundBlick Public Preview 0.5 – Rechtstexte
 
-Statische Vorabseite für die spätere Veröffentlichung unter fundblick.de.
+Enthält die aktuelle Vorschau mit Datenschutzfassung 1.0 und ausgefülltem Impressum.
 
-## Dateien
-- index.html – öffentliche Startseite
-- impressum.html – NOINDEX, enthält bewusst Platzhalter
-- datenschutz.html – NOINDEX, vor Livegang an tatsächliches Hosting anpassen
-- robots.txt
+## Vor kommerziellem Livegang erneut prüfen
+- Produktionshoster und konkrete Server-Log-Speicherdauer in der Datenschutzerklärung ergänzen/ersetzen.
+- Tatsächlich eingesetzte Affiliate-Netzwerke, Händler, Tracking-/Analyse-Dienste datenschutzrechtlich ergänzen.
+- Falls vorhanden: USt-IdNr. oder Wirtschafts-Identifikationsnummer im Impressum ergänzen, soweit gesetzlich erforderlich.
+- Falls eine Telefonnummer als zusätzlicher unmittelbarer Kommunikationsweg verwendet werden soll, im Impressum ergänzen.
+- Rechtstexte nach jeder wesentlichen technischen Änderung erneut prüfen.
 
-## WICHTIG VOR VERÖFFENTLICHUNG
-1. Impressum mit vollständigen echten Betreiberangaben vervollständigen.
-2. Datenschutz an den tatsächlich gewählten Hoster und dessen Server-Logging anpassen.
-3. Erst danach öffentlich deployen.
-4. Keine Demo-Händler oder erfundenen Angebote enthalten.
+Impressum und Datenschutz bleiben öffentlich erreichbar und tragen `noindex,follow`; sie werden nicht über robots.txt gesperrt.
 
-Zusätzliche Infrastrukturkosten für diesen Build: 0,00 €.
+
+## Rechtstexte – festgeschriebene Fassung 17.09.2026
+Impressum und Datenschutzerklärung sind für den aktuellen Entwicklungsstand festgeschrieben. Bei Änderungen an Hosting, Affiliate-, Analyse-, Tracking- oder Consent-Technologien ist die Datenschutzerklärung vor Aktivierung erneut anzupassen.
