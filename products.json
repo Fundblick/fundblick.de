@@ -1,0 +1,16 @@
+[
+  {
+    "id": "test-001",
+    "name": "FundBlick Testprodukt",
+    "category": "technik",
+    "brand": "Testmarke",
+    "description": "Testprodukt zur Entwicklung der FundBlick-Produktstruktur.",
+    "image": "",
+    "merchant": "Testhändler",
+    "price": 99.99,
+    "currency": "EUR",
+    "originalPrice": null,
+    "affiliateUrl": "",
+    "lastUpdated": "2026-09-18"
+  }
+]
