@@ -58,6 +58,25 @@ fetch('products.json')
   .then(response => response.json())
   .then(products => {
     console.log('FundBlick Produkte geladen:', products);
+
+    const product = products[0];
+
+    const section = document.createElement('section');
+    section.innerHTML = `
+      <div class="wrap">
+        <h2 class="title">Erste Produkte</h2>
+        <div class="cards">
+          <div class="card">
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <p><strong>${product.price.toFixed(2)} ${product.currency}</strong></p>
+            <p>Händler: ${product.merchant}</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('main').appendChild(section);
   })
   .catch(error => {
     console.error('Fehler beim Laden der Produkte:', error);
