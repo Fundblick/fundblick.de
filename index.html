@@ -54,32 +54,79 @@ Aktuell werden noch keine Live-Angebote oder Affiliate-Links veröffentlicht. H�
 </main>
 <footer><div class="wrap foot"><div><div class="logo">Fund<span>Blick</span></div><p class="small">Eine Produktsuch- und Empfehlungsplattform im Aufbau. Bei späteren Affiliate-Links kann FundBlick bei qualifizierten Käufen eine Vergütung erhalten.</p></div><div><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></div></div></footer>
 <script>
+let products = [];
+
 fetch('products.json')
   .then(response => response.json())
-  .then(products => {
+  .then(data => {
+    products = data;
     console.log('FundBlick Produkte geladen:', products);
-
-    const product = products[0];
-
-    const section = document.createElement('section');
-    section.innerHTML = `
-      <div class="wrap">
-        <h2 class="title">Erste Produkte</h2>
-        <div class="cards">
-          <div class="card">
-            <h3>${product.name}</h3>
-            <p>${product.description}</p>
-            <p><strong>${product.price.toFixed(2)} ${product.currency}</strong></p>
-            <p>Händler: ${product.merchant}</p>
-          </div>
-        </div>
-      </div>
-    `;
-
-    document.querySelector('main').appendChild(section);
+    showProducts(products);
   })
   .catch(error => {
     console.error('Fehler beim Laden der Produkte:', error);
   });
+
+function showProducts(list) {
+  let section = document.getElementById('products-section');
+
+  if (!section) {
+    section = document.createElement('section');
+    section.id = 'products-section';
+    document.querySelector('main').appendChild(section);
+  }
+
+  if (list.length === 0) {
+    section.innerHTML = `
+      <div class="wrap">
+        <h2 class="title">Keine Produkte gefunden</h2>
+      </div>
+    `;
+    return;
+  }
+
+  section.innerHTML = `
+    <div class="wrap">
+      <h2 class="title">Produkte</h2>
+      <div class="cards">
+        ${list.map(product => `
+          <div class="card">
+            <h3>${product.name}</h3>
+            <p>${product.description}</p>
+            <p><strong>${Number(product.price).toFixed(2)} ${product.currency}</strong></p>
+            <p>Händler: ${product.merchant}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+const searchInput = document.querySelector('.search input');
+const searchButton = document.querySelector('.search button');
+
+function searchProducts() {
+  const term = searchInput.value.trim().toLowerCase();
+
+  const results = products.filter(product =>
+    product.name.toLowerCase().includes(term) ||
+    product.category.toLowerCase().includes(term) ||
+    product.description.toLowerCase().includes(term) ||
+    product.merchant.toLowerCase().includes(term)
+  );
+
+  showProducts(results);
+
+  document.getElementById('products-section')
+    ?.scrollIntoView({ behavior: 'smooth' });
+}
+
+searchButton.addEventListener('click', searchProducts);
+
+searchInput.addEventListener('keydown', event => {
+  if (event.key === 'Enter') {
+    searchProducts();
+  }
+});
 </script>
 </body></html>
