@@ -53,4 +53,14 @@ footer{background:var(--dark);color:#dfe8e2;padding:38px 0;margin-top:20px}.foot
 Aktuell werden noch keine Live-Angebote oder Affiliate-Links veröffentlicht. Händler- und Produktdaten werden erst nach technischer Integration und Freigabe der jeweiligen Partnerprogramme eingebunden.</div></div></section>
 </main>
 <footer><div class="wrap foot"><div><div class="logo">Fund<span>Blick</span></div><p class="small">Eine Produktsuch- und Empfehlungsplattform im Aufbau. Bei späteren Affiliate-Links kann FundBlick bei qualifizierten Käufen eine Vergütung erhalten.</p></div><div><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></div></div></footer>
+<script>
+fetch('products.json')
+  .then(response => response.json())
+  .then(products => {
+    console.log('FundBlick Produkte geladen:', products);
+  })
+  .catch(error => {
+    console.error('Fehler beim Laden der Produkte:', error);
+  });
+</script>
 </body></html>
