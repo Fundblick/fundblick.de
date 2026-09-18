@@ -85,22 +85,26 @@ function showProducts(list) {
     return;
   }
 
-  section.innerHTML = `
-    <div class="wrap">
-      <h2 class="title">Produkte</h2>
-      <div class="cards">
-        ${list.map(product => `
-          <div class="card">
-            <h3>${product.name}</h3>
-            <p>${product.description}</p>
-            <p><strong>${Number(product.price).toFixed(2)} ${product.currency}</strong></p>
-            <p>Händler: ${product.merchant}</p>
-          </div>
-        `).join('')}
-      </div>
+ section.innerHTML = `
+  <div class="wrap">
+    <h2 class="title">Produkte</h2>
+    <div class="cards">
+      ${list.map(product => `
+        <div class="card">
+          ${product.image ? `<img src="${product.image}" alt="${product.name}">` : ''}
+          <h3>${product.name}</h3>
+          <p>${product.description}</p>
+          <p><strong>${Number(product.price).toFixed(2)} ${product.currency}</strong></p>
+          <p>Händler: ${product.merchant}</p>
+          ${product.affiliateUrl
+            ? `<a href="${product.affiliateUrl}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`
+            : `<button type="button" disabled>Zum Angebot</button>`
+          }
+        </div>
+      `).join('')}
     </div>
-  `;
-}
+  </div>
+`;
 
 const searchInput = document.querySelector('.search input');
 const searchButton = document.querySelector('.search button');
