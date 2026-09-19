@@ -1361,7 +1361,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1376,7 +1376,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1391,7 +1391,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1406,7 +1406,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1421,7 +1421,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1436,7 +1436,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1451,7 +1451,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1466,7 +1466,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1481,7 +1481,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   },
   {
@@ -1496,7 +1496,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-19"
   }
 ]
