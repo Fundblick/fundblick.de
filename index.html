@@ -106,7 +106,7 @@ function showProducts(list) {
   <div class="wrap">
     <h2 class="title">Produkte</h2>
     <div class="cards">
-      ${list.map(product => `
+      ${list.filter(product => product.active !== false).map(product => `
         <div class="card">
           ${product.image ? `<img src="${product.image}" alt="${product.name}">` : ''}
           <h3>${product.name}</h3>
