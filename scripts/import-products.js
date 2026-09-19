@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const SOURCE_URL = 'https://dummyjson.com/products?limit=100';
+const SOURCE_URL = 'https://dummyjson.com/products?limit=90';
 const OUTPUT_FILE = 'products.json';
 
 async function importProducts() {
