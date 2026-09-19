@@ -23,8 +23,8 @@ jobs:
 
       - name: Produkte importieren
         run: node scripts/import-products.js
-              - name: Platzi-Produkte importieren
-                      run: node scripts/import-platzi-products.js
+      - name: Platzi-Produkte importieren
+        run: node scripts/import-platzi-products.js
 
       - name: Änderungen speichern
         run: |
