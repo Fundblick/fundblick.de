@@ -93,7 +93,10 @@ function showProducts(list) {
     document.querySelector('main').appendChild(section);
   }
 
-  if (list.length === 0) {
+  const activeProducts = list.filter(product => product.active !== false);
+  const visibleProducts = activeProducts.slice(0, 24);
+
+  if (activeProducts.length === 0) {
     section.innerHTML = `
       <div class="wrap">
         <h2 class="title">Keine Produkte gefunden</h2>
@@ -106,7 +109,7 @@ function showProducts(list) {
   <div class="wrap">
     <h2 class="title">Produkte</h2>
     <div class="cards">
-      ${list.filter(product => product.active !== false).map(product => `
+      ${visibleProducts.map(product => `
         <div class="card">
           ${product.image ? `<img src="${product.image}" alt="${product.name}">` : ''}
           <h3>${product.name}</h3>
@@ -128,6 +131,20 @@ const searchButton = document.querySelector('.search button');
 
 function searchProducts() {
   const term = searchInput.value.trim().toLowerCase();
+
+  if (!term) {
+    const section = document.getElementById('products-section');
+    if (section) {
+      section.innerHTML = `
+        <div class="wrap">
+          <h2 class="title">Was möchtest du finden?</h2>
+          <p>Gib einen Suchbegriff ein, um passende Produkte zu finden.</p>
+        </div>
+      `;
+    }
+    searchInput.focus();
+    return;
+  }
 
   const results = products.filter(product =>
     product.name.toLowerCase().includes(term) ||
