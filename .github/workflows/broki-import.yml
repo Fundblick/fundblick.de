@@ -26,6 +26,9 @@ jobs:
       - name: Platzi-Produkte importieren
         run: node scripts/import-platzi-products.js
 
+      - name: ADCELL-Produkte importieren
+        run: node scripts/import-adcell-products.js
+
       - name: Änderungen speichern
         run: |
           git config user.name "github-actions[bot]"
