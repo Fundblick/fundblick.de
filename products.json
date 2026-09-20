@@ -2741,7 +2741,7 @@
     "currency": "EUR",
     "originalPrice": null,
     "affiliateUrl": "https://example.com/adcell/test-1003",
-    "active": false,
+    "active": true,
     "lastUpdated": "2026-09-20"
   }
 ]
