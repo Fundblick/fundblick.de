@@ -1,4 +1,4 @@
 "Produkt-Deeplink";"Produkt-Titel";"Produktbeschreibung";"Bruttopreis";"Währung";"EAN";"Anbieter-Artikelnummer";"Hersteller";"Produktbild-URL";"Produktkategorie";"Versandkosten";"Verfügbarkeit"
 "https://example.com/adcell/test-1001";"FundBlick ADCELL Testprodukt 1";"Testprodukt für den Broki ADCELL-Connector";"49,99";"EUR";"4000000001001";"FB-1001";"FundBlick Test";"https://dummyjson.com/icon/emilys/128";"Testprodukte";"4,99";"sofort lieferbar"
 "https://example.com/adcell/test-1002";"FundBlick ADCELL Testprodukt 2";"Zweites Testprodukt für den ADCELL-Import";"129,95";"EUR";"4000000001002";"FB-1002";"FundBlick Test";"https://dummyjson.com/icon/michaelw/128";"Testprodukte";"0,00";"lieferbar"
-"https://example.com/adcell/test-1003";"FundBlick ADCELL Testprodukt 3";"Drittes Testprodukt zum Testen von Broki";"19,90";"EUR";"4000000001003";"FB-1003";"FundBlick Test";"https://dummyjson.com/icon/sophiab/128";"Testprodukte";"3,90";"sofort lieferbar"
+
