@@ -148,7 +148,7 @@ function showProducts(list, resetLimit = true) {
     document.querySelector('main').appendChild(section);
   }
 
-  const activeProducts = list.filter(product => product.active !== false);
+  const activeProducts = list.filter(product =>\n    product &&\n    product.active !== false &&\n    String(product.name ?? '').trim() &&\n    Number.isFinite(Number(product.price)) &&\n    Number(product.price) >= 0\n  );
   const visibleProducts = activeProducts.slice(0, 24);
 
   if (activeProducts.length === 0) {
@@ -167,7 +167,7 @@ function showProducts(list, resetLimit = true) {
       <div class="product-grid">
         ${visibleProducts.map(product => `
           <article class="product-card">
-            ${product.image ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy">` : ''}
+            ${product.image ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ''}
             <div class="count-note">${escapeHtml(product.category || 'Produkt')}</div>
             <h3>${escapeHtml(product.name)}</h3>
             <p class="desc">${escapeHtml(product.description)}</p>
