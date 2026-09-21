@@ -23,7 +23,7 @@ nav a,footer a{color:inherit;text-decoration:none;margin-left:22px}
 .price-filter select{padding:11px 12px;border:1px solid #d7e0da;border-radius:10px;font-size:14px;outline:0;background:#fff}.filter-actions{display:flex;gap:8px}.secondary-btn{padding:11px 14px;border:1px solid #cfd9d2;border-radius:10px;background:#fff;color:var(--dark);font-weight:700;cursor:pointer}.secondary-btn:hover{background:var(--soft)}:focus-visible{outline:3px solid #78c99b;outline-offset:2px}.load-more{display:block;margin:26px auto 0;padding:12px 20px;border:1px solid #cfd9d2;border-radius:10px;background:#fff;font-weight:800;cursor:pointer}
 section{padding:54px 0}.title{font-size:30px;margin:0 0 10px}.lead{color:#65736a;margin:0 0 28px}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.card{border:1px solid var(--line);border-radius:16px;padding:24px;background:#fff}
-.icon{font-size:28px}.card h3{margin:15px 0 7px}.card p{color:#66736b;line-height:1.5;margin:0}
+.icon{font-size:28px}.card h3{margin:15px 0 7px}.category-link{display:block;color:inherit;text-decoration:none;height:100%}.category-link:hover h3{color:var(--g)}.card p{color:#66736b;line-height:1.5;margin:0}
 .how{background:var(--soft)}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.step{background:white;border-radius:16px;padding:25px;border:1px solid var(--line)}
   .card button:disabled{
   background:#e2f4e9;
@@ -72,10 +72,10 @@ footer{background:var(--dark);color:#dfe8e2;padding:38px 0;margin-top:20px}.foot
 </div></section>
 <section id="kategorien"><div class="wrap"><h2 class="title">Geplante Kategorien</h2><p class="lead">Zum Start bauen wir eine breite, leicht durchsuchbare Produktstruktur auf.</p>
 <div class="cards">
-<div class="card"><div class="icon">👜</div><h3>Mode & Accessoires</h3><p>Taschen, Bekleidung und praktische Accessoires.</p></div>
-<div class="card"><div class="icon">🏠</div><h3>Haus & Wohnen</h3><p>Produkte für Haushalt, Einrichtung und Alltag.</p></div>
-<div class="card"><div class="icon">🔌</div><h3>Technik</h3><p>Elektronik, Zubehör und nützliche Technikprodukte.</p></div>
-<div class="card"><div class="icon">🎁</div><h3>Geschenkideen</h3><p>Produkte nach Anlass, Zielgruppe und Preisbereich.</p></div>
+<div class="card"><a class="category-link" href="#products-section" data-category-hint="clothes"><div class="icon">👜</div><h3>Mode & Accessoires</h3><p>Bekleidung, Schuhe, Taschen und Accessoires entdecken.</p></a></div>
+<div class="card"><a class="category-link" href="#products-section" data-category-hint="furniture"><div class="icon">🏠</div><h3>Haus & Wohnen</h3><p>Produkte für Haushalt, Einrichtung und Alltag.</p></a></div>
+<div class="card"><a class="category-link" href="#products-section" data-category-hint="electronics"><div class="icon">🔌</div><h3>Technik</h3><p>Elektronik, Zubehör und nützliche Technikprodukte.</p></a></div>
+<div class="card"><a class="category-link" href="#products-section" data-search-hint="gift"><div class="icon">🎁</div><h3>Geschenkideen</h3><p>Inspiration nach Anlass, Zielgruppe und Preisbereich.</p></a></div>
 </div></div></section>
 <section class="how" id="idee"><div class="wrap"><h2 class="title">So soll FundBlick funktionieren</h2><p class="lead">Die Plattform befindet sich derzeit im Aufbau.</p>
 <div class="steps">
@@ -277,6 +277,30 @@ document.getElementById('reset-filters').addEventListener('click', () => {
   document.getElementById('sort-products').value = 'relevance';
   showProducts(products);
   searchInput.focus();
+});
+
+document.querySelectorAll('.category-link').forEach(link => {
+  link.addEventListener('click', event => {
+    event.preventDefault();
+    const categoryHint = link.dataset.categoryHint;
+    const searchHint = link.dataset.searchHint;
+
+    if (categoryHint) {
+      const option = [...document.getElementById('category-filter').options]
+        .find(item => item.value.includes(categoryHint));
+      if (option) {
+        document.getElementById('category-filter').value = option.value;
+        searchInput.value = '';
+        searchProducts();
+        return;
+      }
+      searchInput.value = categoryHint;
+    } else if (searchHint) {
+      searchInput.value = searchHint;
+    }
+
+    searchProducts();
+  });
 });
 
 searchInput.addEventListener('keydown', event => {
