@@ -4,24 +4,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FundBlick – Entwicklungsvorschau</title>
-<meta name="description" content="Mit FundBlick Produkte entdecken, nach Preis und Kategorie filtern und Händlerangebote übersichtlich finden.">\n<meta name="robots" content="noindex,follow">\n<meta name="theme-color" content="#128447">\n\n<meta property="og:type" content="website">\n<meta property="og:locale" content="de_DE">\n<meta property="og:title" content="FundBlick – Produkte entdecken und Angebote vergleichen">\n<meta property="og:description" content="Produkte entdecken, nach Preis und Kategorie filtern und Händlerangebote übersichtlich finden.">\n
+<meta name="description" content="Mit FundBlick Produkte entdecken, nach Preis und Kategorie filtern und Händlerangebote übersichtlich finden.">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#128447">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="FundBlick – Produkte entdecken und Angebote vergleichen">
+<meta property="og:description" content="Produkte entdecken, nach Preis und Kategorie filtern und Händlerangebote übersichtlich finden.">
+
 <style>
 :root{--ink:#102018;--muted:#647168;--g:#148a4b;--cream:#f7f7f2;--line:#dfe7e1}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}.preview{background:#0b1711;color:white;text-align:center;padding:7px;font-size:12px;font-weight:800}header{position:sticky;top:0;z-index:20;background:#f7f7f2eF;border-bottom:1px solid var(--line)}.head{height:66px;display:flex;align-items:center}.logo{font-size:24px;font-weight:900}.logo span,.accent{color:var(--g)}nav{margin-left:auto;display:flex;gap:24px}nav a{color:inherit;text-decoration:none;font-size:14px}.hero{padding:72px 0 44px}.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:50px;align-items:center}.kicker{font-size:12px;font-weight:800;color:#0d6b3a;background:#edf7f0;padding:7px 11px;border-radius:99px}h1{font-size:clamp(48px,7vw,82px);line-height:.96;letter-spacing:-4px;margin:18px 0}.hero p{font-size:18px;line-height:1.6;color:#526158;max-width:690px}.search{display:flex;background:white;border:1px solid var(--line);padding:8px;border-radius:20px;box-shadow:0 18px 55px #16302018;margin-top:28px}.search input{flex:1;min-width:0;border:0;outline:0;padding:14px}.search button{border:0;border-radius:14px;background:var(--g);color:white;padding:0 24px;font-weight:800}.art{height:400px;border-radius:34px;background:linear-gradient(145deg,#dff4e4,#c9f29f);position:relative;overflow:hidden}.float{position:absolute;background:white;border-radius:22px;padding:18px;box-shadow:0 20px 50px #183b2422}.f1{left:12%;top:14%;width:65%;transform:rotate(-3deg)}.fakeimg{height:180px;border-radius:15px;background:#eef2ed;display:grid;place-items:center;font-size:54px}.f2{right:7%;bottom:13%;transform:rotate(4deg)}.quick{display:flex;gap:9px;overflow:auto;padding:0 0 48px}.quick button{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:99px;padding:10px 15px;font-weight:700}.discover{background:white;border-block:1px solid var(--line);padding:56px 0}.section-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:25px}.eyebrow{color:var(--g);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.section-head h2{font-size:42px;letter-spacing:-2px;margin:5px 0}.section-head p{max-width:450px;color:var(--muted)}.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.cat{min-height:155px;border:1px solid var(--line);background:var(--cream);border-radius:22px;padding:20px;text-decoration:none;color:inherit;display:flex;flex-direction:column}.cat i{font-style:normal;font-size:30px}.cat b{margin-top:auto;font-size:18px}.cat span{font-size:12px;color:var(--muted)}.results{padding:60px 0}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:24px}.toolbar input,.toolbar select{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;min-height:44px}.toolbar input{width:135px}.reset{border:0;background:transparent;color:#0d6b3a;font-weight:800}.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.product-card{background:white;border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}.product-card img{width:100%;aspect-ratio:1;object-fit:contain;background:#f2f4f0;padding:14px}.product-card .count-note{font-size:10px;color:#68766d;padding:12px 14px 0}.product-card h3{font-size:16px;margin:6px 14px}.product-card .desc{margin:0 14px}.product-card .meta{font-size:11px;color:#7a857e;margin:12px 14px 0}.product-card .price{margin:6px 14px}.product-card .offer-link,.product-card button{margin:4px 14px 14px;background:var(--ink);color:white;border:0;text-decoration:none;border-radius:10px;padding:10px;text-align:center;font-weight:800}.product-card button:disabled{background:#edf2ee;color:#69766e}.load-more{display:block;margin:28px auto 0;border:1px solid var(--line);background:white;padding:12px 20px;border-radius:99px;font-weight:800}.product-media{aspect-ratio:1;background:#f2f4f0;padding:14px;position:relative}.product-media img{width:100%;height:100%;object-fit:contain}.tag{position:absolute;top:10px;left:10px;background:white;border-radius:99px;padding:5px 8px;font-size:10px}.product-body{padding:15px}.brand{font-size:10px;text-transform:uppercase;color:#0d6b3a;font-weight:900}.product h3{font-size:16px;margin:6px 0}.desc{font-size:13px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.merchant{font-size:11px;color:#7a857e;margin-top:13px}.bottom{display:flex;justify-content:space-between;align-items:end;margin-top:7px;gap:7px}.price{font-size:20px;font-weight:900}.offer{background:var(--ink);color:white;text-decoration:none;padding:9px;border-radius:10px;font-size:11px;font-weight:800}.no{font-size:10px;background:#edf2ee;padding:8px;border-radius:9px}.load{display:block;margin:28px auto;border:1px solid var(--line);background:white;padding:12px 20px;border-radius:99px;font-weight:800}.empty{grid-column:1/-1;background:white;border:1px dashed #bcc9bf;border-radius:20px;padding:35px;text-align:center}.principle{padding:65px 0}.dark{background:var(--ink);color:white;border-radius:30px;padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:35px}.dark h2{font-size:38px;letter-spacing:-2px;margin:4px 0}.dark p{color:#bdc9c1;line-height:1.6}.points div{padding:12px 0;border-top:1px solid #314238}.points b{color:#c9f2a5}footer{padding:35px 0}.foot{border-top:1px solid var(--line);padding-top:24px;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.foot a{color:inherit;margin-left:15px}
 @media(max-width:900px){.hero-grid{grid-template-columns:1fr}.art{display:none}.product-grid,.cats{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){nav{display:none}.hero{padding:44px 0 30px}h1{font-size:clamp(45px,14vw,62px);letter-spacing:-3px}.hero p{font-size:16px}.section-head{display:block}.cats{display:flex;overflow:auto}.cat{min-width:72%}.product-grid{grid-template-columns:repeat(2,1fr);gap:9px}.desc{display:none}.product-body{padding:11px}.product h3{font-size:14px}.bottom{display:block}.offer,.no{display:block;text-align:center;margin-top:8px}.toolbar{display:grid;grid-template-columns:1fr 1fr}.toolbar input,.toolbar select{width:100%}.reset{grid-column:1/-1}.dark{grid-template-columns:1fr;padding:27px}.dark h2{font-size:31px}.foot{display:block}.foot div:last-child{margin-top:12px}.foot a{margin:0 14px 0 0}}
 </style>
-\n</head>
+
+</head>
 <body><div class="preview">ENTWICKLUNGSVORSCHAU · FundBlick Version 2</div><header><div class="wrap head"><div class="logo">Fund<span>Blick</span></div><nav><a href="#entdecken">Entdecken</a><a href="#produkte">Produkte</a><a href="#prinzip">Prinzip</a></nav></div></header><main>
 <section class="hero"><div class="wrap hero-grid"><div><span class="kicker">● Produktentdeckung, neu gedacht</span><h1>Weniger suchen.<br><span class="accent">Besser finden.</span></h1><p>FundBlick bringt Produkte aus unterschiedlichen Quellen in eine klare Suche. Statt Shop für Shop zu öffnen, startest du mit dem Produkt, das du wirklich suchst.</p><form class="search" role="search"><input type="search" autocomplete="off" placeholder="z. B. Parfum, Sofa, Kopfhörer …" aria-label="Produktsuche"><button>Suchen</button></form></div><div class="art" aria-hidden="true"><div class="float f1"><div class="fakeimg">⌁</div><small>FundBlick Fund</small><h3>Ein Produkt. Klare Auswahl.</h3><b>ab 19,99 €</b></div><div class="float f2"><small>gefunden in</small><br><b>mehreren Quellen</b></div></div></div></section>
 <div class="wrap quick"><button data-q="parfum">Parfum</button><button data-category-hint="furniture">Wohnen</button><button data-category-hint="beauty">Beauty</button><button data-q="phone">Smartphones</button><button data-q="watch">Uhren</button><button data-q="shoe">Schuhe</button></div>
 <section class="discover" id="entdecken"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Entdecken</span><h2>Direkt in die richtige Richtung.</h2></div><p>Breite Einstiege zeigen auf Anhieb, was FundBlick abdeckt. Für konkrete Wünsche bleibt die Suche der schnellste Weg.</p></div><div class="cats"><a class="cat category-link" href="#produkte" data-category-hint="beauty"><i>✦</i><b>Beauty & Duft</b><span>Pflege, Make-up, Parfum</span></a><a class="cat category-link" href="#produkte" data-category-hint="furniture"><i>⌂</i><b>Wohnen</b><span>Möbel & Einrichtung</span></a><a class="cat category-link" href="#produkte" data-q="phone"><i>▣</i><b>Technik</b><span>Smartphones & Elektronik</span></a><a class="cat category-link" href="#produkte" data-q="shoe"><i>↗</i><b>Mode</b><span>Schuhe & Accessoires</span></a></div></div></section>
 <section class="results" id="produkte"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Produkte</span><h2>Aktuelle Fundstücke</h2></div><p>Suche, filtere und sortiere die derzeitigen Testdaten.</p></div><div class="toolbar"><input id="price-min" type="number" min="0" placeholder="Preis von €"><input id="price-max" type="number" min="0" placeholder="Preis bis €"><select id="category-filter"><option value="">Alle Kategorien</option></select><select id="sort-products"><option value="relevance">Beste Treffer</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select><button class="reset" id="reset-filters">Filter zurücksetzen</button></div><section id="products-section" aria-live="polite"><div class="empty">Produkte werden geladen …</div></section></div></section>
 <section class="principle" id="prinzip"><div class="wrap dark"><div><span class="eyebrow">FundBlick Prinzip</span><h2>Das Produkt steht im Mittelpunkt. Nicht der Shop.</h2><p>FundBlick soll den Weg vom Wunsch zum passenden Angebot verkürzen – übersichtlich, schnell und ohne unnötige Ablenkung.</p></div><div class="points"><div><b>01</b><br>Produkte verständlich zusammenführen.</div><div><b>02</b><br>Filter und Preise dort zeigen, wo sie helfen.</div><div><b>03</b><br>Mobil genauso selbstverständlich wie am Desktop.</div></div></div></section></main><footer><div class="wrap foot"><div><b>FundBlick</b><br>Entwicklungsvorschau mit Testdaten.</div><div><a href="https://fundblick.de/impressum.html">Impressum</a><a href="https://fundblick.de/datenschutz.html">Datenschutz</a></div></div></footer><script>
-let products = [];\nlet currentResults = [];\nlet visibleLimit = 24;
+let products = [];
+let currentResults = [];
+let visibleLimit = 24;
 
 fetch('https://raw.githubusercontent.com/Fundblick/fundblick.de/development/products.json')
   .then(response => response.json())
   .then(data => {
-    if (!Array.isArray(data)) throw new Error('Produktdaten haben ein ungültiges Format.');\n    products = data.filter(product => product && typeof product === 'object');
+    if (!Array.isArray(data)) throw new Error('Produktdaten haben ein ungültiges Format.');
+    products = data.filter(product => product && typeof product === 'object');
     console.log('FundBlick Produkte geladen:', products);
 
     const categoryFilter = document.getElementById('category-filter');
@@ -39,7 +51,17 @@ fetch('https://raw.githubusercontent.com/Fundblick/fundblick.de/development/prod
       categoryFilter.appendChild(option);
     });
 
-    const params = new URLSearchParams(location.search);\n    searchInput.value = params.get('q') || '';\n    document.getElementById('price-min').value = params.get('min') || '';\n    document.getElementById('price-max').value = params.get('max') || '';\n    const categoryParam = params.get('category') || '';\n    if ([...categoryFilter.options].some(option => option.value === categoryParam)) categoryFilter.value = categoryParam;\n    const sortParam = params.get('sort') || 'relevance';\n    if ([...document.getElementById('sort-products').options].some(option => option.value === sortParam)) document.getElementById('sort-products').value = sortParam;\n\n    if (params.toString()) searchProducts();\n    else showProducts(products);
+    const params = new URLSearchParams(location.search);
+    searchInput.value = params.get('q') || '';
+    document.getElementById('price-min').value = params.get('min') || '';
+    document.getElementById('price-max').value = params.get('max') || '';
+    const categoryParam = params.get('category') || '';
+    if ([...categoryFilter.options].some(option => option.value === categoryParam)) categoryFilter.value = categoryParam;
+    const sortParam = params.get('sort') || 'relevance';
+    if ([...document.getElementById('sort-products').options].some(option => option.value === sortParam)) document.getElementById('sort-products').value = sortParam;
+
+    if (params.toString()) searchProducts();
+    else showProducts(products);
   })
   .catch(error => {
     console.error('Fehler beim Laden der Produkte:', error);
@@ -81,7 +103,13 @@ function showProducts(list, resetLimit = true) {
     document.querySelector('main').appendChild(section);
   }
 
-  const activeProducts = list.filter(product =>\n    product &&\n    product.active !== false &&\n    String(product.name ?? '').trim() &&\n    Number.isFinite(Number(product.price)) &&\n    Number(product.price) >= 0\n  );
+  const activeProducts = list.filter(product =>
+    product &&
+    product.active !== false &&
+    String(product.name ?? '').trim() &&
+    Number.isFinite(Number(product.price)) &&
+    Number(product.price) >= 0
+  );
   currentResults = activeProducts;
   if (resetLimit) visibleLimit = 24;
   const visibleProducts = activeProducts.slice(0, visibleLimit);
@@ -162,7 +190,9 @@ function searchProducts() {
       const category = String(product.category ?? '').toLocaleLowerCase('de-DE');
       const description = String(product.description ?? '').toLocaleLowerCase('de-DE');
       const merchant = String(product.merchant ?? '').toLocaleLowerCase('de-DE');
-      const price = Number(product.price);\n      const terms = term.split(/\\s+/).filter(Boolean);\n      const haystack = [name, brand, category, description, merchant].join(' ');
+      const price = Number(product.price);
+      const terms = term.split(/\\s+/).filter(Boolean);
+      const haystack = [name, brand, category, description, merchant].join(' ');
 
       let relevance = term ? 0 : 1;
 
@@ -213,7 +243,10 @@ function searchProducts() {
     ?.scrollIntoView({ behavior: 'smooth' });
 }
 
-document.querySelector('.search').addEventListener('submit', event => {\n  event.preventDefault();\n  searchProducts();\n});
+document.querySelector('.search').addEventListener('submit', event => {
+  event.preventDefault();
+  searchProducts();
+});
 
 ['price-min', 'price-max', 'category-filter', 'sort-products']
   .forEach(id => {
