@@ -154,7 +154,9 @@ function showProducts(list, resetLimit = true) {
   }
 
   const activeProducts = list.filter(product =>\n    product &&\n    product.active !== false &&\n    String(product.name ?? '').trim() &&\n    Number.isFinite(Number(product.price)) &&\n    Number(product.price) >= 0\n  );
-  const visibleProducts = activeProducts.slice(0, 24);
+  currentResults = activeProducts;
+  if (resetLimit) visibleLimit = 24;
+  const visibleProducts = activeProducts.slice(0, visibleLimit);
 
   if (activeProducts.length === 0) {
     section.innerHTML = '<div class="wrap"><div class="state"><h2 class="title">Keine passenden Produkte gefunden</h2><p>Ändere den Suchbegriff oder lockere die Filter.</p></div></div>';
@@ -185,8 +187,14 @@ function showProducts(list, resetLimit = true) {
           </article>
         `).join('')}
       </div>
+      ${activeProducts.length > visibleProducts.length ? '<button type="button" class="load-more" id="load-more">Weitere Produkte anzeigen</button>' : ''}
     </div>
   `;
+
+  document.getElementById('load-more')?.addEventListener('click', () => {
+    visibleLimit += 24;
+    showProducts(currentResults, false);
+  });
 }
 const searchInput = document.querySelector('.search input');
 const searchButton = document.querySelector('.search button');
@@ -195,8 +203,14 @@ function searchProducts() {
   const term = searchInput.value.trim().toLocaleLowerCase('de-DE');
   const minValue = document.getElementById('price-min').value;
   const maxValue = document.getElementById('price-max').value;
-  const minPrice = minValue === '' ? null : Number(minValue);
-  const maxPrice = maxValue === '' ? null : Number(maxValue);
+  let minPrice = minValue === '' ? null : Number(minValue);
+  let maxPrice = maxValue === '' ? null : Number(maxValue);
+
+  if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
+    [minPrice, maxPrice] = [maxPrice, minPrice];
+    document.getElementById('price-min').value = minPrice;
+    document.getElementById('price-max').value = maxPrice;
+  }
   const selectedCategory = document.getElementById('category-filter').value;
 
   if (!term && minPrice === null && maxPrice === null && !selectedCategory) {
@@ -229,6 +243,7 @@ function searchProducts() {
       if (term && category.includes(term)) relevance += 60;
       if (term && description.includes(term)) relevance += 30;
       if (term && merchant.includes(term)) relevance += 10;
+      if (term && terms.length > 1 && terms.every(word => haystack.includes(word))) relevance += 50;
 
       return { product, relevance, price };
     })
@@ -257,6 +272,15 @@ function searchProducts() {
 
   showProducts(results);
 
+  const params = new URLSearchParams();
+  if (term) params.set('q', searchInput.value.trim());
+  if (minPrice !== null) params.set('min', String(minPrice));
+  if (maxPrice !== null) params.set('max', String(maxPrice));
+  if (selectedCategory) params.set('category', selectedCategory);
+  const currentSort = document.getElementById('sort-products').value;
+  if (currentSort !== 'relevance') params.set('sort', currentSort);
+  history.replaceState(null, '', params.toString() ? '?' + params.toString() : location.pathname);
+
   document.getElementById('products-section')
     ?.scrollIntoView({ behavior: 'smooth' });
 }
@@ -281,6 +305,7 @@ document.getElementById('reset-filters').addEventListener('click', () => {
   document.getElementById('category-filter').value = '';
   document.getElementById('sort-products').value = 'relevance';
   showProducts(products);
+  history.replaceState(null, '', location.pathname);
   searchInput.focus();
 });
 
@@ -308,10 +333,5 @@ document.querySelectorAll('.category-link').forEach(link => {
   });
 });
 
-searchInput.addEventListener('keydown', event => {
-  if (event.key === 'Enter') {
-    searchProducts();
-  }
-});
 </script>
 </body></html>
