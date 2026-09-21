@@ -187,7 +187,7 @@ const searchInput = document.querySelector('.search input');
 const searchButton = document.querySelector('.search button');
 
 function searchProducts() {
-  const term = searchInput.value.trim().toLowerCase();
+  const term = searchInput.value.trim().toLocaleLowerCase('de-DE');
   const minValue = document.getElementById('price-min').value;
   const maxValue = document.getElementById('price-max').value;
   const minPrice = minValue === '' ? null : Number(minValue);
@@ -210,11 +210,11 @@ function searchProducts() {
 
   const results = products
     .map(product => {
-      const name = String(product.name ?? '').toLowerCase();
-      const brand = String(product.brand ?? '').toLowerCase();
-      const category = String(product.category ?? '').toLowerCase();
-      const description = String(product.description ?? '').toLowerCase();
-      const merchant = String(product.merchant ?? '').toLowerCase();
+      const name = String(product.name ?? '').toLocaleLowerCase('de-DE');
+      const brand = String(product.brand ?? '').toLocaleLowerCase('de-DE');
+      const category = String(product.category ?? '').toLocaleLowerCase('de-DE');
+      const description = String(product.description ?? '').toLocaleLowerCase('de-DE');
+      const merchant = String(product.merchant ?? '').toLocaleLowerCase('de-DE');
       const price = Number(product.price);\n      const terms = term.split(/\\s+/).filter(Boolean);\n      const haystack = [name, brand, category, description, merchant].join(' ');
 
       let relevance = term ? 0 : 1;
@@ -233,7 +233,7 @@ function searchProducts() {
       (minPrice === null || result.price >= minPrice) &&
       (maxPrice === null || result.price <= maxPrice) &&
       (!selectedCategory ||
-        String(result.product.category ?? '').toLowerCase() === selectedCategory)
+        String(result.product.category ?? '').toLocaleLowerCase('de-DE') === selectedCategory)
     )
     .sort((a, b) => {
       const sortMode = document.getElementById('sort-products').value;
