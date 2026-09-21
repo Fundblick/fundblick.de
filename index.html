@@ -111,7 +111,7 @@ fetch('products.json')
       categoryFilter.appendChild(option);
     });
 
-    showProducts(products);
+    const params = new URLSearchParams(location.search);\n    searchInput.value = params.get('q') || '';\n    document.getElementById('price-min').value = params.get('min') || '';\n    document.getElementById('price-max').value = params.get('max') || '';\n    const categoryParam = params.get('category') || '';\n    if ([...categoryFilter.options].some(option => option.value === categoryParam)) categoryFilter.value = categoryParam;\n    const sortParam = params.get('sort') || 'relevance';\n    if ([...document.getElementById('sort-products').options].some(option => option.value === sortParam)) document.getElementById('sort-products').value = sortParam;\n\n    if (params.toString()) searchProducts();\n    else showProducts(products);
   })
   .catch(error => {
     console.error('Fehler beim Laden der Produkte:', error);
