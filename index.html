@@ -117,6 +117,11 @@ fetch('products.json')
     console.error('Fehler beim Laden der Produkte:', error);
   });
 
+function showLoadError() {
+  const section = document.getElementById('products-section');
+  section.innerHTML = '<div class="wrap"><div class="state" role="alert"><h2 class="title">Produkte konnten nicht geladen werden</h2><p>Bitte lade die Seite erneut. Die Suche ist momentan nicht verfügbar.</p></div></div>';
+}
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
