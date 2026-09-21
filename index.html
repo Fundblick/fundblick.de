@@ -215,7 +215,7 @@ function searchProducts() {
       const category = String(product.category ?? '').toLowerCase();
       const description = String(product.description ?? '').toLowerCase();
       const merchant = String(product.merchant ?? '').toLowerCase();
-      const price = Number(product.price);
+      const price = Number(product.price);\n      const terms = term.split(/\\s+/).filter(Boolean);\n      const haystack = [name, brand, category, description, merchant].join(' ');
 
       let relevance = term ? 0 : 1;
 
