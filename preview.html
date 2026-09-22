@@ -73,6 +73,8 @@ function validateManifest(manifest) {
   if(!manifest||manifest.version!==1||!Number.isInteger(manifest.itemCount)||manifest.itemCount<0)throw new Error('Ungültiges Publication-Manifest.');
   if(typeof manifest.searchIndexSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchIndexSha256))throw new Error('Ungültiger Suchindex-Hash.');
   if(typeof manifest.searchFile!=='string'||!/^search-index\.[a-f0-9]{12}\.json$/.test(manifest.searchFile)||manifest.searchFile!=='search-index.'+manifest.searchIndexSha256.slice(0,12)+'.json')throw new Error('Ungültiger Suchindex-Pfad.');
+  if(typeof manifest.taxonomySha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.taxonomySha256)||typeof manifest.taxonomyFile!=='string'||manifest.taxonomyFile!=='taxonomy.'+manifest.taxonomySha256.slice(0,12)+'.json')throw new Error('Ungültige Taxonomie-Referenz.');
+  if(typeof manifest.searchConceptsSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchConceptsSha256)||typeof manifest.searchConceptsFile!=='string'||manifest.searchConceptsFile!=='search-concepts.'+manifest.searchConceptsSha256.slice(0,12)+'.json')throw new Error('Ungültige Suchkonzept-Referenz.');
   if(!Number.isInteger(manifest.shardCount)||manifest.shardCount<0||!manifest.shards||typeof manifest.shards!=='object'||Object.keys(manifest.shards).length!==manifest.shardCount)throw new Error('Ungültige Detail-Shards.');
   let shardItems=0;
   for(const [key,shard] of Object.entries(manifest.shards)){
@@ -84,7 +86,7 @@ function validateManifest(manifest) {
 }
 async function loadCatalog() {
   publicationManifest=validateManifest(await loadJson(DATA_BASE+'manifest.json',{mutable:true}));
-  const [index,taxonomy,concepts]=await Promise.all([loadJson(DATA_BASE+publicationManifest.searchFile),loadJson(DATA_BASE+'taxonomy.json'),loadJson(DATA_BASE+'search-concepts.json')]);
+  const [index,taxonomy,concepts]=await Promise.all([loadJson(DATA_BASE+publicationManifest.searchFile),loadJson(DATA_BASE+publicationManifest.taxonomyFile),loadJson(DATA_BASE+publicationManifest.searchConceptsFile)]);
   if(!Array.isArray(taxonomy))throw new Error('Taxonomie hat ein ungültiges Format.');
   if(!Array.isArray(concepts))throw new Error('Suchkonzepte haben ein ungültiges Format.');
   searchConcepts=new Map(concepts.map(item=>[String(item?.concept||''),Array.isArray(item?.terms)?item.terms.map(normalizeSearch).filter(Boolean):[]]).filter(([concept,terms])=>concept&&terms.length));
