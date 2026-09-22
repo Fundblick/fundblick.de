@@ -66,3 +66,27 @@ for(const [query,name] of [['智能电视','智能电视型号龙一'],['ラン�
 }
 console.log('FundBlick published substring parity OK');
 
+
+const searchRoot=JSON.parse(fs.readFileSync(path.join(catalog,manifest.searchRouting.file),'utf8'));
+const readSearchSha=sha=>JSON.parse(fs.readFileSync(path.join(catalog,'search',sha.slice(0,12)+'.json'),'utf8'));
+const exactIds=term=>{
+  const full=hash(term),short=full.slice(0,16),commonSha=searchRoot.common?.[short],items=[];
+  if(commonSha){
+    const tm=readSearchSha(commonSha);
+    for(const sha of tm.p){const page=readSearchSha(sha);if(page.t!==term)throw new Error('exact term page mismatch');items.push(...page.items)}
+  }else{
+    const bucketSha=searchRoot.rare[parseInt(full.slice(0,8),16)%searchRoot.rareBucketCount];
+    if(bucketSha){const bucket=readSearchSha(bucketSha);items.push(...(bucket[term]||[]))}
+  }
+  return new Set(items.map(item=>item.i));
+};
+for(const [exact,substring,name] of [
+  ['testbrandcn','智能电视','智能电视型号龙一'],
+  ['testbrandjp','ランニングシューズ','ランニングシューズモデル桜'],
+  ['testbrandth','รองเท้าวิ่ง','รองเท้าวิ่งรุ่นสายฟ้า']
+]){
+  const expected=index.find(item=>item.n===name)?.i;
+  const mixed=[...t.intersectSets(exactIds(exact),new Set(resolve(substring)))].sort();
+  eq(mixed,[expected],'published mixed-route parity '+exact+' '+substring);
+}
+console.log('FundBlick published mixed exact+substring parity OK');
