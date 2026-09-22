@@ -32,6 +32,7 @@ let currentResults = [];
 let visibleLimit = 24;
 const shardCache = new Map();
 let publicationManifest = null;
+let taxonomyLabels=new Map();
 const searchInput = document.querySelector('.search input');
 
 function normalizeSearch(value) {
@@ -73,7 +74,9 @@ function validateManifest(manifest) {
 }
 async function loadCatalog() {
   publicationManifest=validateManifest(await loadJson(DATA_BASE+'manifest.json',{mutable:true}));
-  const index=await loadJson(DATA_BASE+publicationManifest.searchFile);
+  const [index,taxonomy]=await Promise.all([loadJson(DATA_BASE+publicationManifest.searchFile),loadJson(DATA_BASE+'taxonomy.json')]);
+  if(!Array.isArray(taxonomy))throw new Error('Taxonomie hat ein ungültiges Format.');
+  taxonomyLabels=new Map(taxonomy.map(item=>[String(item?.id||''),String(item?.labels?.de||'')]).filter(([id,label])=>id&&label));
   if(!Array.isArray(index)||index.length!==publicationManifest.itemCount)throw new Error('Suchindex passt nicht zum Manifest.');
   if(index.some(p=>!p||!p.i||!p.n||!p.c||!Number.isInteger(p.s)||!publicationManifest.shards[String(p.s)]))throw new Error('Suchindex enthält ungültige Einträge.');
   products=index;
@@ -81,15 +84,9 @@ async function loadCatalog() {
   restoreState();
   if(new URLSearchParams(location.search).toString()) searchProducts(); else showProducts(products);
 }
-const CATEGORY_LABELS_DE = {
-  'electronics.televisions':'Fernseher',
-  'fashion.bags':'Taschen',
-  'fashion.shoes.men.running':'Herren-Laufschuhe',
-  'tools.power-tools.drills':'Akkuschrauber'
-};
 function categoryLabel(value) {
   const id=String(value||'');
-  return CATEGORY_LABELS_DE[id] || id.split('.').filter(Boolean).pop()?.replace(/[-_]+/g,' ') || '';
+  return taxonomyLabels.get(id) || id.split('.').filter(Boolean).pop()?.replace(/[-_]+/g,' ') || '';
 }
 function initializeFilters() {
   const categoryFilter=document.getElementById('category-filter');
