@@ -73,11 +73,10 @@ async function loadVerifiedJson(path,expectedSha256) {
   const response=await fetch(path,{cache:'force-cache',credentials:'omit'});
   if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
   const bytes=await response.arrayBuffer();
-  if(globalThis.crypto?.subtle&&expectedSha256){
-    const digest=await crypto.subtle.digest('SHA-256',bytes);
-    const actual=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
-    if(actual!==expectedSha256)throw new Error('Hash-Prüfung fehlgeschlagen für '+path);
-  }
+  if(!globalThis.crypto?.subtle)throw new Error('SHA-256-Prüfung wird von diesem Browser nicht unterstützt.');
+  const digest=await crypto.subtle.digest('SHA-256',bytes);
+  const actual=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(actual!==expectedSha256)throw new Error('Hash-Prüfung fehlgeschlagen für '+path);
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 function validateManifest(manifest) {
