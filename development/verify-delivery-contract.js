@@ -3,7 +3,7 @@ const html=fs.readFileSync('preview.html','utf8');
 const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
 if(!script)throw new Error('preview script missing');
 const names=['countryCode','deliveryEligibility','detailOfferEligibility','selectDetailOffer'];
-const source=names.map(n=>{const m=script.match(new RegExp('function '+n+'\\([^]*?\\n\\}'));if(!m)throw new Error(n+' missing');return m[0]}).join('\n');
+const start=script.indexOf('function countryCode');const end=script.indexOf('async function loadProductDetail');if(start<0||end<0||end<=start)throw new Error('delivery function block missing');const source=script.slice(start,end);
 const ctx={};vm.createContext(ctx);vm.runInContext(source,ctx);
 const eq=(actual,expected,label)=>{if(JSON.stringify(actual)!==JSON.stringify(expected))throw new Error(label+': '+JSON.stringify(actual))};
 eq(ctx.countryCode(' it '),'IT','normalizes country');
