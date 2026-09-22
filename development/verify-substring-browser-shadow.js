@@ -15,7 +15,7 @@ for(const needle of [
 }
 if(script.includes("if(!supportsExactShadowQuery(value)){document.documentElement.dataset.shadowSearch='unsupported';return;}"))throw new Error('legacy exact-only gate still blocks substring shadow queries');
 const pureStart=script.indexOf('function isExactShadowToken');
-const pureEnd=script.indexOf('async function substringBucketIndex');
+const pureEnd=script.indexOf('async function substringShadowSearchIds');
 if(pureStart<0||pureEnd<=pureStart)throw new Error('pure substring helper block missing');
 const pure=script.slice(pureStart,pureEnd)+"\n;globalThis.__t={isExactShadowToken,substringUniqueNgrams,substringQueryTokens,intersectSets};";
 const ctx={normalizeSearch:value=>String(value??'').normalize('NFKD').replace(/(\p{Script=Latin})\p{M}+/gu,'$1').toLocaleLowerCase().normalize('NFC').replace(/[^\p{L}\p{M}\p{N}]+/gu,' ').trim().replace(/\s+/g,' ')};
