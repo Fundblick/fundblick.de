@@ -28,4 +28,8 @@ eq(ctx.selectDetailOffer({variants:[{offers:[
   {id:'missing',purchasable:true,market:'IT',shipsTo:['IT'],totalPrice:null},
   {id:'priced',purchasable:true,market:'IT',shipsTo:['IT'],totalPrice:0}
 ]}]},'IT').id,'priced','finite zero price beats missing price');
+eq(ctx.selectDetailOffer({variants:[{offers:[
+  {id:'a-eur',purchasable:true,market:'IT',shipsTo:['IT'],totalPrice:90,currency:'EUR'},
+  {id:'z-gbp',purchasable:true,market:'IT',shipsTo:['IT'],totalPrice:85,currency:'GBP'}
+]}]},'IT').id,'a-eur','different currencies are not compared numerically');
 console.log('FundBlick V2 delivery/offer contract OK');
