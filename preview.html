@@ -33,6 +33,7 @@ let visibleLimit = 24;
 const shardCache = new Map();
 let publicationManifest = null;
 let taxonomyLabels=new Map();
+let activeCategoryPrefix='';
 const searchInput = document.querySelector('.search input');
 
 function normalizeSearch(value) {
@@ -109,7 +110,8 @@ async function loadCatalog() {
   products=index;
   initializeFilters();
   restoreState();
-  if(new URLSearchParams(location.search).toString()) searchProducts(); else showProducts(products);
+  if(activeCategoryPrefix){showProducts(products.filter(p=>String(p.c||'').startsWith(activeCategoryPrefix)));renderAppliedFilters();}
+  else if(new URLSearchParams(location.search).toString()) searchProducts(); else showProducts(products);
 }
 function categoryLabel(value) {
   const id=String(value||'');
@@ -126,7 +128,7 @@ function initializeFilters() {
   });
 }
 function restoreState() {
-  const p=new URLSearchParams(location.search);searchInput.value=p.get('q')||'';
+  const p=new URLSearchParams(location.search);activeCategoryPrefix=String(p.get('categoryPrefix')||'');searchInput.value=p.get('q')||'';
   document.getElementById('price-min').value=p.get('min')||'';
   document.getElementById('price-max').value=p.get('max')||'';
   for(const [id,key] of [['category-filter','category'],['brand-filter','brand']]){
@@ -209,6 +211,7 @@ function renderAppliedFilters(){
   box.innerHTML='';items.forEach(i=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=i.label+' ×';b.onclick=()=>{i.clear();searchProducts()};box.appendChild(b)});
 }
 function searchProducts(){
+  activeCategoryPrefix='';
   const term=normalizeSearch(searchInput.value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(searchInput.value);
   let min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
   min=min===''?null:Number(min);max=max===''?null:Number(max);
@@ -226,7 +229,7 @@ document.querySelector('.search').addEventListener('submit',e=>{e.preventDefault
 ['price-min','price-max','category-filter','brand-filter','sort-products'].forEach(id=>document.getElementById(id).addEventListener('change',searchProducts));
 document.getElementById('reset-filters').addEventListener('click',()=>{searchInput.value='';['price-min','price-max'].forEach(id=>document.getElementById(id).value='');document.getElementById('category-filter').value='';document.getElementById('brand-filter').value='';document.getElementById('sort-products').value='relevance';showProducts(products);renderAppliedFilters();history.replaceState(null,'',location.pathname)});
 document.querySelectorAll('[data-q]').forEach(el=>el.addEventListener('click',()=>{searchInput.value=el.dataset.q;searchProducts()}));
-document.querySelectorAll('[data-category-prefix]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();const prefix=String(el.dataset.categoryPrefix||''),select=document.getElementById('category-filter');const matches=products.filter(p=>String(p.c||'').startsWith(prefix));if(matches.length===1){select.value=normalizeSearch(matches[0].c);searchInput.value='';searchProducts();return}select.value='';searchInput.value='';const results=matches;showProducts(results);renderAppliedFilters();history.replaceState(null,'',location.pathname)}));
+document.querySelectorAll('[data-category-prefix]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();const prefix=String(el.dataset.categoryPrefix||''),select=document.getElementById('category-filter');const matches=products.filter(p=>String(p.c||'').startsWith(prefix));searchInput.value='';if(matches.length===1){select.value=normalizeSearch(matches[0].c);searchProducts();return}activeCategoryPrefix=prefix;select.value='';showProducts(matches);renderAppliedFilters();const params=new URLSearchParams();params.set('categoryPrefix',prefix);history.replaceState(null,'','?'+params)}));
 loadCatalog().catch(error=>{console.error('FundBlick publication load failed:',error);showLoadError()});
 </script>
 </body></html>
