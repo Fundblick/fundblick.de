@@ -217,7 +217,7 @@ function searchProducts(){
   min=min===''?null:Number(min);max=max===''?null:Number(max);
   if(min!==null&&max!==null&&min>max){[min,max]=[max,min];document.getElementById('price-min').value=min;document.getElementById('price-max').value=max;}
   const cat=document.getElementById('category-filter').value,brand=document.getElementById('brand-filter').value;
-  const results=products.map(p=>{const q=normalizeSearch(p.q||'');const padded=` ${q} `;const productConcepts=Array.isArray(p.x)?p.x:[];const conceptMatch=concepts.some(c=>productConcepts.includes(c));const score=!term?1:(q===term?100:conceptMatch?90:terms.every(t=>padded.includes(` ${t} `))?50:0);return{p,score,price:Number(p.p)}})
+  const results=products.map(p=>{const q=normalizeSearch(p.q||'');const padded=` ${q} `;const productConcepts=Array.isArray(p.x)?p.x:[];const conceptMatch=concepts.some(c=>productConcepts.includes(c));const tokenMatch=t=>/^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(t)?padded.includes(` ${t} `):q.includes(t);const score=!term?1:(q===term?100:conceptMatch?90:terms.every(tokenMatch)?50:0);return{p,score,price:Number(p.p)}})
     .filter(x=>x.score>0&&Number.isFinite(x.price)&&(min===null||x.price>=min)&&(max===null||x.price<=max)&&(!cat||normalizeSearch(x.p.c)===cat)&&(!brand||normalizeSearch(x.p.b)===brand))
     .sort((a,b)=>{const s=document.getElementById('sort-products').value;return s==='price-asc'?a.price-b.price:s==='price-desc'?b.price-a.price:b.score-a.score}).map(x=>x.p);
   showProducts(results);renderAppliedFilters();
