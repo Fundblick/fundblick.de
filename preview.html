@@ -155,7 +155,7 @@ async function loadProductDetail(card) {
     if(!data){data=await loadJson(DATA_BASE+file);if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');const expected=publicationManifest.shards[shard]?.itemCount;if(Number.isInteger(expected)&&Object.keys(data).length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');shardCache.set(file,data);}
     const p=data?.[id];
     if(!p)throw new Error('Produkt fehlt im Detail-Shard: '+id);
-    const offer=p.bestOffer||null,img=safeHttpUrl(p.imageUrl);
+    const offer=p.bestOffer||null,rawImg=safeHttpUrl(p.imageUrl),img=rawImg&&new URL(rawImg).hostname.toLowerCase()!=='example.com'?rawImg:'';
     card.innerHTML=`${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">`:''}
       <div class="count-note">${escapeHtml(categoryLabel(p.category)||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
       <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
