@@ -31,7 +31,10 @@ let products = [];
 let currentResults = [];
 let visibleLimit = 24;
 
-fetch('https://raw.githubusercontent.com/Fundblick/fundblick.de/development/products.json')
+fetch('https://raw.githubusercontent.com/Fundblick/fundblick.de/development/products.json', {
+  cache: 'force-cache',
+  credentials: 'omit'
+})
   .then(response => response.json())
   .then(data => {
     if (!Array.isArray(data)) throw new Error('Produktdaten haben ein ungültiges Format.');
