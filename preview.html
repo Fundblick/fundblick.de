@@ -134,10 +134,18 @@ function merchantLanguageName(language,uiLanguage=currentUiLanguage()){
   const code=handoffLanguage(language); if(!code)return '';
   try{return new Intl.DisplayNames([uiLanguage],{type:'language'}).of(code)||code.toUpperCase()}catch{return code.toUpperCase()}
 }
-function merchantOfferAction(offer){
-  if(!offer||!isRealOfferUrl(offer.affiliateUrl))return '<button type="button" disabled>'+escapeHtml(uiText('testProduct'))+'</button>';
+function outboundClickUrl(product,offer){
+  if(!product?.id||!offer?.id||!isRealOfferUrl(offer.affiliateUrl))return '';
+  const params=new URLSearchParams({p:String(product.id),o:String(offer.id),lang:currentUiLanguage()});
+  const country=countryCode(document.getElementById('delivery-country')?.value);
+  if(country)params.set('country',country);
+  return 'out-preview.html?'+params.toString();
+}
+function merchantOfferAction(offer,product){
+  const clickUrl=outboundClickUrl(product,offer);
+  if(!clickUrl)return '<button type="button" disabled>'+escapeHtml(uiText('testProduct'))+'</button>';
   if(merchantLanguageNeedsHelp(offer.merchantLanguage))return '<button type="button" class="offer-link merchant-handoff-trigger">'+escapeHtml(uiText('handoffOffer'))+'</button>';
-  return '<a class="offer-link" href="'+escapeHtml(safeHttpUrl(offer.affiliateUrl))+'" target="_blank" rel="sponsored noopener">'+escapeHtml(uiText('offer'))+'</a>';
+  return '<a class="offer-link" href="'+escapeHtml(clickUrl)+'" target="_blank" rel="sponsored noopener">'+escapeHtml(uiText('offer'))+'</a>';
 }
 function openMerchantHandoff(offer,product){
   const dialog=document.getElementById('merchant-handoff'),ui=currentUiLanguage(),v=handoffVocabulary(ui);
@@ -146,7 +154,7 @@ function openMerchantHandoff(offer,product){
   document.getElementById('handoff-title').textContent=v.title;
   document.getElementById('handoff-message').textContent=(product?.name?product.name+' · ':'')+v.message+(language?' '+uiText('merchantLanguage')+': '+language+'.':'');
   document.getElementById('handoff-open').textContent=v.open;
-  document.getElementById('handoff-open').href=safeHttpUrl(offer.affiliateUrl);
+  document.getElementById('handoff-open').href=outboundClickUrl(product,offer);
   document.getElementById('handoff-close').textContent=v.close;
   const labels={cart:'Warenkorb / Cart',checkout:'Kasse / Checkout',shipping:'Lieferung / Shipping',address:'Lieferadresse / Delivery address',payment:'Zahlungsart / Payment'};
   document.getElementById('handoff-terms').innerHTML=Object.entries(v.terms).map(([key,value])=>'<div class="handoff-term"><small>'+escapeHtml(labels[key]||key)+'</small><b>'+escapeHtml(value)+'</b></div>').join('');
@@ -522,7 +530,7 @@ async function loadProductDetail(card) {
       <div class="count-note">${escapeHtml(categoryLabel(p.category)||uiText('product'))}</div><h3>${escapeHtml(p.name)}</h3>
       <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
       <div class="price">${formatPrice({p:offer?.totalPrice??p.totalPriceFrom,u:offer?.currency||p.currency})}</div>
-      ${merchantOfferAction(offer)}`;
+      ${merchantOfferAction(offer,p)}`;
     card.querySelector('.merchant-handoff-trigger')?.addEventListener('click',()=>openMerchantHandoff(offer,p));
   }catch(error){
     console.error(error);

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>FundBlick – Händler wird geöffnet</title>
+<style>body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f7f7f2;color:#102018}.box{width:min(560px,calc(100% - 32px));margin:18vh auto;padding:28px;background:white;border:1px solid #dfe7e1;border-radius:18px}h1{font-size:24px}p{line-height:1.5;color:#647168}a{color:#0d6b3a;font-weight:700}</style>
+</head>
+<body><main class="box"><h1>Händler wird geöffnet …</h1><p id="status">FundBlick prüft den ausgewählten Angebotslink.</p><p><a id="fallback" href="preview.html" hidden>Händlerseite öffnen</a></p></main>
+<script>
+const DATA_BASE='development/catalog/';
+const params=new URLSearchParams(location.search);
+const productId=params.get('p')||'',offerId=params.get('o')||'';
+const validId=value=>/^[A-Za-z0-9_-]{1,80}$/.test(value);
+function safeHttpUrl(value){
+  try{const url=new URL(String(value||''),location.href);return ['http:','https:'].includes(url.protocol)?url.href:''}catch{return ''}
+}
+function isRealOfferUrl(value){
+  const safe=safeHttpUrl(value);if(!safe)return false;
+  try{return !['example.com','www.example.com'].includes(new URL(safe).hostname.toLowerCase())}catch{return false}
+}
+async function loadJson(file,{mutable=false}={}){
+  const response=await fetch(file,{cache:mutable?'no-cache':'force-cache',credentials:'omit'});
+  if(!response.ok)throw new Error('HTTP '+response.status);
+  return response.json();
+}
+async function resolvePublishedOffer(){
+  if(!validId(productId)||!validId(offerId))throw new Error('Ungültige Link-ID');
+  const manifest=await loadJson(DATA_BASE+'manifest.json',{mutable:true});
+  if(manifest?.version!==1||!manifest.searchFile||!manifest.shards)throw new Error('Ungültiges Manifest');
+  const index=await loadJson(DATA_BASE+manifest.searchFile);
+  const compact=Array.isArray(index)?index.find(item=>item?.i===productId):null;
+  if(!compact||!Number.isInteger(compact.s))throw new Error('Produkt nicht veröffentlicht');
+  const shardMeta=manifest.shards[String(compact.s)];
+  if(!shardMeta?.file)throw new Error('Shard nicht veröffentlicht');
+  const shard=await loadJson(DATA_BASE+shardMeta.file);
+  const product=shard?.[productId];
+  if(!product||product.id!==productId)throw new Error('Produktdetail fehlt');
+  const offer=(product.variants||[]).flatMap(v=>v.offers||[]).find(item=>item?.id===offerId&&item.purchasable);
+  if(!offer||!isRealOfferUrl(offer.affiliateUrl))throw new Error('Angebot nicht freigegeben');
+  return safeHttpUrl(offer.affiliateUrl);
+}
+(async()=>{
+  try{
+    const target=await resolvePublishedOffer();
+    const fallback=document.getElementById('fallback');
+    fallback.href=target;fallback.hidden=false;
+    document.getElementById('status').textContent='Angebot geprüft. Weiterleitung läuft …';
+    location.replace(target);
+  }catch(error){
+    console.error(error);
+    document.getElementById('status').textContent='Der Händlerlink konnte nicht sicher aus dem aktuellen FundBlick-Katalog bestätigt werden.';
+  }
+})();
+</script></body></html>
