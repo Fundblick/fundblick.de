@@ -39,7 +39,7 @@ const searchInput = document.querySelector('.search input');
 function normalizeSearch(value) {
   return String(value ?? '').normalize('NFKD')
     .replace(/(\p{Script=Latin})\p{M}+/gu, '$1')
-    .toLocaleLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .toLocaleLowerCase().normalize('NFC').replace(/[^\p{L}\p{M}\p{N}]+/gu, ' ')
     .trim().replace(/\s+/g, ' ');
 }
 let searchConcepts=new Map();
