@@ -8,7 +8,6 @@
 <meta name="robots" content="noindex,follow">
 <meta name="theme-color" content="#128447">
 <meta name="color-scheme" content="light">
-<link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
@@ -27,333 +26,140 @@
 <section class="discover" id="entdecken"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Entdecken</span><h2>Direkt in die richtige Richtung.</h2></div><p>Breite Einstiege zeigen auf Anhieb, was FundBlick abdeckt. Für konkrete Wünsche bleibt die Suche der schnellste Weg.</p></div><div class="cats"><a class="cat category-link" href="#produkte" data-category-hint="beauty"><i>✦</i><b>Beauty & Duft</b><span>Pflege, Make-up, Parfum</span></a><a class="cat category-link" href="#produkte" data-category-hint="furniture"><i>⌂</i><b>Wohnen</b><span>Möbel & Einrichtung</span></a><a class="cat category-link" href="#produkte" data-q="phone"><i>▣</i><b>Technik</b><span>Smartphones & Elektronik</span></a><a class="cat category-link" href="#produkte" data-q="shoe"><i>↗</i><b>Mode</b><span>Schuhe & Accessoires</span></a></div></div></section>
 <section class="results" id="produkte"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Produkte</span><h2>Aktuelle Fundstücke</h2></div><p>Suche, filtere und sortiere die derzeitigen Testdaten.</p></div><div class="toolbar"><input id="price-min" type="number" min="0" placeholder="Preis von €"><input id="price-max" type="number" min="0" placeholder="Preis bis €"><select id="category-filter"><option value="">Alle Kategorien</option></select><select id="brand-filter"><option value="">Alle Marken</option></select><select id="sort-products"><option value="relevance">Beste Treffer</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select><button class="reset" id="reset-filters">Filter zurücksetzen</button></div><div id="applied-filters" class="applied" aria-label="Aktive Filter"></div><section id="products-section" aria-live="polite"><div class="empty">Produkte werden geladen …</div></section></div></section>
 <section class="principle" id="prinzip"><div class="wrap dark"><div><span class="eyebrow">FundBlick Prinzip</span><h2>Das Produkt steht im Mittelpunkt. Nicht der Shop.</h2><p>FundBlick soll den Weg vom Wunsch zum passenden Angebot verkürzen – übersichtlich, schnell und ohne unnötige Ablenkung.</p></div><div class="points"><div><b>01</b><br>Produkte verständlich zusammenführen.</div><div><b>02</b><br>Filter und Preise dort zeigen, wo sie helfen.</div><div><b>03</b><br>Mobil genauso selbstverständlich wie am Desktop.</div></div></div></section></main><footer><div class="wrap foot"><div><b>FundBlick</b><br>Entwicklungsvorschau mit Testdaten.</div><div><a href="impressum-preview.html">Impressum</a><a href="datenschutz-preview.html">Datenschutz</a></div></div></footer><script>
+const DATA_BASE = 'catalog/';
 let products = [];
 let currentResults = [];
 let visibleLimit = 24;
-
-fetch('https://raw.githubusercontent.com/Fundblick/fundblick.de/development/products.json', {
-  cache: 'force-cache',
-  credentials: 'omit'
-})
-  .then(response => response.json())
-  .then(data => {
-    if (!Array.isArray(data)) throw new Error('Produktdaten haben ein ungültiges Format.');
-    products = data.filter(product => product && typeof product === 'object');
-    const categoryFilter = document.getElementById('category-filter');
-    const categories = [...new Map(
-      products
-        .map(product => String(product.category ?? '').trim())
-        .filter(Boolean)
-        .map(category => [category.toLowerCase(), category])
-    ).values()].sort((a, b) => a.localeCompare(b, 'de'));
-
-    categories.forEach(category => {
-      const option = document.createElement('option');
-      option.value = normalizeSearch(category);
-      option.textContent = category;
-      categoryFilter.appendChild(option);
-    });
-
-    const brandFilter = document.getElementById('brand-filter');
-    const brands = [...new Map(
-      products
-        .map(product => String(product.brand ?? '').trim())
-        .filter(Boolean)
-        .map(brand => [normalizeSearch(brand), brand])
-    ).values()].sort((a, b) => a.localeCompare(b, 'de'));
-
-    brands.forEach(brand => {
-      const option = document.createElement('option');
-      option.value = normalizeSearch(brand);
-      option.textContent = brand;
-      brandFilter.appendChild(option);
-    });
-
-    const params = new URLSearchParams(location.search);
-    searchInput.value = params.get('q') || '';
-    document.getElementById('price-min').value = params.get('min') || '';
-    document.getElementById('price-max').value = params.get('max') || '';
-    const categoryParam = normalizeSearch(params.get('category') || '');
-    if ([...categoryFilter.options].some(option => option.value === categoryParam)) categoryFilter.value = categoryParam;
-    const brandParam = normalizeSearch(params.get('brand') || '');
-    if ([...brandFilter.options].some(option => option.value === brandParam)) brandFilter.value = brandParam;
-    const sortParam = params.get('sort') || 'relevance';
-    if ([...document.getElementById('sort-products').options].some(option => option.value === sortParam)) document.getElementById('sort-products').value = sortParam;
-
-    if (params.toString()) searchProducts();
-    else showProducts(products);
-  })
-  .catch(error => {
-    console.error('Fehler beim Laden der Produkte:', error);
-    showLoadError();
-  });
-
-function showLoadError() {
-  const section = document.getElementById('products-section');
-  section.innerHTML = '<div class="wrap"><div class="state" role="alert"><h2 class="title">Produkte konnten nicht geladen werden</h2><p>Bitte lade die Seite erneut. Die Suche ist momentan nicht verfügbar.</p></div></div>';
-}
-
-function safeHttpUrl(value) {
-  try {
-    const url = new URL(String(value || ''), location.href);
-    return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : '';
-  } catch {
-    return '';
-  }
-}
-
-function isRealOfferUrl(value) {
-  const safe = safeHttpUrl(value);
-  if (!safe) return false;
-  try {
-    const host = new URL(safe).hostname.toLowerCase();
-    return !['example.com','www.example.com'].includes(host);
-  } catch {
-    return false;
-  }
-}
+const shardCache = new Map();
+const searchInput = document.querySelector('.search input');
 
 function normalizeSearch(value) {
-  return String(value ?? '')
-    .normalize('NFKD')
+  return String(value ?? '').normalize('NFKD')
     .replace(/(\p{Script=Latin})\p{M}+/gu, '$1')
-    .toLocaleLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
-    .trim()
-    .replace(/\s+/g, ' ');
+    .toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim().replace(/\s+/g, ' ');
 }
-
 function escapeHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
-
+function safeHttpUrl(value) {
+  try { const u=new URL(String(value||''),location.href); return ['http:','https:'].includes(u.protocol)?u.href:''; }
+  catch { return ''; }
+}
+function isRealOfferUrl(value) {
+  const safe=safeHttpUrl(value); if(!safe)return false;
+  try { return !['example.com','www.example.com'].includes(new URL(safe).hostname.toLowerCase()); } catch { return false; }
+}
 function formatPrice(product) {
-  const price = Number(product.price);
-  if (!Number.isFinite(price)) return 'Preis auf Anfrage';
-  try {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: product.currency || 'EUR'
-    }).format(price);
-  } catch {
-    return price.toFixed(2) + ' ' + escapeHtml(product.currency || 'EUR');
-  }
+  const price=Number(product.p); if(!Number.isFinite(price))return 'Preis auf Anfrage';
+  try{return new Intl.NumberFormat('de-DE',{style:'currency',currency:product.u||'EUR'}).format(price)}
+  catch{return price.toFixed(2)+' '+escapeHtml(product.u||'EUR')}
 }
-
-function showProducts(list, resetLimit = true) {
-  let section = document.getElementById('products-section');
-
-  if (!section) {
-    section = document.createElement('section');
-    section.id = 'products-section';
-    document.querySelector('main').appendChild(section);
-  }
-
-  const activeProducts = list.filter(product =>
-    product &&
-    product.active !== false &&
-    String(product.name ?? '').trim() &&
-    Number.isFinite(Number(product.price)) &&
-    Number(product.price) >= 0
-  );
-  currentResults = activeProducts;
-  if (resetLimit) visibleLimit = matchMedia('(max-width:700px)').matches ? 12 : 24;
-  const visibleProducts = activeProducts.slice(0, visibleLimit);
-
-  if (activeProducts.length === 0) {
-    section.innerHTML = '<div class="wrap"><div class="state"><h2 class="title">Keine passenden Produkte gefunden</h2><p>Ändere den Suchbegriff oder lockere die Filter.</p></div></div>';
-    return;
-  }
-
-  section.innerHTML = `
-    <div class="wrap">
-      <div class="results-head">
-        <div>
-          <h2 class="title">${activeProducts.length} ${activeProducts.length === 1 ? 'Produkt gefunden' : 'Produkte gefunden'}</h2>
-          <div class="count-note">${activeProducts.length > visibleProducts.length ? `${visibleProducts.length} von ${activeProducts.length} Treffern werden angezeigt.` : 'Alle Treffer werden angezeigt.'}</div>
-        </div>
-      </div>
-      <div class="product-grid">
-        ${visibleProducts.map(product => `
-          <article class="product-card">
-            ${safeHttpUrl(product.image) ? `<img src="${escapeHtml(safeHttpUrl(product.image))}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">` : ''}
-            <div class="count-note">${escapeHtml(product.category || 'Produkt')}</div>
-            <h3>${escapeHtml(product.name)}</h3>
-            <p class="desc">${escapeHtml(product.description)}</p>
-            <div class="meta">${product.brand ? escapeHtml(product.brand) + ' · ' : ''}${escapeHtml(product.merchant || '')}</div>
-            <div class="price">${formatPrice(product)}</div>
-            ${isRealOfferUrl(product.affiliateUrl)
-              ? `<a class="offer-link" href="${escapeHtml(safeHttpUrl(product.affiliateUrl))}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`
-              : '<button type="button" disabled>Testprodukt</button>'
-            }
-          </article>
-        `).join('')}
-      </div>
-      ${activeProducts.length > visibleProducts.length ? '<button type="button" class="load-more" id="load-more">Weitere Produkte anzeigen</button>' : ''}
-    </div>
-  `;
-
-  document.getElementById('load-more')?.addEventListener('click', () => {
-    visibleLimit += matchMedia('(max-width:700px)').matches ? 12 : 24;
-    showProducts(currentResults, false);
+async function loadJson(path) {
+  const response=await fetch(path,{cache:'no-cache',credentials:'omit'});
+  if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
+  return response.json();
+}
+async function loadCatalog() {
+  const manifest=await loadJson(DATA_BASE+'manifest.json');
+  if(!manifest?.searchFile)throw new Error('Publication-Manifest ohne Suchindex.');
+  const index=await loadJson(manifest.searchFile);
+  if(!Array.isArray(index))throw new Error('Suchindex hat ein ungültiges Format.');
+  products=index;
+  initializeFilters();
+  restoreState();
+  if(new URLSearchParams(location.search).toString()) searchProducts(); else showProducts(products);
+}
+function initializeFilters() {
+  const categoryFilter=document.getElementById('category-filter');
+  const brandFilter=document.getElementById('brand-filter');
+  [...new Set(products.map(p=>String(p.c||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de')).forEach(v=>{
+    const o=document.createElement('option');o.value=normalizeSearch(v);o.textContent=v;categoryFilter.appendChild(o);
+  });
+  [...new Set(products.map(p=>String(p.b||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de')).forEach(v=>{
+    const o=document.createElement('option');o.value=normalizeSearch(v);o.textContent=v;brandFilter.appendChild(o);
   });
 }
-const searchInput = document.querySelector('.search input');
-const searchButton = document.querySelector('.search button');
-
-function renderAppliedFilters() {
-  const box = document.getElementById('applied-filters');
-  const items = [];
-  const q = searchInput.value.trim();
-  const min = document.getElementById('price-min').value;
-  const max = document.getElementById('price-max').value;
-  const cat = document.getElementById('category-filter');
-  const brand = document.getElementById('brand-filter');
-  if (q) items.push({label:'Suche: ' + q, clear:()=>{searchInput.value='';}});
-  if (min) items.push({label:'ab ' + min + ' €', clear:()=>{document.getElementById('price-min').value='';}});
-  if (max) items.push({label:'bis ' + max + ' €', clear:()=>{document.getElementById('price-max').value='';}});
-  if (cat.value) items.push({label:'Kategorie: ' + cat.options[cat.selectedIndex].text, clear:()=>{cat.value='';}});
-  if (brand.value) items.push({label:'Marke: ' + brand.options[brand.selectedIndex].text, clear:()=>{brand.value='';}});
-  box.innerHTML = '';
-  items.forEach(item => {
-    const button = document.createElement('button');
-    button.type = 'button'; button.className = 'chip';
-    button.textContent = item.label + '  ×';
-    button.addEventListener('click', () => { item.clear(); searchProducts(); });
-    box.appendChild(button);
-  });
-}
-
-function searchProducts() {
-  const term = normalizeSearch(searchInput.value.trim());
-  const minValue = document.getElementById('price-min').value;
-  const maxValue = document.getElementById('price-max').value;
-  let minPrice = minValue === '' ? null : Number(minValue);
-  let maxPrice = maxValue === '' ? null : Number(maxValue);
-
-  if (minPrice !== null && maxPrice !== null && minPrice > maxPrice) {
-    [minPrice, maxPrice] = [maxPrice, minPrice];
-    document.getElementById('price-min').value = minPrice;
-    document.getElementById('price-max').value = maxPrice;
+function restoreState() {
+  const p=new URLSearchParams(location.search);searchInput.value=p.get('q')||'';
+  document.getElementById('price-min').value=p.get('min')||'';
+  document.getElementById('price-max').value=p.get('max')||'';
+  for(const [id,key] of [['category-filter','category'],['brand-filter','brand']]){
+    const el=document.getElementById(id),v=normalizeSearch(p.get(key)||'');
+    if([...el.options].some(o=>o.value===v))el.value=v;
   }
-  const selectedCategory = document.getElementById('category-filter').value;
-  const selectedBrand = document.getElementById('brand-filter').value;
-
-  const results = products
-    .map(product => {
-      const name = normalizeSearch(product.name);
-      const brand = normalizeSearch(product.brand);
-      const category = normalizeSearch(product.category);
-      const description = normalizeSearch(product.description);
-      const merchant = normalizeSearch(product.merchant);
-      const price = Number(product.price);
-      const terms = term.split(/\\s+/).filter(Boolean);
-      const haystack = [name, brand, category, description, merchant].join(' ');
-
-      let relevance = term ? 0 : 1;
-
-      if (term && name.includes(term)) relevance += 100;
-      if (term && brand.includes(term)) relevance += 80;
-      if (term && category.includes(term)) relevance += 60;
-      if (term && description.includes(term)) relevance += 30;
-      if (term && merchant.includes(term)) relevance += 10;
-      if (term && terms.length > 1 && terms.every(word => haystack.includes(word))) relevance += 50;
-
-      return { product, relevance, price };
-    })
-    .filter(result =>
-      result.relevance > 0 &&
-      Number.isFinite(result.price) &&
-      (minPrice === null || result.price >= minPrice) &&
-      (maxPrice === null || result.price <= maxPrice) &&
-      (!selectedCategory ||
-        normalizeSearch(result.product.category) === normalizeSearch(selectedCategory)) &&
-      (!selectedBrand ||
-        normalizeSearch(result.product.brand) === normalizeSearch(selectedBrand))
-    )
-    .sort((a, b) => {
-      const sortMode = document.getElementById('sort-products').value;
-
-      if (sortMode === 'price-asc') {
-        return a.price - b.price;
-      }
-
-      if (sortMode === 'price-desc') {
-        return b.price - a.price;
-      }
-
-      return b.relevance - a.relevance;
-    })
-    .map(result => result.product);
-
-  showProducts(results);
-  renderAppliedFilters();
-
-  const params = new URLSearchParams();
-  if (term) params.set('q', searchInput.value.trim());
-  if (minPrice !== null) params.set('min', String(minPrice));
-  if (maxPrice !== null) params.set('max', String(maxPrice));
-  if (selectedCategory) params.set('category', selectedCategory);
-  if (selectedBrand) params.set('brand', selectedBrand);
-  const currentSort = document.getElementById('sort-products').value;
-  if (currentSort !== 'relevance') params.set('sort', currentSort);
-  history.replaceState(null, '', params.toString() ? '?' + params.toString() : location.pathname);
-
-  document.getElementById('products-section')
-    ?.scrollIntoView({ behavior: 'smooth' });
+  const sort=p.get('sort')||'relevance',el=document.getElementById('sort-products');
+  if([...el.options].some(o=>o.value===sort))el.value=sort;
 }
-
-document.querySelector('.search').addEventListener('submit', event => {
-  event.preventDefault();
-  searchProducts();
-});
-
-['price-min', 'price-max', 'category-filter', 'brand-filter', 'sort-products']
-  .forEach(id => {
-    document.getElementById(id).addEventListener('change', () => searchProducts());
-  });
-
-document.getElementById('reset-filters').addEventListener('click', () => {
-  searchInput.value = '';
-  document.getElementById('price-min').value = '';
-  document.getElementById('price-max').value = '';
-  document.getElementById('category-filter').value = '';
-  document.getElementById('brand-filter').value = '';
-  document.getElementById('sort-products').value = 'relevance';
-  showProducts(products);
-  renderAppliedFilters();
-  history.replaceState(null, '', location.pathname);
-  searchInput.focus();
-});
-
-document.querySelectorAll('.category-link').forEach(link => {
-  link.addEventListener('click', event => {
-    event.preventDefault();
-    const categoryHint = link.dataset.categoryHint;
-    const searchHint = link.dataset.searchHint;
-
-    if (categoryHint) {
-      const option = [...document.getElementById('category-filter').options]
-        .find(item => item.value.includes(categoryHint));
-      if (option) {
-        document.getElementById('category-filter').value = option.value;
-        searchInput.value = '';
-        searchProducts();
-        return;
-      }
-      searchInput.value = categoryHint;
-    } else if (searchHint) {
-      searchInput.value = searchHint;
-    }
-
-    searchProducts();
-  });
-});
-
+function showLoadError() {
+  document.getElementById('products-section').innerHTML='<div class="empty" role="alert">Produktdaten konnten nicht geladen werden. Bitte Seite erneut laden.</div>';
+}
+function showProducts(list,resetLimit=true) {
+  currentResults=list;
+  if(resetLimit)visibleLimit=matchMedia('(max-width:700px)').matches?12:24;
+  const visible=list.slice(0,visibleLimit),section=document.getElementById('products-section');
+  if(!list.length){section.innerHTML='<div class="empty">Keine passenden Produkte gefunden.</div>';return;}
+  section.innerHTML='<div class="product-grid">'+visible.map(p=>`
+    <article class="product-card" data-product-id="${escapeHtml(p.i)}" data-shard="${Number(p.s)}">
+      <div class="product-media"><div class="fakeimg">⌁</div></div>
+      <div class="count-note">${escapeHtml(p.c||'Produkt')}</div>
+      <h3>${escapeHtml(p.n)}</h3>
+      <div class="meta">${escapeHtml(p.b||'')}</div>
+      <div class="price">${formatPrice(p)}</div>
+      <button type="button" class="detail-load">Details laden</button>
+    </article>`).join('')+'</div>'+
+    (list.length>visible.length?'<button type="button" class="load-more" id="load-more">Weitere Produkte anzeigen</button>':'');
+  section.querySelectorAll('.detail-load').forEach(b=>b.addEventListener('click',()=>loadProductDetail(b.closest('.product-card'))));
+  document.getElementById('load-more')?.addEventListener('click',()=>{visibleLimit+=matchMedia('(max-width:700px)').matches?12:24;showProducts(currentResults,false)});
+}
+async function loadProductDetail(card) {
+  const id=card.dataset.productId, shard=card.dataset.shard;
+  const manifest=await loadJson(DATA_BASE+'manifest.json');
+  const file=manifest.shards?.[shard]?.file;
+  if(!file)return;
+  try{
+    let data=shardCache.get(file);
+    if(!data){data=await loadJson(file);shardCache.set(file,data);}
+    const p=data?.[id];if(!p)return;
+    const offer=p.bestOffer||null,img=safeHttpUrl(p.imageUrl);
+    card.innerHTML=`${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">`:''}
+      <div class="count-note">${escapeHtml(p.category||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
+      <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
+      <div class="price">${formatPrice({p:p.totalPriceFrom,u:p.currency})}</div>
+      ${offer&&isRealOfferUrl(offer.affiliateUrl)?`<a class="offer-link" href="${escapeHtml(safeHttpUrl(offer.affiliateUrl))}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`:'<button type="button" disabled>Testprodukt</button>'}`;
+  }catch(error){console.error(error);}
+}
+function renderAppliedFilters(){
+  const box=document.getElementById('applied-filters'),items=[],q=searchInput.value.trim();
+  const min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
+  const cat=document.getElementById('category-filter'),brand=document.getElementById('brand-filter');
+  if(q)items.push({label:'Suche: '+q,clear:()=>searchInput.value=''});
+  if(min)items.push({label:'ab '+min+' €',clear:()=>document.getElementById('price-min').value=''});
+  if(max)items.push({label:'bis '+max+' €',clear:()=>document.getElementById('price-max').value=''});
+  if(cat.value)items.push({label:'Kategorie: '+cat.options[cat.selectedIndex].text,clear:()=>cat.value=''});
+  if(brand.value)items.push({label:'Marke: '+brand.options[brand.selectedIndex].text,clear:()=>brand.value=''});
+  box.innerHTML='';items.forEach(i=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=i.label+' ×';b.onclick=()=>{i.clear();searchProducts()};box.appendChild(b)});
+}
+function searchProducts(){
+  const term=normalizeSearch(searchInput.value),terms=term.split(' ').filter(Boolean);
+  let min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
+  min=min===''?null:Number(min);max=max===''?null:Number(max);
+  if(min!==null&&max!==null&&min>max)[min,max]=[max,min];
+  const cat=document.getElementById('category-filter').value,brand=document.getElementById('brand-filter').value;
+  const results=products.map(p=>{const q=String(p.q||'');const score=!term?1:(q===term?100:terms.every(t=>(` ${q} `).includes(` ${t} `))?50:0);return{p,score,price:Number(p.p)}})
+    .filter(x=>x.score>0&&Number.isFinite(x.price)&&(min===null||x.price>=min)&&(max===null||x.price<=max)&&(!cat||normalizeSearch(x.p.c)===cat)&&(!brand||normalizeSearch(x.p.b)===brand))
+    .sort((a,b)=>{const s=document.getElementById('sort-products').value;return s==='price-asc'?a.price-b.price:s==='price-desc'?b.price-a.price:b.score-a.score}).map(x=>x.p);
+  showProducts(results);renderAppliedFilters();
+  const params=new URLSearchParams();if(term)params.set('q',searchInput.value.trim());if(min!==null)params.set('min',min);if(max!==null)params.set('max',max);if(cat)params.set('category',cat);if(brand)params.set('brand',brand);
+  const sort=document.getElementById('sort-products').value;if(sort!=='relevance')params.set('sort',sort);
+  history.replaceState(null,'',params.toString()?'?'+params:location.pathname);
+}
+document.querySelector('.search').addEventListener('submit',e=>{e.preventDefault();searchProducts()});
+['price-min','price-max','category-filter','brand-filter','sort-products'].forEach(id=>document.getElementById(id).addEventListener('change',searchProducts));
+document.getElementById('reset-filters').addEventListener('click',()=>{searchInput.value='';['price-min','price-max'].forEach(id=>document.getElementById(id).value='');document.getElementById('category-filter').value='';document.getElementById('brand-filter').value='';document.getElementById('sort-products').value='relevance';showProducts(products);renderAppliedFilters();history.replaceState(null,'',location.pathname)});
+document.querySelectorAll('[data-q]').forEach(el=>el.addEventListener('click',()=>{searchInput.value=el.dataset.q;searchProducts()}));
+document.querySelectorAll('[data-category-hint]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();const hint=normalizeSearch(el.dataset.categoryHint),select=document.getElementById('category-filter');const option=[...select.options].find(o=>o.value.includes(hint));if(option){select.value=option.value;searchInput.value=''}else searchInput.value=hint;searchProducts()}));
+loadCatalog().catch(error=>{console.error('FundBlick publication load failed:',error);showLoadError()});
 </script>
 </body></html>
