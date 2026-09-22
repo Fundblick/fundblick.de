@@ -204,7 +204,7 @@ function selectDetailOffer(product,country){
   return offers.sort((a,b)=>{
     const delivery=rank(a)-rank(b);if(delivery)return delivery;
     const ca=currency(a),cb=currency(b);
-    if(ca&&cb&&ca===cb){const priceDiff=price(a)-price(b);if(priceDiff)return priceDiff;}
+    if(ca===cb){const priceDiff=price(a)-price(b);if(priceDiff)return priceDiff;}
     return String(a.id||'').localeCompare(String(b.id||''));
   })[0]||null;
 }
