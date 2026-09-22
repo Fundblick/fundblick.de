@@ -62,11 +62,20 @@ async function loadJson(path,{mutable=false}={}) {
   if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
   return response.json();
 }
+function validateManifest(manifest) {
+  if(!manifest||manifest.version!==1||!Number.isInteger(manifest.itemCount)||manifest.itemCount<0)throw new Error('Ungültiges Publication-Manifest.');
+  if(typeof manifest.searchFile!=='string'||!/^search-index\.[a-f0-9]{12}\.json$/.test(manifest.searchFile))throw new Error('Ungültiger Suchindex-Pfad.');
+  if(!manifest.shards||typeof manifest.shards!=='object')throw new Error('Ungültige Detail-Shards.');
+  for(const [key,shard] of Object.entries(manifest.shards)){
+    if(!/^\d+$/.test(key)||!shard||typeof shard.file!=='string'||!/^shards\/\d+\.[a-f0-9]{12}\.json$/.test(shard.file))throw new Error('Ungültiger Detail-Shard-Pfad.');
+  }
+  return manifest;
+}
 async function loadCatalog() {
-  publicationManifest=await loadJson(DATA_BASE+'manifest.json',{mutable:true});
-  if(!publicationManifest?.searchFile)throw new Error('Publication-Manifest ohne Suchindex.');
+  publicationManifest=validateManifest(await loadJson(DATA_BASE+'manifest.json',{mutable:true}));
   const index=await loadJson(DATA_BASE+publicationManifest.searchFile);
-  if(!Array.isArray(index))throw new Error('Suchindex hat ein ungültiges Format.');
+  if(!Array.isArray(index)||index.length!==publicationManifest.itemCount)throw new Error('Suchindex passt nicht zum Manifest.');
+  if(index.some(p=>!p||!p.i||!p.n||!p.c||!Number.isInteger(p.s)||!publicationManifest.shards[String(p.s)]))throw new Error('Suchindex enthält ungültige Einträge.');
   products=index;
   initializeFilters();
   restoreState();
