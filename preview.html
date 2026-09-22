@@ -92,7 +92,7 @@ async function loadCatalog() {
   searchConcepts=new Map(concepts.map(item=>[String(item?.concept||''),Array.isArray(item?.terms)?item.terms.map(normalizeSearch).filter(Boolean):[]]).filter(([concept,terms])=>concept&&terms.length));
   taxonomyLabels=new Map(taxonomy.map(item=>[String(item?.id||''),String(item?.labels?.de||'')]).filter(([id,label])=>id&&label));
   if(!Array.isArray(index)||index.length!==publicationManifest.itemCount)throw new Error('Suchindex passt nicht zum Manifest.');
-  if(index.some(p=>!p||!p.i||!p.n||!p.c||!Number.isInteger(p.s)||!publicationManifest.shards[String(p.s)]))throw new Error('Suchindex enthält ungültige Einträge.');
+  if(index.some(p=>!p||!p.i||!p.n||!p.c||!Number.isInteger(p.s)||!publicationManifest.shards[String(p.s)]||('x' in p&&!Array.isArray(p.x))||('m' in p&&(!Array.isArray(p.m)||p.m.some(m=>typeof m!=='string'||!/^[A-Z]{2}$/.test(m))))))throw new Error('Suchindex enthält ungültige Einträge.');
   if(new Set(index.map(p=>p.i)).size!==index.length)throw new Error('Suchindex enthält doppelte Product-IDs.');
   if(index.some(p=>!taxonomyLabels.has(String(p.c))))throw new Error('Suchindex verweist auf unbekannte Kategorien.');
   if(index.some(p=>(p.x||[]).some(concept=>!searchConcepts.has(String(concept)))))throw new Error('Suchindex verweist auf unbekannte Suchkonzepte.');
@@ -157,7 +157,9 @@ async function loadProductDetail(card) {
     let data=shardCache.get(file);
     if(!data){data=await loadJson(DATA_BASE+file);if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');const expected=publicationManifest.shards[shard]?.itemCount;if(Number.isInteger(expected)&&Object.keys(data).length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');shardCache.set(file,data);}
     const p=data?.[id];
-    if(!p)throw new Error('Produkt fehlt im Detail-Shard: '+id);
+    if(!p||p.id!==id)throw new Error('Produkt fehlt oder hat eine falsche ID im Detail-Shard: '+id);
+    const indexProduct=products.find(item=>item.i===id);
+    if(!indexProduct||String(p.category||'')!==String(indexProduct.c||''))throw new Error('Produktdetail passt nicht zum Suchindex: '+id);
     const offer=p.bestOffer||null,rawImg=safeHttpUrl(p.imageUrl),img=rawImg&&new URL(rawImg).hostname.toLowerCase()!=='example.com'?rawImg:'';
     card.innerHTML=`${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">`:''}
       <div class="count-note">${escapeHtml(categoryLabel(p.category)||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
