@@ -200,7 +200,13 @@ function selectDetailOffer(product,country){
   const offers=(product?.variants||[]).flatMap(v=>v.offers||[]).filter(o=>o?.purchasable);
   const rank=o=>detailOfferEligibility(o,country).rank;
   const price=o=>o?.totalPrice!==null&&o?.totalPrice!==''&&Number.isFinite(Number(o.totalPrice))?Number(o.totalPrice):Infinity;
-  return offers.sort((a,b)=>rank(a)-rank(b)||(price(a)-price(b))||String(a.id||'').localeCompare(String(b.id||'')))[0]||null;
+  const currency=o=>String(o?.currency||'').trim().toUpperCase();
+  return offers.sort((a,b)=>{
+    const delivery=rank(a)-rank(b);if(delivery)return delivery;
+    const ca=currency(a),cb=currency(b);
+    if(ca&&cb&&ca===cb){const priceDiff=price(a)-price(b);if(priceDiff)return priceDiff;}
+    return String(a.id||'').localeCompare(String(b.id||''));
+  })[0]||null;
 }
 async function loadProductDetail(card) {
   const id=card.dataset.productId, shard=card.dataset.shard;
