@@ -23,7 +23,7 @@
 <section class="hero"><div class="wrap hero-grid"><div><span class="kicker">● Produktentdeckung, neu gedacht</span><h1>Weniger suchen.<br><span class="accent">Besser finden.</span></h1><p>FundBlick bringt Produkte aus unterschiedlichen Quellen in eine klare Suche. Statt Shop für Shop zu öffnen, startest du mit dem Produkt, das du wirklich suchst.</p><form class="search" role="search"><input type="search" autocomplete="off" placeholder="z. B. Parfum, Sofa, Kopfhörer …" aria-label="Produktsuche"><button>Suchen</button></form></div><div class="art" aria-hidden="true"><div class="float f1"><div class="fakeimg">⌁</div><small>FundBlick Fund</small><h3>Ein Produkt. Klare Auswahl.</h3><b>ab 19,99 €</b></div><div class="float f2"><small>gefunden in</small><br><b>mehreren Quellen</b></div></div></div></section>
 <div class="wrap quick"><button data-q="parfum">Parfum</button><button data-category-hint="furniture">Wohnen</button><button data-category-hint="beauty">Beauty</button><button data-q="phone">Smartphones</button><button data-q="watch">Uhren</button><button data-q="shoe">Schuhe</button></div>
 <section class="discover" id="entdecken"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Entdecken</span><h2>Direkt in die richtige Richtung.</h2></div><p>Breite Einstiege zeigen auf Anhieb, was FundBlick abdeckt. Für konkrete Wünsche bleibt die Suche der schnellste Weg.</p></div><div class="cats"><a class="cat category-link" href="#produkte" data-category-hint="beauty"><i>✦</i><b>Beauty & Duft</b><span>Pflege, Make-up, Parfum</span></a><a class="cat category-link" href="#produkte" data-category-hint="furniture"><i>⌂</i><b>Wohnen</b><span>Möbel & Einrichtung</span></a><a class="cat category-link" href="#produkte" data-q="phone"><i>▣</i><b>Technik</b><span>Smartphones & Elektronik</span></a><a class="cat category-link" href="#produkte" data-q="shoe"><i>↗</i><b>Mode</b><span>Schuhe & Accessoires</span></a></div></div></section>
-<section class="results" id="produkte"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Produkte</span><h2>Aktuelle Fundstücke</h2></div><p>Suche, filtere und sortiere die derzeitigen Testdaten.</p></div><div class="toolbar"><input id="price-min" type="number" min="0" placeholder="Preis von €"><input id="price-max" type="number" min="0" placeholder="Preis bis €"><select id="category-filter"><option value="">Alle Kategorien</option></select><select id="sort-products"><option value="relevance">Beste Treffer</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select><button class="reset" id="reset-filters">Filter zurücksetzen</button></div><div id="applied-filters" class="applied" aria-label="Aktive Filter"></div><section id="products-section" aria-live="polite"><div class="empty">Produkte werden geladen …</div></section></div></section>
+<section class="results" id="produkte"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Produkte</span><h2>Aktuelle Fundstücke</h2></div><p>Suche, filtere und sortiere die derzeitigen Testdaten.</p></div><div class="toolbar"><input id="price-min" type="number" min="0" placeholder="Preis von €"><input id="price-max" type="number" min="0" placeholder="Preis bis €"><select id="category-filter"><option value="">Alle Kategorien</option></select><select id="brand-filter"><option value="">Alle Marken</option></select><select id="sort-products"><option value="relevance">Beste Treffer</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select><button class="reset" id="reset-filters">Filter zurücksetzen</button></div><div id="applied-filters" class="applied" aria-label="Aktive Filter"></div><section id="products-section" aria-live="polite"><div class="empty">Produkte werden geladen …</div></section></div></section>
 <section class="principle" id="prinzip"><div class="wrap dark"><div><span class="eyebrow">FundBlick Prinzip</span><h2>Das Produkt steht im Mittelpunkt. Nicht der Shop.</h2><p>FundBlick soll den Weg vom Wunsch zum passenden Angebot verkürzen – übersichtlich, schnell und ohne unnötige Ablenkung.</p></div><div class="points"><div><b>01</b><br>Produkte verständlich zusammenführen.</div><div><b>02</b><br>Filter und Preise dort zeigen, wo sie helfen.</div><div><b>03</b><br>Mobil genauso selbstverständlich wie am Desktop.</div></div></div></section></main><footer><div class="wrap foot"><div><b>FundBlick</b><br>Entwicklungsvorschau mit Testdaten.</div><div><a href="impressum-preview.html">Impressum</a><a href="datenschutz-preview.html">Datenschutz</a></div></div></footer><script>
 let products = [];
 let currentResults = [];
@@ -189,10 +189,12 @@ function renderAppliedFilters() {
   const min = document.getElementById('price-min').value;
   const max = document.getElementById('price-max').value;
   const cat = document.getElementById('category-filter');
+  const brand = document.getElementById('brand-filter');
   if (q) items.push({label:'Suche: ' + q, clear:()=>{searchInput.value='';}});
   if (min) items.push({label:'ab ' + min + ' €', clear:()=>{document.getElementById('price-min').value='';}});
   if (max) items.push({label:'bis ' + max + ' €', clear:()=>{document.getElementById('price-max').value='';}});
   if (cat.value) items.push({label:'Kategorie: ' + cat.options[cat.selectedIndex].text, clear:()=>{cat.value='';}});
+  if (brand.value) items.push({label:'Marke: ' + brand.options[brand.selectedIndex].text, clear:()=>{brand.value='';}});
   box.innerHTML = '';
   items.forEach(item => {
     const button = document.createElement('button');
@@ -216,6 +218,7 @@ function searchProducts() {
     document.getElementById('price-max').value = maxPrice;
   }
   const selectedCategory = document.getElementById('category-filter').value;
+  const selectedBrand = document.getElementById('brand-filter').value;
 
   const results = products
     .map(product => {
@@ -245,7 +248,9 @@ function searchProducts() {
       (minPrice === null || result.price >= minPrice) &&
       (maxPrice === null || result.price <= maxPrice) &&
       (!selectedCategory ||
-        normalizeSearch(result.product.category) === normalizeSearch(selectedCategory))
+        normalizeSearch(result.product.category) === normalizeSearch(selectedCategory)) &&
+      (!selectedBrand ||
+        normalizeSearch(result.product.brand) === normalizeSearch(selectedBrand))
     )
     .sort((a, b) => {
       const sortMode = document.getElementById('sort-products').value;
@@ -270,6 +275,7 @@ function searchProducts() {
   if (minPrice !== null) params.set('min', String(minPrice));
   if (maxPrice !== null) params.set('max', String(maxPrice));
   if (selectedCategory) params.set('category', selectedCategory);
+  if (selectedBrand) params.set('brand', selectedBrand);
   const currentSort = document.getElementById('sort-products').value;
   if (currentSort !== 'relevance') params.set('sort', currentSort);
   history.replaceState(null, '', params.toString() ? '?' + params.toString() : location.pathname);
@@ -283,7 +289,7 @@ document.querySelector('.search').addEventListener('submit', event => {
   searchProducts();
 });
 
-['price-min', 'price-max', 'category-filter', 'sort-products']
+['price-min', 'price-max', 'category-filter', 'brand-filter', 'sort-products']
   .forEach(id => {
     document.getElementById(id).addEventListener('change', () => searchProducts());
   });
@@ -293,6 +299,7 @@ document.getElementById('reset-filters').addEventListener('click', () => {
   document.getElementById('price-min').value = '';
   document.getElementById('price-max').value = '';
   document.getElementById('category-filter').value = '';
+  document.getElementById('brand-filter').value = '';
   document.getElementById('sort-products').value = 'relevance';
   showProducts(products);
   renderAppliedFilters();
