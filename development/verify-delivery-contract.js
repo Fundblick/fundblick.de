@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm');
+const html=fs.readFileSync('preview.html','utf8');
+const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+if(!script)throw new Error('preview script missing');
+const names=['countryCode','deliveryEligibility'];
+const source=names.map(n=>{const m=script.match(new RegExp('function '+n+'\\([^]*?\\n\\}'));if(!m)throw new Error(n+' missing');return m[0]}).join('\n');
+const ctx={};vm.createContext(ctx);vm.runInContext(source,ctx);
+const eq=(actual,expected,label)=>{if(JSON.stringify(actual)!==JSON.stringify(expected))throw new Error(label+': '+JSON.stringify(actual))};
+eq(ctx.countryCode(' it '),'IT','normalizes country');
+eq(ctx.countryCode('ITA'),null,'rejects invalid country');
+eq(ctx.deliveryEligibility({shipsTo:['IT'],markets:['DE'],unknown:false},'it'),{rank:0,state:'eligible'},'explicit eligible');
+eq(ctx.deliveryEligibility({shipsTo:['DE'],markets:['DE'],unknown:false},'IT'),{rank:2,state:'unsupported'},'explicit unsupported');
+eq(ctx.deliveryEligibility({shipsTo:[],markets:['DE'],unknown:true},'DE'),{rank:0,state:'eligible'},'same market eligible');
+eq(ctx.deliveryEligibility({shipsTo:[],markets:['DE'],unknown:true},'IT'),{rank:1,state:'unknown'},'cross-border unknown');
+eq(ctx.deliveryEligibility({shipsTo:[],markets:['DE'],unknown:false},'IT'),{rank:2,state:'unsupported'},'no fallback unsupported');
+eq(ctx.deliveryEligibility({shipsTo:[' it '],markets:[],unknown:false},'IT'),{rank:0,state:'eligible'},'normalizes published destination');
+console.log('FundBlick V2 delivery contract OK');
