@@ -31,6 +31,7 @@ let products = [];
 let currentResults = [];
 let visibleLimit = 24;
 const shardCache = new Map();
+let publicationManifest = null;
 const searchInput = document.querySelector('.search input');
 
 function normalizeSearch(value) {
@@ -56,15 +57,15 @@ function formatPrice(product) {
   try{return new Intl.NumberFormat('de-DE',{style:'currency',currency:product.u||'EUR'}).format(price)}
   catch{return price.toFixed(2)+' '+escapeHtml(product.u||'EUR')}
 }
-async function loadJson(path) {
-  const response=await fetch(path,{cache:'no-cache',credentials:'omit'});
+async function loadJson(path,{mutable=false}={}) {
+  const response=await fetch(path,{cache:mutable?'no-cache':'force-cache',credentials:'omit'});
   if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
   return response.json();
 }
 async function loadCatalog() {
-  const manifest=await loadJson(DATA_BASE+'manifest.json');
-  if(!manifest?.searchFile)throw new Error('Publication-Manifest ohne Suchindex.');
-  const index=await loadJson(manifest.searchFile);
+  publicationManifest=await loadJson(DATA_BASE+'manifest.json',{mutable:true});
+  if(!publicationManifest?.searchFile)throw new Error('Publication-Manifest ohne Suchindex.');
+  const index=await loadJson(DATA_BASE+publicationManifest.searchFile);
   if(!Array.isArray(index))throw new Error('Suchindex hat ein ungültiges Format.');
   products=index;
   initializeFilters();
@@ -115,20 +116,25 @@ function showProducts(list,resetLimit=true) {
 }
 async function loadProductDetail(card) {
   const id=card.dataset.productId, shard=card.dataset.shard;
-  const manifest=await loadJson(DATA_BASE+'manifest.json');
-  const file=manifest.shards?.[shard]?.file;
-  if(!file)return;
+  const button=card.querySelector('.detail-load');
+  const file=publicationManifest?.shards?.[shard]?.file;
+  if(!file){if(button)button.textContent='Details nicht verfügbar';return;}
+  if(button){button.disabled=true;button.textContent='Details werden geladen…';}
   try{
     let data=shardCache.get(file);
-    if(!data){data=await loadJson(file);shardCache.set(file,data);}
-    const p=data?.[id];if(!p)return;
+    if(!data){data=await loadJson(DATA_BASE+file);shardCache.set(file,data);}
+    const p=data?.[id];
+    if(!p)throw new Error('Produkt fehlt im Detail-Shard: '+id);
     const offer=p.bestOffer||null,img=safeHttpUrl(p.imageUrl);
     card.innerHTML=`${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">`:''}
       <div class="count-note">${escapeHtml(p.category||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
       <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
       <div class="price">${formatPrice({p:p.totalPriceFrom,u:p.currency})}</div>
       ${offer&&isRealOfferUrl(offer.affiliateUrl)?`<a class="offer-link" href="${escapeHtml(safeHttpUrl(offer.affiliateUrl))}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`:'<button type="button" disabled>Testprodukt</button>'}`;
-  }catch(error){console.error(error);}
+  }catch(error){
+    console.error(error);
+    if(button){button.disabled=false;button.textContent='Details erneut laden';}
+  }
 }
 function renderAppliedFilters(){
   const box=document.getElementById('applied-filters'),items=[],q=searchInput.value.trim();
