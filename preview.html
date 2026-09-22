@@ -139,6 +139,10 @@ function restoreState() {
 function showLoadError() {
   document.getElementById('products-section').innerHTML='<div class="empty" role="alert">Produktdaten konnten nicht geladen werden. Bitte Seite erneut laden.</div>';
 }
+function indexImageUrl(p){
+  const raw=safeHttpUrl(p?.g);
+  return raw&&new URL(raw).hostname.toLowerCase()!=='example.com'?raw:'';
+}
 function showProducts(list,resetLimit=true) {
   currentResults=list;
   if(resetLimit)visibleLimit=matchMedia('(max-width:700px)').matches?12:24;
@@ -146,7 +150,7 @@ function showProducts(list,resetLimit=true) {
   if(!list.length){section.innerHTML='<div class="empty">Keine passenden Produkte gefunden.</div>';return;}
   section.innerHTML='<div class="product-grid">'+visible.map(p=>`
     <article class="product-card" data-product-id="${escapeHtml(p.i)}" data-shard="${Number(p.s)}">
-      <div class="product-media"><div class="fakeimg">⌁</div></div>
+      <div class="product-media">${indexImageUrl(p)?`<img src="${escapeHtml(indexImageUrl(p))}" alt="${escapeHtml(p.n)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fakeimg" style="display:none">⌁</div>`:`<div class="fakeimg">⌁</div>`}</div>
       <div class="count-note">${escapeHtml(categoryLabel(p.c)||'Produkt')}</div>
       <h3>${escapeHtml(p.n)}</h3>
       <div class="meta">${escapeHtml(p.b||'')}</div>
