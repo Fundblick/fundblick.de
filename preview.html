@@ -151,9 +151,9 @@ function searchProducts(){
   const term=normalizeSearch(searchInput.value),terms=term.split(' ').filter(Boolean);
   let min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
   min=min===''?null:Number(min);max=max===''?null:Number(max);
-  if(min!==null&&max!==null&&min>max)[min,max]=[max,min];
+  if(min!==null&&max!==null&&min>max){[min,max]=[max,min];document.getElementById('price-min').value=min;document.getElementById('price-max').value=max;}
   const cat=document.getElementById('category-filter').value,brand=document.getElementById('brand-filter').value;
-  const results=products.map(p=>{const q=String(p.q||'');const score=!term?1:(q===term?100:terms.every(t=>(` ${q} `).includes(` ${t} `))?50:0);return{p,score,price:Number(p.p)}})
+  const results=products.map(p=>{const q=normalizeSearch(p.q||'');const padded=` ${q} `;const score=!term?1:(q===term?100:terms.every(t=>padded.includes(` ${t} `))?50:0);return{p,score,price:Number(p.p)}})
     .filter(x=>x.score>0&&Number.isFinite(x.price)&&(min===null||x.price>=min)&&(max===null||x.price<=max)&&(!cat||normalizeSearch(x.p.c)===cat)&&(!brand||normalizeSearch(x.p.b)===brand))
     .sort((a,b)=>{const s=document.getElementById('sort-products').value;return s==='price-asc'?a.price-b.price:s==='price-desc'?b.price-a.price:b.score-a.score}).map(x=>x.p);
   showProducts(results);renderAppliedFilters();
