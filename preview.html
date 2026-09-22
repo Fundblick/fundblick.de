@@ -179,11 +179,18 @@ function showProducts(list,resetLimit=true) {
   section.querySelectorAll('.detail-load').forEach(b=>b.addEventListener('click',()=>loadProductDetail(b.closest('.product-card'))));
   document.getElementById('load-more')?.addEventListener('click',()=>{visibleLimit+=matchMedia('(max-width:700px)').matches?12:24;showProducts(currentResults,false)});
 }
+function countryCode(value){
+  const code=String(value||'').trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(code)?code:null;
+}
 function deliveryEligibility({shipsTo=[],markets=[],unknown=false},country){
-  if(!country)return {rank:0,state:'unknown'};
-  if(shipsTo.includes(country)||(!shipsTo.length&&markets.includes(country)))return {rank:0,state:'eligible'};
-  if(unknown)return {rank:1,state:'unknown'};
-  return {rank:2,state:'unsupported'};
+  const target=countryCode(country);
+  if(!target)return {rank:1,state:'unknown'};
+  const destinations=Array.isArray(shipsTo)?shipsTo.map(countryCode).filter(Boolean):[];
+  const sourceMarkets=Array.isArray(markets)?markets.map(countryCode).filter(Boolean):[];
+  if(destinations.length)return destinations.includes(target)?{rank:0,state:'eligible'}:{rank:2,state:'unsupported'};
+  if(sourceMarkets.includes(target))return {rank:0,state:'eligible'};
+  return unknown?{rank:1,state:'unknown'}:{rank:2,state:'unsupported'};
 }
 function detailOfferEligibility(offer,country){
   const shipsTo=Array.isArray(offer?.shipsTo)?offer.shipsTo:[],market=String(offer?.market||'').toUpperCase();
