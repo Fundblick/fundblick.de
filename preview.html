@@ -65,11 +65,15 @@ async function loadJson(path,{mutable=false}={}) {
 }
 function validateManifest(manifest) {
   if(!manifest||manifest.version!==1||!Number.isInteger(manifest.itemCount)||manifest.itemCount<0)throw new Error('Ungültiges Publication-Manifest.');
-  if(typeof manifest.searchFile!=='string'||!/^search-index\.[a-f0-9]{12}\.json$/.test(manifest.searchFile))throw new Error('Ungültiger Suchindex-Pfad.');
+  if(typeof manifest.searchIndexSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchIndexSha256))throw new Error('Ungültiger Suchindex-Hash.');
+  if(typeof manifest.searchFile!=='string'||!/^search-index\.[a-f0-9]{12}\.json$/.test(manifest.searchFile)||manifest.searchFile!=='search-index.'+manifest.searchIndexSha256.slice(0,12)+'.json')throw new Error('Ungültiger Suchindex-Pfad.');
   if(!Number.isInteger(manifest.shardCount)||manifest.shardCount<0||!manifest.shards||typeof manifest.shards!=='object'||Object.keys(manifest.shards).length!==manifest.shardCount)throw new Error('Ungültige Detail-Shards.');
+  let shardItems=0;
   for(const [key,shard] of Object.entries(manifest.shards)){
-    if(!/^\d+$/.test(key)||!shard||!Number.isInteger(shard.itemCount)||shard.itemCount<0||typeof shard.file!=='string'||!/^shards\/\d+\.[a-f0-9]{12}\.json$/.test(shard.file)||!shard.file.startsWith('shards/'+key+'.'))throw new Error('Ungültiger Detail-Shard.');
+    if(!/^\d+$/.test(key)||!shard||!Number.isInteger(shard.itemCount)||shard.itemCount<0||typeof shard.sha256!=='string'||!/^[a-f0-9]{64}$/.test(shard.sha256)||typeof shard.file!=='string'||!/^shards\/\d+\.[a-f0-9]{12}\.json$/.test(shard.file)||shard.file!=='shards/'+key+'.'+shard.sha256.slice(0,12)+'.json')throw new Error('Ungültiger Detail-Shard.');
+    shardItems+=shard.itemCount;
   }
+  if(shardItems!==manifest.itemCount)throw new Error('Shard-Anzahl passt nicht zum Manifest.');
   return manifest;
 }
 async function loadCatalog() {
@@ -79,6 +83,8 @@ async function loadCatalog() {
   taxonomyLabels=new Map(taxonomy.map(item=>[String(item?.id||''),String(item?.labels?.de||'')]).filter(([id,label])=>id&&label));
   if(!Array.isArray(index)||index.length!==publicationManifest.itemCount)throw new Error('Suchindex passt nicht zum Manifest.');
   if(index.some(p=>!p||!p.i||!p.n||!p.c||!Number.isInteger(p.s)||!publicationManifest.shards[String(p.s)]))throw new Error('Suchindex enthält ungültige Einträge.');
+  if(new Set(index.map(p=>p.i)).size!==index.length)throw new Error('Suchindex enthält doppelte Product-IDs.');
+  if(index.some(p=>!taxonomyLabels.has(String(p.c))))throw new Error('Suchindex verweist auf unbekannte Kategorien.');
   products=index;
   initializeFilters();
   restoreState();
