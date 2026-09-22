@@ -69,6 +69,17 @@ async function loadJson(path,{mutable=false}={}) {
   if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
   return response.json();
 }
+async function loadVerifiedJson(path,expectedSha256) {
+  const response=await fetch(path,{cache:'force-cache',credentials:'omit'});
+  if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
+  const bytes=await response.arrayBuffer();
+  if(globalThis.crypto?.subtle&&expectedSha256){
+    const digest=await crypto.subtle.digest('SHA-256',bytes);
+    const actual=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    if(actual!==expectedSha256)throw new Error('Hash-Prüfung fehlgeschlagen für '+path);
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
 function validateManifest(manifest) {
   if(!manifest||manifest.version!==1||!Number.isInteger(manifest.itemCount)||manifest.itemCount<0)throw new Error('Ungültiges Publication-Manifest.');
   if(typeof manifest.searchIndexSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchIndexSha256))throw new Error('Ungültiger Suchindex-Hash.');
@@ -86,7 +97,7 @@ function validateManifest(manifest) {
 }
 async function loadCatalog() {
   publicationManifest=validateManifest(await loadJson(DATA_BASE+'manifest.json',{mutable:true}));
-  const [index,taxonomy,concepts]=await Promise.all([loadJson(DATA_BASE+publicationManifest.searchFile),loadJson(DATA_BASE+publicationManifest.taxonomyFile),loadJson(DATA_BASE+publicationManifest.searchConceptsFile)]);
+  const [index,taxonomy,concepts]=await Promise.all([loadVerifiedJson(DATA_BASE+publicationManifest.searchFile,publicationManifest.searchIndexSha256),loadVerifiedJson(DATA_BASE+publicationManifest.taxonomyFile,publicationManifest.taxonomySha256),loadVerifiedJson(DATA_BASE+publicationManifest.searchConceptsFile,publicationManifest.searchConceptsSha256)]);
   if(!Array.isArray(taxonomy))throw new Error('Taxonomie hat ein ungültiges Format.');
   if(!Array.isArray(concepts))throw new Error('Suchkonzepte haben ein ungültiges Format.');
   searchConcepts=new Map(concepts.map(item=>[String(item?.concept||''),Array.isArray(item?.terms)?item.terms.map(normalizeSearch).filter(Boolean):[]]).filter(([concept,terms])=>concept&&terms.length));
@@ -155,7 +166,7 @@ async function loadProductDetail(card) {
   if(button){button.disabled=true;button.textContent='Details werden geladen…';}
   try{
     let data=shardCache.get(file);
-    if(!data){data=await loadJson(DATA_BASE+file);if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');const expected=publicationManifest.shards[shard]?.itemCount;if(Number.isInteger(expected)&&Object.keys(data).length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');shardCache.set(file,data);}
+    if(!data){data=await loadVerifiedJson(DATA_BASE+file,publicationManifest.shards[shard]?.sha256);if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');const expected=publicationManifest.shards[shard]?.itemCount;if(Number.isInteger(expected)&&Object.keys(data).length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');shardCache.set(file,data);}
     const p=data?.[id];
     if(!p||p.id!==id)throw new Error('Produkt fehlt oder hat eine falsche ID im Detail-Shard: '+id);
     const indexProduct=products.find(item=>item.i===id);
