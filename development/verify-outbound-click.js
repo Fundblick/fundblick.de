@@ -2,8 +2,8 @@ const fs=require('fs'),vm=require('vm');
 const preview=fs.readFileSync('preview.html','utf8');
 const outbound=fs.readFileSync('out-preview.html','utf8');
 const merchant=fs.readFileSync('merchant-preview.html','utf8');
-const script=html=>html.match(/<script>([\s\S]*?)<\/script>/)?.[1]||'';
-new vm.Script(script(preview));new vm.Script(script(outbound));new vm.Script(script(merchant));
+const script=(html,marker)=>[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes(marker))||'';
+new vm.Script(script(preview,'const DATA_BASE'));new vm.Script(script(outbound,'const DATA_BASE'));new vm.Script(script(merchant,'const TEXT='));
 for(const needle of [
   'function outboundClickUrl(product,offer)',
   "return 'out-preview.html?'+params.toString()",

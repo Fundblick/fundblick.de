@@ -1,6 +1,6 @@
 const fs=require('fs'),vm=require('vm');
 const html=fs.readFileSync('preview.html','utf8');
-const script=html.match(/<script>([\s\S]*?)<\/script>/)?.[1];
+const script=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('const DATA_BASE'));
 if(!script)throw new Error('preview script missing');
 const names=['countryCode','deliveryEligibility','detailOfferEligibility','selectDetailOffer'];
 const start=script.indexOf('function countryCode');const end=script.indexOf('async function loadProductDetail');if(start<0||end<0||end<=start)throw new Error('delivery function block missing');const source=script.slice(start,end);
