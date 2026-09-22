@@ -41,12 +41,10 @@ function normalizeSearch(value) {
     .toLocaleLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim().replace(/\s+/g, ' ');
 }
-const SEARCH_CONCEPTS = new Map([
-  ['CORDLESS_DRILL', ['Akkuschrauber','cordless drill','аккумуляторная дрель','mașină de găurit cu acumulator','wiertarko-wkrętarka akumulatorowa','aku vrtačka','aku vŕtačka','perceuse sans fil','taladro inalámbrico','trapano a batteria','акумуляторний дриль']]
-]);
+let searchConcepts=new Map();
 function resolveSearchConcepts(value) {
   const normalized=normalizeSearch(value),matches=[];
-  for(const [concept,terms] of SEARCH_CONCEPTS)if(terms.some(term=>normalizeSearch(term)===normalized))matches.push(concept);
+  for(const [concept,terms] of searchConcepts)if(terms.includes(normalized))matches.push(concept);
   return matches;
 }
 function escapeHtml(value) {
@@ -86,13 +84,16 @@ function validateManifest(manifest) {
 }
 async function loadCatalog() {
   publicationManifest=validateManifest(await loadJson(DATA_BASE+'manifest.json',{mutable:true}));
-  const [index,taxonomy]=await Promise.all([loadJson(DATA_BASE+publicationManifest.searchFile),loadJson(DATA_BASE+'taxonomy.json')]);
+  const [index,taxonomy,concepts]=await Promise.all([loadJson(DATA_BASE+publicationManifest.searchFile),loadJson(DATA_BASE+'taxonomy.json'),loadJson(DATA_BASE+'search-concepts.json')]);
   if(!Array.isArray(taxonomy))throw new Error('Taxonomie hat ein ungültiges Format.');
+  if(!Array.isArray(concepts))throw new Error('Suchkonzepte haben ein ungültiges Format.');
+  searchConcepts=new Map(concepts.map(item=>[String(item?.concept||''),Array.isArray(item?.terms)?item.terms.map(normalizeSearch).filter(Boolean):[]]).filter(([concept,terms])=>concept&&terms.length));
   taxonomyLabels=new Map(taxonomy.map(item=>[String(item?.id||''),String(item?.labels?.de||'')]).filter(([id,label])=>id&&label));
   if(!Array.isArray(index)||index.length!==publicationManifest.itemCount)throw new Error('Suchindex passt nicht zum Manifest.');
   if(index.some(p=>!p||!p.i||!p.n||!p.c||!Number.isInteger(p.s)||!publicationManifest.shards[String(p.s)]))throw new Error('Suchindex enthält ungültige Einträge.');
   if(new Set(index.map(p=>p.i)).size!==index.length)throw new Error('Suchindex enthält doppelte Product-IDs.');
   if(index.some(p=>!taxonomyLabels.has(String(p.c))))throw new Error('Suchindex verweist auf unbekannte Kategorien.');
+  if(index.some(p=>(p.x||[]).some(concept=>!searchConcepts.has(String(concept)))))throw new Error('Suchindex verweist auf unbekannte Suchkonzepte.');
   products=index;
   initializeFilters();
   restoreState();
