@@ -79,7 +79,8 @@ const CATEGORY_LABELS_DE = {
   'tools.power-tools.drills':'Akkuschrauber'
 };
 function categoryLabel(value) {
-  return CATEGORY_LABELS_DE[String(value||'')] || String(value||'');
+  const id=String(value||'');
+  return CATEGORY_LABELS_DE[id] || id.split('.').filter(Boolean).pop()?.replace(/[-_]+/g,' ') || '';
 }
 function initializeFilters() {
   const categoryFilter=document.getElementById('category-filter');
