@@ -33,6 +33,8 @@ let currentResults = [];
 let visibleLimit = 24;
 const shardCache = new Map();
 let publicationManifest = null;
+let searchRoutingRoot = null;
+const shadowSearchCache = new Map();
 let taxonomyLabels=new Map();
 let activeCategoryPrefix='';
 let uiLanguage='de';
@@ -167,12 +169,94 @@ async function loadVerifiedJson(path,expectedSha256) {
   if(actual!==expectedSha256)throw new Error('Hash-Prüfung fehlgeschlagen für '+path);
   return JSON.parse(new TextDecoder().decode(bytes));
 }
+async function sha256HexText(value){
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(value)));
+  return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function searchContentPath(sha){return 'search/'+String(sha).slice(0,12)+'.json'}
+async function loadShadowSearchRoot(){
+  const meta=publicationManifest?.searchRouting;
+  if(!meta)return null;
+  if(searchRoutingRoot)return searchRoutingRoot;
+  searchRoutingRoot=await loadVerifiedJson(DATA_BASE+meta.file,meta.sha256);
+  if(!searchRoutingRoot||searchRoutingRoot.v!==2||!searchRoutingRoot.common||!Array.isArray(searchRoutingRoot.rare)||searchRoutingRoot.rare.length!==searchRoutingRoot.rareBucketCount)throw new Error('Ungültiges Search-Routing.');
+  return searchRoutingRoot;
+}
+async function shadowPostings(term){
+  const key=String(term||'').trim();
+  if(!key)return [];
+  if(shadowSearchCache.has(key))return shadowSearchCache.get(key);
+  const root=await loadShadowSearchRoot();
+  if(!root)return [];
+  const fullHash=await sha256HexText(key),short=fullHash.slice(0,16);
+  let items=[];
+  const commonManifestSha=root.common?.[short];
+  if(commonManifestSha){
+    const manifest=await loadVerifiedJson(DATA_BASE+searchContentPath(commonManifestSha),commonManifestSha);
+    if(!manifest||!Array.isArray(manifest.p))throw new Error('Ungültiges Search-Term-Manifest.');
+    for(let page=0;page<manifest.p.length;page++){
+      const pageSha=manifest.p[page];
+      const payload=await loadVerifiedJson(DATA_BASE+searchContentPath(pageSha),pageSha);
+      if(!payload||payload.t!==key||payload.p!==page||!Array.isArray(payload.items))throw new Error('Ungültige Search-Seite.');
+      items.push(...payload.items);
+    }
+  }else{
+    const bucketIndex=parseInt(fullHash.slice(0,8),16)%root.rareBucketCount;
+    const bucketSha=root.rare[bucketIndex];
+    if(bucketSha){
+      const bucket=await loadVerifiedJson(DATA_BASE+searchContentPath(bucketSha),bucketSha);
+      if(!bucket||Array.isArray(bucket)||typeof bucket!=='object')throw new Error('Ungültiger Search-Bucket.');
+      items=Array.isArray(bucket[key])?bucket[key]:[];
+    }
+  }
+  shadowSearchCache.set(key,items);
+  return items;
+}
+function legacySearchIds(value){
+  const term=normalizeSearch(value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(value);
+  if(!term)return products.map(p=>p.i).sort();
+  return products.filter(p=>{
+    const q=normalizeSearch(p.q||''),padded=' '+q+' ',productConcepts=Array.isArray(p.x)?p.x:[];
+    const conceptMatch=concepts.some(concept=>productConcepts.includes(concept));
+    const tokenMatch=t=>/^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(t)?padded.includes(' '+t+' '):q.includes(t);
+    return q===term||conceptMatch||terms.every(tokenMatch);
+  }).map(p=>p.i).sort();
+}
+async function shadowSearchIds(value){
+  const term=normalizeSearch(value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(value).map(c=>'@'+c);
+  if(!term)return products.map(p=>p.i).sort();
+  let tokenIds=null;
+  for(const token of terms){
+    const ids=new Set((await shadowPostings(token)).map(item=>item.i));
+    tokenIds=tokenIds===null?ids:new Set([...tokenIds].filter(id=>ids.has(id)));
+  }
+  const conceptIds=new Set();
+  for(const concept of concepts)for(const item of await shadowPostings(concept))conceptIds.add(item.i);
+  return [...new Set([...(tokenIds||[]),...conceptIds])].sort();
+}
+async function runShadowSearchComparison(value){
+  if(!publicationManifest?.searchRouting||!normalizeSearch(value)){document.documentElement.dataset.shadowSearch='idle';return;}
+  try{
+    const [legacy,shadow]=await Promise.all([Promise.resolve(legacySearchIds(value)),shadowSearchIds(value)]);
+    const ok=JSON.stringify(legacy)===JSON.stringify(shadow);
+    document.documentElement.dataset.shadowSearch=ok?'ok':'mismatch';
+    if(ok)console.info('FundBlick shadow search match',value,shadow.length);
+    else console.warn('FundBlick shadow search mismatch',{value,legacy,shadow});
+  }catch(error){
+    document.documentElement.dataset.shadowSearch='error';
+    console.warn('FundBlick shadow search check failed',error);
+  }
+}
 function validateManifest(manifest) {
   if(!manifest||manifest.version!==1||!Number.isInteger(manifest.itemCount)||manifest.itemCount<0)throw new Error('Ungültiges Publication-Manifest.');
   if(typeof manifest.searchIndexSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchIndexSha256))throw new Error('Ungültiger Suchindex-Hash.');
   if(typeof manifest.searchFile!=='string'||!/^search-index\.[a-f0-9]{12}\.json$/.test(manifest.searchFile)||manifest.searchFile!=='search-index.'+manifest.searchIndexSha256.slice(0,12)+'.json')throw new Error('Ungültiger Suchindex-Pfad.');
   if(typeof manifest.taxonomySha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.taxonomySha256)||typeof manifest.taxonomyFile!=='string'||manifest.taxonomyFile!=='taxonomy.'+manifest.taxonomySha256.slice(0,12)+'.json')throw new Error('Ungültige Taxonomie-Referenz.');
   if(typeof manifest.searchConceptsSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchConceptsSha256)||typeof manifest.searchConceptsFile!=='string'||manifest.searchConceptsFile!=='search-concepts.'+manifest.searchConceptsSha256.slice(0,12)+'.json')throw new Error('Ungültige Suchkonzept-Referenz.');
+  if(manifest.searchRouting!==undefined){
+    const r=manifest.searchRouting;
+    if(!r||r.version!==2||typeof r.sha256!=='string'||!/^[a-f0-9]{64}$/.test(r.sha256)||!Number.isInteger(r.bytes)||r.bytes<=0||typeof r.file!=='string'||r.file!=='search/'+r.sha256.slice(0,12)+'.json')throw new Error('Ungültige Search-Routing-Referenz.');
+  }
   if(!Number.isInteger(manifest.shardCount)||manifest.shardCount<0||!manifest.shards||typeof manifest.shards!=='object'||Object.keys(manifest.shards).length!==manifest.shardCount)throw new Error('Ungültige Detail-Shards.');
   let shardItems=0;
   for(const [key,shard] of Object.entries(manifest.shards)){
@@ -361,6 +445,7 @@ function searchProducts(){
   const params=new URLSearchParams();if(uiLanguage!=='de')params.set('lang',uiLanguage);if(term)params.set('q',searchInput.value.trim());if(min!==null)params.set('min',min);if(max!==null)params.set('max',max);if(cat)params.set('category',cat);if(brand)params.set('brand',brand);if(country)params.set('country',country);
   const sort=document.getElementById('sort-products').value;if(sort!=='relevance')params.set('sort',sort);
   history.replaceState(null,'',params.toString()?'?'+params:location.pathname);
+  runShadowSearchComparison(searchInput.value);
 }
 document.querySelector('.search').addEventListener('submit',e=>{e.preventDefault();searchProducts()});
 document.getElementById('ui-language').addEventListener('change',e=>{uiLanguage=supportedUiLanguage(e.target.value);applyUiLanguage();searchProducts()});
