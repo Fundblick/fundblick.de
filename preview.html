@@ -65,9 +65,9 @@ async function loadJson(path,{mutable=false}={}) {
 function validateManifest(manifest) {
   if(!manifest||manifest.version!==1||!Number.isInteger(manifest.itemCount)||manifest.itemCount<0)throw new Error('Ungültiges Publication-Manifest.');
   if(typeof manifest.searchFile!=='string'||!/^search-index\.[a-f0-9]{12}\.json$/.test(manifest.searchFile))throw new Error('Ungültiger Suchindex-Pfad.');
-  if(!manifest.shards||typeof manifest.shards!=='object')throw new Error('Ungültige Detail-Shards.');
+  if(!Number.isInteger(manifest.shardCount)||manifest.shardCount<0||!manifest.shards||typeof manifest.shards!=='object'||Object.keys(manifest.shards).length!==manifest.shardCount)throw new Error('Ungültige Detail-Shards.');
   for(const [key,shard] of Object.entries(manifest.shards)){
-    if(!/^\d+$/.test(key)||!shard||typeof shard.file!=='string'||!/^shards\/\d+\.[a-f0-9]{12}\.json$/.test(shard.file))throw new Error('Ungültiger Detail-Shard-Pfad.');
+    if(!/^\d+$/.test(key)||!shard||!Number.isInteger(shard.itemCount)||shard.itemCount<0||typeof shard.file!=='string'||!/^shards\/\d+\.[a-f0-9]{12}\.json$/.test(shard.file)||!shard.file.startsWith('shards/'+key+'.'))throw new Error('Ungültiger Detail-Shard.');
   }
   return manifest;
 }
@@ -141,7 +141,7 @@ async function loadProductDetail(card) {
   if(button){button.disabled=true;button.textContent='Details werden geladen…';}
   try{
     let data=shardCache.get(file);
-    if(!data){data=await loadJson(DATA_BASE+file);shardCache.set(file,data);}
+    if(!data){data=await loadJson(DATA_BASE+file);if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');const expected=publicationManifest.shards[shard]?.itemCount;if(Number.isInteger(expected)&&Object.keys(data).length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');shardCache.set(file,data);}
     const p=data?.[id];
     if(!p)throw new Error('Produkt fehlt im Detail-Shard: '+id);
     const offer=p.bestOffer||null,img=safeHttpUrl(p.imageUrl);
