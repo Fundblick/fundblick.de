@@ -171,7 +171,7 @@ async function loadProductDetail(card) {
     const indexProduct=products.find(item=>item.i===id);
     if(!indexProduct||String(p.category||'')!==String(indexProduct.c||''))throw new Error('Produktdetail passt nicht zum Suchindex: '+id);
     const offer=p.bestOffer||null,rawImg=safeHttpUrl(p.imageUrl),img=rawImg&&new URL(rawImg).hostname.toLowerCase()!=='example.com'?rawImg:'';
-    card.innerHTML=`${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">`:''}
+    card.innerHTML=`${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer" onerror="this.remove()">`:''}
       <div class="count-note">${escapeHtml(categoryLabel(p.category)||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
       <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
       <div class="price">${formatPrice({p:p.totalPriceFrom,u:p.currency})}</div>
