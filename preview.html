@@ -262,6 +262,10 @@ function validateManifest(manifest) {
     const r=manifest.searchRouting;
     if(!r||r.version!==2||typeof r.sha256!=='string'||!/^[a-f0-9]{64}$/.test(r.sha256)||!Number.isInteger(r.bytes)||r.bytes<=0||typeof r.file!=='string'||r.file!=='search/'+r.sha256.slice(0,12)+'.json')throw new Error('Ungültige Search-Routing-Referenz.');
   }
+  if(manifest.substringRouting!==undefined){
+    const r=manifest.substringRouting;
+    if(!r||r.version!==1||typeof r.sha256!=='string'||!/^[a-f0-9]{64}$/.test(r.sha256)||!Number.isInteger(r.bytes)||r.bytes<=0||typeof r.file!=='string'||r.file!=='substring/'+r.sha256.slice(0,12)+'.json')throw new Error('Ungültige Substring-Routing-Referenz.');
+  }
   if(!Number.isInteger(manifest.shardCount)||manifest.shardCount<0||!manifest.shards||typeof manifest.shards!=='object'||Object.keys(manifest.shards).length!==manifest.shardCount)throw new Error('Ungültige Detail-Shards.');
   let shardItems=0;
   for(const [key,shard] of Object.entries(manifest.shards)){
