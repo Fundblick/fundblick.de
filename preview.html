@@ -7,6 +7,8 @@
 <meta name="description" content="Mit FundBlick Produkte entdecken, nach Preis und Kategorie filtern und Händlerangebote übersichtlich finden.">
 <meta name="robots" content="noindex,follow">
 <meta name="theme-color" content="#128447">
+<meta name="color-scheme" content="light">
+<link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
@@ -34,8 +36,6 @@ fetch('https://raw.githubusercontent.com/Fundblick/fundblick.de/development/prod
   .then(data => {
     if (!Array.isArray(data)) throw new Error('Produktdaten haben ein ungültiges Format.');
     products = data.filter(product => product && typeof product === 'object');
-    console.log('FundBlick Produkte geladen:', products);
-
     const categoryFilter = document.getElementById('category-filter');
     const categories = [...new Map(
       products
@@ -112,9 +112,12 @@ function isRealOfferUrl(value) {
 
 function normalizeSearch(value) {
   return String(value ?? '')
-    .toLocaleLowerCase('de-DE')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+    .normalize('NFKD')
+    .replace(/\p{M}+/gu, '')
+    .toLocaleLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
 }
 
 function escapeHtml(value) {
@@ -156,7 +159,7 @@ function showProducts(list, resetLimit = true) {
     Number(product.price) >= 0
   );
   currentResults = activeProducts;
-  if (resetLimit) visibleLimit = 24;
+  if (resetLimit) visibleLimit = matchMedia('(max-width:700px)').matches ? 12 : 24;
   const visibleProducts = activeProducts.slice(0, visibleLimit);
 
   if (activeProducts.length === 0) {
@@ -175,7 +178,7 @@ function showProducts(list, resetLimit = true) {
       <div class="product-grid">
         ${visibleProducts.map(product => `
           <article class="product-card">
-            ${safeHttpUrl(product.image) ? `<img src="${escapeHtml(safeHttpUrl(product.image))}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ''}
+            ${safeHttpUrl(product.image) ? `<img src="${escapeHtml(safeHttpUrl(product.image))}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">` : ''}
             <div class="count-note">${escapeHtml(product.category || 'Produkt')}</div>
             <h3>${escapeHtml(product.name)}</h3>
             <p class="desc">${escapeHtml(product.description)}</p>
@@ -193,7 +196,7 @@ function showProducts(list, resetLimit = true) {
   `;
 
   document.getElementById('load-more')?.addEventListener('click', () => {
-    visibleLimit += 24;
+    visibleLimit += matchMedia('(max-width:700px)').matches ? 12 : 24;
     showProducts(currentResults, false);
   });
 }
