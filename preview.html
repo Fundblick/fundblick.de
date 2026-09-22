@@ -196,27 +196,13 @@ function searchProducts() {
   }
   const selectedCategory = document.getElementById('category-filter').value;
 
-  if (!term && minPrice === null && maxPrice === null && !selectedCategory) {
-    const section = document.getElementById('products-section');
-    if (section) {
-      section.innerHTML = `
-        <div class="wrap">
-          <h2 class="title">Was möchtest du finden?</h2>
-          <p>Gib einen Suchbegriff oder einen Preisbereich ein.</p>
-        </div>
-      `;
-    }
-    searchInput.focus();
-    return;
-  }
-
   const results = products
     .map(product => {
-      const name = normalizeSearch('');
-      const brand = normalizeSearch('');
-      const category = normalizeSearch('');
-      const description = normalizeSearch('');
-      const merchant = normalizeSearch('');
+      const name = normalizeSearch(product.name);
+      const brand = normalizeSearch(product.brand);
+      const category = normalizeSearch(product.category);
+      const description = normalizeSearch(product.description);
+      const merchant = normalizeSearch(product.merchant);
       const price = Number(product.price);
       const terms = term.split(/\\s+/).filter(Boolean);
       const haystack = [name, brand, category, description, merchant].join(' ');
@@ -277,13 +263,7 @@ document.querySelector('.search').addEventListener('submit', event => {
 
 ['price-min', 'price-max', 'category-filter', 'sort-products']
   .forEach(id => {
-    document.getElementById(id).addEventListener('change', () => {
-      const hasQuery = searchInput.value.trim() ||
-        document.getElementById('price-min').value ||
-        document.getElementById('price-max').value ||
-        document.getElementById('category-filter').value;
-      if (hasQuery) searchProducts();
-    });
+    document.getElementById(id).addEventListener('change', () => searchProducts());
   });
 
 document.getElementById('reset-filters').addEventListener('click', () => {
