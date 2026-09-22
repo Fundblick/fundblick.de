@@ -16,7 +16,7 @@ for(const needle of [
   "const manifest=await loadJson(DATA_BASE+'manifest.json',{mutable:true})",
   "index.find(item=>item?.i===productId)",
   "item?.id===offerId&&item.purchasable",
-  "external.hostname.toLowerCase().endsWith('.example')",
+  "host==='example.com'||host==='www.example.com'||host.endsWith('.example')",
   "merchant-preview.html?lang=",
   "location.replace(target)"
 ])if(!outbound.includes(needle))throw new Error('safe outbound resolver contract missing: '+needle);
@@ -39,3 +39,17 @@ console.log('FundBlick safe outbound click contract OK',JSON.stringify({products
 for(const code of ['en','de','ru','ro','zh','ja','th'])if(!merchant.includes(code+':{'))throw new Error('merchant simulator language missing: '+code);
 if(!/DEVELOPMENT MERCHANT SIMULATOR/.test(merchant)||!/noindex,nofollow/.test(merchant))throw new Error('merchant simulator must be explicit and non-indexable');
 console.log('FundBlick local merchant simulator contract OK');
+
+if(!preview.includes('function isRealOfferUrl(value) {\n  return Boolean(safeHttpUrl(value));\n}'))throw new Error('development preview must allow reserved HTTP(S) simulator URLs');
+if(!outbound.includes("host==='example.com'||host==='www.example.com'||host.endsWith('.example')"))throw new Error('reserved simulator host detection missing');
+const germanSimulator=index.some(compact=>{
+  const meta=manifest.shards[String(compact.s)];if(!meta)return false;
+  const shard=JSON.parse(fs.readFileSync('development/catalog/'+meta.file,'utf8'));
+  const product=shard[compact.i];
+  return (product?.variants||[]).flatMap(v=>v.offers||[]).some(offer=>{
+    if(!offer?.purchasable||offer.merchantLanguage!=='de'||!offer.affiliateUrl)return false;
+    const host=new URL(offer.affiliateUrl).hostname.toLowerCase();
+    return host==='example.com'||host==='www.example.com'||host.endsWith('.example');
+  });
+});
+if(!germanSimulator)throw new Error('German merchant simulator case missing');

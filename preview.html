@@ -64,8 +64,7 @@ function safeHttpUrl(value) {
   catch { return ''; }
 }
 function isRealOfferUrl(value) {
-  const safe=safeHttpUrl(value); if(!safe)return false;
-  try { return !['example.com','www.example.com'].includes(new URL(safe).hostname.toLowerCase()); } catch { return false; }
+  return Boolean(safeHttpUrl(value));
 }
 const UI_LANGUAGES=['de','en','ru','ro'];
 const UI_TEXT={

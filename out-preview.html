@@ -17,8 +17,7 @@ function safeHttpUrl(value){
   try{const url=new URL(String(value||''),location.href);return ['http:','https:'].includes(url.protocol)?url.href:''}catch{return ''}
 }
 function isRealOfferUrl(value){
-  const safe=safeHttpUrl(value);if(!safe)return false;
-  try{return !['example.com','www.example.com'].includes(new URL(safe).hostname.toLowerCase())}catch{return false}
+  return Boolean(safeHttpUrl(value))
 }
 async function loadJson(file,{mutable=false}={}){
   const response=await fetch(file,{cache:mutable?'no-cache':'force-cache',credentials:'omit'});
@@ -45,7 +44,8 @@ async function resolvePublishedOffer(){
   try{
     const resolved=await resolvePublishedOffer();
     const external=new URL(resolved.url);
-    const simulator=external.hostname.toLowerCase().endsWith('.example');
+    const host=external.hostname.toLowerCase();
+    const simulator=host==='example.com'||host==='www.example.com'||host.endsWith('.example');
     const target=simulator
       ? 'merchant-preview.html?lang='+encodeURIComponent(resolved.merchantLanguage||'en')+'&o='+encodeURIComponent(offerId)
       : resolved.url;
