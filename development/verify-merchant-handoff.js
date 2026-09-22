@@ -37,3 +37,7 @@ for(const offer of foreign){
 }
 if(!detailOffers.some(offer=>offer.merchantLanguage==='de'&&!h.merchantLanguageNeedsHelp(offer.merchantLanguage,'de')))throw new Error('Missing same-language control case');
 console.log('FundBlick merchant-language handoff contract OK');
+
+const merchantHtml=fs.readFileSync('merchant-preview.html','utf8');
+for(const id of ['cart','checkout','shipping','address','payment'])if(!merchantHtml.includes('id="'+id+'"'))throw new Error('Merchant simulator missing '+id+' action');
+for(const term of ['Доставка','Адрес доставки','Livrare','Adresa de livrare','配送','收货地址','お届け先住所','การจัดส่ง','ที่อยู่จัดส่ง'])if(!merchantHtml.includes(term))throw new Error('Merchant simulator vocabulary missing: '+term);
