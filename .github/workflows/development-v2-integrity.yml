@@ -15,3 +15,4 @@ jobs:
       - run: node development/verify-catalog.js
       - run: node development/verify-delivery-contract.js
       - run: node development/verify-merchant-handoff.js
+      - run: node development/verify-ui-language.js

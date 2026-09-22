@@ -22,10 +22,10 @@
 
 </head>
 <body><div class="preview">ENTWICKLUNGSVORSCHAU · FundBlick Version 2</div><header><div class="wrap head"><div class="logo">Fund<span>Blick</span></div><nav><a href="#entdecken">Entdecken</a><a href="#produkte">Produkte</a><a href="#prinzip">Prinzip</a></nav></div></header><main>
-<section class="hero"><div class="wrap hero-grid"><div><span class="kicker">● Produktentdeckung, neu gedacht</span><h1>Weniger suchen.<br><span class="accent">Besser finden.</span></h1><p>FundBlick bringt Produkte aus unterschiedlichen Quellen in eine klare Suche. Statt Shop für Shop zu öffnen, startest du mit dem Produkt, das du wirklich suchst.</p><form class="search" role="search"><input type="search" autocomplete="off" placeholder="z. B. Parfum, Sofa, Kopfhörer …" aria-label="Produktsuche"><button>Suchen</button></form></div><div class="art" aria-hidden="true"><div class="float f1"><div class="fakeimg">⌁</div><small>FundBlick Fund</small><h3>Ein Produkt. Klare Auswahl.</h3><b>ab 19,99 €</b></div><div class="float f2"><small>gefunden in</small><br><b>mehreren Quellen</b></div></div></div></section>
+<section class="hero"><div class="wrap hero-grid"><div><span class="kicker">● Produktentdeckung, neu gedacht</span><h1>Weniger suchen.<br><span class="accent">Besser finden.</span></h1><p>FundBlick bringt Produkte aus unterschiedlichen Quellen in eine klare Suche. Statt Shop für Shop zu öffnen, startest du mit dem Produkt, das du wirklich suchst.</p><form class="search" role="search"><input id="site-search" type="search" autocomplete="off" placeholder="z. B. Parfum, Sofa, Kopfhörer …" aria-label="Produktsuche"><button id="search-submit">Suchen</button></form></div><div class="art" aria-hidden="true"><div class="float f1"><div class="fakeimg">⌁</div><small>FundBlick Fund</small><h3>Ein Produkt. Klare Auswahl.</h3><b>ab 19,99 €</b></div><div class="float f2"><small>gefunden in</small><br><b>mehreren Quellen</b></div></div></div></section>
 <div class="wrap quick"><button data-q="akkuschrauber">Akkuschrauber</button><button data-category-prefix="electronics">Elektronik</button><button data-category-prefix="fashion">Mode</button><button data-q="fernseher">Fernseher</button><button data-category-prefix="fashion.bags">Taschen</button><button data-category-prefix="fashion.shoes">Schuhe</button></div>
 <section class="discover" id="entdecken"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Entdecken</span><h2>Direkt in die richtige Richtung.</h2></div><p>Breite Einstiege zeigen auf Anhieb, was FundBlick abdeckt. Für konkrete Wünsche bleibt die Suche der schnellste Weg.</p></div><div class="cats"><a class="cat category-link" href="#produkte" data-category-prefix="fashion"><i>✦</i><b>Mode</b><span>Schuhe & Accessoires</span></a><a class="cat category-link" href="#produkte" data-category-prefix="fashion.bags"><i>⌂</i><b>Taschen</b><span>Taschen & Accessoires</span></a><a class="cat category-link" href="#produkte" data-category-prefix="electronics"><i>▣</i><b>Elektronik</b><span>Fernseher & Technik</span></a><a class="cat category-link" href="#produkte" data-category-prefix="fashion.shoes"><i>↗</i><b>Schuhe</b><span>Laufschuhe & weitere Schuhe</span></a></div></div></section>
-<section class="results" id="produkte"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Produkte</span><h2>Aktuelle Fundstücke</h2></div><p>Suche, filtere und sortiere die derzeitigen Testdaten.</p></div><div class="toolbar"><input id="price-min" type="number" min="0" placeholder="Preis von €"><input id="price-max" type="number" min="0" placeholder="Preis bis €"><select id="category-filter"><option value="">Alle Kategorien</option></select><select id="brand-filter"><option value="">Alle Marken</option></select><select id="delivery-country" aria-label="Lieferland"><option value="">Lieferland: nicht gewählt</option><option value="DE">Deutschland</option><option value="AT">Österreich</option><option value="CH">Schweiz</option><option value="IT">Italien</option><option value="FR">Frankreich</option><option value="NL">Niederlande</option><option value="BE">Belgien</option><option value="PL">Polen</option></select><select id="sort-products"><option value="relevance">Beste Treffer</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select><button class="reset" id="reset-filters">Filter zurücksetzen</button></div><div id="applied-filters" class="applied" aria-label="Aktive Filter"></div><section id="products-section" aria-live="polite"><div class="empty">Produkte werden geladen …</div></section></div></section>
+<section class="results" id="produkte"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Produkte</span><h2>Aktuelle Fundstücke</h2></div><p>Suche, filtere und sortiere die derzeitigen Testdaten.</p></div><div class="toolbar"><select id="ui-language" aria-label="Sprache"><option value="de">Deutsch</option><option value="en">English</option><option value="ru">Русский</option><option value="ro">Română</option></select><input id="price-min" type="number" min="0" placeholder="Preis von €"><input id="price-max" type="number" min="0" placeholder="Preis bis €"><select id="category-filter"><option value="">Alle Kategorien</option></select><select id="brand-filter"><option value="">Alle Marken</option></select><select id="delivery-country" aria-label="Lieferland"><option value="">Lieferland: nicht gewählt</option><option value="DE">Deutschland</option><option value="AT">Österreich</option><option value="CH">Schweiz</option><option value="IT">Italien</option><option value="FR">Frankreich</option><option value="NL">Niederlande</option><option value="BE">Belgien</option><option value="PL">Polen</option></select><select id="sort-products"><option value="relevance">Beste Treffer</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select><button class="reset" id="reset-filters">Filter zurücksetzen</button></div><div id="applied-filters" class="applied" aria-label="Aktive Filter"></div><section id="products-section" aria-live="polite"><div class="empty">Produkte werden geladen …</div></section></div></section>
 <section class="principle" id="prinzip"><div class="wrap dark"><div><span class="eyebrow">FundBlick Prinzip</span><h2>Das Produkt steht im Mittelpunkt. Nicht der Shop.</h2><p>FundBlick soll den Weg vom Wunsch zum passenden Angebot verkürzen – übersichtlich, schnell und ohne unnötige Ablenkung.</p></div><div class="points"><div><b>01</b><br>Produkte verständlich zusammenführen.</div><div><b>02</b><br>Filter und Preise dort zeigen, wo sie helfen.</div><div><b>03</b><br>Mobil genauso selbstverständlich wie am Desktop.</div></div></div></section></main><dialog id="merchant-handoff" class="handoff-dialog"><div class="handoff-box"><h3 id="handoff-title">Kaufhilfe</h3><p id="handoff-message"></p><div id="handoff-terms" class="handoff-terms"></div><div class="handoff-actions"><a id="handoff-open" href="#" target="_blank" rel="sponsored noopener">Händlerseite öffnen</a><button id="handoff-close" type="button">Schließen</button></div></div></dialog><footer><div class="wrap foot"><div><b>FundBlick</b><br>Entwicklungsvorschau mit Testdaten.</div><div><a href="impressum-preview.html">Impressum</a><a href="datenschutz-preview.html">Datenschutz</a></div></div></footer><script>
 const DATA_BASE = 'development/catalog/';
 let products = [];
@@ -35,6 +35,7 @@ const shardCache = new Map();
 let publicationManifest = null;
 let taxonomyLabels=new Map();
 let activeCategoryPrefix='';
+let uiLanguage='de';
 const searchInput = document.querySelector('.search input');
 
 function normalizeSearch(value) {
@@ -61,6 +62,49 @@ function isRealOfferUrl(value) {
   const safe=safeHttpUrl(value); if(!safe)return false;
   try { return !['example.com','www.example.com'].includes(new URL(safe).hostname.toLowerCase()); } catch { return false; }
 }
+const UI_LANGUAGES=['de','en','ru','ro'];
+const UI_TEXT={
+  de:{searchPlaceholder:'z. B. Parfum, Sofa, Kopfhörer …',search:'Suchen',language:'Sprache',priceMin:'Preis von €',priceMax:'Preis bis €',allCategories:'Alle Kategorien',allBrands:'Alle Marken',deliveryNone:'Lieferland: nicht gewählt',sortRelevance:'Beste Treffer',sortPriceAsc:'Preis aufsteigend',sortPriceDesc:'Preis absteigend',reset:'Filter zurücksetzen',noResults:'Keine passenden Produkte gefunden.',loading:'Produkte werden geladen …',loadError:'Produktdaten konnten nicht geladen werden. Bitte Seite erneut laden.',details:'Details laden',detailsLoading:'Details werden geladen…',detailsRetry:'Details erneut laden',detailsUnavailable:'Details nicht verfügbar',product:'Produkt',deliveryEligible:'Lieferung passend',deliveryUnknown:'Lieferung noch nicht bestätigt',deliveryUnsupported:'Lieferung nicht vorgesehen',searchChip:'Suche',categoryChip:'Kategorie',brandChip:'Marke',countryChip:'Lieferland',from:'ab',to:'bis',testProduct:'Testprodukt',offer:'Zum Angebot',handoffOffer:'Kaufhilfe & Händler öffnen',merchantLanguage:'Händlersprache'},
+  en:{searchPlaceholder:'e.g. perfume, sofa, headphones …',search:'Search',language:'Language',priceMin:'Price from €',priceMax:'Price to €',allCategories:'All categories',allBrands:'All brands',deliveryNone:'Delivery country: not selected',sortRelevance:'Best matches',sortPriceAsc:'Price ascending',sortPriceDesc:'Price descending',reset:'Reset filters',noResults:'No matching products found.',loading:'Products are loading …',loadError:'Product data could not be loaded. Please reload the page.',details:'Load details',detailsLoading:'Loading details…',detailsRetry:'Load details again',detailsUnavailable:'Details unavailable',product:'Product',deliveryEligible:'Delivery available',deliveryUnknown:'Delivery not yet confirmed',deliveryUnsupported:'Delivery not available',searchChip:'Search',categoryChip:'Category',brandChip:'Brand',countryChip:'Delivery country',from:'from',to:'to',testProduct:'Test product',offer:'View offer',handoffOffer:'Purchase help & open merchant',merchantLanguage:'Merchant language'},
+  ru:{searchPlaceholder:'например: парфюм, диван, наушники …',search:'Поиск',language:'Язык',priceMin:'Цена от €',priceMax:'Цена до €',allCategories:'Все категории',allBrands:'Все бренды',deliveryNone:'Страна доставки: не выбрана',sortRelevance:'Лучшие совпадения',sortPriceAsc:'Цена по возрастанию',sortPriceDesc:'Цена по убыванию',reset:'Сбросить фильтры',noResults:'Подходящие товары не найдены.',loading:'Товары загружаются …',loadError:'Не удалось загрузить данные товаров. Перезагрузите страницу.',details:'Загрузить детали',detailsLoading:'Загрузка деталей…',detailsRetry:'Загрузить детали снова',detailsUnavailable:'Детали недоступны',product:'Товар',deliveryEligible:'Доставка подходит',deliveryUnknown:'Доставка пока не подтверждена',deliveryUnsupported:'Доставка не предусмотрена',searchChip:'Поиск',categoryChip:'Категория',brandChip:'Бренд',countryChip:'Страна доставки',from:'от',to:'до',testProduct:'Тестовый товар',offer:'К предложению',handoffOffer:'Помощь с покупкой и сайт продавца',merchantLanguage:'Язык продавца'},
+  ro:{searchPlaceholder:'de ex. parfum, canapea, căști …',search:'Caută',language:'Limbă',priceMin:'Preț de la €',priceMax:'Preț până la €',allCategories:'Toate categoriile',allBrands:'Toate mărcile',deliveryNone:'Țara de livrare: neselectată',sortRelevance:'Cele mai bune rezultate',sortPriceAsc:'Preț crescător',sortPriceDesc:'Preț descrescător',reset:'Resetează filtrele',noResults:'Nu au fost găsite produse potrivite.',loading:'Produsele se încarcă …',loadError:'Datele produselor nu au putut fi încărcate. Reîncarcă pagina.',details:'Încarcă detalii',detailsLoading:'Se încarcă detaliile…',detailsRetry:'Încarcă detaliile din nou',detailsUnavailable:'Detalii indisponibile',product:'Produs',deliveryEligible:'Livrare disponibilă',deliveryUnknown:'Livrarea nu este încă confirmată',deliveryUnsupported:'Livrarea nu este disponibilă',searchChip:'Căutare',categoryChip:'Categorie',brandChip:'Marcă',countryChip:'Țara de livrare',from:'de la',to:'până la',testProduct:'Produs de test',offer:'Vezi oferta',handoffOffer:'Ajutor la cumpărare și comerciant',merchantLanguage:'Limba comerciantului'}
+};
+function supportedUiLanguage(value){
+  const code=handoffLanguage(value);
+  return UI_LANGUAGES.includes(code)?code:'de';
+}
+function uiText(key,language=uiLanguage){
+  const lang=UI_LANGUAGES.includes(language)?language:'en';
+  return UI_TEXT[lang]?.[key]||UI_TEXT.en[key]||key;
+}
+function countryDisplayName(code){
+  try{return new Intl.DisplayNames([uiLanguage],{type:'region'}).of(code)||code}catch{return code}
+}
+function applyUiLanguage(){
+  document.documentElement.lang=uiLanguage;
+  const languageSelect=document.getElementById('ui-language');
+  if(languageSelect)languageSelect.value=uiLanguage;
+  searchInput.placeholder=uiText('searchPlaceholder');
+  searchInput.setAttribute('aria-label',uiText('search'));
+  const submit=document.getElementById('search-submit'); if(submit)submit.textContent=uiText('search');
+  const langSelect=document.getElementById('ui-language'); if(langSelect)langSelect.setAttribute('aria-label',uiText('language'));
+  document.getElementById('price-min').placeholder=uiText('priceMin');
+  document.getElementById('price-max').placeholder=uiText('priceMax');
+  const category=document.getElementById('category-filter'); if(category?.options[0])category.options[0].textContent=uiText('allCategories');
+  const brand=document.getElementById('brand-filter'); if(brand?.options[0])brand.options[0].textContent=uiText('allBrands');
+  const delivery=document.getElementById('delivery-country');
+  if(delivery){
+    if(delivery.options[0])delivery.options[0].textContent=uiText('deliveryNone');
+    for(const option of [...delivery.options].slice(1))option.textContent=countryDisplayName(option.value);
+    delivery.setAttribute('aria-label',uiText('countryChip'));
+  }
+  const sort=document.getElementById('sort-products');
+  if(sort){
+    const labels={relevance:'sortRelevance','price-asc':'sortPriceAsc','price-desc':'sortPriceDesc'};
+    for(const option of sort.options)option.textContent=uiText(labels[option.value]||option.value);
+  }
+  const reset=document.getElementById('reset-filters'); if(reset)reset.textContent=uiText('reset');
+}
 const HANDOFF_VOCAB={
   de:{title:'Kaufhilfe',message:'Die Händlerseite ist in einer anderen Sprache. FundBlick bleibt geöffnet und zeigt dir wichtige Begriffe.',open:'Händlerseite öffnen',close:'Schließen',terms:{cart:'Warenkorb',checkout:'Kasse / Bezahlen',shipping:'Lieferung',address:'Lieferadresse',payment:'Zahlungsart'}},
   en:{title:'Purchase help',message:'The merchant page uses another language. FundBlick stays open and keeps key checkout terms available.',open:'Open merchant page',close:'Close',terms:{cart:'Cart',checkout:'Checkout',shipping:'Shipping',address:'Delivery address',payment:'Payment method'}},
@@ -72,7 +116,7 @@ function handoffLanguage(value){
   const primary=tag.split('-')[0];
   return /^[a-z]{2,3}$/.test(primary)?primary:null;
 }
-function currentUiLanguage(){return handoffLanguage(document.documentElement.lang)||'de'}
+function currentUiLanguage(){return uiLanguage}
 function merchantLanguageNeedsHelp(merchantLanguage,uiLanguage=currentUiLanguage()){
   const merchant=handoffLanguage(merchantLanguage),ui=handoffLanguage(uiLanguage);
   return Boolean(merchant&&ui&&merchant!==ui);
@@ -86,16 +130,16 @@ function merchantLanguageName(language,uiLanguage=currentUiLanguage()){
   try{return new Intl.DisplayNames([uiLanguage],{type:'language'}).of(code)||code.toUpperCase()}catch{return code.toUpperCase()}
 }
 function merchantOfferAction(offer){
-  if(!offer||!isRealOfferUrl(offer.affiliateUrl))return '<button type="button" disabled>Testprodukt</button>';
-  if(merchantLanguageNeedsHelp(offer.merchantLanguage))return '<button type="button" class="offer-link merchant-handoff-trigger">Kaufhilfe & Händler öffnen</button>';
-  return '<a class="offer-link" href="'+escapeHtml(safeHttpUrl(offer.affiliateUrl))+'" target="_blank" rel="sponsored noopener">Zum Angebot</a>';
+  if(!offer||!isRealOfferUrl(offer.affiliateUrl))return '<button type="button" disabled>'+escapeHtml(uiText('testProduct'))+'</button>';
+  if(merchantLanguageNeedsHelp(offer.merchantLanguage))return '<button type="button" class="offer-link merchant-handoff-trigger">'+escapeHtml(uiText('handoffOffer'))+'</button>';
+  return '<a class="offer-link" href="'+escapeHtml(safeHttpUrl(offer.affiliateUrl))+'" target="_blank" rel="sponsored noopener">'+escapeHtml(uiText('offer'))+'</a>';
 }
 function openMerchantHandoff(offer,product){
   const dialog=document.getElementById('merchant-handoff'),ui=currentUiLanguage(),v=handoffVocabulary(ui);
   if(!dialog||!offer||!isRealOfferUrl(offer.affiliateUrl))return;
   const language=merchantLanguageName(offer.merchantLanguage,ui);
   document.getElementById('handoff-title').textContent=v.title;
-  document.getElementById('handoff-message').textContent=(product?.name?product.name+' · ':'')+v.message+(language?' Händlersprache: '+language+'.':'');
+  document.getElementById('handoff-message').textContent=(product?.name?product.name+' · ':'')+v.message+(language?' '+uiText('merchantLanguage')+': '+language+'.':'');
   document.getElementById('handoff-open').textContent=v.open;
   document.getElementById('handoff-open').href=safeHttpUrl(offer.affiliateUrl);
   document.getElementById('handoff-close').textContent=v.close;
@@ -105,7 +149,7 @@ function openMerchantHandoff(offer,product){
 }
 function formatPrice(product) {
   const price=Number(product.p); if(!Number.isFinite(price))return 'Preis auf Anfrage';
-  try{return new Intl.NumberFormat('de-DE',{style:'currency',currency:product.u||'EUR'}).format(price)}
+  try{return new Intl.NumberFormat(uiLanguage,{style:'currency',currency:product.u||'EUR'}).format(price)}
   catch{return price.toFixed(2)+' '+escapeHtml(product.u||'EUR')}
 }
 async function loadJson(path,{mutable=false}={}) {
@@ -171,7 +215,9 @@ function initializeFilters() {
   });
 }
 function restoreState() {
-  const p=new URLSearchParams(location.search);activeCategoryPrefix=String(p.get('categoryPrefix')||'');searchInput.value=p.get('q')||'';
+  const p=new URLSearchParams(location.search);
+  uiLanguage=supportedUiLanguage(p.get('lang')||'de');
+  activeCategoryPrefix=String(p.get('categoryPrefix')||'');searchInput.value=p.get('q')||'';
   document.getElementById('price-min').value=p.get('min')||'';
   document.getElementById('price-max').value=p.get('max')||'';
   for(const [id,key] of [['category-filter','category'],['brand-filter','brand'],['delivery-country','country']]){
@@ -180,9 +226,10 @@ function restoreState() {
   }
   const sort=p.get('sort')||'relevance',el=document.getElementById('sort-products');
   if([...el.options].some(o=>o.value===sort))el.value=sort;
+  applyUiLanguage();
 }
 function showLoadError() {
-  document.getElementById('products-section').innerHTML='<div class="empty" role="alert">Produktdaten konnten nicht geladen werden. Bitte Seite erneut laden.</div>';
+  document.getElementById('products-section').innerHTML='<div class="empty" role="alert">'+escapeHtml(uiText('loadError'))+'</div>';
 }
 function indexImageUrl(p){
   const raw=safeHttpUrl(p?.g);
@@ -191,7 +238,7 @@ function indexImageUrl(p){
 function deliveryState(p,country=document.getElementById('delivery-country')?.value||''){
   if(!country)return null;
   const result=deliveryEligibility({shipsTo:Array.isArray(p?.t)?p.t:[],markets:Array.isArray(p?.m)?p.m:[],unknown:p?.w===1},country);
-  return {...result,label:result.state==='eligible'?'Lieferung passend':result.state==='unknown'?'Lieferung noch nicht bestätigt':'Lieferung nicht vorgesehen'};
+  return {...result,label:result.state==='eligible'?uiText('deliveryEligible'):result.state==='unknown'?uiText('deliveryUnknown'):uiText('deliveryUnsupported')};
 }
 function displayPriceProduct(p){
   const country=document.getElementById('delivery-country')?.value||'';
@@ -207,16 +254,16 @@ function showProducts(list,resetLimit=true) {
   currentResults=list;
   if(resetLimit)visibleLimit=matchMedia('(max-width:700px)').matches?12:24;
   const visible=list.slice(0,visibleLimit),section=document.getElementById('products-section');
-  if(!list.length){section.innerHTML='<div class="empty">Keine passenden Produkte gefunden.</div>';return;}
+  if(!list.length){section.innerHTML='<div class="empty">'+escapeHtml(uiText('noResults'))+'</div>';return;}
   section.innerHTML='<div class="product-grid">'+visible.map(p=>`
     <article class="product-card" data-product-id="${escapeHtml(p.i)}" data-shard="${Number(p.s)}">
       <div class="product-media">${indexImageUrl(p)?`<img src="${escapeHtml(indexImageUrl(p))}" alt="${escapeHtml(p.n)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fakeimg" style="display:none">⌁</div>`:`<div class="fakeimg">⌁</div>`}</div>
-      <div class="count-note">${escapeHtml(categoryLabel(p.c)||'Produkt')}</div>
+      <div class="count-note">${escapeHtml(categoryLabel(p.c)||uiText('product'))}</div>
       <h3>${escapeHtml(p.n)}</h3>
       <div class="meta">${escapeHtml(p.b||'')}</div>
       ${deliveryNote(p)}
       <div class="price">${formatPrice(displayPriceProduct(p))}</div>
-      <button type="button" class="detail-load">Details laden</button>
+      <button type="button" class="detail-load" >${escapeHtml(uiText('details'))}</button>
     </article>`).join('')+'</div>'+
     (list.length>visible.length?'<button type="button" class="load-more" id="load-more">Weitere Produkte anzeigen</button>':'');
   section.querySelectorAll('.detail-load').forEach(b=>b.addEventListener('click',()=>loadProductDetail(b.closest('.product-card'))));
@@ -255,8 +302,8 @@ async function loadProductDetail(card) {
   const id=card.dataset.productId, shard=card.dataset.shard;
   const button=card.querySelector('.detail-load');
   const file=publicationManifest?.shards?.[shard]?.file;
-  if(!file){if(button)button.textContent='Details nicht verfügbar';return;}
-  if(button){button.disabled=true;button.textContent='Details werden geladen…';}
+  if(!file){if(button)button.textContent=uiText('detailsUnavailable');return;}
+  if(button){button.disabled=true;button.textContent=uiText('detailsLoading');}
   try{
     let data=shardCache.get(file);
     if(!data){
@@ -278,26 +325,26 @@ async function loadProductDetail(card) {
     if(!indexProduct||String(p.category||'')!==String(indexProduct.c||''))throw new Error('Produktdetail passt nicht zum Suchindex: '+id);
     const country=document.getElementById('delivery-country').value,offer=selectDetailOffer(p,country)||p.bestOffer||null,rawImg=safeHttpUrl(p.imageUrl),img=rawImg&&new URL(rawImg).hostname.toLowerCase()!=='example.com'?rawImg:'';
     card.innerHTML=`<div class="product-media">${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fakeimg" style="display:none">⌁</div>`:`<div class="fakeimg">⌁</div>`}</div>
-      <div class="count-note">${escapeHtml(categoryLabel(p.category)||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
+      <div class="count-note">${escapeHtml(categoryLabel(p.category)||uiText('product'))}</div><h3>${escapeHtml(p.name)}</h3>
       <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
       <div class="price">${formatPrice({p:offer?.totalPrice??p.totalPriceFrom,u:offer?.currency||p.currency})}</div>
       ${merchantOfferAction(offer)}`;
     card.querySelector('.merchant-handoff-trigger')?.addEventListener('click',()=>openMerchantHandoff(offer,p));
   }catch(error){
     console.error(error);
-    if(button){button.disabled=false;button.textContent='Details erneut laden';}
+    if(button){button.disabled=false;button.textContent=uiText('detailsRetry');}
   }
 }
 function renderAppliedFilters(){
   const box=document.getElementById('applied-filters'),items=[],q=searchInput.value.trim();
   const min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
   const cat=document.getElementById('category-filter'),brand=document.getElementById('brand-filter'),country=document.getElementById('delivery-country');
-  if(q)items.push({label:'Suche: '+q,clear:()=>searchInput.value=''});
-  if(min)items.push({label:'ab '+min+' €',clear:()=>document.getElementById('price-min').value=''});
-  if(max)items.push({label:'bis '+max+' €',clear:()=>document.getElementById('price-max').value=''});
-  if(cat.value)items.push({label:'Kategorie: '+cat.options[cat.selectedIndex].text,clear:()=>cat.value=''});
-  if(brand.value)items.push({label:'Marke: '+brand.options[brand.selectedIndex].text,clear:()=>brand.value=''});
-  if(country.value)items.push({label:'Lieferland: '+country.options[country.selectedIndex].text,clear:()=>country.value=''});
+  if(q)items.push({label:uiText('searchChip')+': '+q,clear:()=>searchInput.value=''});
+  if(min)items.push({label:uiText('from')+' '+min+' €',clear:()=>document.getElementById('price-min').value=''});
+  if(max)items.push({label:uiText('to')+' '+max+' €',clear:()=>document.getElementById('price-max').value=''});
+  if(cat.value)items.push({label:uiText('categoryChip')+': '+cat.options[cat.selectedIndex].text,clear:()=>cat.value=''});
+  if(brand.value)items.push({label:uiText('brandChip')+': '+brand.options[brand.selectedIndex].text,clear:()=>brand.value=''});
+  if(country.value)items.push({label:uiText('countryChip')+': '+country.options[country.selectedIndex].text,clear:()=>country.value=''});
   box.innerHTML='';items.forEach(i=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=i.label+' ×';b.onclick=()=>{i.clear();searchProducts()};box.appendChild(b)});
 }
 function searchProducts(){
@@ -311,15 +358,16 @@ function searchProducts(){
     .filter(x=>x.score>0&&Number.isFinite(x.price)&&(min===null||x.price>=min)&&(max===null||x.price<=max)&&(!cat||normalizeSearch(x.p.c)===cat)&&(!brand||normalizeSearch(x.p.b)===brand))
     .sort((a,b)=>{const s=document.getElementById('sort-products').value;const delivery=a.deliveryRank-b.deliveryRank;if(delivery)return delivery;return s==='price-asc'?a.price-b.price:s==='price-desc'?b.price-a.price:b.score-a.score}).map(x=>x.p);
   showProducts(results);renderAppliedFilters();
-  const params=new URLSearchParams();if(term)params.set('q',searchInput.value.trim());if(min!==null)params.set('min',min);if(max!==null)params.set('max',max);if(cat)params.set('category',cat);if(brand)params.set('brand',brand);if(country)params.set('country',country);
+  const params=new URLSearchParams();if(uiLanguage!=='de')params.set('lang',uiLanguage);if(term)params.set('q',searchInput.value.trim());if(min!==null)params.set('min',min);if(max!==null)params.set('max',max);if(cat)params.set('category',cat);if(brand)params.set('brand',brand);if(country)params.set('country',country);
   const sort=document.getElementById('sort-products').value;if(sort!=='relevance')params.set('sort',sort);
   history.replaceState(null,'',params.toString()?'?'+params:location.pathname);
 }
 document.querySelector('.search').addEventListener('submit',e=>{e.preventDefault();searchProducts()});
+document.getElementById('ui-language').addEventListener('change',e=>{uiLanguage=supportedUiLanguage(e.target.value);applyUiLanguage();searchProducts()});
 ['price-min','price-max','category-filter','brand-filter','delivery-country','sort-products'].forEach(id=>document.getElementById(id).addEventListener('change',searchProducts));
-document.getElementById('reset-filters').addEventListener('click',()=>{searchInput.value='';['price-min','price-max'].forEach(id=>document.getElementById(id).value='');document.getElementById('category-filter').value='';document.getElementById('brand-filter').value='';document.getElementById('delivery-country').value='';document.getElementById('sort-products').value='relevance';showProducts(products);renderAppliedFilters();history.replaceState(null,'',location.pathname)});
+document.getElementById('reset-filters').addEventListener('click',()=>{searchInput.value='';['price-min','price-max'].forEach(id=>document.getElementById(id).value='');document.getElementById('category-filter').value='';document.getElementById('brand-filter').value='';document.getElementById('delivery-country').value='';document.getElementById('sort-products').value='relevance';showProducts(products);renderAppliedFilters();const params=new URLSearchParams();if(uiLanguage!=='de')params.set('lang',uiLanguage);history.replaceState(null,'',params.toString()?'?'+params:location.pathname)});
 document.querySelectorAll('[data-q]').forEach(el=>el.addEventListener('click',()=>{searchInput.value=el.dataset.q;searchProducts()}));
-document.querySelectorAll('[data-category-prefix]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();const prefix=String(el.dataset.categoryPrefix||''),select=document.getElementById('category-filter');const matches=products.filter(p=>String(p.c||'').startsWith(prefix));searchInput.value='';if(matches.length===1){select.value=normalizeSearch(matches[0].c);searchProducts();return}activeCategoryPrefix=prefix;select.value='';showProducts(matches);renderAppliedFilters();const params=new URLSearchParams();params.set('categoryPrefix',prefix);history.replaceState(null,'','?'+params)}));
+document.querySelectorAll('[data-category-prefix]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();const prefix=String(el.dataset.categoryPrefix||''),select=document.getElementById('category-filter');const matches=products.filter(p=>String(p.c||'').startsWith(prefix));searchInput.value='';if(matches.length===1){select.value=normalizeSearch(matches[0].c);searchProducts();return}activeCategoryPrefix=prefix;select.value='';showProducts(matches);renderAppliedFilters();const params=new URLSearchParams();if(uiLanguage!=='de')params.set('lang',uiLanguage);params.set('categoryPrefix',prefix);history.replaceState(null,'','?'+params)}));
 document.getElementById('handoff-close')?.addEventListener('click',()=>document.getElementById('merchant-handoff')?.close());
 loadCatalog().catch(error=>{console.error('FundBlick publication load failed:',error);showLoadError()});
 </script>
