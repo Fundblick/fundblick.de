@@ -152,6 +152,11 @@ function deliveryState(p,country=document.getElementById('delivery-country')?.va
   if(p?.w===1)return {rank:1,state:'unknown',label:'Lieferung noch nicht bestätigt'};
   return {rank:2,state:'unsupported',label:'Lieferung nicht vorgesehen'};
 }
+function displayPriceProduct(p){
+  const country=document.getElementById('delivery-country')?.value||'';
+  const local=country&&p?.d?.[country];
+  return local&&Number.isFinite(Number(local.p))?{...p,p:Number(local.p),u:local.u||p.u}:p;
+}
 function deliveryNote(p){
   const state=deliveryState(p);
   return state?`<div class="delivery-note" data-state="${state.state}">${escapeHtml(state.label)}</div>`:'';
@@ -169,7 +174,7 @@ function showProducts(list,resetLimit=true) {
       <h3>${escapeHtml(p.n)}</h3>
       <div class="meta">${escapeHtml(p.b||'')}</div>
       ${deliveryNote(p)}
-      <div class="price">${formatPrice(p)}</div>
+      <div class="price">${formatPrice(displayPriceProduct(p))}</div>
       <button type="button" class="detail-load">Details laden</button>
     </article>`).join('')+'</div>'+
     (list.length>visible.length?'<button type="button" class="load-more" id="load-more">Weitere Produkte anzeigen</button>':'');
