@@ -188,7 +188,7 @@ function deliveryEligibility({shipsTo=[],markets=[],unknown=false},country){
   if(!target)return {rank:1,state:'unknown'};
   const destinations=Array.isArray(shipsTo)?shipsTo.map(countryCode).filter(Boolean):[];
   const sourceMarkets=Array.isArray(markets)?markets.map(countryCode).filter(Boolean):[];
-  if(destinations.length)return destinations.includes(target)?{rank:0,state:'eligible'}:{rank:2,state:'unsupported'};
+  if(destinations.includes(target))return {rank:0,state:'eligible'};
   if(sourceMarkets.includes(target))return {rank:0,state:'eligible'};
   return unknown?{rank:1,state:'unknown'}:{rank:2,state:'unsupported'};
 }

@@ -14,6 +14,8 @@ eq(ctx.deliveryEligibility({shipsTo:[],markets:['DE'],unknown:true},'DE'),{rank:
 eq(ctx.deliveryEligibility({shipsTo:[],markets:['DE'],unknown:true},'IT'),{rank:1,state:'unknown'},'cross-border unknown');
 eq(ctx.deliveryEligibility({shipsTo:[],markets:['DE'],unknown:false},'IT'),{rank:2,state:'unsupported'},'no fallback unsupported');
 eq(ctx.deliveryEligibility({shipsTo:[' it '],markets:[],unknown:false},'IT'),{rank:0,state:'eligible'},'normalizes published destination');
+eq(ctx.deliveryEligibility({shipsTo:['AT','DE'],markets:['DE'],unknown:true},'DE'),{rank:0,state:'eligible'},'mixed product keeps known destination eligible');
+eq(ctx.deliveryEligibility({shipsTo:['AT','DE'],markets:['DE'],unknown:true},'IT'),{rank:1,state:'unknown'},'mixed product keeps unknown cross-border state');
 const product={variants:[{offers:[
   {id:'cheap-unknown',purchasable:true,market:'DE',shipsTo:[],totalPrice:80,currency:'EUR'},
   {id:'it-expensive',purchasable:true,market:'DE',shipsTo:['IT'],totalPrice:100,currency:'EUR'},
