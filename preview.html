@@ -147,10 +147,8 @@ function indexImageUrl(p){
 }
 function deliveryState(p,country=document.getElementById('delivery-country')?.value||''){
   if(!country)return null;
-  const shipsTo=Array.isArray(p?.t)?p.t:[],markets=Array.isArray(p?.m)?p.m:[];
-  if(shipsTo.includes(country)||(!shipsTo.length&&markets.includes(country)))return {rank:0,state:'eligible',label:'Lieferung passend'};
-  if(p?.w===1)return {rank:1,state:'unknown',label:'Lieferung noch nicht bestätigt'};
-  return {rank:2,state:'unsupported',label:'Lieferung nicht vorgesehen'};
+  const result=deliveryEligibility({shipsTo:Array.isArray(p?.t)?p.t:[],markets:Array.isArray(p?.m)?p.m:[],unknown:p?.w===1},country);
+  return {...result,label:result.state==='eligible'?'Lieferung passend':result.state==='unknown'?'Lieferung noch nicht bestätigt':'Lieferung nicht vorgesehen'};
 }
 function displayPriceProduct(p){
   const country=document.getElementById('delivery-country')?.value||'';
@@ -181,17 +179,20 @@ function showProducts(list,resetLimit=true) {
   section.querySelectorAll('.detail-load').forEach(b=>b.addEventListener('click',()=>loadProductDetail(b.closest('.product-card'))));
   document.getElementById('load-more')?.addEventListener('click',()=>{visibleLimit+=matchMedia('(max-width:700px)').matches?12:24;showProducts(currentResults,false)});
 }
-function detailOfferEligibility(offer,country){
+function deliveryEligibility({shipsTo=[],markets=[],unknown=false},country){
   if(!country)return {rank:0,state:'unknown'};
-  const shipsTo=Array.isArray(offer?.shipsTo)?offer.shipsTo:[],market=String(offer?.market||'').toUpperCase();
-  if(shipsTo.includes(country)||(!shipsTo.length&&market===country))return {rank:0,state:'eligible'};
-  if(!shipsTo.length)return {rank:1,state:'unknown'};
+  if(shipsTo.includes(country)||(!shipsTo.length&&markets.includes(country)))return {rank:0,state:'eligible'};
+  if(unknown)return {rank:1,state:'unknown'};
   return {rank:2,state:'unsupported'};
+}
+function detailOfferEligibility(offer,country){
+  const shipsTo=Array.isArray(offer?.shipsTo)?offer.shipsTo:[],market=String(offer?.market||'').toUpperCase();
+  return deliveryEligibility({shipsTo,markets:market?[market]:[],unknown:!shipsTo.length},country);
 }
 function selectDetailOffer(product,country){
   const offers=(product?.variants||[]).flatMap(v=>v.offers||[]).filter(o=>o?.purchasable);
   const rank=o=>detailOfferEligibility(o,country).rank;
-  return offers.sort((a,b)=>rank(a)-rank(b)||(Number(a.totalPrice)||Infinity)-(Number(b.totalPrice)||Infinity)||String(a.id).localeCompare(String(b.id)))[0]||null;
+  return offers.sort((a,b)=>rank(a)-rank(b)||((Number.isFinite(Number(a.totalPrice))?Number(a.totalPrice):Infinity)-(Number.isFinite(Number(b.totalPrice))?Number(b.totalPrice):Infinity))||String(a.id||'').localeCompare(String(b.id||'')))[0]||null;
 }
 async function loadProductDetail(card) {
   const id=card.dataset.productId, shard=card.dataset.shard;
