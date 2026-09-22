@@ -18,4 +18,5 @@ jobs:
       - run: node development/verify-ui-language.js
       - run: node development/verify-search-routing.js
       - run: node development/verify-substring-routing.js
+      - run: node development/verify-substring-browser-shadow.js
       - run: node development/verify-search-shadow.js

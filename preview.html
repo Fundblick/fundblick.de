@@ -34,7 +34,10 @@ let visibleLimit = 24;
 const shardCache = new Map();
 let publicationManifest = null;
 let searchRoutingRoot = null;
+let substringRoutingRoot = null;
 const shadowSearchCache = new Map();
+const substringDirectoryCache = new Map();
+const substringFileCache = new Map();
 let taxonomyLabels=new Map();
 let activeCategoryPrefix='';
 let uiLanguage='de';
@@ -212,9 +215,99 @@ async function shadowPostings(term){
   shadowSearchCache.set(key,items);
   return items;
 }
+function isExactShadowToken(token){
+  return /^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(token);
+}
 function supportsExactShadowQuery(value){
   const tokens=normalizeSearch(value).split(' ').filter(Boolean);
-  return tokens.length>0&&tokens.every(token=>/^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(token));
+  return tokens.length>0&&tokens.every(isExactShadowToken);
+}
+function substringContentPath(sha){return 'substring/'+String(sha).slice(0,12)+'.json'}
+async function loadSubstringFile(sha){
+  if(substringFileCache.has(sha))return substringFileCache.get(sha);
+  const payload=await loadVerifiedJson(DATA_BASE+substringContentPath(sha),sha);
+  substringFileCache.set(sha,payload);
+  return payload;
+}
+async function loadSubstringRoot(){
+  const meta=publicationManifest?.substringRouting;
+  if(!meta)return null;
+  if(substringRoutingRoot)return substringRoutingRoot;
+  const root=await loadVerifiedJson(DATA_BASE+meta.file,meta.sha256);
+  if(!root||root.v!==1||!Number.isInteger(root.b)||root.b<16||!Number.isInteger(root.s)||root.s<32||!Array.isArray(root.d)||root.d.length!==root.b||typeof root.c!=='string')throw new Error('Ungültiges Substring-Routing.');
+  substringRoutingRoot=root;
+  return root;
+}
+function substringUniqueNgrams(value,size){
+  const chars=[...String(value||'')];
+  if(!Number.isInteger(size)||size<1)return [];
+  if(chars.length<size)return chars.length?[chars.join('')]:[];
+  return [...new Set(Array.from({length:chars.length-size+1},(_,i)=>chars.slice(i,i+size).join('')))];
+}
+function substringQueryTokens(value){
+  return normalizeSearch(value).split(' ').filter(Boolean).filter(token=>!isExactShadowToken(token));
+}
+function substringQueryGrams(token){
+  const length=[...token].length,gramSize=length>=4?4:length>=2?2:1;
+  return substringUniqueNgrams(token,gramSize);
+}
+async function substringBucketIndex(gram,bucketCount){
+  const hash=await sha256HexText(gram);
+  return parseInt(hash.slice(0,8),16)%bucketCount;
+}
+async function substringRouteForGram(root,gram){
+  const index=await substringBucketIndex(gram,root.b);
+  const directorySha=root.d[index];
+  if(!directorySha)return null;
+  let directory=substringDirectoryCache.get(directorySha);
+  if(!directory){
+    directory=await loadSubstringFile(directorySha);
+    if(!directory||Array.isArray(directory)||typeof directory!=='object')throw new Error('Ungültiges Substring-Verzeichnis.');
+    substringDirectoryCache.set(directorySha,directory);
+  }
+  const entry=directory[gram];
+  if(!entry)return null;
+  return {gram,entry,count:Array.isArray(entry.r)?entry.r.length:entry.n};
+}
+async function substringPostings(route){
+  if(Array.isArray(route.entry.r))return new Set(route.entry.r);
+  if(!Number.isInteger(route.entry.n)||!Array.isArray(route.entry.p)||!route.entry.p.length)throw new Error('Ungültige Substring-Route.');
+  const values=[];
+  for(const sha of route.entry.p){
+    const page=await loadSubstringFile(sha);
+    if(!page||page.g!==route.gram||!Array.isArray(page.v))throw new Error('Ungültige Substring-Postingseite.');
+    values.push(...page.v);
+  }
+  return new Set(values);
+}
+function intersectSets(a,b){
+  if(a===null)return new Set(b);
+  return new Set([...a].filter(value=>b.has(value)));
+}
+async function substringShadowSearchIds(value){
+  const root=await loadSubstringRoot();
+  const tokens=substringQueryTokens(value);
+  if(!root||!tokens.length)return [];
+  let candidates=null;
+  for(const token of tokens){
+    const routes=(await Promise.all(substringQueryGrams(token).map(gram=>substringRouteForGram(root,gram)))).filter(Boolean).sort((a,b)=>a.count-b.count||a.gram.localeCompare(b.gram));
+    if(!routes.length)return [];
+    let tokenSet=await substringPostings(routes[0]);
+    if(tokenSet.size>64&&routes[1])tokenSet=intersectSets(tokenSet,await substringPostings(routes[1]));
+    candidates=intersectSets(candidates,tokenSet);
+    if(!candidates.size)return [];
+  }
+  const verification=await loadSubstringFile(root.c);
+  if(!verification||!Array.isArray(verification.p))throw new Error('Ungültiges Substring-Verifikationsmanifest.');
+  const ids=[];
+  for(const ordinal of [...(candidates||new Set())].sort((a,b)=>a-b)){
+    const pageIndex=Math.floor(ordinal/root.s),offset=ordinal%root.s,pageSha=verification.p[pageIndex];
+    if(!pageSha)continue;
+    const page=await loadSubstringFile(pageSha),item=page?.[offset];
+    if(!item||!Array.isArray(item.t))continue;
+    if(tokens.every(queryToken=>item.t.some(productToken=>String(productToken).includes(queryToken))))ids.push(item.i);
+  }
+  return ids.sort();
 }
 function legacySearchIds(value){
   const term=normalizeSearch(value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(value);
@@ -229,18 +322,26 @@ function legacySearchIds(value){
 async function shadowSearchIds(value){
   const term=normalizeSearch(value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(value).map(c=>'@'+c);
   if(!term)return products.map(p=>p.i).sort();
+  const exactTerms=terms.filter(isExactShadowToken),substringTerms=terms.filter(token=>!isExactShadowToken(token));
   let tokenIds=null;
-  for(const token of terms){
+  for(const token of exactTerms){
     const ids=new Set((await shadowPostings(token)).map(item=>item.i));
-    tokenIds=tokenIds===null?ids:new Set([...tokenIds].filter(id=>ids.has(id)));
+    tokenIds=tokenIds===null?ids:intersectSets(tokenIds,ids);
+  }
+  if(substringTerms.length){
+    const ids=new Set(await substringShadowSearchIds(substringTerms.join(' ')));
+    tokenIds=tokenIds===null?ids:intersectSets(tokenIds,ids);
   }
   const conceptIds=new Set();
   for(const concept of concepts)for(const item of await shadowPostings(concept))conceptIds.add(item.i);
   return [...new Set([...(tokenIds||[]),...conceptIds])].sort();
 }
 async function runShadowSearchComparison(value){
-  if(!publicationManifest?.searchRouting||!normalizeSearch(value)){document.documentElement.dataset.shadowSearch='idle';return;}
-  if(!supportsExactShadowQuery(value)){document.documentElement.dataset.shadowSearch='unsupported';return;}
+  const normalized=normalizeSearch(value);
+  if(!normalized){document.documentElement.dataset.shadowSearch='idle';return;}
+  const hasExact=normalized.split(' ').filter(Boolean).some(isExactShadowToken);
+  const hasSubstring=substringQueryTokens(value).length>0;
+  if((hasExact&&!publicationManifest?.searchRouting)||(hasSubstring&&!publicationManifest?.substringRouting)){document.documentElement.dataset.shadowSearch='unsupported';return;}
   try{
     const [legacy,shadow]=await Promise.all([Promise.resolve(legacySearchIds(value)),shadowSearchIds(value)]);
     const ok=JSON.stringify(legacy)===JSON.stringify(shadow);
