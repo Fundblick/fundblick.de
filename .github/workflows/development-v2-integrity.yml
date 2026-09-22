@@ -14,6 +14,7 @@ jobs:
           node-version: 22
       - run: node development/verify-catalog.js
       - run: node development/verify-publication-apply.js
+      - run: node development/verify-seo-preview-apply.js
       - run: node development/verify-delivery-contract.js
       - run: node development/verify-merchant-handoff.js
       - run: node development/verify-outbound-click.js
