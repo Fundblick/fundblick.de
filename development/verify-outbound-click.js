@@ -1,8 +1,9 @@
 const fs=require('fs'),vm=require('vm');
 const preview=fs.readFileSync('preview.html','utf8');
 const outbound=fs.readFileSync('out-preview.html','utf8');
+const merchant=fs.readFileSync('merchant-preview.html','utf8');
 const script=html=>html.match(/<script>([\s\S]*?)<\/script>/)?.[1]||'';
-new vm.Script(script(preview));new vm.Script(script(outbound));
+new vm.Script(script(preview));new vm.Script(script(outbound));new vm.Script(script(merchant));
 for(const needle of [
   'function outboundClickUrl(product,offer)',
   "return 'out-preview.html?'+params.toString()",
@@ -15,6 +16,8 @@ for(const needle of [
   "const manifest=await loadJson(DATA_BASE+'manifest.json',{mutable:true})",
   "index.find(item=>item?.i===productId)",
   "item?.id===offerId&&item.purchasable",
+  "external.hostname.toLowerCase().endsWith('.example')",
+  "merchant-preview.html?lang=",
   "location.replace(target)"
 ])if(!outbound.includes(needle))throw new Error('safe outbound resolver contract missing: '+needle);
 if(/params\.get\(['"](?:url|target|href)['"]\)/.test(outbound))throw new Error('outbound page must not accept a destination URL from query parameters');
@@ -32,3 +35,7 @@ for(const compact of index){
 }
 if(!checked)throw new Error('no published purchasable offer available for outbound resolver contract');
 console.log('FundBlick safe outbound click contract OK',JSON.stringify({products:index.length,productsWithPurchasableOffer:checked}));
+
+for(const code of ['en','de','ru','ro','zh','ja','th'])if(!merchant.includes(code+':{'))throw new Error('merchant simulator language missing: '+code);
+if(!/DEVELOPMENT MERCHANT SIMULATOR/.test(merchant)||!/noindex,nofollow/.test(merchant))throw new Error('merchant simulator must be explicit and non-indexable');
+console.log('FundBlick local merchant simulator contract OK');

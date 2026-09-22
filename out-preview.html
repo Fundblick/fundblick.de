@@ -39,14 +39,19 @@ async function resolvePublishedOffer(){
   if(!product||product.id!==productId)throw new Error('Produktdetail fehlt');
   const offer=(product.variants||[]).flatMap(v=>v.offers||[]).find(item=>item?.id===offerId&&item.purchasable);
   if(!offer||!isRealOfferUrl(offer.affiliateUrl))throw new Error('Angebot nicht freigegeben');
-  return safeHttpUrl(offer.affiliateUrl);
+  return {url:safeHttpUrl(offer.affiliateUrl),merchantLanguage:String(offer.merchantLanguage||'').toLowerCase()};
 }
 (async()=>{
   try{
-    const target=await resolvePublishedOffer();
+    const resolved=await resolvePublishedOffer();
+    const external=new URL(resolved.url);
+    const simulator=external.hostname.toLowerCase().endsWith('.example');
+    const target=simulator
+      ? 'merchant-preview.html?lang='+encodeURIComponent(resolved.merchantLanguage||'en')+'&o='+encodeURIComponent(offerId)
+      : resolved.url;
     const fallback=document.getElementById('fallback');
     fallback.href=target;fallback.hidden=false;
-    document.getElementById('status').textContent='Angebot geprüft. Weiterleitung läuft …';
+    document.getElementById('status').textContent=simulator?'Testangebot geprüft. Händler-Simulator wird geöffnet …':'Angebot geprüft. Weiterleitung läuft …';
     location.replace(target);
   }catch(error){
     console.error(error);
