@@ -212,6 +212,10 @@ async function shadowPostings(term){
   shadowSearchCache.set(key,items);
   return items;
 }
+function supportsExactShadowQuery(value){
+  const tokens=normalizeSearch(value).split(' ').filter(Boolean);
+  return tokens.length>0&&tokens.every(token=>/^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(token));
+}
 function legacySearchIds(value){
   const term=normalizeSearch(value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(value);
   if(!term)return products.map(p=>p.i).sort();
@@ -236,6 +240,7 @@ async function shadowSearchIds(value){
 }
 async function runShadowSearchComparison(value){
   if(!publicationManifest?.searchRouting||!normalizeSearch(value)){document.documentElement.dataset.shadowSearch='idle';return;}
+  if(!supportsExactShadowQuery(value)){document.documentElement.dataset.shadowSearch='unsupported';return;}
   try{
     const [legacy,shadow]=await Promise.all([Promise.resolve(legacySearchIds(value)),shadowSearchIds(value)]);
     const ok=JSON.stringify(legacy)===JSON.stringify(shadow);
