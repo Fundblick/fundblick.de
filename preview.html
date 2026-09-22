@@ -41,6 +41,14 @@ function normalizeSearch(value) {
     .toLocaleLowerCase().normalize('NFC').replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim().replace(/\s+/g, ' ');
 }
+const SEARCH_CONCEPTS = new Map([
+  ['CORDLESS_DRILL', ['Akkuschrauber','cordless drill','аккумуляторная дрель','mașină de găurit cu acumulator','wiertarko-wkrętarka akumulatorowa','aku vrtačka','aku vŕtačka','perceuse sans fil','taladro inalámbrico','trapano a batteria','акумуляторний дриль']]
+]);
+function resolveSearchConcepts(value) {
+  const normalized=normalizeSearch(value),matches=[];
+  for(const [concept,terms] of SEARCH_CONCEPTS)if(terms.some(term=>normalizeSearch(term)===normalized))matches.push(concept);
+  return matches;
+}
 function escapeHtml(value) {
   return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
@@ -170,12 +178,12 @@ function renderAppliedFilters(){
   box.innerHTML='';items.forEach(i=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=i.label+' ×';b.onclick=()=>{i.clear();searchProducts()};box.appendChild(b)});
 }
 function searchProducts(){
-  const term=normalizeSearch(searchInput.value),terms=term.split(' ').filter(Boolean);
+  const term=normalizeSearch(searchInput.value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(searchInput.value);
   let min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
   min=min===''?null:Number(min);max=max===''?null:Number(max);
   if(min!==null&&max!==null&&min>max){[min,max]=[max,min];document.getElementById('price-min').value=min;document.getElementById('price-max').value=max;}
   const cat=document.getElementById('category-filter').value,brand=document.getElementById('brand-filter').value;
-  const results=products.map(p=>{const q=normalizeSearch(p.q||'');const padded=` ${q} `;const score=!term?1:(q===term?100:terms.every(t=>padded.includes(` ${t} `))?50:0);return{p,score,price:Number(p.p)}})
+  const results=products.map(p=>{const q=normalizeSearch(p.q||'');const padded=` ${q} `;const productConcepts=Array.isArray(p.x)?p.x:[];const conceptMatch=concepts.some(c=>productConcepts.includes(c));const score=!term?1:(q===term?100:conceptMatch?90:terms.every(t=>padded.includes(` ${t} `))?50:0);return{p,score,price:Number(p.p)}})
     .filter(x=>x.score>0&&Number.isFinite(x.price)&&(min===null||x.price>=min)&&(max===null||x.price<=max)&&(!cat||normalizeSearch(x.p.c)===cat)&&(!brand||normalizeSearch(x.p.b)===brand))
     .sort((a,b)=>{const s=document.getElementById('sort-products').value;return s==='price-asc'?a.price-b.price:s==='price-desc'?b.price-a.price:b.score-a.score}).map(x=>x.p);
   showProducts(results);renderAppliedFilters();
