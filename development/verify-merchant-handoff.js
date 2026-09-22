@@ -17,4 +17,19 @@ eq(h.merchantLanguageNeedsHelp(null,'de'),false,'unknown merchant language does 
 if(h.handoffVocabulary('ru').terms.checkout!=='Оформление заказа')throw new Error('Russian checkout vocabulary missing');
 if(h.handoffVocabulary('ro').terms.payment!=='Metodă de plată')throw new Error('Romanian payment vocabulary missing');
 if(h.handoffVocabulary('fr').open!=='Open merchant page')throw new Error('English fallback missing');
+const manifest=JSON.parse(fs.readFileSync('development/catalog/manifest.json','utf8'));
+const detailOffers=Object.values(manifest.shards).flatMap(meta=>{
+  const shard=JSON.parse(fs.readFileSync('development/catalog/'+meta.file,'utf8'));
+  return Object.values(shard).flatMap(product=>(product.variants||[]).flatMap(variant=>variant.offers||[]));
+});
+const languages=new Set(detailOffers.map(offer=>offer.merchantLanguage).filter(Boolean));
+for(const language of ['de','ru','ro'])if(!languages.has(language))throw new Error('Missing merchant-language simulator case: '+language);
+const foreign=detailOffers.filter(offer=>['ru','ro'].includes(offer.merchantLanguage));
+if(!foreign.length)throw new Error('Missing foreign-language offers');
+for(const offer of foreign){
+  const host=new URL(offer.affiliateUrl).hostname.toLowerCase();
+  if(!host.endsWith('.example')||host==='example.com')throw new Error('Foreign-language offer must use reserved non-production .example host');
+  if(!h.merchantLanguageNeedsHelp(offer.merchantLanguage,'de'))throw new Error('Foreign-language offer does not trigger handoff');
+}
+if(!detailOffers.some(offer=>offer.merchantLanguage==='de'&&!h.merchantLanguageNeedsHelp(offer.merchantLanguage,'de')))throw new Error('Missing same-language control case');
 console.log('FundBlick merchant-language handoff contract OK');
