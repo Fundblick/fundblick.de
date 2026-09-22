@@ -113,7 +113,7 @@ function isRealOfferUrl(value) {
 function normalizeSearch(value) {
   return String(value ?? '')
     .normalize('NFKD')
-    .replace(/\p{M}+/gu, '')
+    .replace(/(\p{Script=Latin})\p{M}+/gu, '$1')
     .toLocaleLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, ' ')
     .trim()
