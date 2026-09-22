@@ -36,7 +36,9 @@ const index=JSON.parse(fs.readFileSync(path.join(catalog,manifest.searchFile),'u
 if(manifest.itemCount<7)throw new Error('non-trivial substring fixture missing');
 const root=JSON.parse(fs.readFileSync(path.join(catalog,manifest.substringRouting.file),'utf8'));
 if(!root.d.some(Boolean))throw new Error('substring routing has no populated directories');
-const readSha=sha=>JSON.parse(fs.readFileSync(path.join(catalog,'substring',sha.slice(0,12)+'.json'),'utf8'));
+let ioTrace=null;
+const traceFile=rel=>{const file=path.join(catalog,rel),bytes=fs.readFileSync(file);if(ioTrace&&!ioTrace.files.has(rel)){ioTrace.files.add(rel);ioTrace.bytes+=bytes.length}return JSON.parse(bytes.toString('utf8'))};
+const readSha=sha=>traceFile('substring/'+sha.slice(0,12)+'.json');
 const hash=value=>crypto.createHash('sha256').update(String(value)).digest('hex');
 const bucket=(gram,count)=>parseInt(hash(gram).slice(0,8),16)%count;
 const grams=token=>{const chars=[...token],size=chars.length>=4?4:chars.length>=2?2:1;return [...new Set(Array.from({length:Math.max(1,chars.length-size+1)},(_,i)=>chars.slice(i,i+size).join('')))];};
@@ -68,7 +70,7 @@ console.log('FundBlick published substring parity OK');
 
 
 const searchRoot=JSON.parse(fs.readFileSync(path.join(catalog,manifest.searchRouting.file),'utf8'));
-const readSearchSha=sha=>JSON.parse(fs.readFileSync(path.join(catalog,'search',sha.slice(0,12)+'.json'),'utf8'));
+const readSearchSha=sha=>traceFile('search/'+sha.slice(0,12)+'.json');
 const exactIds=term=>{
   const full=hash(term),short=full.slice(0,16),commonSha=searchRoot.common?.[short],items=[];
   if(commonSha){
@@ -90,3 +92,21 @@ for(const [exact,substring,name] of [
   eq(mixed,[expected],'published mixed-route parity '+exact+' '+substring);
 }
 console.log('FundBlick published mixed exact+substring parity OK');
+
+const startTrace=(includeExact=false)=>{
+  ioTrace={files:new Set(),bytes:0};
+  const add=rel=>{const b=fs.readFileSync(path.join(catalog,rel));if(!ioTrace.files.has(rel)){ioTrace.files.add(rel);ioTrace.bytes+=b.length}};
+  add(manifest.substringRouting.file);
+  if(includeExact)add(manifest.searchRouting.file);
+  return ioTrace;
+};
+const finishTrace=()=>{const out={requests:ioTrace.files.size,bytes:ioTrace.bytes,files:[...ioTrace.files].sort()};ioTrace=null;return out};
+for(const query of ['智能电视','ランニングシューズ','รองเท้าวิ่ง']){
+  startTrace(false);resolve(query);const m=finishTrace();
+  if(m.requests>20||m.bytes>32768)throw new Error('cold substring budget exceeded '+query+': '+JSON.stringify(m));
+}
+for(const [exact,substring] of [['testbrandcn','智能电视'],['testbrandjp','ランニングシューズ'],['testbrandth','รองเท้าวิ่ง']]){
+  startTrace(true);exactIds(exact);resolve(substring);const m=finishTrace();
+  if(m.requests>24||m.bytes>49152)throw new Error('cold mixed search budget exceeded '+exact+' '+substring+': '+JSON.stringify(m));
+}
+console.log('FundBlick published substring request/byte budgets OK');
