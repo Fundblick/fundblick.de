@@ -111,10 +111,19 @@ function applyUiLanguage(){
   const reset=document.getElementById('reset-filters'); if(reset)reset.textContent=uiText('reset');
 }
 const HANDOFF_VOCAB={
-  de:{title:'Kaufhilfe',message:'Die Händlerseite ist in einer anderen Sprache. FundBlick bleibt geöffnet und zeigt dir wichtige Begriffe.',open:'Händlerseite öffnen',close:'Schließen',terms:{cart:'Warenkorb',checkout:'Kasse / Bezahlen',shipping:'Lieferung',address:'Lieferadresse',payment:'Zahlungsart'}},
-  en:{title:'Purchase help',message:'The merchant page uses another language. FundBlick stays open and keeps key checkout terms available.',open:'Open merchant page',close:'Close',terms:{cart:'Cart',checkout:'Checkout',shipping:'Shipping',address:'Delivery address',payment:'Payment method'}},
-  ru:{title:'Помощь с покупкой',message:'Страница продавца открывается на другом языке. FundBlick останется открытым и покажет основные термины.',open:'Открыть сайт продавца',close:'Закрыть',terms:{cart:'Корзина',checkout:'Оформление заказа',shipping:'Доставка',address:'Адрес доставки',payment:'Способ оплаты'}},
-  ro:{title:'Ajutor la cumpărare',message:'Pagina comerciantului este într-o altă limbă. FundBlick rămâne deschis și păstrează termenii importanți la îndemână.',open:'Deschide pagina comerciantului',close:'Închide',terms:{cart:'Coș',checkout:'Finalizare comandă',shipping:'Livrare',address:'Adresă de livrare',payment:'Metodă de plată'}}
+  de:{title:'Kaufhilfe',message:'Die Händlerseite ist in einer anderen Sprache. FundBlick bleibt geöffnet und zeigt dir wichtige Begriffe.',open:'Händlerseite öffnen',close:'Schließen'},
+  en:{title:'Purchase help',message:'The merchant page uses another language. FundBlick stays open and keeps key checkout terms available.',open:'Open merchant page',close:'Close'},
+  ru:{title:'Помощь с покупкой',message:'Страница продавца открывается на другом языке. FundBlick останется открытым и покажет основные термины.',open:'Открыть сайт продавца',close:'Закрыть'},
+  ro:{title:'Ajutor la cumpărare',message:'Pagina comerciantului este într-o altă limbă. FundBlick rămâne deschis și păstrează termenii importanți la îndemână.',open:'Deschide pagina comerciantului',close:'Închide'}
+};
+const MERCHANT_TERMS={
+  de:{cart:'Warenkorb',checkout:'Kasse / Bezahlen',shipping:'Lieferung',address:'Lieferadresse',payment:'Zahlungsart'},
+  en:{cart:'Cart',checkout:'Checkout',shipping:'Shipping',address:'Delivery address',payment:'Payment method'},
+  ru:{cart:'Корзина',checkout:'Оформление заказа',shipping:'Доставка',address:'Адрес доставки',payment:'Способ оплаты'},
+  ro:{cart:'Coș',checkout:'Finalizare comandă',shipping:'Livrare',address:'Adresă de livrare',payment:'Metodă de plată'},
+  zh:{cart:'购物车',checkout:'结账',shipping:'配送',address:'收货地址',payment:'支付方式'},
+  ja:{cart:'カート',checkout:'購入手続き',shipping:'配送',address:'お届け先住所',payment:'支払い方法'},
+  th:{cart:'ตะกร้าสินค้า',checkout:'ชำระเงิน',shipping:'การจัดส่ง',address:'ที่อยู่จัดส่ง',payment:'วิธีชำระเงิน'}
 };
 function handoffLanguage(value){
   const tag=String(value||'').trim().toLowerCase().replace(/_/g,'-');
@@ -129,6 +138,10 @@ function merchantLanguageNeedsHelp(merchantLanguage,uiLanguage=currentUiLanguage
 function handoffVocabulary(uiLanguage){
   const ui=handoffLanguage(uiLanguage)||'de';
   return HANDOFF_VOCAB[ui]||HANDOFF_VOCAB.en;
+}
+function merchantTerms(merchantLanguage){
+  const merchant=handoffLanguage(merchantLanguage)||'en';
+  return MERCHANT_TERMS[merchant]||MERCHANT_TERMS.en;
 }
 function merchantLanguageName(language,uiLanguage=currentUiLanguage()){
   const code=handoffLanguage(language); if(!code)return '';
@@ -156,8 +169,8 @@ function openMerchantHandoff(offer,product){
   document.getElementById('handoff-open').textContent=v.open;
   document.getElementById('handoff-open').href=outboundClickUrl(product,offer);
   document.getElementById('handoff-close').textContent=v.close;
-  const labels={cart:'Warenkorb / Cart',checkout:'Kasse / Checkout',shipping:'Lieferung / Shipping',address:'Lieferadresse / Delivery address',payment:'Zahlungsart / Payment'};
-  document.getElementById('handoff-terms').innerHTML=Object.entries(v.terms).map(([key,value])=>'<div class="handoff-term"><small>'+escapeHtml(labels[key]||key)+'</small><b>'+escapeHtml(value)+'</b></div>').join('');
+  const labels={cart:'Warenkorb / Cart',checkout:'Kasse / Checkout',shipping:'Lieferung / Shipping',address:'Lieferadresse / Delivery address',payment:'Zahlungsart / Payment'},terms=merchantTerms(offer.merchantLanguage);
+  document.getElementById('handoff-terms').innerHTML=Object.entries(terms).map(([key,value])=>'<div class="handoff-term"><small>'+escapeHtml(labels[key]||key)+'</small><b>'+escapeHtml(value)+'</b></div>').join('');
   if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
 }
 function formatPrice(product) {
