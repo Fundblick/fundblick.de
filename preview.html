@@ -199,7 +199,8 @@ function detailOfferEligibility(offer,country){
 function selectDetailOffer(product,country){
   const offers=(product?.variants||[]).flatMap(v=>v.offers||[]).filter(o=>o?.purchasable);
   const rank=o=>detailOfferEligibility(o,country).rank;
-  return offers.sort((a,b)=>rank(a)-rank(b)||((Number.isFinite(Number(a.totalPrice))?Number(a.totalPrice):Infinity)-(Number.isFinite(Number(b.totalPrice))?Number(b.totalPrice):Infinity))||String(a.id||'').localeCompare(String(b.id||'')))[0]||null;
+  const price=o=>o?.totalPrice!==null&&o?.totalPrice!==''&&Number.isFinite(Number(o.totalPrice))?Number(o.totalPrice):Infinity;
+  return offers.sort((a,b)=>rank(a)-rank(b)||(price(a)-price(b))||String(a.id||'').localeCompare(String(b.id||'')))[0]||null;
 }
 async function loadProductDetail(card) {
   const id=card.dataset.productId, shard=card.dataset.shard;
