@@ -72,6 +72,33 @@ function showLoadError() {
   section.innerHTML = '<div class="wrap"><div class="state" role="alert"><h2 class="title">Produkte konnten nicht geladen werden</h2><p>Bitte lade die Seite erneut. Die Suche ist momentan nicht verfügbar.</p></div></div>';
 }
 
+function safeHttpUrl(value) {
+  try {
+    const url = new URL(String(value || ''), location.href);
+    return (url.protocol === 'https:' || url.protocol === 'http:') ? url.href : '';
+  } catch {
+    return '';
+  }
+}
+
+function isRealOfferUrl(value) {
+  const safe = safeHttpUrl(value);
+  if (!safe) return false;
+  try {
+    const host = new URL(safe).hostname.toLowerCase();
+    return !['example.com','www.example.com'].includes(host);
+  } catch {
+    return false;
+  }
+}
+
+function normalizeSearch(value) {
+  return String(value ?? '')
+    .toLocaleLowerCase('de-DE')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -130,15 +157,15 @@ function showProducts(list, resetLimit = true) {
       <div class="product-grid">
         ${visibleProducts.map(product => `
           <article class="product-card">
-            ${product.image ? `<img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ''}
+            ${safeHttpUrl(product.image) ? `<img src="${escapeHtml(safeHttpUrl(product.image))}" alt="${escapeHtml(product.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ''}
             <div class="count-note">${escapeHtml(product.category || 'Produkt')}</div>
             <h3>${escapeHtml(product.name)}</h3>
             <p class="desc">${escapeHtml(product.description)}</p>
             <div class="meta">${product.brand ? escapeHtml(product.brand) + ' · ' : ''}${escapeHtml(product.merchant || '')}</div>
             <div class="price">${formatPrice(product)}</div>
-            ${product.affiliateUrl
-              ? `<a class="offer-link" href="${escapeHtml(product.affiliateUrl)}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`
-              : '<button type="button" disabled>Noch kein Angebot</button>'
+            ${isRealOfferUrl(product.affiliateUrl)
+              ? `<a class="offer-link" href="${escapeHtml(safeHttpUrl(product.affiliateUrl))}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`
+              : '<button type="button" disabled>Testprodukt</button>'
             }
           </article>
         `).join('')}
@@ -156,7 +183,7 @@ const searchInput = document.querySelector('.search input');
 const searchButton = document.querySelector('.search button');
 
 function searchProducts() {
-  const term = searchInput.value.trim().toLocaleLowerCase('de-DE');
+  const term = normalizeSearch(searchInput.value.trim());
   const minValue = document.getElementById('price-min').value;
   const maxValue = document.getElementById('price-max').value;
   let minPrice = minValue === '' ? null : Number(minValue);
@@ -185,11 +212,11 @@ function searchProducts() {
 
   const results = products
     .map(product => {
-      const name = String(product.name ?? '').toLocaleLowerCase('de-DE');
-      const brand = String(product.brand ?? '').toLocaleLowerCase('de-DE');
-      const category = String(product.category ?? '').toLocaleLowerCase('de-DE');
-      const description = String(product.description ?? '').toLocaleLowerCase('de-DE');
-      const merchant = String(product.merchant ?? '').toLocaleLowerCase('de-DE');
+      const name = normalizeSearch('');
+      const brand = normalizeSearch('');
+      const category = normalizeSearch('');
+      const description = normalizeSearch('');
+      const merchant = normalizeSearch('');
       const price = Number(product.price);
       const terms = term.split(/\\s+/).filter(Boolean);
       const haystack = [name, brand, category, description, merchant].join(' ');
@@ -211,7 +238,7 @@ function searchProducts() {
       (minPrice === null || result.price >= minPrice) &&
       (maxPrice === null || result.price <= maxPrice) &&
       (!selectedCategory ||
-        String(result.product.category ?? '').toLocaleLowerCase('de-DE') === selectedCategory)
+        normalizeSearch(result.product.category) === normalizeSearch(selectedCategory))
     )
     .sort((a, b) => {
       const sortMode = document.getElementById('sort-products').value;
