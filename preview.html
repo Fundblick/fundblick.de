@@ -72,11 +72,20 @@ async function loadCatalog() {
   restoreState();
   if(new URLSearchParams(location.search).toString()) searchProducts(); else showProducts(products);
 }
+const CATEGORY_LABELS_DE = {
+  'electronics.televisions':'Fernseher',
+  'fashion.bags':'Taschen',
+  'fashion.shoes.men.running':'Herren-Laufschuhe',
+  'tools.power-tools.drills':'Akkuschrauber'
+};
+function categoryLabel(value) {
+  return CATEGORY_LABELS_DE[String(value||'')] || String(value||'');
+}
 function initializeFilters() {
   const categoryFilter=document.getElementById('category-filter');
   const brandFilter=document.getElementById('brand-filter');
   [...new Set(products.map(p=>String(p.c||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de')).forEach(v=>{
-    const o=document.createElement('option');o.value=normalizeSearch(v);o.textContent=v;categoryFilter.appendChild(o);
+    const o=document.createElement('option');o.value=normalizeSearch(v);o.textContent=categoryLabel(v);categoryFilter.appendChild(o);
   });
   [...new Set(products.map(p=>String(p.b||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de')).forEach(v=>{
     const o=document.createElement('option');o.value=normalizeSearch(v);o.textContent=v;brandFilter.appendChild(o);
