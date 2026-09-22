@@ -113,7 +113,7 @@ function showProducts(list,resetLimit=true) {
   section.innerHTML='<div class="product-grid">'+visible.map(p=>`
     <article class="product-card" data-product-id="${escapeHtml(p.i)}" data-shard="${Number(p.s)}">
       <div class="product-media"><div class="fakeimg">⌁</div></div>
-      <div class="count-note">${escapeHtml(p.c||'Produkt')}</div>
+      <div class="count-note">${escapeHtml(categoryLabel(p.c)||'Produkt')}</div>
       <h3>${escapeHtml(p.n)}</h3>
       <div class="meta">${escapeHtml(p.b||'')}</div>
       <div class="price">${formatPrice(p)}</div>
@@ -136,7 +136,7 @@ async function loadProductDetail(card) {
     if(!p)throw new Error('Produkt fehlt im Detail-Shard: '+id);
     const offer=p.bestOffer||null,img=safeHttpUrl(p.imageUrl);
     card.innerHTML=`${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" fetchpriority="low" referrerpolicy="no-referrer">`:''}
-      <div class="count-note">${escapeHtml(p.category||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
+      <div class="count-note">${escapeHtml(categoryLabel(p.category)||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
       <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
       <div class="price">${formatPrice({p:p.totalPriceFrom,u:p.currency})}</div>
       ${offer&&isRealOfferUrl(offer.affiliateUrl)?`<a class="offer-link" href="${escapeHtml(safeHttpUrl(offer.affiliateUrl))}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`:'<button type="button" disabled>Testprodukt</button>'}`;
