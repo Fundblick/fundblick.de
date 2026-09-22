@@ -176,6 +176,18 @@ function showProducts(list,resetLimit=true) {
   section.querySelectorAll('.detail-load').forEach(b=>b.addEventListener('click',()=>loadProductDetail(b.closest('.product-card'))));
   document.getElementById('load-more')?.addEventListener('click',()=>{visibleLimit+=matchMedia('(max-width:700px)').matches?12:24;showProducts(currentResults,false)});
 }
+function detailOfferEligibility(offer,country){
+  if(!country)return {rank:0,state:'unknown'};
+  const shipsTo=Array.isArray(offer?.shipsTo)?offer.shipsTo:[],market=String(offer?.market||'').toUpperCase();
+  if(shipsTo.includes(country)||(!shipsTo.length&&market===country))return {rank:0,state:'eligible'};
+  if(!shipsTo.length)return {rank:1,state:'unknown'};
+  return {rank:2,state:'unsupported'};
+}
+function selectDetailOffer(product,country){
+  const offers=(product?.variants||[]).flatMap(v=>v.offers||[]).filter(o=>o?.purchasable);
+  const rank=o=>detailOfferEligibility(o,country).rank;
+  return offers.sort((a,b)=>rank(a)-rank(b)||(Number(a.totalPrice)||Infinity)-(Number(b.totalPrice)||Infinity)||String(a.id).localeCompare(String(b.id)))[0]||null;
+}
 async function loadProductDetail(card) {
   const id=card.dataset.productId, shard=card.dataset.shard;
   const button=card.querySelector('.detail-load');
@@ -201,11 +213,11 @@ async function loadProductDetail(card) {
     if(!p||p.id!==id)throw new Error('Produkt fehlt oder hat eine falsche ID im Detail-Shard: '+id);
     const indexProduct=products.find(item=>item.i===id);
     if(!indexProduct||String(p.category||'')!==String(indexProduct.c||''))throw new Error('Produktdetail passt nicht zum Suchindex: '+id);
-    const offer=p.bestOffer||null,rawImg=safeHttpUrl(p.imageUrl),img=rawImg&&new URL(rawImg).hostname.toLowerCase()!=='example.com'?rawImg:'';
+    const country=document.getElementById('delivery-country').value,offer=selectDetailOffer(p,country)||p.bestOffer||null,rawImg=safeHttpUrl(p.imageUrl),img=rawImg&&new URL(rawImg).hostname.toLowerCase()!=='example.com'?rawImg:'';
     card.innerHTML=`<div class="product-media">${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fakeimg" style="display:none">⌁</div>`:`<div class="fakeimg">⌁</div>`}</div>
       <div class="count-note">${escapeHtml(categoryLabel(p.category)||'Produkt')}</div><h3>${escapeHtml(p.name)}</h3>
       <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
-      <div class="price">${formatPrice({p:p.totalPriceFrom,u:p.currency})}</div>
+      <div class="price">${formatPrice({p:offer?.totalPrice??p.totalPriceFrom,u:offer?.currency||p.currency})}</div>
       ${offer&&isRealOfferUrl(offer.affiliateUrl)?`<a class="offer-link" href="${escapeHtml(safeHttpUrl(offer.affiliateUrl))}" target="_blank" rel="sponsored noopener">Zum Angebot</a>`:'<button type="button" disabled>Testprodukt</button>'}`;
   }catch(error){
     console.error(error);
