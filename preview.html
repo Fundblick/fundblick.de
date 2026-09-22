@@ -169,7 +169,19 @@ async function loadProductDetail(card) {
   if(button){button.disabled=true;button.textContent='Details werden geladen…';}
   try{
     let data=shardCache.get(file);
-    if(!data){data=await loadVerifiedJson(DATA_BASE+file,publicationManifest.shards[shard]?.sha256);if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');const expected=publicationManifest.shards[shard]?.itemCount;if(Number.isInteger(expected)&&Object.keys(data).length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');shardCache.set(file,data);}
+    if(!data){
+      data=await loadVerifiedJson(DATA_BASE+file,publicationManifest.shards[shard]?.sha256);
+      if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');
+      const entries=Object.entries(data),expected=publicationManifest.shards[shard]?.itemCount;
+      if(Number.isInteger(expected)&&entries.length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');
+      for(const [detailId,detail] of entries){
+        const indexed=products.find(item=>item.i===detailId);
+        if(!detail||detail.id!==detailId||!indexed||String(indexed.s)!==String(shard)||String(detail.category||'')!==String(indexed.c||'')){
+          throw new Error('Detail-Shard enthält inkonsistente Produktdaten: '+detailId);
+        }
+      }
+      shardCache.set(file,data);
+    }
     const p=data?.[id];
     if(!p||p.id!==id)throw new Error('Produkt fehlt oder hat eine falsche ID im Detail-Shard: '+id);
     const indexProduct=products.find(item=>item.i===id);
