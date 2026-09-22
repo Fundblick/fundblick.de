@@ -22,3 +22,13 @@ if(!html.includes('id="ui-language"'))throw new Error('UI language selector miss
 if(!script.includes("params.set('lang',uiLanguage)"))throw new Error('UI language URL state missing');
 if(!script.includes('function currentUiLanguage(){return uiLanguage}'))throw new Error('Merchant handoff is not bound to explicit UI language state');
 console.log('FundBlick UI language contract OK');
+
+if(!html.includes('<meta name="google" content="notranslate">'))throw new Error('FundBlick preview must prevent Chrome from re-translating its own localized UI');
+if(!html.includes("document.documentElement.setAttribute('translate','no')"))throw new Error('Explicit FundBlick UI language must disable browser translation on the FundBlick page');
+for(const key of ['heroTitleTop','heroTitleAccent','resultsTitle','principleTitle'])if(!html.includes('data-ui="'+key+'"'))throw new Error('Static UI localization marker missing: '+key);
+for(const language of u.UI_LANGUAGES){
+  for(const key of ['heroTitleTop','heroTitleAccent','resultsTitle','principleTitle']){
+    if(!u.UI_TEXT[language]?.[key])throw new Error('Missing localized static UI text '+language+' '+key);
+  }
+}
+if(u.UI_TEXT.ru.principleTitle!=='В центре внимания — товар, а не магазин.')throw new Error('Russian static UI localization failed');

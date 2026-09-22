@@ -54,3 +54,6 @@ const ruChrome=h.translationInstruction('de','ru',chromeAndroid);
 if(!ruChrome.includes('Chrome')||!ruChrome.includes('Всегда переводить'))throw new Error('Russian Chrome translation guide missing');
 const roEdge=h.translationInstruction('de','ro',edgeWindows);
 if(!roEdge.includes('Edge')||!roEdge.includes('întotdeauna'))throw new Error('Romanian Edge translation guide missing');
+
+if(!merchantHtml.includes("document.documentElement.lang=l"))throw new Error('Merchant simulator must declare merchant language before page translation');
+if(/name="google" content="notranslate"/.test(merchantHtml))throw new Error('Merchant simulator must remain browser-translatable');
