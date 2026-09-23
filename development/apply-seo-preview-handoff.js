@@ -4,6 +4,7 @@ const crypto=require('crypto');
 
 const sha256=buffer=>crypto.createHash('sha256').update(buffer).digest('hex');
 const posix=value=>String(value||'').split(path.sep).join('/');
+const PREVIEW_BRIDGE='<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="robots" content="noindex,nofollow"><title>FundBlick – Weiterleitung</title></head><body><p>Händler wird geöffnet …</p><script>location.replace("../../out-preview.html"+location.search+location.hash)<\/script></body></html>\n';
 
 function safeRelative(value){
   const normalized=path.posix.normalize(String(value||''));
@@ -28,6 +29,7 @@ function validateSeoHandoff(sourceRoot){
   if(handoff.sourceCommit!==null&&!/^[a-f0-9]{40}$/.test(String(handoff.sourceCommit||'')))throw new Error('Invalid SEO source commit');
   if(!Number.isInteger(handoff.pageCount)||handoff.pageCount<0||!Number.isInteger(handoff.localeCount)||handoff.localeCount<1)throw new Error('Invalid SEO preview counts');
   const actual=listFiles(previewRoot),declared=handoff.files.map(file=>safeRelative(file.path));
+  if(declared.includes('out-preview.html'))throw new Error('SEO preview handoff uses reserved website bridge path');
   if(JSON.stringify(actual)!==JSON.stringify(declared))throw new Error('SEO preview file list differs from handoff');
   let total=0;
   for(let i=0;i<handoff.files.length;i++){
@@ -58,6 +60,7 @@ function applySeoPreview(sourceRoot,targetRoot){
     }
     const copied=listFiles(next);
     if(JSON.stringify(copied)!==JSON.stringify(handoff.files.map(x=>x.path)))throw new Error('Copied SEO preview file list mismatch');
+    fs.writeFileSync(path.join(next,'out-preview.html'),PREVIEW_BRIDGE,'utf8');
     if(fs.existsSync(target))fs.renameSync(target,previous);
     fs.renameSync(next,target);
     fs.rmSync(previous,{recursive:true,force:true});
@@ -73,7 +76,8 @@ function applySeoPreview(sourceRoot,targetRoot){
     completeProductCount:handoff.completeProductCount,
     queuedProductCount:handoff.queuedProductCount,
     fileCount:handoff.fileCount,
-    totalBytes:handoff.totalBytes
+    totalBytes:handoff.totalBytes,
+    previewBridge:true
   };
 }
 
@@ -82,4 +86,4 @@ if(require.main===module){
   if(!source||!target)throw new Error('Usage: node apply-seo-preview-handoff.js <source-root> <target-seo-preview>');
   console.log(JSON.stringify(applySeoPreview(source,target)));
 }
-module.exports={validateSeoHandoff,applySeoPreview};
+module.exports={PREVIEW_BRIDGE,validateSeoHandoff,applySeoPreview};
