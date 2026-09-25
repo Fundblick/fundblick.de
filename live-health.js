@@ -6,6 +6,7 @@
     record('language-api',Boolean(window.FundBlickLanguage),'search-i18n loaded');
     record('category-schema',Boolean(window.FB_CATEGORY_SCHEMAS&&Object.keys(window.FB_CATEGORY_SCHEMAS).length),'facet schemas loaded');
     record('common-facets',Array.isArray(window.FB_COMMON_FACETS),'common facets loaded');
+    record('common-filter-i18n',Boolean(window.FBCommonFilterI18n),'common filter translations loaded');
     record('intent-parser',typeof window.FB_parseSearchIntent==='function','intent parser loaded');
     record('search-input',Boolean(document.querySelector('#query')),'search input present');
     record('filters-root',Boolean(document.querySelector('#filters')),'filter root present');
