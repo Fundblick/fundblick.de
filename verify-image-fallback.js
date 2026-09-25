@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const source=fs.readFileSync('image-fallback.js','utf8');
+const html=fs.readFileSync('search.html','utf8');
+const css=fs.readFileSync('styles.css','utf8');
+assert.ok(source.includes('no-image-placeholder'),'image fallback must create a dedicated placeholder');
+assert.ok(source.includes("addEventListener('error'"),'broken remote images must fall back cleanly');
+assert.ok(source.includes('<svg'),'placeholder should be icon-only, not result text');
+assert.ok(!source.includes('Suchergebnisse'),'placeholder must never contain result-page copy');
+assert.ok(html.includes('image-fallback.js'),'search page must load image fallback');
+assert.ok(css.includes('.no-image-placeholder svg'),'placeholder icon must be constrained by CSS');
+console.log('image fallback regression checks passed');
