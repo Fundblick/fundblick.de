@@ -28,8 +28,12 @@ assert.ok(exact>descriptionOnly);
 assert.ok(descriptionOnly>miss);
 
 const html=fs.readFileSync('search.html','utf8');
+const mobileCss=fs.readFileSync('search-mobile.css','utf8');
 assert.ok(html.includes('id="results-search-reset"'),'results page must include the search reset behavior');
 assert.ok(html.includes("const clearResultSearch=()=>{input.value='';input.removeAttribute('value');};"),'results search field must be cleared visually');
 assert.ok(html.includes("form.addEventListener('submit',()=>queueMicrotask(clearResultSearch))"),'results search must clear again after a new search');
 assert.ok(html.includes("window.addEventListener('pageshow',clearResultSearch)"),'results search must also clear after browser restore/refresh');
-console.log('search state, relevance and empty result-search verification passed');
+assert.ok(html.includes('search-mobile.css?v=20260925-live23'),'mobile search CSS must be cache-busted');
+assert.ok(mobileCss.includes('.results-page>.search-form{position:sticky;top:8px;z-index:45'),'mobile result search must stay reachable while scrolling');
+assert.ok(mobileCss.includes('.mobile-search-tools{display:grid;grid-template-columns:1fr 1fr;gap:8px;position:sticky;top:76px'),'mobile filter/sort tools must stack below the sticky search bar');
+console.log('search state, relevance, empty result-search and mobile sticky-search verification passed');
