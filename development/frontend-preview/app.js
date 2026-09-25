@@ -7,6 +7,7 @@
   const voiceButton=document.querySelector('#voiceButton');
   const voiceStatus=document.querySelector('#voiceStatus');
   const submitButton=form?.querySelector('button[type="submit"]');
+  const proofLink=document.querySelector('.proof-link');
   const i18n=window.FUNDBLICK_I18N||{};
   const locales=window.FUNDBLICK_LOCALES||{};
   const supported=Object.keys(locales);
@@ -89,6 +90,7 @@
     document.querySelectorAll('[data-i18n]').forEach(el=>{const value=text[el.dataset.i18n];if(value)el.textContent=value});
     updateQuickExamples();
     updateVoiceButton();
+    if(proofLink){const proofQuery=(samples[lang]||samples.de)[0]?.q||'Bluetooth Kopfhörer';proofLink.href='search.html?'+new URLSearchParams({q:proofQuery,lang}).toString()}
     if(persist){try{localStorage.setItem('fundblick-language',lang)}catch{}}
     close();
   }
