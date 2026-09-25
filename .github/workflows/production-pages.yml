@@ -33,6 +33,7 @@ jobs:
           node --check facet-schemas.js
           node --check search.js
           node --check site-i18n.js
+          node --check verify-live-facets.js
       - name: Verify live search assets
         run: |
           grep -q 'search-i18n.js' search.html
@@ -41,6 +42,8 @@ jobs:
           grep -q "'zh-Hans'" search-i18n.js
           grep -q 'FB_CATEGORY_SCHEMAS' facet-schemas.js
           grep -q 'data-catalog-url="development/core-products.json"' search.html
+      - name: Test live category facets
+        run: node verify-live-facets.js
       - name: Package production files only
         run: |
           mkdir -p _site/development
