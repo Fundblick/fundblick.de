@@ -1,0 +1,8 @@
+{
+  "channel": "live",
+  "status": "healthy",
+  "lastVerifiedMilestone": "localized-category-labels",
+  "supportedLanguages": 20,
+  "productionMode": "main",
+  "notes": "Updated only after a successful production workflow milestone."
+}
