@@ -31,6 +31,7 @@ jobs:
           node --check i18n.js
           node --check search-i18n.js
           node --check facet-schemas.js
+          node --check category-aliases.js
           node --check search.js
           node --check site-i18n.js
           node --check verify-live-facets.js
@@ -38,16 +39,18 @@ jobs:
         run: |
           grep -q 'search-i18n.js' search.html
           grep -q 'facet-schemas.js' search.html
+          grep -q 'category-aliases.js' search.html
           grep -q 'value="zh-Hans"' search.html
           grep -q "'zh-Hans'" search-i18n.js
           grep -q 'FB_CATEGORY_SCHEMAS' facet-schemas.js
+          grep -q 'pistola de calor' category-aliases.js
           grep -q 'data-catalog-url="development/core-products.json"' search.html
       - name: Test live category facets
         run: node verify-live-facets.js
       - name: Package production files only
         run: |
           mkdir -p _site/development
-          cp index.html search.html search.js search-i18n.js facet-schemas.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html search.html search.js search-i18n.js facet-schemas.js category-aliases.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp development/core-products.json _site/development/
           touch _site/.nojekyll
       - name: Configure Pages
