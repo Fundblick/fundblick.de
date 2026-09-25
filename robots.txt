@@ -8,3 +8,5 @@ Disallow: /impressum-preview.html
 Disallow: /datenschutz-preview.html
 
 Sitemap: https://fundblick.de/sitemap.xml
+
+# Production SEO baseline reconciled from main on 2026-09-25.
