@@ -13,14 +13,14 @@
   function matchPrice(query,kind){for(const prefix of RULES[kind]){const re=new RegExp(prefix.source+'\\s*'+priceNumber+'\\s*(?:€|eur|euro)?',prefix.flags);const m=query.match(re);if(m)return {value:Number(m[1].replace(',','.')),match:m[0]};}return null;}
   function parse(query){
     const raw=String(query||'');let clean=raw;const filters={facets:{}};
-    const max=matchPrice(clean,'max'),min=matchPrice(clean,'min');
-    if(max){filters.max=max.value;clean=clean.replace(max.match,' ')}
-    if(min){filters.min=min.value;clean=clean.replace(min.match,' ')}
+    const merchantMatch=clean.match(merchants);if(merchantMatch){filters.facets.merchants=[String(Number(merchantMatch[1]))];clean=clean.replace(merchantMatch[0],' ')}
+    const ratingMatch=clean.match(rating);if(ratingMatch){filters.facets.rating=[String(Number(ratingMatch[1].replace(',','.')))];clean=clean.replace(ratingMatch[0],' ')}
     if(shippingFree.test(clean)){filters.facets.shipping=['Kostenloser Versand'];clean=clean.replace(shippingFree,' ')}
     if(inStock.test(clean)){(filters.facets.shipping??=[]).push('Sofort lieferbar');clean=clean.replace(inStock,' ')}
     const fastMatch=clean.match(fast);if(fastMatch&&Number(fastMatch[1])<=3){(filters.facets.shipping??=[]).push('Lieferung ≤ 3 Werktage');clean=clean.replace(fastMatch[0],' ')}
-    const ratingMatch=clean.match(rating);if(ratingMatch){filters.facets.rating=[String(Number(ratingMatch[1].replace(',','.')))];clean=clean.replace(ratingMatch[0],' ')}
-    const merchantMatch=clean.match(merchants);if(merchantMatch){filters.facets.merchants=[String(Number(merchantMatch[1]))];clean=clean.replace(merchantMatch[0],' ')}
+    const max=matchPrice(clean,'max'),min=matchPrice(clean,'min');
+    if(max){filters.max=max.value;clean=clean.replace(max.match,' ')}
+    if(min){filters.min=min.value;clean=clean.replace(min.match,' ')}
     return {raw,clean:clean.replace(/\s+/g,' ').trim(),filters};
   }
   function hasIntent(parsed){return parsed.filters.min!==undefined||parsed.filters.max!==undefined||Object.keys(parsed.filters.facets).length>0;}
