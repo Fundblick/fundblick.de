@@ -1,4 +1,5 @@
 'use strict';
+const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const state=require('./search-state-guard.js');
 const relevance=require('./search-relevance.js');
@@ -25,4 +26,10 @@ const descriptionOnly=relevance.scoreFields({title:'Demo Werkzeug',brand:'Test',
 const miss=relevance.scoreFields({title:'Adidas Laufschuh',brand:'Adidas',description:'Running shoe'},'Bosch');
 assert.ok(exact>descriptionOnly);
 assert.ok(descriptionOnly>miss);
-console.log('search state and relevance verification passed');
+
+const html=fs.readFileSync('search.html','utf8');
+assert.ok(html.includes('id="results-search-reset"'),'results page must include the search reset behavior');
+assert.ok(html.includes("const clearResultSearch=()=>{input.value='';input.removeAttribute('value');};"),'results search field must be cleared visually');
+assert.ok(html.includes("form.addEventListener('submit',()=>queueMicrotask(clearResultSearch))"),'results search must clear again after a new search');
+assert.ok(html.includes("window.addEventListener('pageshow',clearResultSearch)"),'results search must also clear after browser restore/refresh');
+console.log('search state, relevance and empty result-search verification passed');

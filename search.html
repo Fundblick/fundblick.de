@@ -40,5 +40,17 @@
   <script src="search-mobile.js?v=20260925-live15" defer></script>
   <script src="live-health.js?v=20260925-live15" defer></script>
   <script src="language-links.js?v=20260925-live15" defer></script>
+  <script id="results-search-reset">
+    window.addEventListener('DOMContentLoaded',()=>{
+      const input=document.querySelector('#query');
+      const form=document.querySelector('.search-form');
+      if(!input||!form)return;
+      const clearResultSearch=()=>{input.value='';input.removeAttribute('value');};
+      clearResultSearch();
+      requestAnimationFrame(clearResultSearch);
+      form.addEventListener('submit',()=>queueMicrotask(clearResultSearch));
+      window.addEventListener('pageshow',clearResultSearch);
+    });
+  </script>
 </body>
 </html>
