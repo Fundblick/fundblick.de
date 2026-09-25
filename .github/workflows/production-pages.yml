@@ -43,6 +43,7 @@ jobs:
           node --check verify-live-facets.js
           node --check verify-search-intent.js
           node --check verify-live-health.js
+          node --check verify-production-assets.js
       - name: Verify live search assets
         run: |
           grep -q 'search-i18n.js' search.html
@@ -71,6 +72,7 @@ jobs:
           node verify-live-facets.js
           node verify-search-intent.js
           node verify-live-health.js
+          node verify-production-assets.js
       - name: Package production files only
         run: |
           mkdir -p _site/development
