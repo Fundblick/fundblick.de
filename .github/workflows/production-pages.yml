@@ -50,6 +50,8 @@ jobs:
           node --check facet-value-i18n.js
           node --check common-filter-i18n.js
           node --check search-mobile.js
+          node --check results-paging.js
+          node --check page-meta-i18n.js
           node --check live-health.js
           node --check language-links.js
           node --check affiliate-config.js
@@ -79,6 +81,7 @@ jobs:
           node --check verify-home-empty-search.js
           node --check verify-homepage-visual.js
           node --check verify-home-polish.js
+          node --check verify-customer-meta-paging.js
       - name: Build production catalog
         run: |
           node build-live-catalog.js build/catalog
@@ -87,6 +90,7 @@ jobs:
       - name: Verify live search assets
         run: |
           grep -q 'language-links.js' index.html
+          grep -q 'page-meta-i18n.js' index.html
           grep -q 'deal-of-day.js' index.html
           grep -q 'home-extras.js' index.html
           grep -q 'home-categories.js' index.html
@@ -121,6 +125,9 @@ jobs:
           grep -q 'facet-value-i18n.js' search.html
           grep -q 'common-filter-i18n.js' search.html
           grep -q 'search-mobile.js' search.html
+          grep -q 'results-paging.js' search.html
+          grep -q 'results-paging.css' search.html
+          grep -q 'page-meta-i18n.js' search.html
           grep -q 'live-health.js' search.html
           grep -q 'language-links.js' search.html
           grep -q 'language-links.js' impressum.html
@@ -180,11 +187,14 @@ jobs:
           node verify-home-empty-search.js
           node verify-homepage-visual.js
           node verify-home-polish.js
+          node verify-customer-meta-paging.js
       - name: Package production files only
         run: |
           mkdir -p _site
-          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js adcell-feed-normalizer.js affiliate-consent.css site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css results-paging.js results-paging.css page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js affiliate-consent.css i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp -R build/catalog _site/catalog
+          test ! -e _site/adcell-feed-normalizer.js
+          test ! -e _site/site-i18n.js
           touch _site/.nojekyll
       - name: Configure Pages
         uses: actions/configure-pages@v5
