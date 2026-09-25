@@ -25,7 +25,7 @@
   };
   const supported=Object.keys(COPY);
   const normalize=value=>{const raw=String(value||'').replace(/_/g,'-');if(supported.includes(raw))return raw;const lower=raw.toLowerCase();if(lower==='zh'||lower.startsWith('zh-cn')||lower.startsWith('zh-hans'))return 'zh-Hans';const base=lower.split('-')[0];return supported.find(item=>item.toLowerCase()===base)||null;};
-  const current=()=>{const params=new URLSearchParams(location.search),select=document.querySelector('#language');return normalize(params.get('lang'))||normalize(select?.value)||normalize(root.FundBlickLanguage?.lang)||normalize(document.documentElement.lang)||'de';};
+  const current=()=>{const params=new URLSearchParams(location.search),select=document.querySelector('#language');return normalize(select?.value)||normalize(params.get('lang'))||normalize(root.FundBlickLanguage?.lang)||normalize(document.documentElement.lang)||'de';};
   const meta=(selector,value)=>{const el=document.querySelector(selector);if(el&&value)el.setAttribute('content',value);};
   function apply(){
     const lang=current(),copy=COPY[lang]||COPY.en,isSearch=/\/search\.html$/i.test(location.pathname)||!!document.querySelector('.results-page'),query=new URLSearchParams(location.search).get('q')?.trim();
