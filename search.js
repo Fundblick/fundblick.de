@@ -12,6 +12,21 @@
   if(typeof module!=='undefined')module.exports={detect,normalize,features};
   const qEl=typeof document!=='undefined'?document.querySelector('#query'):null;
   if(!qEl)return;
+  const language=window.FundBlickLanguage||{lang:'de',config:{locale:'de-DE'},t:{},translate:key=>key};
+  const tx=key=>language.translate(key);
+  const facetLabels={connection:'connection',form:'form',features:'features',battery:'battery',screen:'screen',panel:'panel',size:'size',color:'color',storage:'storage',power:'power'};
+  const categoryLabels={headphones:'categoryHeadphones',shoes:'categoryShoes',phone:'categoryPhones'};
+  const valueLabels={ru:{Kabellos:'Беспроводные',Kabelgebunden:'Проводные',Schwarz:'Чёрный',Weiß:'Белый',Blau:'Синий',Rot:'Красный'},tr:{Kabellos:'Kablosuz',Kabelgebunden:'Kablolu',Schwarz:'Siyah',Weiß:'Beyaz',Blau:'Mavi',Rot:'Kırmızı'},uk:{Kabellos:'Бездротові',Kabelgebunden:'Дротові',Schwarz:'Чорний',Weiß:'Білий',Blau:'Синій',Rot:'Червоний'},it:{Kabellos:'Senza fili',Kabelgebunden:'Con cavo',Schwarz:'Nero',Weiß:'Bianco',Blau:'Blu',Rot:'Rosso'},en:{Kabellos:'Wireless',Kabelgebunden:'Wired',Schwarz:'Black',Weiß:'White',Blau:'Blue',Rot:'Red'},ar:{Kabellos:'لاسلكي',Kabelgebunden:'سلكي',Schwarz:'أسود',Weiß:'أبيض',Blau:'أزرق',Rot:'أحمر'}};
+  const displayValue=value=>valueLabels[language.lang]?.[value]||value;
+  const removeWord={de:'Filter entfernen',ru:'Удалить фильтр',tr:'Filtreyi kaldır',uk:'Прибрати фільтр',it:'Rimuovi filtro',en:'Remove filter',ar:'إزالة الفلتر'};
+  const queryAliases=[
+    [/(?:наушники|навушники|kulakl[ıi]k|cuffie|سماعات|headphones?)/giu,'Kopfhörer'],
+    [/(?:обувь|взуття|ayakkab[ıi]|scarpe|أحذية|shoes?)/giu,'Schuhe'],
+    [/(?:смартфон[ыа]?|смартфон[иів]?|ak[ıi]ll[ıi] telefonlar?|هواتف ذكية|هاتف ذكي|smartphones?)/giu,'Smartphone'],
+    [/(?:телевизор[ыа]?|телевізор[иів]?|televizyon|televisione|تلفاز|تلفزيون)/giu,'Fernseher'],
+    [/(?:кофемашин[аыу]|кавомашин[аыу]|kahve makinesi|macchina da caffè|آلة قهوة)/giu,'Kaffeemaschine'],
+    [/(?:беспроводн(?:ые|ой|ая)|бездротов(?:і|ий|а)|kablosuz|senza fili|لاسلكي(?:ة)?)/giu,'kabellos']
+  ];
   const filtersEl=document.querySelector('#filters'),cardsEl=document.querySelector('#cards'),summaryEl=document.querySelector('#summary'),chipsEl=document.querySelector('#chips'),sortEl=document.querySelector('#sort');
   const params=new URLSearchParams(location.search);
   const state={query:params.get('q')||'',min:asNumber(params.get('min')),max:asNumber(params.get('max')),brands:new Set((params.get('brand')||'').split(',').filter(Boolean)),facets:{},sort:params.get('sort')||'relevance'};
@@ -21,7 +36,7 @@
   function asNumber(v){return v!==null&&v!==''&&Number.isFinite(Number(v))&&Number(v)>=0?Number(v):null}
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const norm=s=>String(s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('de');
-  const money=n=>new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR'}).format(n);
+  const money=n=>new Intl.NumberFormat(language.config.locale||'de-DE',{style:'currency',currency:'EUR'}).format(n);
   function detect(query){return CATEGORY_RULES.find(c=>c.query.test(query))||null}
   function features(product){
     const text=`${product.name||''} ${product.description||''}`;
@@ -101,12 +116,12 @@
   function optionsFor(key){const set=new Set(base.map(p=>key==='brand'?p.brand:p.attrs[key]).filter(Boolean));return [...set].sort((a,b)=>a.localeCompare(b,'de',{numeric:true}))}
   function group(key,label,values){if(!values.length)return '';
     const selected=key==='brand'?state.brands:state.facets[key]||new Set();
-    return `<section class="facet"><h2>${esc(label)}</h2>${values.map(value=>{const count=filtered(key).filter(p=>(key==='brand'?p.brand:p.attrs[key])===value).length;return `<label><input type="checkbox" data-key="${esc(key)}" value="${esc(value)}" ${selected.has(value)?'checked':''}>${esc(value)}<span>${count}</span></label>`}).join('')}</section>`;
+    return `<section class="facet"><h2>${esc(key==='brand'?tx('manufacturer'):tx(facetLabels[key]||label))}</h2>${values.map(value=>{const count=filtered(key).filter(p=>(key==='brand'?p.brand:p.attrs[key])===value).length;return `<label><input type="checkbox" data-key="${esc(key)}" value="${esc(value)}" ${selected.has(value)?'checked':''}>${esc(displayValue(value))}<span>${count}</span></label>`}).join('')}</section>`;
   }
   function renderFilters(){
     const schema=category?.facets||[];
     const specialized=schema.map(([key,label])=>group(key,label,optionsFor(key))).join('');
-    filtersEl.innerHTML=`<section class="facet"><h2>Preis der Testprodukte</h2><div class="price-row"><label>Von (€)<input class="number-input" id="min" type="number" min="0" step="0.01" value="${state.min??''}"></label><label>Bis (€)<input class="number-input" id="max" type="number" min="0" step="0.01" value="${state.max??''}"></label></div><button class="apply-price" id="apply-price" type="button">Preis anwenden</button></section>${group('brand','Hersteller',optionsFor('brand'))}${specialized}<section class="facet"><h2>Versand & Verfügbarkeit</h2><p class="facet-help">Dazu liegen noch keine verlässlichen Daten vor. Diese Filter werden ergänzt, sobald Händlerangebote angebunden sind.</p></section>`;
+    filtersEl.innerHTML=`<section class="facet"><h2>${esc(tx('price'))}</h2><div class="price-row"><label>${esc(tx('from'))}<input class="number-input" id="min" type="number" min="0" step="0.01" value="${state.min??''}"></label><label>${esc(tx('to'))}<input class="number-input" id="max" type="number" min="0" step="0.01" value="${state.max??''}"></label></div><button class="apply-price" id="apply-price" type="button">${esc(tx('apply'))}</button></section>${group('brand','Hersteller',optionsFor('brand'))}${specialized}<section class="facet"><h2>${esc(tx('shipping'))}</h2><p class="facet-help">${esc(tx('shippingHelp'))}</p></section>`;
     filtersEl.querySelectorAll('input[type=checkbox]').forEach(el=>el.addEventListener('change',()=>{
       const set=el.dataset.key==='brand'?state.brands:(state.facets[el.dataset.key]??=new Set());
       el.checked?set.add(el.value):set.delete(el.value);render();
@@ -114,10 +129,10 @@
     filtersEl.querySelector('#apply-price').addEventListener('click',()=>{state.min=asNumber(filtersEl.querySelector('#min').value);state.max=asNumber(filtersEl.querySelector('#max').value);render()});
   }
   function renderChips(){const chips=[];
-    if(state.min!==null)chips.push(['min',`ab ${money(state.min)}`]);if(state.max!==null)chips.push(['max',`bis ${money(state.max)}`]);
-    for(const brand of state.brands)chips.push(['brand:'+brand,`Hersteller: ${brand}`]);
-    for(const [key,values] of Object.entries(state.facets))for(const value of values)chips.push([key+':'+value,value]);
-    chipsEl.innerHTML=chips.map(([key,label])=>`<button type="button" data-remove="${esc(key)}" aria-label="Filter ${esc(label)} entfernen">${esc(label)} ×</button>`).join('');
+    if(state.min!==null)chips.push(['min',`${tx('from')} ${money(state.min)}`]);if(state.max!==null)chips.push(['max',`${tx('to')} ${money(state.max)}`]);
+    for(const brand of state.brands)chips.push(['brand:'+brand,`${tx('manufacturer')}: ${brand}`]);
+    for(const [key,values] of Object.entries(state.facets))for(const value of values)chips.push([key+':'+value,displayValue(value)]);
+    chipsEl.innerHTML=chips.map(([key,label])=>`<button type="button" data-remove="${esc(key)}" aria-label="${esc(removeWord[language.lang]||removeWord.de)}: ${esc(label)}">${esc(label)} ×</button>`).join('');
     chipsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
       const [key,...rest]=b.dataset.remove.split(':');const value=rest.join(':');
       if(key==='min'||key==='max')state[key]=null;else if(key==='brand')state.brands.delete(value);else state.facets[key]?.delete(value);
@@ -125,24 +140,24 @@
     }));
   }
   function writeUrl(){const url=new URL(location.href);const set=(key,value)=>value==null||value===''?url.searchParams.delete(key):url.searchParams.set(key,String(value));
-    set('q',state.query);set('min',state.min);set('max',state.max);set('brand',[...state.brands].join(','));
+    set('q',state.query);set('lang',language.lang);set('min',state.min);set('max',state.max);set('brand',[...state.brands].join(','));
     const facetData=Object.fromEntries(Object.entries(state.facets).filter(([,s])=>s.size).map(([k,s])=>[k,[...s]]));
     set('facets',Object.keys(facetData).length?JSON.stringify(facetData):'');set('sort',state.sort==='relevance'?'':state.sort);history.replaceState(null,'',url);
   }
-  function card(p){const tags=Object.values(p.attrs).slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('');
-    return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:'<div class="no-image" aria-hidden="true">Produkt</div>'}<div><p>${esc(p.brand||p.category)} · Testdaten</p><h2>${esc(p.name)}</h2><p>${esc(p.description.slice(0,150))}</p><div class="tags">${tags}</div></div><div class="price"><strong>${money(p.price)}</strong><small>Testpreis, Versand unbekannt</small><span class="unavailable">Noch kein Angebot</span></div></article>`;
+  function card(p){const tags=Object.values(p.attrs).slice(0,3).map(x=>`<span>${esc(displayValue(x))}</span>`).join('');
+    return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(tx('results'))}</div>`}<div><p><bdi>${esc(p.brand||p.category)}</bdi> · ${esc(tx('testData'))}</p><h2 dir="auto">${esc(p.name)}</h2><p dir="auto">${esc(p.description.slice(0,150))}</p><div class="tags">${tags}</div></div><div class="price"><strong>${money(p.price)}</strong><small>${esc(tx('testPrice'))}</small><span class="unavailable">${esc(tx('noOffer'))}</span></div></article>`;
   }
   function render(){renderFilters();renderChips();let list=filtered();
     if(state.sort==='price-asc')list.sort((a,b)=>a.price-b.price);
     else if(state.sort==='price-desc')list.sort((a,b)=>b.price-a.price);
     else if(state.sort==='brand')list.sort((a,b)=>a.brand.localeCompare(b.brand,'de'));
-    summaryEl.textContent=`${list.length} ${list.length===1?'Produkt':'Produkte'} gefunden${category?' · '+category.label:''}`;
-    cardsEl.innerHTML=list.length?list.slice(0,100).map(card).join(''):`<div class="empty"><h2>Keine passenden Produkte</h2><p>Ändere deine Suchbegriffe oder entferne einen Filter. Für manche Produktklassen liegen noch keine Testprodukte vor.</p></div>`;
+    summaryEl.textContent=`${list.length} ${list.length===1?tx('oneFound'):tx('found')}${category?' · '+(categoryLabels[category.id]?tx(categoryLabels[category.id]).replace(/^[^\p{L}]+/u,''):category.label):''}`;
+    cardsEl.innerHTML=list.length?list.slice(0,100).map(card).join(''):`<div class="empty"><h2>${esc(tx('noResults'))}</h2><p>${esc(tx('noResultsHelp'))}</p></div>`;
     writeUrl();
   }
   document.querySelector('.search-form').addEventListener('submit',e=>{e.preventDefault();state.query=qEl.value.trim();state.brands.clear();state.facets={};state.min=null;state.max=null;runSearch()});
   document.querySelector('#reset').addEventListener('click',()=>{state.min=state.max=null;state.brands.clear();state.facets={};render()});
   sortEl.addEventListener('change',()=>{state.sort=sortEl.value;render()});
-  function runSearch(){category=detect(state.query);const tokens=interpret(state.query);base=products.filter(p=>queryMatch(p,tokens));render()}
-  fetch('products.json').then(r=>{if(!r.ok)throw Error('Produktdaten nicht erreichbar');return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Produktdaten ungültig');products=data.map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent='Produktdaten konnten nicht geladen werden.';cardsEl.innerHTML='<div class="empty"><h2>Suche momentan nicht verfügbar</h2><p>Bitte versuche es später erneut.</p></div>'});
+  function runSearch(){const translated=queryAliases.reduce((q,[pattern,value])=>q.replace(pattern,value),state.query);category=detect(translated);const tokens=interpret(translated);base=products.filter(p=>queryMatch(p,tokens));render()}
+  fetch('products.json').then(r=>{if(!r.ok)throw Error('Produktdaten nicht erreichbar');return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Produktdaten ungültig');products=data.map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent=tx('loadError');cardsEl.innerHTML=`<div class="empty"><h2>${esc(tx('loadError'))}</h2><p>${esc(tx('tryLater'))}</p></div>`});
 })();
