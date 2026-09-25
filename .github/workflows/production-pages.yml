@@ -39,6 +39,7 @@ jobs:
           node --check common-filter-i18n.js
           node --check search-mobile.js
           node --check live-health.js
+          node --check language-links.js
           node --check site-i18n.js
           node --check verify-live-facets.js
           node --check verify-search-intent.js
@@ -47,6 +48,7 @@ jobs:
           node --check verify-total-price-integrity.js
       - name: Verify live search assets
         run: |
+          grep -q 'language-links.js' index.html
           grep -q 'search-i18n.js' search.html
           grep -q 'facet-schemas.js' search.html
           grep -q 'common-facet-defs.js' search.html
@@ -56,6 +58,7 @@ jobs:
           grep -q 'common-filter-i18n.js' search.html
           grep -q 'search-mobile.js' search.html
           grep -q 'live-health.js' search.html
+          grep -q 'language-links.js' search.html
           grep -q 'search-mobile.css' search.html
           grep -q 'value="zh-Hans"' search.html
           grep -q "'zh-Hans'" search-i18n.js
@@ -66,6 +69,7 @@ jobs:
           grep -q 'FBCommonFilterI18n' common-filter-i18n.js
           grep -q 'FB_parseSearchIntent' search-intent.js
           grep -q 'FundBlickHealth' live-health.js
+          grep -q 'FundBlickLanguageLinks' language-links.js
           grep -q 'mobile-search-tools' search-mobile.css
           grep -q 'data-catalog-url="development/core-products.json"' search.html
       - name: Test live search logic
@@ -78,7 +82,7 @@ jobs:
       - name: Package production files only
         run: |
           mkdir -p _site/development
-          cp index.html search.html search.js search-i18n.js facet-schemas.js common-facet-defs.js category-aliases.js search-intent.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html search.html search.js search-i18n.js facet-schemas.js common-facet-defs.js category-aliases.js search-intent.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp development/core-products.json _site/development/
           touch _site/.nojekyll
       - name: Configure Pages
