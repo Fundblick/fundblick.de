@@ -15,7 +15,7 @@
     hr:'Unesite proizvod, marku ili model.',
     el:'Εισαγάγετε προϊόν, μάρκα ή μοντέλο.',
     sr:'Унесите производ, бренд или модел.',
-    es:'Introduce un producto, una marca o un modelo.',
+    es:'Introduce un producto, una marca o modelo.',
     fr:'Saisissez un produit, une marque ou un modèle.',
     pt:'Introduza um produto, uma marca ou um modelo.',
     fa:'لطفاً یک محصول، برند یا مدل وارد کنید.',
@@ -40,8 +40,14 @@
     input.addEventListener('input',()=>{if(input.value.trim())clear();});
     const select=document.querySelector('#language');if(select)select.addEventListener('change',()=>{if(input.getAttribute('aria-invalid')==='true')queueMicrotask(show);});
   }
+  function loadAsset(tag,attrs){return new Promise((resolve,reject)=>{const exists=attrs.src?document.querySelector(`script[src^="${attrs.src}"]`):document.querySelector(`link[href^="${attrs.href}"]`);if(exists){resolve(exists);return;}const el=document.createElement(tag);Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,value));el.addEventListener('load',()=>resolve(el),{once:true});el.addEventListener('error',reject,{once:true});document.head.appendChild(el);});}
+  function installAffiliateReadiness(){
+    loadAsset('link',{rel:'stylesheet',href:'affiliate-consent.css?v=20260925-live20'}).catch(()=>{});
+    loadAsset('script',{src:'affiliate-config.js?v=20260925-live20'}).then(()=>loadAsset('script',{src:'affiliate-consent.js?v=20260925-live20'})).catch(()=>{});
+  }
   const select=document.querySelector('#language');if(select)select.addEventListener('change',()=>queueMicrotask(()=>apply(normalize(select.value)||'de')));
   apply();
   installHomeSearchGuard();
+  installAffiliateReadiness();
   window.FundBlickLanguageLinks={apply,current,emptySearch};
 })();
