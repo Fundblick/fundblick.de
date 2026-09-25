@@ -4,12 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,follow">
-  <link rel="stylesheet" href="styles.css?v=20260925c">
+  <meta name="description" content="FundBlick Produktsuche mit dynamischen, produktspezifischen Filtern.">
+  <link rel="stylesheet" href="styles.css?v=20260925-live2">
   <title>Produktsuche – FundBlick</title>
 </head>
 <body>
   <a class="skip" href="#main">Zum Inhalt</a>
-  <header class="topbar"><div class="wrap nav"><a class="brand" href="/">Fund<span>Blick</span></a><div class="nav-actions"><label class="sr-only" for="language">Sprache wählen</label><select id="language" aria-label="Sprache wählen"><option value="de">Deutsch</option><option value="ru">Русский</option><option value="tr">Türkçe</option><option value="uk">Українська</option><option value="it">Italiano</option><option value="en">English</option><option value="ar">العربية</option></select><a href="/" data-i18n="homeLink">Startseite</a></div></div></header>
+  <header class="topbar"><div class="wrap nav"><a class="brand" href="/">Fund<span>Blick</span></a><div class="nav-actions"><label class="sr-only" for="language">Sprache wählen</label><select id="language" aria-label="Sprache wählen"><option value="de">DE · Deutsch</option><option value="tr">TR · Türkçe</option><option value="ru">RU · Русский</option><option value="ar">AR · العربية</option><option value="pl">PL · Polski</option><option value="ro">RO · Română</option><option value="uk">UK · Українська</option><option value="en">EN · English</option><option value="it">IT · Italiano</option><option value="bg">BG · Български</option><option value="hr">HR · Hrvatski</option><option value="el">EL · Ελληνικά</option><option value="sr">SR · Српски</option><option value="es">ES · Español</option><option value="fr">FR · Français</option><option value="pt">PT · Português</option><option value="fa">FA · فارسی</option><option value="sq">SQ · Shqip</option><option value="zh-Hans">ZH · 简体中文</option><option value="ku">KU · Kurdî</option></select><a href="/" data-i18n="homeLink">Startseite</a></div></div></header>
   <main id="main" class="wrap results-page">
     <form class="search-form" action="search.html" method="get" role="search"><label class="sr-only" for="query" data-i18n="searchLabel">Produkte suchen</label><input id="query" name="q" type="search" placeholder="Produkt, Marke oder Eigenschaft …" data-i18n-placeholder="resultPlaceholder" autocomplete="off"><button class="voice-button" type="button" data-voice-for="query" hidden aria-label="Spracheingabe starten" title="Spracheingabe starten">🎙</button><button type="submit" data-i18n="searchButton">Suchen</button></form><p id="voice-status" class="voice-status" role="status" aria-live="polite"></p><p class="voice-disclosure" data-i18n="voiceNote" hidden></p>
     <div class="results-heading"><div><p class="eyebrow" data-i18n="eyebrow">FUNDBLICK PRODUKTSUCHE</p><h1 data-i18n="results">Suchergebnisse</h1><p id="summary" role="status" aria-live="polite">Produkte werden geladen …</p></div><label for="sort"><span data-i18n="sort">Sortieren</span> <select id="sort"><option value="relevance" data-i18n="relevance">Beste Treffer</option><option value="price-asc" data-i18n="priceAsc">Preis: aufsteigend</option><option value="price-desc" data-i18n="priceDesc">Preis: absteigend</option><option value="brand" data-i18n="manufacturer">Hersteller</option></select></label></div>
@@ -18,10 +19,10 @@
       <details id="filter-panel" class="filter-panel" open><summary data-i18n="refine">Suche verfeinern</summary><div id="filters"></div><button id="reset" class="reset" type="button" data-i18n="reset">Alle Filter zurücksetzen</button></details>
       <section aria-label="Produkte"><div id="cards" class="product-grid" data-catalog-url="development/core-products.json"></div></section>
     </div>
-    <p class="data-note" data-i18n="resultsNote">Testdaten ohne kaufbare Händlerangebote. Angezeigte Preise enthalten keine nachgewiesenen Versandkosten.</p>
+    <p class="data-note" data-i18n="shippingHelp">Verlässliche Versand- und Verfügbarkeitsdaten erscheinen hier, sobald Händlerangebote angebunden sind.</p>
   </main>
   <footer class="footer"><div class="wrap"><span>FundBlick</span><nav aria-label="Rechtliches"><a href="impressum.html" data-i18n="imprint">Impressum</a><a href="datenschutz.html" data-i18n="privacy">Datenschutz</a></nav></div></footer>
-  <script src="site-i18n.js?v=20260925c" defer></script>
-  <script src="search.js?v=20260925c" defer></script>
+  <script src="search-i18n.js?v=20260925-live2" defer></script>
+  <script src="search.js?v=20260925-live2" defer></script>
 </body>
 </html>
