@@ -48,7 +48,7 @@
   if(!root||typeof root.fetch!=='function')return;
 
   const nativeFetch=root.fetch.bind(root);
-  let metaPromise=null,homePromise=null;
+  let manifestPromise=null,indexPromise=null,homePromise=null;
   const shardPromises=new Map();
   const queryPromises=new Map();
   const fetchJson=async url=>{const response=await nativeFetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`Catalog request failed: ${url} (${response.status})`);return response.json();};
@@ -74,9 +74,21 @@
   function initialQuery(){try{return new URL(root.location?.href||'https://fundblick.de/').searchParams.get('q')||'';}catch{return '';}}
   function detectedFamily(query){try{return root.FB_detectCategory?.(query)?.id||null;}catch{return null;}}
   function onSearchPage(){try{return /\/search\.html$/i.test(root.location?.pathname||'')||!!root.document?.querySelector?.('.results-page');}catch{return false;}}
+  async function manifestOnly(){
+    if(!manifestPromise)manifestPromise=(async()=>{
+      const manifest=await fetchJson('catalog/manifest.json');
+      if(!manifest||!manifest.searchFile||!manifest.shards)throw new Error('Invalid live catalog manifest');
+      root.FundBlickCatalog={...(root.FundBlickCatalog||{}),manifest,largeCatalog:Number(manifest.itemCount||0)>LARGE_CATALOG_THRESHOLD,load,loadHome,manifestOnly,meta,selectShardIds};
+      return manifest;
+    })();
+    return manifestPromise;
+  }
   async function meta(){
-    if(!metaPromise)metaPromise=(async()=>{const manifest=await fetchJson('catalog/manifest.json');if(!manifest||!manifest.searchFile||!manifest.shards)throw new Error('Invalid live catalog manifest');const index=await fetchJson('catalog/'+manifest.searchFile);const largeCatalog=Number(manifest.itemCount||0)>LARGE_CATALOG_THRESHOLD;root.FundBlickCatalog={...(root.FundBlickCatalog||{}),manifest,index,largeCatalog,load,loadHome,meta,selectShardIds};return {manifest,index};})();
-    return metaPromise;
+    const manifest=await manifestOnly();
+    if(!indexPromise)indexPromise=fetchJson('catalog/'+manifest.searchFile);
+    const index=await indexPromise;
+    root.FundBlickCatalog={...(root.FundBlickCatalog||{}),manifest,index,largeCatalog:Number(manifest.itemCount||0)>LARGE_CATALOG_THRESHOLD,load,loadHome,manifestOnly,meta,selectShardIds};
+    return {manifest,index};
   }
   async function loadShard(id,entry){
     const key=String(id);
@@ -91,11 +103,11 @@
   }
   async function loadHome(){
     if(!homePromise)homePromise=(async()=>{
-      const {manifest}=await meta();
+      const manifest=await manifestOnly();
       if(!manifest.homeDealFile)return loadAll(manifest);
       const payload=await fetchJson('catalog/'+manifest.homeDealFile);
       const products=flattenShard(payload);
-      root.FundBlickCatalog={...(root.FundBlickCatalog||{}),homeProducts:products,homeDealFile:manifest.homeDealFile,homeDealCount:products.length,load,loadHome,meta,selectShardIds};
+      root.FundBlickCatalog={...(root.FundBlickCatalog||{}),homeProducts:products,homeDealFile:manifest.homeDealFile,homeDealCount:products.length,load,loadHome,manifestOnly,meta,selectShardIds};
       return products;
     })();
     return homePromise;
@@ -110,7 +122,7 @@
       const byId=new Map();
       payloads.flat().forEach(product=>byId.set(product.id,{...(byId.get(product.id)||{}),...product}));
       const products=[...byId.values()];
-      root.FundBlickCatalog={...(root.FundBlickCatalog||{}),manifest,index,products,loadedShardIds:ids,partial:ids.length<allShardIds(manifest).length,largeCatalog:Number(manifest.itemCount||0)>LARGE_CATALOG_THRESHOLD,load,loadHome,meta,selectShardIds};
+      root.FundBlickCatalog={...(root.FundBlickCatalog||{}),manifest,index,products,loadedShardIds:ids,partial:ids.length<allShardIds(manifest).length,largeCatalog:Number(manifest.itemCount||0)>LARGE_CATALOG_THRESHOLD,load,loadHome,manifestOnly,meta,selectShardIds};
       return products;
     })());
     return queryPromises.get(queryKey);
@@ -123,5 +135,5 @@
     if(path.endsWith('/products.json'))return jsonResponse([]);
     return nativeFetch(input,init);
   };
-  root.FundBlickCatalog={load,loadHome,meta,selectShardIds,largeCatalog:false};
+  root.FundBlickCatalog={load,loadHome,manifestOnly,meta,selectShardIds,largeCatalog:false};
 })(typeof window!=='undefined'?window:null);
