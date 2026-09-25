@@ -11,6 +11,9 @@ assert.equal(manifest.promotionSchema,'fundblick-promotion-v1');
 assert.ok(manifest.itemCount>=15,'catalog unexpectedly small');
 assert.ok(manifest.shardCount>=2,'catalog should exercise multiple shards');
 assert.ok(manifest.searchFile&&!manifest.searchFile.includes('development/'));
+assert.ok(manifest.homeDealFile&&!manifest.homeDealFile.includes('development/'),'homepage deal feed missing');
+assert.ok(Number.isInteger(manifest.homeDealCount)&&manifest.homeDealCount>=1,'homepage deal count missing');
+assert.ok(manifest.homeDealCount<=manifest.homeDealLimit&&manifest.homeDealLimit===60,'homepage deal feed must stay compact');
 const index=JSON.parse(fs.readFileSync(path.join(root,manifest.searchFile),'utf8'));
 assert.equal(index.length,manifest.itemCount);
 const seen=new Set();let counted=0,multiOfferProducts=0,promotionProducts=0;
@@ -48,4 +51,9 @@ assert.ok(multiOfferProducts>=10,'too few products exercise merchant comparison'
 assert.ok(promotionProducts>=10,'too few products exercise promotion comparison');
 for(const row of index){assert.ok(seen.has(row.i),`index points to missing ${row.i}`);assert.ok(manifest.shards[String(row.s)],`invalid shard ${row.s}`);assert.ok(row.q.length>0);assert.ok(Number.isFinite(row.t)&&row.t>=0);assert.ok(Number.isFinite(row.r)&&row.r>=row.p);assert.ok(row.t<=row.r);assert.ok(Number.isInteger(row.o)&&row.o>=1);}
 for(const expected of ['electronics.audio.headphones','electronics.televisions','fashion.shoes','electronics.smartphones','tools.heat-guns','home.kitchen.coffee-machines'])assert.ok(index.some(row=>row.c.includes(expected)),`missing category ${expected}`);
-console.log('live catalog v2 + simulated merchant promotions verification passed');
+const homeDeals=JSON.parse(fs.readFileSync(path.join(root,manifest.homeDealFile),'utf8'));
+assert.ok(Array.isArray(homeDeals),'homepage deal feed must be an array');
+assert.equal(homeDeals.length,manifest.homeDealCount,'homepage deal count mismatch');
+assert.ok(homeDeals.length<=60,'homepage must never receive the full catalog by accident');
+for(const product of homeDeals){assert.ok(seen.has(product.id),`homepage deal feed points to missing ${product.id}`);assert.ok(Array.isArray(product.offers)&&product.offers.length>=1,`homepage deal candidate lacks offers: ${product.id}`);}
+console.log('live catalog v2 + compact homepage deal feed + simulated merchant promotions verification passed');
