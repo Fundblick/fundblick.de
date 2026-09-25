@@ -3,7 +3,7 @@ const fs=require('fs');
 const vm=require('vm');
 
 const expected=['de','tr','ru','ar','pl','ro','uk','en','it','bg','hr','el','sr','es','fr','pt','fa','sq','zh-Hans','ku'];
-const required=['search','button','eyebrow','hero','lead','popular','voiceStart','voiceStop','listening','voiceError'];
+const required=['search','button','eyebrow','hero','lead','popular','voiceStart','voiceStop','listening','voiceError','multiMerchants','shippingIncluded','noShopSearch','howCompare','sameProduct','total','priceDifference','tryComparison','imprint','privacy','developmentNote'];
 const i18nSource=fs.readFileSync('development/frontend-preview/i18n.js','utf8');
 const context={window:{}};
 vm.createContext(context);
@@ -24,11 +24,12 @@ const html=fs.readFileSync('development/frontend-preview/index.html','utf8');
 for(const code of expected)if(!html.includes(`option value="${code}"`))throw new Error('Language selector missing '+code);
 if(!html.includes('id="voiceButton"'))throw new Error('Voice button missing');
 if(!html.includes('id="voiceStatus"'))throw new Error('Voice status region missing');
+for(const key of ['multiMerchants','shippingIncluded','noShopSearch','howCompare','sameProduct','total','priceDifference','tryComparison','imprint','privacy','developmentNote'])if(!html.includes(`data-i18n="${key}"`))throw new Error('Localized homepage marker missing: '+key);
 if(!/noindex,nofollow/.test(html))throw new Error('Development preview must remain noindex');
 
 const app=fs.readFileSync('development/frontend-preview/app.js','utf8');
 new vm.Script(app,{filename:'app.js'});
-for(const marker of ['SpeechRecognition||window.webkitSpeechRecognition','fundblick-language','document.documentElement.dir','URLSearchParams({q,lang})']){
+for(const marker of ['SpeechRecognition||window.webkitSpeechRecognition','fundblick-language','document.documentElement.dir','URLSearchParams({q,lang})','proofLink.href']){
   if(!app.includes(marker))throw new Error('Frontend language runtime marker missing: '+marker);
 }
 console.log('FundBlick frontend language contract OK',JSON.stringify({locales:expected.length,rtl:['ar','fa'],voice:true}));
