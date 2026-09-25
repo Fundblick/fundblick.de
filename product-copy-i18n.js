@@ -25,7 +25,7 @@
   };
   const CAT_KEYS=['product','beauty','fragrance','furniture','grocery','laptop','phone','audio','tv','shoes','tool','coffee','bag'];
   const INDEX=Object.fromEntries(CAT_KEYS.map((key,i)=>[key,i]));
-  function language(){const raw=root.FundBlickLanguage?.lang||document.documentElement.lang||'de';return SUPPORTED.includes(raw)?raw:'de';}
+  function language(){const raw=root.FundBlickLanguage?.lang||(typeof document!=='undefined'?document.documentElement.lang:'')||'de';return SUPPORTED.includes(raw)?raw:'de';}
   function detect(title,description){
     const text=(String(title||'')+' '+String(description||'')).toLowerCase();
     if(/mascara|eyeshadow|lipstick|nail polish|makeup|cosmetic|beauty/.test(text))return 'beauty';
@@ -71,8 +71,8 @@
     if(!title.dataset.fbOriginalTitle)title.dataset.fbOriginalTitle=title.textContent.trim();
     if(description&&!description.dataset.fbOriginalDescription)description.dataset.fbOriginalDescription=description.textContent.trim();
     const localized=localize({title:title.dataset.fbOriginalTitle,description:description?.dataset.fbOriginalDescription||'',brand},lang);
-    title.textContent=localized.title;
-    if(description)description.textContent=localized.description;
+    if(title.textContent!==localized.title)title.textContent=localized.title;
+    if(description&&description.textContent!==localized.description)description.textContent=localized.description;
     title.lang=lang;title.dir='auto';if(description){description.lang=lang;description.dir='auto';}
   }
   function apply(){if(typeof document==='undefined')return;const lang=language();document.querySelectorAll('.product').forEach(card=>applyCard(card,lang));}
