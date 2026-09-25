@@ -40,6 +40,30 @@
     input.addEventListener('input',()=>{if(input.value.trim())clear();});
     const select=document.querySelector('#language');if(select)select.addEventListener('change',()=>{if(input.getAttribute('aria-invalid')==='true')queueMicrotask(show);});
   }
+
+  const betaCopy={de:'Live-Beta · aktuell Testdaten',tr:'Canlı beta · şu anda test verileri',ru:'Live-бета · сейчас тестовые данные',ar:'نسخة تجريبية مباشرة · بيانات اختبار حالياً',pl:'Live beta · obecnie dane testowe',ro:'Beta live · momentan date de test',uk:'Live-бета · зараз тестові дані',en:'Live beta · currently test data',it:'Beta live · al momento dati di prova',bg:'Live beta · в момента тестови данни',hr:'Live beta · trenutačno testni podaci',el:'Live beta · προς το παρόν δοκιμαστικά δεδομένα',sr:'Live beta · тренутно тестни подаци',es:'Beta en vivo · actualmente datos de prueba',fr:'Bêta en ligne · données de test actuellement',pt:'Beta em direto · atualmente dados de teste',fa:'نسخه بتای زنده · فعلاً داده‌های آزمایشی',sq:'Beta live · aktualisht të dhëna testuese','zh-Hans':'在线测试版 · 当前为测试数据',ku:'Beta ya zindî · niha daneyên ceribandinê'};
+  const resultsFor={de:'Ergebnisse für',tr:'Sonuçlar',ru:'Результаты для',ar:'نتائج البحث عن',pl:'Wyniki dla',ro:'Rezultate pentru',uk:'Результати для',en:'Results for',it:'Risultati per',bg:'Резултати за',hr:'Rezultati za',el:'Αποτελέσματα για',sr:'Резултати за',es:'Resultados para',fr:'Résultats pour',pt:'Resultados para',fa:'نتایج برای',sq:'Rezultate për','zh-Hans':'搜索结果',ku:'Encam ji bo'};
+  function installBetaBadge(){
+    const language=document.querySelector('.hero-language');if(!language)return;
+    let badge=document.querySelector('.fb-beta-badge');
+    if(!badge){badge=document.createElement('div');badge.className='fb-beta-badge';badge.setAttribute('role','note');language.insertAdjacentElement('afterend',badge);}
+    const paint=()=>{badge.textContent=betaCopy[current()]||betaCopy.de;};paint();
+    document.querySelector('#language')?.addEventListener('change',()=>queueMicrotask(paint));
+  }
+  function installQueryContext(){
+    const form=document.querySelector('.search-form');if(!form)return;
+    let box=document.querySelector('#searchQueryContext');
+    if(!box){box=document.createElement('div');box.id='searchQueryContext';box.className='search-query-context';box.setAttribute('role','note');form.insertAdjacentElement('afterend',box);}
+    const paint=()=>{const q=(new URLSearchParams(location.search).get('q')||'').trim();if(!q){box.hidden=true;box.textContent='';return;}box.hidden=false;box.replaceChildren();const label=document.createElement('span');label.className='search-query-context-label';label.textContent=(resultsFor[current()]||resultsFor.de)+':';const value=document.createElement('strong');value.dir='auto';value.textContent=q;box.append(label,value);};
+    paint();document.querySelector('#language')?.addEventListener('change',()=>queueMicrotask(paint));form.addEventListener('submit',()=>queueMicrotask(paint));window.addEventListener('pageshow',paint);window.addEventListener('popstate',paint);
+  }
+  function installLegalShell(){
+    if(!document.body.classList.contains('fb-legal-page')||document.querySelector('.fb-legal-header'))return;
+    const header=document.createElement('header');header.className='fb-legal-header';header.innerHTML='<div class="fb-legal-header-inner"><a class="fb-shell-brand" href="/" aria-label="FundBlick Startseite">Fund<span>Blick</span></a><a class="fb-shell-home" href="/">Startseite</a></div>';document.body.prepend(header);
+    const footer=document.createElement('footer');footer.className='fb-legal-footer';footer.innerHTML='<div><strong>FundBlick</strong><span>Produktsuche · Preisvergleich</span></div>';document.body.append(footer);
+  }
+  function installCustomerPolish(){installBetaBadge();installQueryContext();installLegalShell();}
+
   function loadAsset(tag,attrs){return new Promise((resolve,reject)=>{const exists=attrs.src?document.querySelector(`script[src^="${attrs.src}"]`):document.querySelector(`link[href^="${attrs.href}"]`);if(exists){resolve(exists);return;}const el=document.createElement(tag);Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,value));el.addEventListener('load',()=>resolve(el),{once:true});el.addEventListener('error',reject,{once:true});document.head.appendChild(el);});}
   function installAffiliateReadiness(){
     loadAsset('link',{rel:'stylesheet',href:'affiliate-consent.css?v=20260925-live21'}).catch(()=>{});
@@ -53,6 +77,7 @@
   const select=document.querySelector('#language');if(select)select.addEventListener('change',()=>queueMicrotask(()=>apply(normalize(select.value)||'de')));
   apply();
   installHomeSearchGuard();
+  installCustomerPolish();
   installAffiliateReadiness();
   window.FundBlickLanguageLinks={apply,current,emptySearch};
 })();
