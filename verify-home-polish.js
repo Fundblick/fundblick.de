@@ -29,4 +29,6 @@ assert.ok(css.includes('.hero-beta'),'live-beta badge styling missing');
 assert.ok(css.includes('.home-value-grid'),'customer value section styling missing');
 assert.ok(loader.includes('manifest.homeDealFile'),'homepage loader must use the compact deal-candidate feed');
 assert.ok(loader.includes('!normalizeSearch(query)&&!onSearchPage()'),'homepage must avoid full catalog loading when no query exists');
-console.log('homepage polish, beta transparency, customer value and compact deal-feed verification passed');
+assert.ok(loader.includes('const manifest=await manifestOnly();\n      if(!manifest.homeDealFile'),'homepage deal loading must read only the manifest before its compact feed');
+assert.ok(loader.includes("if(!indexPromise)indexPromise=fetchJson('catalog/'+manifest.searchFile)"),'full search index must be deferred until search metadata is actually requested');
+console.log('homepage polish, beta transparency, customer value and manifest-only compact deal-feed verification passed');
