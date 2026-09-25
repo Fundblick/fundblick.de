@@ -2,6 +2,7 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const crypto=require('node:crypto');
+const Coupons=require('./coupon-engine.js');
 
 const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceFiles=['development/core-products.json'];
@@ -17,6 +18,31 @@ const normalize=value=>String(value||'').normalize('NFKD').replace(/[\u0300-\u03
 const money=value=>Math.round(Number(value)*100)/100;
 const numeric=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value))?Number(value):null;
 
+function simulatedPromotions(raw,index,price,shippingCost){
+  const base={
+    active:true,
+    verification:'verified',
+    validFrom:'2026-01-01T00:00:00Z',
+    validUntil:'2099-12-31T23:59:59Z',
+    source:{type:'simulator',name:'FundBlick Simulator'},
+    simulated:true
+  };
+  const promotions=[];
+  if(index===1&&price>=30){
+    promotions.push({...base,id:`${raw.id}-promo-blick10`,mode:'code',type:'percent',value:10,code:'BLICK10',minBasket:30,title:'10 % Test-Gutschein'});
+  }
+  if(index===2&&shippingCost>0){
+    promotions.push({...base,id:`${raw.id}-promo-versand0`,mode:'code',type:'free-shipping',value:0,code:'VERSAND0',title:'Versandkostenfrei Test-Gutschein'});
+  }
+  if(index===3&&price>=80){
+    promotions.push({...base,id:`${raw.id}-promo-spar8`,mode:'code',type:'fixed',value:8,code:'SPAR8',minBasket:80,title:'8 € Test-Gutschein'});
+  }
+  if(index===4&&price>=20){
+    promotions.push({...base,id:`${raw.id}-promo-auto5`,mode:'automatic',type:'percent',value:5,title:'5 % automatische Testaktion'});
+  }
+  return promotions;
+}
+
 function simulatedOffers(raw){
   const basePrice=Number(raw.price);
   const requested=Math.round(numeric(raw.merchantCount)??3);
@@ -29,7 +55,7 @@ function simulatedOffers(raw){
     const price=money(basePrice*(1+priceDeltas[i]));
     const shippingCost=money(i===0&&originalShipping!==null?originalShipping:shippingPattern[i]);
     const deliveryDays=Math.max(1,originalDelivery+deliveryOffsets[i]);
-    offers.push({
+    const offer={
       id:`${raw.id}-offer-${i+1}`,
       merchantId:`demo-merchant-${i+1}`,
       merchant:merchantNames[i],
@@ -40,30 +66,42 @@ function simulatedOffers(raw){
       deliveryDays,
       availability:originalStock?'IN_STOCK':'OUT_OF_STOCK',
       inStock:originalStock,
-      simulated:true
-    });
+      simulated:true,
+      promotions:simulatedPromotions(raw,i,price,shippingCost)
+    };
+    const decorated=Coupons.decorateOffer(raw,offer);
+    offer.effectiveTotal=decorated.effectiveTotal;
+    offer.promotionSavings=decorated.promotionSavings;
+    offer.bestPromotionId=decorated.promotionEvaluation?.promotion?.id||null;
+    offers.push(offer);
   }
-  return offers.sort((a,b)=>a.totalPrice-b.totalPrice||a.deliveryDays-b.deliveryDays||a.merchant.localeCompare(b.merchant));
+  return offers.sort((a,b)=>(a.effectiveTotal??a.totalPrice)-(b.effectiveTotal??b.totalPrice)||a.totalPrice-b.totalPrice||a.deliveryDays-b.deliveryDays||a.merchant.localeCompare(b.merchant));
 }
 
 function enrichProduct(raw){
   const offers=simulatedOffers(raw);
   const purchasable=offers.filter(offer=>offer.inStock);
-  const best=(purchasable.length?purchasable:offers)[0];
+  const ranked=purchasable.length?purchasable:offers;
+  const best=ranked[0];
   return {
     ...raw,
     sourcePrice:Number(raw.price),
     price:best.price,
     shippingCost:best.shippingCost,
     totalPrice:best.totalPrice,
+    effectiveTotalPrice:best.effectiveTotal??best.totalPrice,
+    promotionSavings:best.promotionSavings||0,
     inStock:best.inStock,
     deliveryDays:best.deliveryDays,
     merchantCount:offers.length,
     offers,
     bestOffer:best,
+    bestEffectiveOffer:best,
     priceFrom:Math.min(...offers.map(offer=>offer.price)),
     totalPriceFrom:Math.min(...offers.map(offer=>offer.totalPrice)),
-    simulatedOffers:true
+    effectiveTotalFrom:Math.min(...offers.map(offer=>offer.effectiveTotal??offer.totalPrice)),
+    simulatedOffers:true,
+    simulatedPromotions:true
   };
 }
 
@@ -113,7 +151,8 @@ function main(){
     c:String(product.category||''),
     q:normalize([product.name,product.brand,product.category,product.description].filter(Boolean).join(' ')),
     p:product.price,
-    t:product.totalPrice,
+    t:product.effectiveTotalPrice??product.totalPrice,
+    r:product.totalPrice,
     o:product.merchantCount,
     u:String(product.currency||'EUR'),
     s:productShard.get(product.id)
@@ -123,7 +162,8 @@ function main(){
   const manifest={
     version:2,
     source:'curated-live-beta',
-    offerSchema:'simulated-v1',
+    offerSchema:'simulated-v2-promotions',
+    promotionSchema:'fundblick-promotion-v1',
     itemCount:items.length,
     targetShardBytes,
     maxItemsPerShard,
@@ -133,7 +173,7 @@ function main(){
     shards:shardMeta
   };
   fs.writeFileSync(path.join(outputRoot,'manifest.json'),JSON.stringify(manifest)+'\n');
-  console.log(`live catalog built: ${items.length} items, ${shards.length} shards, simulated merchant offers enabled`);
+  console.log(`live catalog built: ${items.length} items, ${shards.length} shards, simulated merchant offers and verified test promotions enabled`);
 }
 
 main();

@@ -8,6 +8,8 @@
     record('common-facets',Array.isArray(window.FB_COMMON_FACETS),'common facets loaded');
     record('common-filter-i18n',Boolean(window.FBCommonFilterI18n),'common filter translations loaded');
     record('intent-parser',typeof window.FB_parseSearchIntent==='function','intent parser loaded');
+    record('coupon-engine',Boolean(window.FundBlickCoupons&&typeof window.FundBlickCoupons.rankOffers==='function'),'coupon engine loaded');
+    record('offer-comparison',Boolean(window.FundBlickOfferComparison),'offer comparison loaded');
     record('search-input',Boolean(document.querySelector('#query')),'search input present');
     record('filters-root',Boolean(document.querySelector('#filters')),'filter root present');
     record('cards-root',Boolean(document.querySelector('#cards')),'cards root present');

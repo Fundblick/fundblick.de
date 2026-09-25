@@ -43,6 +43,7 @@ jobs:
           node --check catalog-loader.js
           node --check search.js
           node --check product-copy-i18n.js
+          node --check coupon-engine.js
           node --check offer-comparison.js
           node --check search-relevance.js
           node --check facet-value-i18n.js
@@ -63,6 +64,7 @@ jobs:
           node --check verify-category-display-i18n.js
           node --check verify-product-copy-i18n.js
           node --check verify-offer-comparison.js
+          node --check verify-coupon-engine.js
           node --check verify-home-empty-search.js
           node --check verify-homepage-visual.js
           node --check verify-home-polish.js
@@ -70,6 +72,7 @@ jobs:
         run: |
           node build-live-catalog.js build/catalog
           node verify-live-catalog-v2.js build/catalog
+          node verify-coupon-engine.js build/catalog
       - name: Verify live search assets
         run: |
           grep -q 'language-links.js' index.html
@@ -100,6 +103,7 @@ jobs:
           grep -q 'search-state-guard.js' search.html
           grep -q 'catalog-loader.js' search.html
           grep -q 'product-copy-i18n.js' search.html
+          grep -q 'coupon-engine.js' search.html
           grep -q 'offer-comparison.js' search.html
           grep -q 'search-relevance.js' search.html
           grep -q 'facet-value-i18n.js' search.html
@@ -118,6 +122,7 @@ jobs:
           grep -q 'FB_COMMON_FACETS' common-facet-defs.js
           grep -q 'pistola de calor' category-aliases.js
           grep -q 'FBProductCopyI18n' product-copy-i18n.js
+          grep -q 'FundBlickCoupons' coupon-engine.js
           grep -q 'FundBlickOfferComparison' offer-comparison.js
           grep -q 'Filtermaschine' facet-value-i18n.js
           grep -q 'FBCommonFilterI18n' common-filter-i18n.js
@@ -139,13 +144,14 @@ jobs:
           node verify-category-display-i18n.js
           node verify-product-copy-i18n.js
           node verify-offer-comparison.js
+          node verify-coupon-engine.js build/catalog
           node verify-home-empty-search.js
           node verify-homepage-visual.js
           node verify-home-polish.js
       - name: Package production files only
         run: |
           mkdir -p _site
-          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js product-copy-i18n.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp -R build/catalog _site/catalog
           touch _site/.nojekyll
       - name: Configure Pages
