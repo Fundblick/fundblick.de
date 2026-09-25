@@ -15,7 +15,8 @@ for(const page of ['index.html','search.html','impressum.html','datenschutz.html
   assert.ok(fs.existsSync(page),`missing page ${page}`);
   for(const ref of localAssetRefs(page))assert.ok(fs.existsSync(path.normalize(ref)),`${page} references missing local asset ${ref}`);
 }
-for(const required of ['products.json','development/core-products.json','CNAME','robots.txt','sitemap.xml'])assert.ok(fs.existsSync(required),`missing production asset ${required}`);
+for(const required of ['development/core-products.json','CNAME','robots.txt','sitemap.xml'])assert.ok(fs.existsSync(required),`missing production asset ${required}`);
+assert.ok(!fs.existsSync('products.json'),'obsolete DummyJSON feed must stay removed');
 const index=fs.readFileSync('index.html','utf8');
 const search=fs.readFileSync('search.html','utf8');
 const imprint=fs.readFileSync('impressum.html','utf8');
@@ -31,4 +32,4 @@ assert.ok(links.includes('installBetaBadge')&&links.includes('installQueryContex
 assert.ok(imprint.includes('class="fb-legal-page"')&&privacy.includes('class="fb-legal-page"'),'legal page shell missing');
 assert.ok(notFound.includes('class="fb-error-page"'),'404 visual shell missing');
 assert.ok(sitemap.includes('<loc>https://fundblick.de/</loc>')&&!/Development placeholder/i.test(sitemap),'production sitemap is still placeholder/empty');
-console.log('production asset reference and customer-facing polish verification passed');
+console.log('production asset reference, legacy-feed removal and customer-facing polish verification passed');
