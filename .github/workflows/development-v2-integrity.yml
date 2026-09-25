@@ -19,6 +19,7 @@ jobs:
       - run: node development/verify-merchant-handoff.js
       - run: node development/verify-outbound-click.js
       - run: node development/verify-ui-language.js
+      - run: node development/verify-frontend-language.js
       - run: node development/verify-search-routing.js
       - run: node development/verify-substring-routing.js
       - run: node development/verify-substring-browser-shadow.js
