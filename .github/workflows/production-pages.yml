@@ -46,6 +46,7 @@ jobs:
           node --check verify-live-health.js
           node --check verify-production-assets.js
           node --check verify-total-price-integrity.js
+          node --check verify-language-navigation.js
       - name: Verify live search assets
         run: |
           grep -q 'language-links.js' index.html
@@ -59,6 +60,9 @@ jobs:
           grep -q 'search-mobile.js' search.html
           grep -q 'live-health.js' search.html
           grep -q 'language-links.js' search.html
+          grep -q 'language-links.js' impressum.html
+          grep -q 'language-links.js' datenschutz.html
+          grep -q 'language-links.js' 404.html
           grep -q 'search-mobile.css' search.html
           grep -q 'value="zh-Hans"' search.html
           grep -q "'zh-Hans'" search-i18n.js
@@ -79,6 +83,7 @@ jobs:
           node verify-live-health.js
           node verify-production-assets.js
           node verify-total-price-integrity.js
+          node verify-language-navigation.js
       - name: Package production files only
         run: |
           mkdir -p _site/development
