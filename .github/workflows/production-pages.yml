@@ -59,6 +59,7 @@ jobs:
           node --check verify-category-display-i18n.js
           node --check verify-product-copy-i18n.js
           node --check verify-offer-comparison.js
+          node --check verify-home-empty-search.js
       - name: Build production catalog
         run: |
           node build-live-catalog.js build/catalog
@@ -114,6 +115,7 @@ jobs:
           node verify-category-display-i18n.js
           node verify-product-copy-i18n.js
           node verify-offer-comparison.js
+          node verify-home-empty-search.js
       - name: Package production files only
         run: |
           mkdir -p _site
