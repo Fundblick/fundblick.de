@@ -8,6 +8,6 @@ assert.ok(app.includes("input.setAttribute('aria-invalid','true')"),'empty searc
 assert.ok(app.includes("ar:'يرجى إدخال منتج أو علامة تجارية أو موديل.'"),'Arabic empty-search copy missing');
 assert.ok(app.includes("'zh-Hans':'请输入商品、品牌或型号。'"),'Chinese empty-search copy missing');
 assert.ok(html.includes('app.js?v=20260925-live15'),'homepage must cache-bust the fixed app.js');
-assert.ok(html.includes('language-links.js?v=20260925-live15'),'homepage must cache-bust the search guard helper');
+assert.ok(html.includes('language-links.js?v=20260925-live20'),'homepage must cache-bust the search guard and affiliate readiness helper');
 assert.ok(html.includes('aria-live="assertive"'),'homepage search feedback must be announced immediately');
 console.log('homepage empty-search verification passed');
