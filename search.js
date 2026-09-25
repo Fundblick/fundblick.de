@@ -26,7 +26,7 @@
   const language=window.FundBlickLanguage||{lang:'de',config:{locale:'de-DE'},t:{},translate:key=>key};
   const tx=key=>language.translate(key);
   const locale=language.config?.locale||'de-DE';
-  const facetLabels={connection:'connection',form:'form',features:'features',battery:'battery',screen:'screen',panel:'panel',size:'size',color:'color',storage:'storage',power:'power'};
+  const facetLabels={connection:'connection',form:'form',features:'features',battery:'battery',screen:'screen',panel:'panel',size:'size',color:'color',storage:'storage',power:'power',shipping:'shipping'};
   const categoryLabels={headphones:'categoryHeadphones',shoes:'categoryShoes',smartphone:'categoryPhones'};
   const valueLabels={
     de:{Kabellos:'Kabellos',Kabelgebunden:'Kabelgebunden',Schwarz:'Schwarz',Weiß:'Weiß',Blau:'Blau',Rot:'Rot'},
@@ -61,7 +61,8 @@
   qEl.value=state.query;if([...sortEl.options].some(x=>x.value===state.sort))sortEl.value=state.sort;
 
   function asNumber(v){return v!==null&&v!==''&&Number.isFinite(Number(v))&&Number(v)>=0?Number(v):null}
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const maybeNumber=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const norm=s=>String(s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase(locale).trim();
   const money=n=>new Intl.NumberFormat(locale,{style:'currency',currency:'EUR'}).format(n);
   const escapeRegExp=s=>String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
@@ -114,17 +115,22 @@
 
   function normalize(raw){
     if(!raw||raw.active===false||!raw.name||!Number.isFinite(Number(raw.price))||Number(raw.price)<0)return null;
-    const text=`${raw.name} ${raw.description||''}`,taxonomy=String(raw.category||''),family=inferFamily(text,taxonomy);
-    const p={name:String(raw.name),brand:String(raw.brand||''),description:String(raw.description||''),category:String(raw.category||''),price:Number(raw.price),image:String(raw.image||''),family};p.attrs=features(p);return p;
+    const text=`${raw.name} ${raw.description||''}`,taxonomy=String(raw.category||''),family=inferFamily(text,taxonomy),price=Number(raw.price),shippingCost=maybeNumber(raw.shippingCost),rating=maybeNumber(raw.rating),merchantCount=maybeNumber(raw.merchantCount),deliveryDays=maybeNumber(raw.deliveryDays);
+    const p={name:String(raw.name),brand:String(raw.brand||''),description:String(raw.description||''),category:String(raw.category||''),price,shippingCost,totalPrice:shippingCost===null?price:price+shippingCost,image:String(raw.image||''),family,rating,merchantCount,inStock:raw.inStock===true,deliveryDays};
+    p.attrs=features(p);
+    if(rating!==null)p.attrs.rating=rating;
+    if(merchantCount!==null)p.attrs.merchants=merchantCount;
+    const shipping=[];if(shippingCost===0)shipping.push('Kostenloser Versand');if(p.inStock)shipping.push('Sofort lieferbar');if(deliveryDays!==null&&deliveryDays<=3)shipping.push('Lieferung ≤ 3 Werktage');if(shipping.length)p.attrs.shipping=shipping;
+    return p;
   }
 
-  function facetDef(key){return schemaFor(category?.id)?.facets?.find(f=>f.key===key)||null}
+  function facetDef(key){return schemaFor(category?.id)?.facets?.find(f=>f.key===key)||(window.FB_COMMON_FACETS||[]).find(f=>f.key===key)||null}
   function facetTitle(facet){const key=facetLabels[facet.key];if(key){const translated=tx(key);if(translated&&translated!==key)return translated}return facet.label||facet.key}
   function selectedArrayState(){return Object.fromEntries(Object.entries(state.facets).map(([k,v])=>[k,[...v]]))}
   function facetVisible(facet){return typeof window.FB_facetVisible==='function'?window.FB_facetVisible(facet,selectedArrayState(),state.query):true}
   function optionLabel(facet,value){if(facet.type==='threshold')return `≥ ${displayValue(value)}${facet.unit?' '+facet.unit:''}`;return `${displayValue(value)}${facet.unit?' '+facet.unit:''}`}
   function productHasOption(p,key,value,facet){const vals=valuesOf(p.attrs[key]);if(facet?.type==='threshold')return vals.some(v=>Number(v)>=Number(value));return vals.some(v=>String(v)===String(value))}
-  function facetMatches(p,key,set){if(!set?.size)return true;const facet=facetDef(key)||{type:'multi'};if(facet.type==='threshold'){const threshold=Math.max(...[...set].map(Number).filter(Number.isFinite));return valuesOf(p.attrs[key]).some(v=>Number(v)>=threshold)}return [...set].some(value=>productHasOption(p,key,value,facet))}
+  function facetMatches(p,key,set){if(!set?.size)return true;const facet=facetDef(key)||{type:'multi'};if(facet.type==='threshold'){const threshold=Math.max(...[...set].map(Number).filter(Number.isFinite));return valuesOf(p.attrs[key]).some(v=>Number(v)>=threshold)}if(key==='shipping')return [...set].every(value=>productHasOption(p,key,value,facet));return [...set].some(value=>productHasOption(p,key,value,facet))}
 
   function interpret(query){
     const constraints={};let clean=query;
@@ -143,22 +149,22 @@
   }
 
   function queryMatch(p,tokens){if(category&&p.family!==category.id)return false;const hay=norm([p.name,p.brand,p.category,p.description].join(' '));return tokens.every(t=>hay.includes(t))}
-  function filtered(skip){return base.filter(p=>{if(state.min!==null&&p.price<state.min||state.max!==null&&p.price>state.max)return false;if(skip!=='brand'&&state.brands.size&&!state.brands.has(p.brand))return false;return Object.entries(state.facets).every(([key,set])=>skip===key||facetMatches(p,key,set))})}
+  function filtered(skip){return base.filter(p=>{if(state.min!==null&&p.totalPrice<state.min||state.max!==null&&p.totalPrice>state.max)return false;if(skip!=='brand'&&state.brands.size&&!state.brands.has(p.brand))return false;return Object.entries(state.facets).every(([key,set])=>skip===key||facetMatches(p,key,set))})}
   function optionsForKey(key){const set=new Set(base.flatMap(p=>valuesOf(key==='brand'?p.brand:p.attrs[key])).filter(v=>v!==''&&v!==undefined&&v!==null).map(String));return [...set].sort((a,b)=>a.localeCompare(b,locale,{numeric:true}))}
-  function optionsForFacet(facet){const configured=(facet.values||[]).map(String),actual=optionsForKey(facet.key);return [...new Set([...configured,...actual])]}
+  function optionsForFacet(facet){const configured=(facet.values||[]).map(String);return configured.length?configured:optionsForKey(facet.key)}
   function group(key,label,values,facet={key,label,type:'multi'}){if(!values.length)return '';const selected=key==='brand'?state.brands:state.facets[key]||new Set();return `<section class="facet"><h2>${esc(key==='brand'?tx('manufacturer'):facetTitle(facet))}</h2>${values.map(value=>{const count=filtered(key).filter(p=>key==='brand'?p.brand===value:productHasOption(p,key,value,facet)).length;return `<label><input type="checkbox" data-key="${esc(key)}" value="${esc(value)}" ${selected.has(String(value))?'checked':''}>${esc(optionLabel(facet,value))}<span>${count}</span></label>`}).join('')}</section>`}
 
   function renderFilters(){
-    const schema=schemaFor(category?.id);const specialized=(schema?.facets||[]).filter(facetVisible).map(f=>group(f.key,f.label,optionsForFacet(f),f)).join('');const colorValues=optionsForKey('color');
-    filtersEl.innerHTML=`<section class="facet"><h2>${esc(tx('price'))}</h2><div class="price-row"><label>${esc(tx('from'))}<input class="number-input" id="min" type="number" min="0" step="0.01" value="${state.min??''}"></label><label>${esc(tx('to'))}<input class="number-input" id="max" type="number" min="0" step="0.01" value="${state.max??''}"></label></div><button class="apply-price" id="apply-price" type="button">${esc(tx('apply'))}</button></section>${group('brand','Hersteller',optionsForKey('brand'),{key:'brand',label:'Hersteller',type:'multi'})}${colorValues.length?group('color','Farbe',colorValues,{key:'color',label:tx('color'),type:'multi'}):''}${specialized}<section class="facet"><h2>${esc(tx('shipping'))}</h2><p class="facet-help">${esc(tx('shippingHelp'))}</p></section>`;
+    const schema=schemaFor(category?.id),specialized=(schema?.facets||[]).filter(facetVisible).map(f=>group(f.key,f.label,optionsForFacet(f),f)).join(''),colorValues=optionsForKey('color'),common=window.FB_COMMON_FACETS||[],commonGroup=key=>{const f=common.find(x=>x.key===key);return f?group(f.key,f.label,optionsForFacet(f),f):''};
+    filtersEl.innerHTML=`<section class="facet"><h2>${esc(tx('price'))}</h2><div class="price-row"><label>${esc(tx('from'))}<input class="number-input" id="min" type="number" min="0" step="0.01" value="${state.min??''}"></label><label>${esc(tx('to'))}<input class="number-input" id="max" type="number" min="0" step="0.01" value="${state.max??''}"></label></div><button class="apply-price" id="apply-price" type="button">${esc(tx('apply'))}</button></section>${group('brand','Hersteller',optionsForKey('brand'),{key:'brand',label:'Hersteller',type:'multi'})}${commonGroup('shipping')}${commonGroup('rating')}${colorValues.length?group('color','Farbe',colorValues,{key:'color',label:tx('color'),type:'multi'}):''}${specialized}${commonGroup('merchants')}`;
     filtersEl.querySelectorAll('input[type=checkbox]').forEach(el=>el.addEventListener('change',()=>{const set=el.dataset.key==='brand'?state.brands:(state.facets[el.dataset.key]??=new Set());el.checked?set.add(String(el.value)):set.delete(String(el.value));render()}));
     filtersEl.querySelector('#apply-price').addEventListener('click',()=>{state.min=asNumber(filtersEl.querySelector('#min').value);state.max=asNumber(filtersEl.querySelector('#max').value);render()});
   }
 
   function renderChips(){const chips=[];if(state.min!==null)chips.push(['min',`${tx('from')} ${money(state.min)}`]);if(state.max!==null)chips.push(['max',`${tx('to')} ${money(state.max)}`]);for(const brand of state.brands)chips.push(['brand:'+brand,`${tx('manufacturer')}: ${brand}`]);for(const [key,values] of Object.entries(state.facets))for(const value of values){const facet=facetDef(key)||{type:'multi'};chips.push([key+':'+value,optionLabel(facet,value)])}chipsEl.innerHTML=chips.map(([key,label])=>`<button type="button" data-remove="${esc(key)}" aria-label="${esc(removeWord[language.lang]||removeWord.en)}: ${esc(label)}">${esc(label)} ×</button>`).join('');chipsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{const [key,...rest]=b.dataset.remove.split(':'),value=rest.join(':');if(key==='min'||key==='max')state[key]=null;else if(key==='brand')state.brands.delete(value);else state.facets[key]?.delete(value);render()}))}
   function writeUrl(){const url=new URL(location.href),set=(key,value)=>value==null||value===''?url.searchParams.delete(key):url.searchParams.set(key,String(value));set('q',state.query);set('lang',language.lang);set('min',state.min);set('max',state.max);set('brand',[...state.brands].join(','));const facetData=Object.fromEntries(Object.entries(state.facets).filter(([,s])=>s.size).map(([k,s])=>[k,[...s]]));set('facets',Object.keys(facetData).length?JSON.stringify(facetData):'');set('sort',state.sort==='relevance'?'':state.sort);history.replaceState(null,'',url)}
-  function card(p){const tags=Object.values(p.attrs).flatMap(valuesOf).slice(0,4).map(x=>`<span>${esc(displayValue(x))}</span>`).join('');return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(tx('results'))}</div>`}<div><p><bdi>${esc(p.brand||p.category)}</bdi> · ${esc(tx('testData'))}</p><h2 dir="auto">${esc(p.name)}</h2><p dir="auto">${esc(p.description.slice(0,150))}</p><div class="tags">${tags}</div></div><div class="price"><strong>${money(p.price)}</strong><small>${esc(tx('testPrice'))}</small><span class="unavailable">${esc(tx('noOffer'))}</span></div></article>`}
-  function render(){renderFilters();renderChips();let list=filtered();if(state.sort==='price-asc')list.sort((a,b)=>a.price-b.price);else if(state.sort==='price-desc')list.sort((a,b)=>b.price-a.price);else if(state.sort==='brand')list.sort((a,b)=>a.brand.localeCompare(b.brand,locale));const categoryText=categoryLabels[category?.id]?tx(categoryLabels[category.id]).replace(/^[^\p{L}\p{N}]+/u,''):(category?.label||'');summaryEl.textContent=`${list.length} ${list.length===1?tx('oneFound'):tx('found')}${categoryText?' · '+categoryText:''}`;cardsEl.innerHTML=list.length?list.slice(0,100).map(card).join(''):`<div class="empty"><h2>${esc(tx('noResults'))}</h2><p>${esc(tx('noResultsHelp'))}</p></div>`;writeUrl()}
+  function card(p){const tags=Object.entries(p.attrs).filter(([key])=>!['rating','merchants','shipping'].includes(key)).flatMap(([,v])=>valuesOf(v)).slice(0,4).map(x=>`<span>${esc(displayValue(x))}</span>`).join(''),offerMeta=[p.rating!==null?`★ ${p.rating.toLocaleString(locale,{maximumFractionDigits:1})}`:'',p.merchantCount!==null?`🏪 ${p.merchantCount}`:''].filter(Boolean).join(' · '),priceDetail=p.shippingCost!==null?`${money(p.price)} + ${money(p.shippingCost)} 🚚`:tx('testPrice');return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(tx('results'))}</div>`}<div><p><bdi>${esc(p.brand||p.category)}</bdi> · ${esc(tx('testData'))}</p><h2 dir="auto">${esc(p.name)}</h2><p dir="auto">${esc(p.description.slice(0,150))}</p>${offerMeta?`<p>${esc(offerMeta)}</p>`:''}<div class="tags">${tags}</div></div><div class="price"><strong>${money(p.totalPrice)}</strong><small>${esc(priceDetail)}</small><span class="unavailable">${esc(tx('noOffer'))}</span></div></article>`}
+  function render(){renderFilters();renderChips();let list=filtered();if(state.sort==='price-asc')list.sort((a,b)=>a.totalPrice-b.totalPrice);else if(state.sort==='price-desc')list.sort((a,b)=>b.totalPrice-a.totalPrice);else if(state.sort==='brand')list.sort((a,b)=>a.brand.localeCompare(b.brand,locale));const categoryText=categoryLabels[category?.id]?tx(categoryLabels[category.id]).replace(/^[^\p{L}\p{N}]+/u,''):(category?.label||'');summaryEl.textContent=`${list.length} ${list.length===1?tx('oneFound'):tx('found')}${categoryText?' · '+categoryText:''}`;cardsEl.innerHTML=list.length?list.slice(0,100).map(card).join(''):`<div class="empty"><h2>${esc(tx('noResults'))}</h2><p>${esc(tx('noResultsHelp'))}</p></div>`;writeUrl()}
 
   document.querySelector('.search-form').addEventListener('submit',e=>{e.preventDefault();state.query=qEl.value.trim();state.brands.clear();state.facets={};state.min=null;state.max=null;runSearch()});
   document.querySelector('#reset').addEventListener('click',()=>{state.min=state.max=null;state.brands.clear();state.facets={};render()});
