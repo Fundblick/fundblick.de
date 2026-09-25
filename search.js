@@ -3,7 +3,7 @@
   const CATEGORY_RULES = [
     {id:'headphones', label:'Kopfhörer', query:/kopfh[oö]rer|headphones?|earbuds?|in.?ear|over.?ear/i, product:/headphones?|earbuds?|earphones?|kopfh[oö]rer/i, facets:[['connection','Verbindung'],['form','Bauform'],['features','Funktionen'],['battery','Akkulaufzeit']]},
     {id:'tv', label:'Fernseher', query:/fernseher|television|\btv\b|\boled\b|\bqled\b/i, product:/television|smart tv|fernseher|\btv\b/i, facets:[['screen','Bildschirmdiagonale'],['panel','Bildschirmtechnik']]},
-    {id:'shoes', label:'Schuhe', query:/schuhe?|sneakers?|laufschuhe?|running shoes|boots/i, product:/shoes?|sneakers?|cleats?|heels?|sandals?|espadrilles?|boots?|slippers?|schuhe?/i, facets:[['size','Schuhgröße'],['color','Farbe']]},
+    {id:'shoes', label:'Schuhe', query:/\b(?:schuhe?|sneakers?|laufschuhe?|running shoes|boots?)\b/i, product:/\b(?:shoes?|sneakers?|cleats?|heels?|sandals?|espadrilles?|boots?|slippers?|schuhe?)\b/i, facets:[['size','Schuhgröße'],['color','Farbe']]},
     {id:'phone', label:'Smartphones', query:/smartphones?|handys?|iphone|galaxy|pixel phone/i, product:/smartphones?|iphone|mobile phone|galaxy|pixel phone/i, facets:[['storage','Speicher'],['color','Farbe']]},
     {id:'coffee', label:'Kaffeemaschinen', query:/kaffeemaschine|coffee maker|coffee machine/i, product:/coffee maker|coffee machine|espresso machine|kaffeemaschine/i, facets:[['features','Funktionen']]},
     {id:'heatgun', label:'Heißluftfön', query:/hei[ßs]luftf[oö]n|heat gun/i, product:/heat gun|hei[ßs]luftf[oö]n/i, facets:[['power','Leistung']]}
@@ -106,12 +106,12 @@
   function renderFilters(){
     const schema=category?.facets||[];
     const specialized=schema.map(([key,label])=>group(key,label,optionsFor(key))).join('');
-    filtersEl.innerHTML=`<section class="facet"><h2>Preis der Testprodukte</h2><div class="price-row"><label>Von (€)<input class="number-input" id="min" type="number" min="0" step="0.01" value="${state.min??''}"></label><label>Bis (€)<input class="number-input" id="max" type="number" min="0" step="0.01" value="${state.max??''}"></label></div></section>${group('brand','Hersteller',optionsFor('brand'))}${specialized}<section class="facet"><h2>Versand & Verfügbarkeit</h2><p class="facet-help">Dazu liegen noch keine verlässlichen Daten vor. Diese Filter werden ergänzt, sobald Händlerangebote angebunden sind.</p></section>`;
+    filtersEl.innerHTML=`<section class="facet"><h2>Preis der Testprodukte</h2><div class="price-row"><label>Von (€)<input class="number-input" id="min" type="number" min="0" step="0.01" value="${state.min??''}"></label><label>Bis (€)<input class="number-input" id="max" type="number" min="0" step="0.01" value="${state.max??''}"></label></div><button class="apply-price" id="apply-price" type="button">Preis anwenden</button></section>${group('brand','Hersteller',optionsFor('brand'))}${specialized}<section class="facet"><h2>Versand & Verfügbarkeit</h2><p class="facet-help">Dazu liegen noch keine verlässlichen Daten vor. Diese Filter werden ergänzt, sobald Händlerangebote angebunden sind.</p></section>`;
     filtersEl.querySelectorAll('input[type=checkbox]').forEach(el=>el.addEventListener('change',()=>{
       const set=el.dataset.key==='brand'?state.brands:(state.facets[el.dataset.key]??=new Set());
       el.checked?set.add(el.value):set.delete(el.value);render();
     }));
-    for(const key of ['min','max'])filtersEl.querySelector('#'+key).addEventListener('change',e=>{state[key]=asNumber(e.target.value);render()});
+    filtersEl.querySelector('#apply-price').addEventListener('click',()=>{state.min=asNumber(filtersEl.querySelector('#min').value);state.max=asNumber(filtersEl.querySelector('#max').value);render()});
   }
   function renderChips(){const chips=[];
     if(state.min!==null)chips.push(['min',`ab ${money(state.min)}`]);if(state.max!==null)chips.push(['max',`bis ${money(state.max)}`]);
