@@ -53,7 +53,11 @@ jobs:
           node --check live-health.js
           node --check language-links.js
           node --check affiliate-config.js
+          node --check affiliate-consent-version.js
           node --check affiliate-consent.js
+          node --check affiliate-link-policy.js
+          node --check affiliate-outbound.js
+          node --check adcell-feed-normalizer.js
           node --check site-i18n.js
           node --check build-live-catalog.js
           node --check verify-live-catalog-v2.js
@@ -71,6 +75,7 @@ jobs:
           node --check verify-image-fallback.js
           node --check verify-image-quality.js
           node --check verify-affiliate-readiness.js
+          node --check verify-affiliate-routing.js
           node --check verify-home-empty-search.js
           node --check verify-homepage-visual.js
           node --check verify-home-polish.js
@@ -122,11 +127,18 @@ jobs:
           grep -q 'language-links.js' datenschutz.html
           grep -q 'language-links.js' 404.html
           grep -q 'affiliate-config.js' language-links.js
+          grep -q 'affiliate-consent-version.js' language-links.js
           grep -q 'affiliate-consent.js' language-links.js
+          grep -q 'affiliate-link-policy.js' language-links.js
+          grep -q 'affiliate-outbound.js' language-links.js
           grep -q 'affiliate-consent.css' language-links.js
           grep -q 'id="affiliate-adcell"' datenschutz.html
           grep -q 'data-adcell-live-disclosure="false"' datenschutz.html
           grep -q 'IAB Vendor ID 766' datenschutz.html
+          grep -q 'outboundEnabled:false' affiliate-config.js
+          grep -q 'FundBlickAffiliateLinkPolicy' affiliate-link-policy.js
+          grep -q 'FundBlickAffiliateOutbound' affiliate-outbound.js
+          grep -q 'FundBlickAdcellFeedNormalizer' adcell-feed-normalizer.js
           grep -q 'search-mobile.css' search.html
           grep -q 'value="zh-Hans"' search.html
           grep -q "'zh-Hans'" search-i18n.js
@@ -164,13 +176,14 @@ jobs:
           node verify-image-fallback.js
           node verify-image-quality.js
           node verify-affiliate-readiness.js
+          node verify-affiliate-routing.js
           node verify-home-empty-search.js
           node verify-homepage-visual.js
           node verify-home-polish.js
       - name: Package production files only
         run: |
           mkdir -p _site
-          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js affiliate-config.js affiliate-consent.js affiliate-consent.css site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js adcell-feed-normalizer.js affiliate-consent.css site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp -R build/catalog _site/catalog
           touch _site/.nojekyll
       - name: Configure Pages
