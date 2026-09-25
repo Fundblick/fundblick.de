@@ -31,6 +31,7 @@ jobs:
           node --check i18n.js
           node --check deal-of-day.js
           node --check home-extras.js
+          node --check home-categories.js
           node --check search-i18n.js
           node --check facet-schemas.js
           node --check category-display-i18n.js
@@ -72,9 +73,12 @@ jobs:
           grep -q 'language-links.js' index.html
           grep -q 'deal-of-day.js' index.html
           grep -q 'home-extras.js' index.html
+          grep -q 'home-categories.js' index.html
+          grep -q 'home-categories.css' index.html
           grep -q 'id="deal"' index.html
           grep -q 'id="categories"' index.html
           grep -q 'id="showcaseList"' index.html
+          test "$(grep -o 'data-category-key=' index.html | wc -l)" -eq 16
           grep -q 'search-i18n.js' search.html
           grep -q 'facet-schemas.js' search.html
           grep -q 'category-display-i18n.js' search.html
@@ -128,7 +132,7 @@ jobs:
       - name: Package production files only
         run: |
           mkdir -p _site
-          cp index.html deal-of-day.js home-extras.js search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js product-copy-i18n.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js product-copy-i18n.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp -R build/catalog _site/catalog
           touch _site/.nojekyll
       - name: Configure Pages
