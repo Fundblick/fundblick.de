@@ -25,4 +25,6 @@ assert.ok(packageLine.includes('page-meta-i18n.js'),'localized metadata helper m
 assert.ok(packageLine.includes('results-paging.js')&&packageLine.includes('results-paging.css'),'paging assets must ship to production');
 assert.ok(!packageLine.includes('adcell-feed-normalizer.js'),'ADCELL import normalizer must not be exposed in the public site artifact');
 assert.ok(!packageLine.includes('site-i18n.js'),'unused site-i18n helper must not be exposed in the public site artifact');
+assert.ok(!packageLine.includes('products.json'),'legacy DummyJSON product feed must not be exposed in production');
+assert.ok(workflow.includes('test ! -e _site/products.json'),'production packaging must explicitly guard against legacy product-feed leakage');
 console.log('customer metadata, paging and production exposure verification passed');
