@@ -25,10 +25,24 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+      - name: Validate live JavaScript
+        run: |
+          node --check app.js
+          node --check i18n.js
+          node --check search-i18n.js
+          node --check search.js
+          node --check site-i18n.js
+      - name: Verify live search assets
+        run: |
+          grep -q 'search-i18n.js' search.html
+          grep -q 'value="zh-Hans"' search.html
+          grep -q "'zh-Hans'" search-i18n.js
+          grep -q 'data-catalog-url="development/core-products.json"' search.html
       - name: Package production files only
         run: |
-          mkdir -p _site
-          cp index.html search.html search.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          mkdir -p _site/development
+          cp index.html search.html search.js search-i18n.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp development/core-products.json _site/development/
           touch _site/.nojekyll
       - name: Configure Pages
         uses: actions/configure-pages@v5
