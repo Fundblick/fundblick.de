@@ -191,10 +191,11 @@ jobs:
       - name: Package production files only
         run: |
           mkdir -p _site
-          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css results-paging.js results-paging.css page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js affiliate-consent.css i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css results-paging.js results-paging.css page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js affiliate-consent.css i18n.js app.js styles.css home.css impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp -R build/catalog _site/catalog
           test ! -e _site/adcell-feed-normalizer.js
           test ! -e _site/site-i18n.js
+          test ! -e _site/products.json
           touch _site/.nojekyll
       - name: Configure Pages
         uses: actions/configure-pages@v5
