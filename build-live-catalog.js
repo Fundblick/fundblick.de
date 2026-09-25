@@ -8,6 +8,7 @@ const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceFiles=['development/core-products.json'];
 const targetShardBytes=24576;
 const maxItemsPerShard=8;
+const homeDealLimit=60;
 const merchantNames=['DemoMarkt','ShopTest','PreisDemo','DirektTest','Handel24','KaufDemo','MarktProbe'];
 const priceDeltas=[0,-0.025,0.018,-0.012,0.035,-0.02,0.012];
 const shippingPattern=[0,4.5,0,5.99,2.99,0,3.49];
@@ -132,6 +133,18 @@ function splitShards(items){
   return shards;
 }
 
+function dealCandidateScore(product){
+  const offers=Array.isArray(product?.offers)?product.offers:[];
+  if(!offers.length)return 0;
+  const regular=offers.map(offer=>Number(offer.totalPrice)).filter(Number.isFinite).sort((a,b)=>a-b);
+  if(!regular.length)return 0;
+  const reference=regular[Math.floor((regular.length-1)/2)];
+  const best=Math.min(...offers.map(offer=>Number(offer.effectiveTotal??offer.totalPrice)).filter(Number.isFinite));
+  const saving=Math.max(0,reference-best);
+  const pct=reference>0?saving/reference:0;
+  return pct*1000+saving*2+Number(product.merchantCount||0);
+}
+
 function main(){
   const items=readSources();
   if(!items.length)throw new Error('No active catalog products found');
@@ -159,6 +172,11 @@ function main(){
   }));
   const indexJson=JSON.stringify(searchIndex);const indexHash=sha256(indexJson);const searchFile=`search-index.${indexHash.slice(0,12)}.json`;
   fs.writeFileSync(path.join(outputRoot,searchFile),indexJson+'\n');
+
+  const homeDealItems=items.slice().sort((a,b)=>dealCandidateScore(b)-dealCandidateScore(a)||a.id.localeCompare(b.id)).slice(0,Math.min(homeDealLimit,items.length));
+  const homeDealJson=JSON.stringify(homeDealItems);const homeDealHash=sha256(homeDealJson);const homeDealFile=`home-deals.${homeDealHash.slice(0,12)}.json`;
+  fs.writeFileSync(path.join(outputRoot,homeDealFile),homeDealJson+'\n');
+
   const manifest={
     version:2,
     source:'curated-live-beta',
@@ -170,10 +188,13 @@ function main(){
     shardCount:shards.length,
     searchIndexSha256:indexHash,
     searchFile,
+    homeDealFile,
+    homeDealCount:homeDealItems.length,
+    homeDealLimit,
     shards:shardMeta
   };
   fs.writeFileSync(path.join(outputRoot,'manifest.json'),JSON.stringify(manifest)+'\n');
-  console.log(`live catalog built: ${items.length} items, ${shards.length} shards, simulated merchant offers and verified test promotions enabled`);
+  console.log(`live catalog built: ${items.length} items, ${shards.length} shards, ${homeDealItems.length} homepage deal candidates, simulated merchant offers and verified test promotions enabled`);
 }
 
 main();
