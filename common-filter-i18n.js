@@ -26,10 +26,11 @@
   const t=copy[lang]||copy.en;
   const values={'Kostenloser Versand':t.free,'Sofort lieferbar':t.stock,'Lieferung ≤ 3 Werktage':t.fast};
   window.FBCommonFilterI18n={lang,labels:t,values};
-  function translateLabel(label){const input=label.querySelector('input[type="checkbox"]');if(!input)return;const translated=values[input.value];if(!translated)return;const text=[...label.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(text)text.textContent=' '+translated+' ';}
+  function setText(el,value){if(el&&el.textContent!==value)el.textContent=value;}
+  function translateLabel(label){const input=label.querySelector('input[type="checkbox"]');if(!input)return;const translated=values[input.value];if(!translated)return;const text=[...label.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(text&&text.textContent.trim()!==translated)text.textContent=' '+translated+' ';}
   function apply(){
-    document.querySelectorAll('#filters .facet').forEach(section=>{const key=section.querySelector('input[type="checkbox"]')?.dataset.key;if(key==='rating')section.querySelector('h2')&&(section.querySelector('h2').textContent=t.rating);if(key==='merchants')section.querySelector('h2')&&(section.querySelector('h2').textContent=t.merchants);section.querySelectorAll('label').forEach(translateLabel);});
-    document.querySelectorAll('#chips button[data-remove]').forEach(button=>{const raw=button.dataset.remove||'',pos=raw.indexOf(':');if(pos<0)return;const key=raw.slice(0,pos),value=raw.slice(pos+1),translated=values[value];if(key==='shipping'&&translated)button.textContent=translated+' ×';});
+    document.querySelectorAll('#filters .facet').forEach(section=>{const key=section.querySelector('input[type="checkbox"]')?.dataset.key;if(key==='rating')setText(section.querySelector('h2'),t.rating);if(key==='merchants')setText(section.querySelector('h2'),t.merchants);section.querySelectorAll('label').forEach(translateLabel);});
+    document.querySelectorAll('#chips button[data-remove]').forEach(button=>{const raw=button.dataset.remove||'',pos=raw.indexOf(':');if(pos<0)return;const key=raw.slice(0,pos),value=raw.slice(pos+1),translated=values[value],target=translated?translated+' ×':'';if(key==='shipping'&&translated&&button.textContent!==target)button.textContent=target;});
   }
   const targets=['filters','chips'].map(id=>document.getElementById(id)).filter(Boolean);const observer=new MutationObserver(()=>queueMicrotask(apply));targets.forEach(el=>observer.observe(el,{childList:true,subtree:true,characterData:true}));apply();
 })();
