@@ -68,7 +68,8 @@
   function normalize(raw){
     if(!raw||raw.active===false||!raw.name||!Number.isFinite(Number(raw.price))||Number(raw.price)<0)return null;
     const text=`${raw.name} ${raw.description||''}`;
-    const family=CATEGORY_RULES.find(c=>c.product.test(text))?.id||(/(?:^|[- ])shoes?$/i.test(String(raw.category||''))?'shoes':null);
+    const taxonomy=String(raw.category||'');
+    const family=taxonomy.startsWith('fashion.shoes')?'shoes':taxonomy.startsWith('electronics.televisions')?'tv':taxonomy.startsWith('tools.power-tools.drills')?'drill':CATEGORY_RULES.find(c=>c.product.test(text))?.id||(/(?:^|[- ])shoes?$/i.test(taxonomy)?'shoes':null);
     const p={name:String(raw.name),brand:String(raw.brand||''),description:String(raw.description||''),category:String(raw.category||''),price:Number(raw.price),image:String(raw.image||''),family};
     p.attrs=features(p);return p;
   }
@@ -159,5 +160,6 @@
   document.querySelector('#reset').addEventListener('click',()=>{state.min=state.max=null;state.brands.clear();state.facets={};render()});
   sortEl.addEventListener('change',()=>{state.sort=sortEl.value;render()});
   function runSearch(){const translated=queryAliases.reduce((q,[pattern,value])=>q.replace(pattern,value),state.query);category=detect(translated);const tokens=interpret(translated);base=products.filter(p=>queryMatch(p,tokens));render()}
-  fetch('products.json').then(r=>{if(!r.ok)throw Error('Produktdaten nicht erreichbar');return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Produktdaten ungültig');products=data.map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent=tx('loadError');cardsEl.innerHTML=`<div class="empty"><h2>${esc(tx('loadError'))}</h2><p>${esc(tx('tryLater'))}</p></div>`});
+  const readProducts=url=>fetch(url).then(r=>{if(!r.ok)throw Error('Produktdaten nicht erreichbar: '+url);return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Produktdaten ungültig');return data});
+  Promise.all([readProducts('products.json'),cardsEl.dataset.catalogUrl?readProducts(cardsEl.dataset.catalogUrl):Promise.resolve([])]).then(groups=>{products=groups.flat().map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent=tx('loadError');cardsEl.innerHTML=`<div class="empty"><h2>${esc(tx('loadError'))}</h2><p>${esc(tx('tryLater'))}</p></div>`});
 })();

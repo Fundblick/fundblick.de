@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<script>
+(()=>{const l=new URLSearchParams(location.search).get('lang');if(['de','en','ru','ro'].includes(l)){document.documentElement.lang=l;document.documentElement.setAttribute('translate','no')}})();
+</script>
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FundBlick – Entwicklungsvorschau</title>
+<meta name="description" content="Mit FundBlick Produkte entdecken, nach Preis und Kategorie filtern und Händlerangebote übersichtlich finden.">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#128447">
+<meta name="color-scheme" content="light">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_DE">
+<meta property="og:title" content="FundBlick – Produkte entdecken und Angebote vergleichen">
+<meta property="og:description" content="Produkte entdecken, nach Preis und Kategorie filtern und Händlerangebote übersichtlich finden.">
+
+<style>
+:root{--ink:#102018;--muted:#647168;--g:#148a4b;--cream:#f7f7f2;--line:#dfe7e1}*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}.wrap{width:min(1180px,calc(100% - 32px));margin:auto}.preview{background:#0b1711;color:white;text-align:center;padding:7px;font-size:12px;font-weight:800}header{position:sticky;top:0;z-index:20;background:#f7f7f2eF;border-bottom:1px solid var(--line)}.head{height:66px;display:flex;align-items:center}.logo{font-size:24px;font-weight:900}.logo span,.accent{color:var(--g)}nav{margin-left:auto;display:flex;gap:24px}nav a{color:inherit;text-decoration:none;font-size:14px}.hero{padding:72px 0 44px}.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:50px;align-items:center}.kicker{font-size:12px;font-weight:800;color:#0d6b3a;background:#edf7f0;padding:7px 11px;border-radius:99px}h1{font-size:clamp(48px,7vw,82px);line-height:.96;letter-spacing:-4px;margin:18px 0}.hero p{font-size:18px;line-height:1.6;color:#526158;max-width:690px}.search{display:flex;background:white;border:1px solid var(--line);padding:8px;border-radius:20px;box-shadow:0 18px 55px #16302018;margin-top:28px}.search input{flex:1;min-width:0;border:0;outline:0;padding:14px}.search button{border:0;border-radius:14px;background:var(--g);color:white;padding:0 24px;font-weight:800}.art{height:400px;border-radius:34px;background:linear-gradient(145deg,#dff4e4,#c9f29f);position:relative;overflow:hidden}.float{position:absolute;background:white;border-radius:22px;padding:18px;box-shadow:0 20px 50px #183b2422}.f1{left:12%;top:14%;width:65%;transform:rotate(-3deg)}.fakeimg{height:180px;border-radius:15px;background:#eef2ed;display:grid;place-items:center;font-size:54px}.f2{right:7%;bottom:13%;transform:rotate(4deg)}.quick{display:flex;gap:9px;overflow:auto;padding:0 0 48px}.quick button{white-space:nowrap;border:1px solid var(--line);background:white;border-radius:99px;padding:10px 15px;font-weight:700}.discover{background:white;border-block:1px solid var(--line);padding:56px 0}.section-head{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:25px}.eyebrow{color:var(--g);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.1em}.section-head h2{font-size:42px;letter-spacing:-2px;margin:5px 0}.section-head p{max-width:450px;color:var(--muted)}.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.cat{min-height:155px;border:1px solid var(--line);background:var(--cream);border-radius:22px;padding:20px;text-decoration:none;color:inherit;display:flex;flex-direction:column}.cat i{font-style:normal;font-size:30px}.cat b{margin-top:auto;font-size:18px}.cat span{font-size:12px;color:var(--muted)}.results{padding:60px 0}.toolbar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:24px}.toolbar input,.toolbar select{border:1px solid var(--line);background:white;border-radius:12px;padding:11px;min-height:44px}.toolbar input{width:135px}.reset{border:0;background:transparent;color:#0d6b3a;font-weight:800}.applied{display:flex;gap:8px;flex-wrap:wrap;margin:-10px 0 22px}.chip{border:1px solid #cbd8ce;background:#edf7f0;color:#24432f;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:750;cursor:pointer}.chip b{margin-left:5px}.mobile-filter-toggle{display:none}.product-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.product-card{content-visibility:auto;contain-intrinsic-size:360px 520px;background:white;border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}.product-card img{width:100%;aspect-ratio:1;object-fit:contain;background:#f2f4f0;padding:14px}.product-card .count-note{font-size:10px;color:#68766d;padding:12px 14px 0}.product-card h3{font-size:16px;margin:6px 14px}.product-card .desc{margin:0 14px}.product-card .meta{font-size:11px;color:#7a857e;margin:12px 14px 0}.delivery-note{font-size:11px;margin:5px 14px 0;color:#526159}.delivery-note[data-state="eligible"]{color:#0d6b3a}.delivery-note[data-state="unsupported"]{color:#8a3a2b}.product-card .price{margin:6px 14px}.product-card .offer-link,.product-card button{margin:4px 14px 14px;background:var(--ink);color:white;border:0;text-decoration:none;border-radius:10px;padding:10px;text-align:center;font-weight:800}.product-card button:disabled{background:#edf2ee;color:#69766e}.load-more{display:block;margin:28px auto 0;border:1px solid var(--line);background:white;padding:12px 20px;border-radius:99px;font-weight:800}.product-media{aspect-ratio:1;background:#f2f4f0;padding:14px;position:relative}.product-media img{width:100%;height:100%;object-fit:contain}.tag{position:absolute;top:10px;left:10px;background:white;border-radius:99px;padding:5px 8px;font-size:10px}.product-body{padding:15px}.brand{font-size:10px;text-transform:uppercase;color:#0d6b3a;font-weight:900}.product h3{font-size:16px;margin:6px 0}.desc{font-size:13px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.merchant{font-size:11px;color:#7a857e;margin-top:13px}.bottom{display:flex;justify-content:space-between;align-items:end;margin-top:7px;gap:7px}.price{font-size:20px;font-weight:900}.offer{background:var(--ink);color:white;text-decoration:none;padding:9px;border-radius:10px;font-size:11px;font-weight:800}.no{font-size:10px;background:#edf2ee;padding:8px;border-radius:9px}.load{display:block;margin:28px auto;border:1px solid var(--line);background:white;padding:12px 20px;border-radius:99px;font-weight:800}.empty{grid-column:1/-1;background:white;border:1px dashed #bcc9bf;border-radius:20px;padding:35px;text-align:center}.principle{padding:65px 0}.dark{background:var(--ink);color:white;border-radius:30px;padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:35px}.dark h2{font-size:38px;letter-spacing:-2px;margin:4px 0}.dark p{color:#bdc9c1;line-height:1.6}.points div{padding:12px 0;border-top:1px solid #314238}.points b{color:#c9f2a5}footer{padding:35px 0}.foot{border-top:1px solid var(--line);padding-top:24px;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.foot a{color:inherit;margin-left:15px}
+.handoff-dialog{width:min(520px,calc(100% - 28px));border:0;border-radius:22px;padding:0;box-shadow:0 30px 90px #10201844}.handoff-dialog::backdrop{background:#10201888}.handoff-box{padding:24px}.handoff-box h3{margin:0 0 8px;font-size:24px}.handoff-box p{color:var(--muted);line-height:1.5}.handoff-terms{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:18px 0}.handoff-term{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:10px}.handoff-term small{display:block;color:var(--muted);margin-bottom:3px}.translation-guide{grid-column:1/-1;background:#eef7f1;border:1px solid #cfe5d6;border-radius:14px;padding:14px;line-height:1.45}.translation-guide small{display:block;color:var(--muted);margin-bottom:6px}.handoff-fallback{grid-column:1/-1}.handoff-fallback summary{cursor:pointer;font-weight:700;color:var(--muted)}.handoff-terms-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.handoff-actions{display:flex;gap:10px;flex-wrap:wrap}.handoff-actions a,.handoff-actions button{border:0;border-radius:11px;padding:11px 14px;font-weight:800}.handoff-actions a{background:var(--ink);color:white;text-decoration:none}.handoff-actions button{background:#edf2ee;color:var(--ink)}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.art{display:none}.product-grid,.cats{grid-template-columns:repeat(3,1fr)}}@media(max-width:700px){nav{display:none}.hero{padding:44px 0 30px}h1{font-size:clamp(45px,14vw,62px);letter-spacing:-3px}.hero p{font-size:16px}.section-head{display:block}.cats{display:flex;overflow:auto}.cat{min-width:72%}.product-grid{grid-template-columns:1fr;gap:12px}.product-card{display:grid;grid-template-columns:minmax(118px,36%) 1fr;grid-template-rows:auto auto auto 1fr auto;min-height:190px}.product-card .product-media{grid-column:1;grid-row:1/-1;aspect-ratio:auto;height:100%;min-height:190px;padding:10px}.product-card .count-note{grid-column:2;padding:14px 14px 0}.product-card h3{grid-column:2;font-size:15px;line-height:1.25;margin:5px 14px}.product-card .desc{grid-column:2;display:none}.product-card .meta{grid-column:2;margin:5px 14px 0}.product-card .price{grid-column:2;font-size:19px;margin:5px 14px}.product-card .delivery-note{grid-column:2;margin:4px 14px 0}.product-card .offer-link,.product-card button{grid-column:2;margin:4px 14px 14px;min-height:44px}.product-body{padding:11px}.product h3{font-size:14px}.bottom{display:block}.offer,.no{display:block;text-align:center;margin-top:8px}.toolbar{display:grid;grid-template-columns:1fr 1fr}.toolbar input,.toolbar select{width:100%}.reset{grid-column:1/-1}.dark{grid-template-columns:1fr;padding:27px}.dark h2{font-size:31px}.foot{display:block}.foot div:last-child{margin-top:12px}.foot a{margin:0 14px 0 0}}
+</style>
+
+</head>
+<body><div class="preview" data-ui="previewBanner">ENTWICKLUNGSVORSCHAU · FundBlick Version 2</div><header><div class="wrap head"><div class="logo">Fund<span>Blick</span></div><nav><a href="#entdecken" data-ui="navDiscover">Entdecken</a><a href="#produkte" data-ui="navProducts">Produkte</a><a href="#prinzip" data-ui="navPrinciple">Prinzip</a></nav></div></header><main>
+<section class="hero"><div class="wrap hero-grid"><div><span class="kicker" data-ui="heroKicker">● Produktentdeckung, neu gedacht</span><h1><span data-ui="heroTitleTop">Weniger suchen.</span><br><span class="accent" data-ui="heroTitleAccent">Besser finden.</span></h1><p data-ui="heroIntro">FundBlick bringt Produkte aus unterschiedlichen Quellen in eine klare Suche. Statt Shop für Shop zu öffnen, startest du mit dem Produkt, das du wirklich suchst.</p><form class="search" role="search"><input id="site-search" type="search" autocomplete="off" placeholder="z. B. Parfum, Sofa, Kopfhörer …" aria-label="Produktsuche"><button id="search-submit">Suchen</button></form></div><div class="art" aria-hidden="true"><div class="float f1"><div class="fakeimg">⌁</div><small>FundBlick Fund</small><h3>Ein Produkt. Klare Auswahl.</h3><b>ab 19,99 €</b></div><div class="float f2"><small>gefunden in</small><br><b>mehreren Quellen</b></div></div></div></section>
+<div class="wrap quick"><button data-q="akkuschrauber" data-ui="quickDrill">Akkuschrauber</button><button data-category-prefix="electronics" data-ui="quickElectronics">Elektronik</button><button data-category-prefix="fashion" data-ui="quickFashion">Mode</button><button data-q="fernseher" data-ui="quickTv">Fernseher</button><button data-category-prefix="fashion.bags" data-ui="quickBags">Taschen</button><button data-category-prefix="fashion.shoes" data-ui="quickShoes">Schuhe</button></div>
+<section class="discover" id="entdecken"><div class="wrap"><div class="section-head"><div><span class="eyebrow" data-ui="discoverEyebrow">Entdecken</span><h2 data-ui="discoverTitle">Direkt in die richtige Richtung.</h2></div><p data-ui="discoverIntro">Breite Einstiege zeigen auf Anhieb, was FundBlick abdeckt. Für konkrete Wünsche bleibt die Suche der schnellste Weg.</p></div><div class="cats"><a class="cat category-link" href="#produkte" data-category-prefix="fashion"><i>✦</i><b data-ui="catFashion">Mode</b><span data-ui="catFashionSub">Schuhe & Accessoires</span></a><a class="cat category-link" href="#produkte" data-category-prefix="fashion.bags"><i>⌂</i><b data-ui="catBags">Taschen</b><span data-ui="catBagsSub">Taschen & Accessoires</span></a><a class="cat category-link" href="#produkte" data-category-prefix="electronics"><i>▣</i><b data-ui="catElectronics">Elektronik</b><span data-ui="catElectronicsSub">Fernseher & Technik</span></a><a class="cat category-link" href="#produkte" data-category-prefix="fashion.shoes"><i>↗</i><b data-ui="catShoes">Schuhe</b><span data-ui="catShoesSub">Laufschuhe & weitere Schuhe</span></a></div></div></section>
+<section class="results" id="produkte"><div class="wrap"><div class="section-head"><div><span class="eyebrow" data-ui="resultsEyebrow">Produkte</span><h2 data-ui="resultsTitle">Aktuelle Fundstücke</h2></div><p data-ui="resultsIntro">Suche, filtere und sortiere die derzeitigen Testdaten.</p></div><div class="toolbar"><select id="ui-language" aria-label="Sprache"><option value="de">Deutsch</option><option value="en">English</option><option value="ru">Русский</option><option value="ro">Română</option></select><input id="price-min" type="number" min="0" placeholder="Preis von €"><input id="price-max" type="number" min="0" placeholder="Preis bis €"><select id="category-filter"><option value="">Alle Kategorien</option></select><select id="brand-filter"><option value="">Alle Marken</option></select><select id="delivery-country" aria-label="Lieferland"><option value="">Lieferland: nicht gewählt</option><option value="DE">Deutschland</option><option value="AT">Österreich</option><option value="CH">Schweiz</option><option value="IT">Italien</option><option value="FR">Frankreich</option><option value="NL">Niederlande</option><option value="BE">Belgien</option><option value="PL">Polen</option></select><select id="sort-products"><option value="relevance">Beste Treffer</option><option value="price-asc">Preis aufsteigend</option><option value="price-desc">Preis absteigend</option></select><button class="reset" id="reset-filters">Filter zurücksetzen</button></div><div id="applied-filters" class="applied" aria-label="Aktive Filter"></div><section id="products-section" aria-live="polite"><div class="empty">Produkte werden geladen …</div></section></div></section>
+<section class="principle" id="prinzip"><div class="wrap dark"><div><span class="eyebrow" data-ui="principleEyebrow">FundBlick Prinzip</span><h2 data-ui="principleTitle">Das Produkt steht im Mittelpunkt. Nicht der Shop.</h2><p data-ui="principleIntro">FundBlick soll den Weg vom Wunsch zum passenden Angebot verkürzen – übersichtlich, schnell und ohne unnötige Ablenkung.</p></div><div class="points"><div><b>01</b><br><span data-ui="principle1">Produkte verständlich zusammenführen.</span></div><div><b>02</b><br><span data-ui="principle2">Filter und Preise dort zeigen, wo sie helfen.</span></div><div><b>03</b><br><span data-ui="principle3">Mobil genauso selbstverständlich wie am Desktop.</span></div></div></div></section></main><dialog id="merchant-handoff" class="handoff-dialog"><div class="handoff-box"><h3 id="handoff-title">Kaufhilfe</h3><p id="handoff-message"></p><div id="handoff-terms" class="handoff-terms"></div><div class="handoff-actions"><a id="handoff-open" href="#" target="_blank" rel="sponsored noopener">Händlerseite öffnen</a><button id="handoff-close" type="button">Schließen</button></div></div></dialog><footer><div class="wrap foot"><div><b>FundBlick</b><br>Entwicklungsvorschau mit Testdaten.</div><div><a href="impressum-preview.html">Impressum</a><a href="datenschutz-preview.html">Datenschutz</a></div></div></footer><script>
+const DATA_BASE = 'development/catalog/';
+let products = [];
+let currentResults = [];
+let visibleLimit = 24;
+const shardCache = new Map();
+let publicationManifest = null;
+let searchRoutingRoot = null;
+let substringRoutingRoot = null;
+const shadowSearchCache = new Map();
+const substringDirectoryCache = new Map();
+const substringFileCache = new Map();
+let taxonomyLabels=new Map();
+let activeCategoryPrefix='';
+let uiLanguage='de';
+const searchInput = document.querySelector('.search input');
+
+function normalizeSearch(value) {
+  return String(value ?? '').normalize('NFKD')
+    .replace(/(\p{Script=Latin})\p{M}+/gu, '$1')
+    .toLocaleLowerCase().normalize('NFC').replace(/[^\p{L}\p{M}\p{N}]+/gu, ' ')
+    .trim().replace(/\s+/g, ' ');
+}
+let searchConcepts=new Map();
+function resolveSearchConcepts(value) {
+  const normalized=normalizeSearch(value),matches=[];
+  for(const [concept,terms] of searchConcepts)if(terms.includes(normalized))matches.push(concept);
+  return matches;
+}
+function escapeHtml(value) {
+  return String(value ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function safeHttpUrl(value) {
+  try { const u=new URL(String(value||''),location.href); return ['http:','https:'].includes(u.protocol)?u.href:''; }
+  catch { return ''; }
+}
+function isRealOfferUrl(value) {
+  return Boolean(safeHttpUrl(value));
+}
+const UI_LANGUAGES=['de','en','ru','ro'];
+const UI_TEXT={
+  de:{searchPlaceholder:'z. B. Parfum, Sofa, Kopfhörer …',search:'Suchen',language:'Sprache',priceMin:'Preis von €',priceMax:'Preis bis €',allCategories:'Alle Kategorien',allBrands:'Alle Marken',deliveryNone:'Lieferland: nicht gewählt',sortRelevance:'Beste Treffer',sortPriceAsc:'Preis aufsteigend',sortPriceDesc:'Preis absteigend',reset:'Filter zurücksetzen',noResults:'Keine passenden Produkte gefunden.',loading:'Produkte werden geladen …',loadError:'Produktdaten konnten nicht geladen werden. Bitte Seite erneut laden.',details:'Details laden',detailsLoading:'Details werden geladen…',detailsRetry:'Details erneut laden',detailsUnavailable:'Details nicht verfügbar',product:'Produkt',deliveryEligible:'Lieferung passend',deliveryUnknown:'Lieferung noch nicht bestätigt',deliveryUnsupported:'Lieferung nicht vorgesehen',searchChip:'Suche',categoryChip:'Kategorie',brandChip:'Marke',countryChip:'Lieferland',from:'ab',to:'bis',testProduct:'Testprodukt',offer:'Zum Angebot',handoffOffer:'Kaufhilfe & Händler öffnen',merchantLanguage:'Händlersprache',previewBanner:"ENTWICKLUNGSVORSCHAU · FundBlick Version 2",navDiscover:"Entdecken",navProducts:"Produkte",navPrinciple:"Prinzip",heroKicker:"● Produktentdeckung, neu gedacht",heroTitleTop:"Weniger suchen.",heroTitleAccent:"Besser finden.",heroIntro:"FundBlick bringt Produkte aus unterschiedlichen Quellen in eine klare Suche. Statt Shop für Shop zu öffnen, startest du mit dem Produkt, das du wirklich suchst.",quickDrill:"Akkuschrauber",quickElectronics:"Elektronik",quickFashion:"Mode",quickTv:"Fernseher",quickBags:"Taschen",quickShoes:"Schuhe",discoverEyebrow:"Entdecken",discoverTitle:"Direkt in die richtige Richtung.",discoverIntro:"Breite Einstiege zeigen auf Anhieb, was FundBlick abdeckt. Für konkrete Wünsche bleibt die Suche der schnellste Weg.",catFashion:"Mode",catFashionSub:"Schuhe & Accessoires",catBags:"Taschen",catBagsSub:"Taschen & Accessoires",catElectronics:"Elektronik",catElectronicsSub:"Fernseher & Technik",catShoes:"Schuhe",catShoesSub:"Laufschuhe & weitere Schuhe",resultsEyebrow:"Produkte",resultsTitle:"Aktuelle Fundstücke",resultsIntro:"Suche, filtere und sortiere die derzeitigen Testdaten.",principleEyebrow:"FundBlick Prinzip",principleTitle:"Das Produkt steht im Mittelpunkt. Nicht der Shop.",principleIntro:"FundBlick soll den Weg vom Wunsch zum passenden Angebot verkürzen – übersichtlich, schnell und ohne unnötige Ablenkung.",principle1:"Produkte verständlich zusammenführen.",principle2:"Filter und Preise dort zeigen, wo sie helfen.",principle3:"Mobil genauso selbstverständlich wie am Desktop."},
+  en:{searchPlaceholder:'e.g. perfume, sofa, headphones …',search:'Search',language:'Language',priceMin:'Price from €',priceMax:'Price to €',allCategories:'All categories',allBrands:'All brands',deliveryNone:'Delivery country: not selected',sortRelevance:'Best matches',sortPriceAsc:'Price ascending',sortPriceDesc:'Price descending',reset:'Reset filters',noResults:'No matching products found.',loading:'Products are loading …',loadError:'Product data could not be loaded. Please reload the page.',details:'Load details',detailsLoading:'Loading details…',detailsRetry:'Load details again',detailsUnavailable:'Details unavailable',product:'Product',deliveryEligible:'Delivery available',deliveryUnknown:'Delivery not yet confirmed',deliveryUnsupported:'Delivery not available',searchChip:'Search',categoryChip:'Category',brandChip:'Brand',countryChip:'Delivery country',from:'from',to:'to',testProduct:'Test product',offer:'View offer',handoffOffer:'Purchase help & open merchant',merchantLanguage:'Merchant language',previewBanner:"DEVELOPMENT PREVIEW · FundBlick Version 2",navDiscover:"Discover",navProducts:"Products",navPrinciple:"Principle",heroKicker:"● Product discovery, rethought",heroTitleTop:"Search less.",heroTitleAccent:"Find better.",heroIntro:"FundBlick brings products from different sources into one clear search. Instead of opening shop after shop, start with the product you actually want.",quickDrill:"Cordless drill",quickElectronics:"Electronics",quickFashion:"Fashion",quickTv:"Televisions",quickBags:"Bags",quickShoes:"Shoes",discoverEyebrow:"Discover",discoverTitle:"Start in the right direction.",discoverIntro:"Broad entry points show what FundBlick covers at a glance. For specific needs, search remains the fastest route.",catFashion:"Fashion",catFashionSub:"Shoes & accessories",catBags:"Bags",catBagsSub:"Bags & accessories",catElectronics:"Electronics",catElectronicsSub:"TVs & technology",catShoes:"Shoes",catShoesSub:"Running shoes & more",resultsEyebrow:"Products",resultsTitle:"Current finds",resultsIntro:"Search, filter and sort the current test data.",principleEyebrow:"FundBlick principle",principleTitle:"The product comes first. Not the shop.",principleIntro:"FundBlick shortens the path from a need to a suitable offer – clearly, quickly and without unnecessary distraction.",principle1:"Bring product information together clearly.",principle2:"Show filters and prices where they help.",principle3:"As natural on mobile as on desktop."},
+  ru:{searchPlaceholder:'например: парфюм, диван, наушники …',search:'Поиск',language:'Язык',priceMin:'Цена от €',priceMax:'Цена до €',allCategories:'Все категории',allBrands:'Все бренды',deliveryNone:'Страна доставки: не выбрана',sortRelevance:'Лучшие совпадения',sortPriceAsc:'Цена по возрастанию',sortPriceDesc:'Цена по убыванию',reset:'Сбросить фильтры',noResults:'Подходящие товары не найдены.',loading:'Товары загружаются …',loadError:'Не удалось загрузить данные товаров. Перезагрузите страницу.',details:'Загрузить детали',detailsLoading:'Загрузка деталей…',detailsRetry:'Загрузить детали снова',detailsUnavailable:'Детали недоступны',product:'Товар',deliveryEligible:'Доставка подходит',deliveryUnknown:'Доставка пока не подтверждена',deliveryUnsupported:'Доставка не предусмотрена',searchChip:'Поиск',categoryChip:'Категория',brandChip:'Бренд',countryChip:'Страна доставки',from:'от',to:'до',testProduct:'Тестовый товар',offer:'К предложению',handoffOffer:'Помощь с покупкой и сайт продавца',merchantLanguage:'Язык продавца',previewBanner:"ПРЕДВАРИТЕЛЬНАЯ ВЕРСИЯ · FundBlick Version 2",navDiscover:"Обзор",navProducts:"Товары",navPrinciple:"Принцип",heroKicker:"● Новый подход к поиску товаров",heroTitleTop:"Меньше искать.",heroTitleAccent:"Лучше находить.",heroIntro:"FundBlick объединяет товары из разных источников в одном понятном поиске. Вместо переходов из магазина в магазин начните с товара, который вам действительно нужен.",quickDrill:"Аккумуляторный шуруповёрт",quickElectronics:"Электроника",quickFashion:"Мода",quickTv:"Телевизоры",quickBags:"Сумки",quickShoes:"Обувь",discoverEyebrow:"Обзор",discoverTitle:"Сразу в правильном направлении.",discoverIntro:"Основные категории сразу показывают возможности FundBlick. Для конкретного запроса быстрее всего воспользоваться поиском.",catFashion:"Мода",catFashionSub:"Обувь и аксессуары",catBags:"Сумки",catBagsSub:"Сумки и аксессуары",catElectronics:"Электроника",catElectronicsSub:"Телевизоры и техника",catShoes:"Обувь",catShoesSub:"Кроссовки и другая обувь",resultsEyebrow:"Товары",resultsTitle:"Актуальные находки",resultsIntro:"Ищите, фильтруйте и сортируйте текущие тестовые данные.",principleEyebrow:"Принцип FundBlick",principleTitle:"В центре внимания — товар, а не магазин.",principleIntro:"FundBlick сокращает путь от желания до подходящего предложения — понятно, быстро и без лишних отвлечений.",principle1:"Понятно объединять информацию о товарах.",principle2:"Показывать фильтры и цены там, где они полезны.",principle3:"Одинаково удобно на телефоне и компьютере."},
+  ro:{searchPlaceholder:'de ex. parfum, canapea, căști …',search:'Caută',language:'Limbă',priceMin:'Preț de la €',priceMax:'Preț până la €',allCategories:'Toate categoriile',allBrands:'Toate mărcile',deliveryNone:'Țara de livrare: neselectată',sortRelevance:'Cele mai bune rezultate',sortPriceAsc:'Preț crescător',sortPriceDesc:'Preț descrescător',reset:'Resetează filtrele',noResults:'Nu au fost găsite produse potrivite.',loading:'Produsele se încarcă …',loadError:'Datele produselor nu au putut fi încărcate. Reîncarcă pagina.',details:'Încarcă detalii',detailsLoading:'Se încarcă detaliile…',detailsRetry:'Încarcă detaliile din nou',detailsUnavailable:'Detalii indisponibile',product:'Produs',deliveryEligible:'Livrare disponibilă',deliveryUnknown:'Livrarea nu este încă confirmată',deliveryUnsupported:'Livrarea nu este disponibilă',searchChip:'Căutare',categoryChip:'Categorie',brandChip:'Marcă',countryChip:'Țara de livrare',from:'de la',to:'până la',testProduct:'Produs de test',offer:'Vezi oferta',handoffOffer:'Ajutor la cumpărare și comerciant',merchantLanguage:'Limba comerciantului',previewBanner:"PREVIZUALIZARE DE DEZVOLTARE · FundBlick Version 2",navDiscover:"Descoperă",navProducts:"Produse",navPrinciple:"Principiu",heroKicker:"● Descoperirea produselor, regândită",heroTitleTop:"Caută mai puțin.",heroTitleAccent:"Găsește mai bine.",heroIntro:"FundBlick aduce produse din surse diferite într-o singură căutare clară. În loc să deschizi magazin după magazin, începi cu produsul pe care îl cauți cu adevărat.",quickDrill:"Mașină de înșurubat",quickElectronics:"Electronice",quickFashion:"Modă",quickTv:"Televizoare",quickBags:"Genți",quickShoes:"Încălțăminte",discoverEyebrow:"Descoperă",discoverTitle:"Direct în direcția potrivită.",discoverIntro:"Intrările generale arată imediat ce acoperă FundBlick. Pentru cerințe concrete, căutarea rămâne cea mai rapidă cale.",catFashion:"Modă",catFashionSub:"Încălțăminte și accesorii",catBags:"Genți",catBagsSub:"Genți și accesorii",catElectronics:"Electronice",catElectronicsSub:"Televizoare și tehnologie",catShoes:"Încălțăminte",catShoesSub:"Pantofi de alergare și altele",resultsEyebrow:"Produse",resultsTitle:"Descoperiri actuale",resultsIntro:"Caută, filtrează și sortează datele de test curente.",principleEyebrow:"Principiul FundBlick",principleTitle:"Produsul este în centru. Nu magazinul.",principleIntro:"FundBlick scurtează drumul de la dorință la oferta potrivită – clar, rapid și fără distrageri inutile.",principle1:"Reunește clar informațiile despre produse.",principle2:"Arată filtrele și prețurile acolo unde ajută.",principle3:"La fel de firesc pe mobil ca pe desktop."},
+};
+function supportedUiLanguage(value){
+  const code=handoffLanguage(value);
+  return UI_LANGUAGES.includes(code)?code:'de';
+}
+function uiText(key,language=uiLanguage){
+  const lang=UI_LANGUAGES.includes(language)?language:'en';
+  return UI_TEXT[lang]?.[key]||UI_TEXT.en[key]||key;
+}
+function countryDisplayName(code){
+  try{return new Intl.DisplayNames([uiLanguage],{type:'region'}).of(code)||code}catch{return code}
+}
+function applyUiLanguage(){
+  document.documentElement.lang=uiLanguage;
+  const languageSelect=document.getElementById('ui-language');
+  if(languageSelect)languageSelect.value=uiLanguage;
+  searchInput.placeholder=uiText('searchPlaceholder');
+  searchInput.setAttribute('aria-label',uiText('search'));
+  const submit=document.getElementById('search-submit'); if(submit)submit.textContent=uiText('search');
+  const langSelect=document.getElementById('ui-language'); if(langSelect)langSelect.setAttribute('aria-label',uiText('language'));
+  document.getElementById('price-min').placeholder=uiText('priceMin');
+  document.getElementById('price-max').placeholder=uiText('priceMax');
+  const category=document.getElementById('category-filter'); if(category?.options[0])category.options[0].textContent=uiText('allCategories');
+  const brand=document.getElementById('brand-filter'); if(brand?.options[0])brand.options[0].textContent=uiText('allBrands');
+  const delivery=document.getElementById('delivery-country');
+  if(delivery){
+    if(delivery.options[0])delivery.options[0].textContent=uiText('deliveryNone');
+    for(const option of [...delivery.options].slice(1))option.textContent=countryDisplayName(option.value);
+    delivery.setAttribute('aria-label',uiText('countryChip'));
+  }
+  const sort=document.getElementById('sort-products');
+  if(sort){
+    const labels={relevance:'sortRelevance','price-asc':'sortPriceAsc','price-desc':'sortPriceDesc'};
+    for(const option of sort.options)option.textContent=uiText(labels[option.value]||option.value);
+  }
+  const reset=document.getElementById('reset-filters'); if(reset)reset.textContent=uiText('reset');
+  document.querySelectorAll('[data-ui]').forEach(el=>{const key=el.getAttribute('data-ui');const value=uiText(key);if(value&&value!==key)el.textContent=value});
+}
+const HANDOFF_VOCAB={
+  de:{title:'Händlerseite übersetzen',message:'Die Händlerseite ist in einer anderen Sprache. Dein Browser kann die komplette Seite übersetzen.',open:'Händlerseite öffnen',close:'Schließen',detected:'Erkannter Browser',fallback:'Falls die Browserübersetzung nicht verfügbar ist'},
+  en:{title:'Translate merchant page',message:'The merchant page uses another language. Your browser can translate the complete page.',open:'Open merchant page',close:'Close',detected:'Detected browser',fallback:'If browser translation is unavailable'},
+  ru:{title:'Перевести сайт продавца',message:'Сайт продавца открыт на другом языке. Ваш браузер может перевести всю страницу.',open:'Открыть сайт продавца',close:'Закрыть',detected:'Определённый браузер',fallback:'Если перевод в браузере недоступен'},
+  ro:{title:'Tradu pagina comerciantului',message:'Pagina comerciantului este într-o altă limbă. Browserul poate traduce întreaga pagină.',open:'Deschide pagina comerciantului',close:'Închide',detected:'Browser detectat',fallback:'Dacă traducerea din browser nu este disponibilă'}
+};
+const MERCHANT_TERMS={
+  de:{cart:'Warenkorb',checkout:'Kasse / Bezahlen',shipping:'Lieferung',address:'Lieferadresse',payment:'Zahlungsart'},
+  en:{cart:'Cart',checkout:'Checkout',shipping:'Shipping',address:'Delivery address',payment:'Payment method'},
+  ru:{cart:'Корзина',checkout:'Оформление заказа',shipping:'Доставка',address:'Адрес доставки',payment:'Способ оплаты'},
+  ro:{cart:'Coș',checkout:'Finalizare comandă',shipping:'Livrare',address:'Adresă de livrare',payment:'Metodă de plată'},
+  zh:{cart:'购物车',checkout:'结账',shipping:'配送',address:'收货地址',payment:'支付方式'},
+  ja:{cart:'カート',checkout:'購入手続き',shipping:'配送',address:'お届け先住所',payment:'支払い方法'},
+  th:{cart:'ตะกร้าสินค้า',checkout:'ชำระเงิน',shipping:'การจัดส่ง',address:'ที่อยู่จัดส่ง',payment:'วิธีชำระเงิน'}
+};
+const TRANSLATION_GUIDE={
+  de:{
+    chromeAndroid:(source,target)=>`Chrome: ⋮ → Übersetzen → ${target} → Übersetzungseinstellungen → „${source} immer übersetzen“.`,
+    chrome:(source,target)=>`Chrome: Übersetzungssymbol in der Adressleiste → ${target}; in den Übersetzungsoptionen „${source} immer übersetzen“ aktivieren.`,
+    edge:(source,target)=>`Edge: Übersetzungssymbol in der Adressleiste → ${target} → „Immer aus ${source} übersetzen“.`,
+    firefoxAndroid:(source,target)=>`Firefox: Übersetzungssymbol → ${target} → Einstellungen für die Übersetzung → automatische Übersetzung aktivieren.`,
+    firefox:(source,target)=>`Firefox: Übersetzungssymbol bzw. Übersetzungsmenü öffnen und nach ${target} übersetzen.`,
+    safari:(source,target)=>`Safari: Seitenmenü → „Übersetzen in ${target}“ (wenn für diese Sprache verfügbar).`,
+    other:(source,target)=>`Nutze die Seitenübersetzung deines Browsers und übersetze von ${source} nach ${target}.`
+  },
+  en:{
+    chromeAndroid:(source,target)=>`Chrome: ⋮ → Translate → ${target} → translation settings → “Always translate ${source}”.`,
+    chrome:(source,target)=>`Chrome: translation icon in the address bar → ${target}; enable “Always translate ${source}” in translation options.`,
+    edge:(source,target)=>`Edge: translation icon in the address bar → ${target} → “Always translate from ${source}”.`,
+    firefoxAndroid:(source,target)=>`Firefox: translation icon → ${target} → translation settings → enable automatic translation.`,
+    firefox:(source,target)=>`Firefox: open the translation icon/menu and translate to ${target}.`,
+    safari:(source,target)=>`Safari: Page Menu → “Translate to ${target}” (if available for this language).`,
+    other:(source,target)=>`Use your browser's page translation feature to translate from ${source} to ${target}.`
+  },
+  ru:{
+    chromeAndroid:(source,target)=>`Chrome: ⋮ → «Перевести» → ${target} → настройки перевода → «Всегда переводить ${source}».`,
+    chrome:(source,target)=>`Chrome: значок перевода в адресной строке → ${target}; в настройках перевода включите «Всегда переводить ${source}».`,
+    edge:(source,target)=>`Edge: значок перевода в адресной строке → ${target} → «Всегда переводить с ${source}».`,
+    firefoxAndroid:(source,target)=>`Firefox: значок перевода → ${target} → настройки перевода → включите автоматический перевод.`,
+    firefox:(source,target)=>`Firefox: откройте значок/меню перевода и переведите страницу на ${target}.`,
+    safari:(source,target)=>`Safari: меню страницы → «Перевести на ${target}» (если язык поддерживается).`,
+    other:(source,target)=>`Используйте функцию перевода страниц вашего браузера: ${source} → ${target}.`
+  },
+  ro:{
+    chromeAndroid:(source,target)=>`Chrome: ⋮ → Traduceți → ${target} → setările traducerii → „Traduceți întotdeauna ${source}”.`,
+    chrome:(source,target)=>`Chrome: pictograma de traducere din bara de adrese → ${target}; activați „Traduceți întotdeauna ${source}”.`,
+    edge:(source,target)=>`Edge: pictograma de traducere → ${target} → „Traduceți întotdeauna din ${source}”.`,
+    firefoxAndroid:(source,target)=>`Firefox: pictograma de traducere → ${target} → setările traducerii → activați traducerea automată.`,
+    firefox:(source,target)=>`Firefox: deschideți pictograma/meniul de traducere și traduceți în ${target}.`,
+    safari:(source,target)=>`Safari: meniul paginii → „Traduceți în ${target}” (dacă limba este disponibilă).`,
+    other:(source,target)=>`Folosiți traducerea paginii din browser pentru ${source} → ${target}.`
+  }
+};
+function handoffLanguage(value){
+  const tag=String(value||'').trim().toLowerCase().replace(/_/g,'-');
+  const primary=tag.split('-')[0];
+  return /^[a-z]{2,3}$/.test(primary)?primary:null;
+}
+function currentUiLanguage(){return uiLanguage}
+function merchantLanguageNeedsHelp(merchantLanguage,uiLanguage=currentUiLanguage()){
+  const merchant=handoffLanguage(merchantLanguage),ui=handoffLanguage(uiLanguage);
+  return Boolean(merchant&&ui&&merchant!==ui);
+}
+function handoffVocabulary(uiLanguage){
+  const ui=handoffLanguage(uiLanguage)||'de';
+  return HANDOFF_VOCAB[ui]||HANDOFF_VOCAB.en;
+}
+function merchantTerms(merchantLanguage){
+  const merchant=handoffLanguage(merchantLanguage)||'en';
+  return MERCHANT_TERMS[merchant]||MERCHANT_TERMS.en;
+}
+function detectBrowserContext(nav=globalThis.navigator){
+  const ua=String(nav?.userAgent||'');
+  let browser='other';
+  if(/EdgiOS\/|EdgA?\//.test(ua))browser='edge';
+  else if(/FxiOS\/|Firefox\//.test(ua))browser='firefox';
+  else if(/SamsungBrowser\/|OPR\//.test(ua))browser='other';
+  else if(/CriOS\/|Chrome\//.test(ua))browser='chrome';
+  else if(/Version\/.*Safari\//.test(ua))browser='safari';
+  const device=/Android/i.test(ua)?'android':/(iPhone|iPad|iPod)/i.test(ua)?'ios':'desktop';
+  return {browser,device};
+}
+function browserLabel(context){
+  const name={chrome:'Chrome',edge:'Edge',firefox:'Firefox',safari:'Safari',other:'Browser'}[context.browser]||'Browser';
+  const device={android:'Android',ios:'iPhone/iPad',desktop:'Desktop'}[context.device]||context.device;
+  return name+' · '+device;
+}
+function languageName(language,uiLanguage=currentUiLanguage()){
+  const code=handoffLanguage(language); if(!code)return '';
+  try{return new Intl.DisplayNames([uiLanguage],{type:'language'}).of(code)||code.toUpperCase()}catch{return code.toUpperCase()}
+}
+function translationInstruction(merchantLanguage,uiLanguage=currentUiLanguage(),context=detectBrowserContext()){
+  const ui=handoffLanguage(uiLanguage)||'en',set=TRANSLATION_GUIDE[ui]||TRANSLATION_GUIDE.en;
+  const source=languageName(merchantLanguage,ui),target=languageName(ui,ui);
+  const key=context.browser==='chrome'&&context.device==='android'?'chromeAndroid':context.browser==='firefox'&&context.device==='android'?'firefoxAndroid':context.browser;
+  return (set[key]||set.other)(source||String(merchantLanguage||''),target||ui.toUpperCase());
+}
+function merchantLanguageName(language,uiLanguage=currentUiLanguage()){return languageName(language,uiLanguage)}
+function outboundClickUrl(product,offer){
+  if(!product?.id||!offer?.id||!isRealOfferUrl(offer.affiliateUrl))return '';
+  const params=new URLSearchParams({p:String(product.id),o:String(offer.id),lang:currentUiLanguage()});
+  const country=countryCode(document.getElementById('delivery-country')?.value);
+  if(country)params.set('country',country);
+  return 'out-preview.html?'+params.toString();
+}
+function merchantOfferAction(offer,product){
+  const clickUrl=outboundClickUrl(product,offer);
+  if(!clickUrl)return '<button type="button" disabled>'+escapeHtml(uiText('testProduct'))+'</button>';
+  if(merchantLanguageNeedsHelp(offer.merchantLanguage))return '<button type="button" class="offer-link merchant-handoff-trigger">'+escapeHtml(uiText('handoffOffer'))+'</button>';
+  return '<a class="offer-link" href="'+escapeHtml(clickUrl)+'" target="_blank" rel="sponsored noopener">'+escapeHtml(uiText('offer'))+'</a>';
+}
+function openMerchantHandoff(offer,product){
+  const dialog=document.getElementById('merchant-handoff'),ui=currentUiLanguage(),v=handoffVocabulary(ui);
+  if(!dialog||!offer||!isRealOfferUrl(offer.affiliateUrl))return;
+  const language=merchantLanguageName(offer.merchantLanguage,ui),context=detectBrowserContext(),instruction=translationInstruction(offer.merchantLanguage,ui,context);
+  document.getElementById('handoff-title').textContent=v.title;
+  document.getElementById('handoff-message').textContent=(product?.name?product.name+' · ':'')+v.message+(language?' '+uiText('merchantLanguage')+': '+language+'.':'');
+  document.getElementById('handoff-open').textContent=v.open;
+  document.getElementById('handoff-open').href=outboundClickUrl(product,offer);
+  document.getElementById('handoff-close').textContent=v.close;
+  const labels={cart:'Warenkorb / Cart',checkout:'Kasse / Checkout',shipping:'Lieferung / Shipping',address:'Lieferadresse / Delivery address',payment:'Zahlungsart / Payment'},terms=merchantTerms(offer.merchantLanguage);
+  const fallback=Object.entries(terms).map(([key,value])=>'<div class="handoff-term"><small>'+escapeHtml(labels[key]||key)+'</small><b>'+escapeHtml(value)+'</b></div>').join('');
+  document.getElementById('handoff-terms').innerHTML='<div class="translation-guide"><small>'+escapeHtml(v.detected)+': '+escapeHtml(browserLabel(context))+'</small><b>'+escapeHtml(instruction)+'</b></div><details class="handoff-fallback"><summary>'+escapeHtml(v.fallback)+'</summary><div class="handoff-terms-grid">'+fallback+'</div></details>';
+  if(typeof dialog.showModal==='function')dialog.showModal();else dialog.setAttribute('open','');
+}
+function formatPrice(product) {
+  const price=Number(product.p); if(!Number.isFinite(price))return 'Preis auf Anfrage';
+  try{return new Intl.NumberFormat(uiLanguage,{style:'currency',currency:product.u||'EUR'}).format(price)}
+  catch{return price.toFixed(2)+' '+escapeHtml(product.u||'EUR')}
+}
+async function loadJson(path,{mutable=false}={}) {
+  const response=await fetch(path,{cache:mutable?'no-cache':'force-cache',credentials:'omit'});
+  if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
+  return response.json();
+}
+async function loadVerifiedJson(path,expectedSha256) {
+  const response=await fetch(path,{cache:'force-cache',credentials:'omit'});
+  if(!response.ok)throw new Error('HTTP '+response.status+' für '+path);
+  const bytes=await response.arrayBuffer();
+  if(!globalThis.crypto?.subtle)throw new Error('SHA-256-Prüfung wird von diesem Browser nicht unterstützt.');
+  const digest=await crypto.subtle.digest('SHA-256',bytes);
+  const actual=[...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  if(actual!==expectedSha256)throw new Error('Hash-Prüfung fehlgeschlagen für '+path);
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+async function sha256HexText(value){
+  const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(String(value)));
+  return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function searchContentPath(sha){return 'search/'+String(sha).slice(0,12)+'.json'}
+async function loadShadowSearchRoot(){
+  const meta=publicationManifest?.searchRouting;
+  if(!meta)return null;
+  if(searchRoutingRoot)return searchRoutingRoot;
+  searchRoutingRoot=await loadVerifiedJson(DATA_BASE+meta.file,meta.sha256);
+  if(!searchRoutingRoot||searchRoutingRoot.v!==2||!searchRoutingRoot.common||!Array.isArray(searchRoutingRoot.rare)||searchRoutingRoot.rare.length!==searchRoutingRoot.rareBucketCount)throw new Error('Ungültiges Search-Routing.');
+  return searchRoutingRoot;
+}
+async function shadowPostings(term){
+  const key=String(term||'').trim();
+  if(!key)return [];
+  if(shadowSearchCache.has(key))return shadowSearchCache.get(key);
+  const root=await loadShadowSearchRoot();
+  if(!root)return [];
+  const fullHash=await sha256HexText(key),short=fullHash.slice(0,16);
+  let items=[];
+  const commonManifestSha=root.common?.[short];
+  if(commonManifestSha){
+    const manifest=await loadVerifiedJson(DATA_BASE+searchContentPath(commonManifestSha),commonManifestSha);
+    if(!manifest||!Array.isArray(manifest.p))throw new Error('Ungültiges Search-Term-Manifest.');
+    for(let page=0;page<manifest.p.length;page++){
+      const pageSha=manifest.p[page];
+      const payload=await loadVerifiedJson(DATA_BASE+searchContentPath(pageSha),pageSha);
+      if(!payload||payload.t!==key||payload.p!==page||!Array.isArray(payload.items))throw new Error('Ungültige Search-Seite.');
+      items.push(...payload.items);
+    }
+  }else{
+    const bucketIndex=parseInt(fullHash.slice(0,8),16)%root.rareBucketCount;
+    const bucketSha=root.rare[bucketIndex];
+    if(bucketSha){
+      const bucket=await loadVerifiedJson(DATA_BASE+searchContentPath(bucketSha),bucketSha);
+      if(!bucket||Array.isArray(bucket)||typeof bucket!=='object')throw new Error('Ungültiger Search-Bucket.');
+      items=Array.isArray(bucket[key])?bucket[key]:[];
+    }
+  }
+  shadowSearchCache.set(key,items);
+  return items;
+}
+function isExactShadowToken(token){
+  return /^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(token);
+}
+function supportsExactShadowQuery(value){
+  const tokens=normalizeSearch(value).split(' ').filter(Boolean);
+  return tokens.length>0&&tokens.every(isExactShadowToken);
+}
+function substringContentPath(sha){return 'substring/'+String(sha).slice(0,12)+'.json'}
+async function loadSubstringFile(sha){
+  if(substringFileCache.has(sha))return substringFileCache.get(sha);
+  const payload=await loadVerifiedJson(DATA_BASE+substringContentPath(sha),sha);
+  substringFileCache.set(sha,payload);
+  return payload;
+}
+async function loadSubstringRoot(){
+  const meta=publicationManifest?.substringRouting;
+  if(!meta)return null;
+  if(substringRoutingRoot)return substringRoutingRoot;
+  const root=await loadVerifiedJson(DATA_BASE+meta.file,meta.sha256);
+  if(!root||root.v!==1||!Number.isInteger(root.b)||root.b<16||!Number.isInteger(root.s)||root.s<32||!Array.isArray(root.d)||root.d.length!==root.b||typeof root.c!=='string')throw new Error('Ungültiges Substring-Routing.');
+  substringRoutingRoot=root;
+  return root;
+}
+function substringUniqueNgrams(value,size){
+  const chars=[...String(value||'')];
+  if(!Number.isInteger(size)||size<1)return [];
+  if(chars.length<size)return chars.length?[chars.join('')]:[];
+  return [...new Set(Array.from({length:chars.length-size+1},(_,i)=>chars.slice(i,i+size).join('')))];
+}
+function substringQueryTokens(value){
+  return normalizeSearch(value).split(' ').filter(Boolean).filter(token=>!isExactShadowToken(token));
+}
+function substringQueryGrams(token){
+  const length=[...token].length,gramSize=length>=4?4:length>=2?2:1;
+  return substringUniqueNgrams(token,gramSize);
+}
+async function substringBucketIndex(gram,bucketCount){
+  const hash=await sha256HexText(gram);
+  return parseInt(hash.slice(0,8),16)%bucketCount;
+}
+async function substringRouteForGram(root,gram){
+  const index=await substringBucketIndex(gram,root.b);
+  const directorySha=root.d[index];
+  if(!directorySha)return null;
+  let directory=substringDirectoryCache.get(directorySha);
+  if(!directory){
+    directory=await loadSubstringFile(directorySha);
+    if(!directory||Array.isArray(directory)||typeof directory!=='object')throw new Error('Ungültiges Substring-Verzeichnis.');
+    substringDirectoryCache.set(directorySha,directory);
+  }
+  const entry=directory[gram];
+  if(!entry)return null;
+  return {gram,entry,count:Array.isArray(entry.r)?entry.r.length:entry.n};
+}
+async function substringPostings(route){
+  if(Array.isArray(route.entry.r))return new Set(route.entry.r);
+  if(!Number.isInteger(route.entry.n)||!Array.isArray(route.entry.p)||!route.entry.p.length)throw new Error('Ungültige Substring-Route.');
+  const values=[];
+  for(const sha of route.entry.p){
+    const page=await loadSubstringFile(sha);
+    if(!page||page.g!==route.gram||!Array.isArray(page.v))throw new Error('Ungültige Substring-Postingseite.');
+    values.push(...page.v);
+  }
+  return new Set(values);
+}
+function intersectSets(a,b){
+  if(a===null)return new Set(b);
+  return new Set([...a].filter(value=>b.has(value)));
+}
+async function substringShadowSearchIds(value){
+  const root=await loadSubstringRoot();
+  const tokens=substringQueryTokens(value);
+  if(!root||!tokens.length)return [];
+  let candidates=null;
+  for(const token of tokens){
+    const routes=(await Promise.all(substringQueryGrams(token).map(gram=>substringRouteForGram(root,gram)))).filter(Boolean).sort((a,b)=>a.count-b.count||a.gram.localeCompare(b.gram));
+    if(!routes.length)return [];
+    let tokenSet=await substringPostings(routes[0]);
+    if(tokenSet.size>64&&routes[1])tokenSet=intersectSets(tokenSet,await substringPostings(routes[1]));
+    candidates=intersectSets(candidates,tokenSet);
+    if(!candidates.size)return [];
+  }
+  const verification=await loadSubstringFile(root.c);
+  if(!verification||!Array.isArray(verification.p))throw new Error('Ungültiges Substring-Verifikationsmanifest.');
+  const ids=[];
+  for(const ordinal of [...(candidates||new Set())].sort((a,b)=>a-b)){
+    const pageIndex=Math.floor(ordinal/root.s),offset=ordinal%root.s,pageSha=verification.p[pageIndex];
+    if(!pageSha)continue;
+    const page=await loadSubstringFile(pageSha),item=page?.[offset];
+    if(!item||!Array.isArray(item.t))continue;
+    if(tokens.every(queryToken=>item.t.some(productToken=>String(productToken).includes(queryToken))))ids.push(item.i);
+  }
+  return ids.sort();
+}
+function legacySearchIds(value){
+  const term=normalizeSearch(value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(value);
+  if(!term)return products.map(p=>p.i).sort();
+  return products.filter(p=>{
+    const q=normalizeSearch(p.q||''),padded=' '+q+' ',productConcepts=Array.isArray(p.x)?p.x:[];
+    const conceptMatch=concepts.some(concept=>productConcepts.includes(concept));
+    const tokenMatch=t=>/^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(t)?padded.includes(' '+t+' '):q.includes(t);
+    return q===term||conceptMatch||terms.every(tokenMatch);
+  }).map(p=>p.i).sort();
+}
+async function shadowSearchIds(value){
+  const term=normalizeSearch(value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(value).map(c=>'@'+c);
+  if(!term)return products.map(p=>p.i).sort();
+  const exactTerms=terms.filter(isExactShadowToken),substringTerms=terms.filter(token=>!isExactShadowToken(token));
+  let tokenIds=null;
+  for(const token of exactTerms){
+    const ids=new Set((await shadowPostings(token)).map(item=>item.i));
+    tokenIds=tokenIds===null?ids:intersectSets(tokenIds,ids);
+  }
+  if(substringTerms.length){
+    const ids=new Set(await substringShadowSearchIds(substringTerms.join(' ')));
+    tokenIds=tokenIds===null?ids:intersectSets(tokenIds,ids);
+  }
+  const conceptIds=new Set();
+  for(const concept of concepts)for(const item of await shadowPostings(concept))conceptIds.add(item.i);
+  return [...new Set([...(tokenIds||[]),...conceptIds])].sort();
+}
+async function runShadowSearchComparison(value){
+  const normalized=normalizeSearch(value);
+  if(!normalized){document.documentElement.dataset.shadowSearch='idle';return;}
+  const hasExact=normalized.split(' ').filter(Boolean).some(isExactShadowToken);
+  const hasSubstring=substringQueryTokens(value).length>0;
+  if((hasExact&&!publicationManifest?.searchRouting)||(hasSubstring&&!publicationManifest?.substringRouting)){document.documentElement.dataset.shadowSearch='unsupported';return;}
+  try{
+    const [legacy,shadow]=await Promise.all([Promise.resolve(legacySearchIds(value)),shadowSearchIds(value)]);
+    const ok=JSON.stringify(legacy)===JSON.stringify(shadow);
+    document.documentElement.dataset.shadowSearch=ok?'ok':'mismatch';
+    if(ok)console.info('FundBlick shadow search match',value,shadow.length);
+    else console.warn('FundBlick shadow search mismatch',{value,legacy,shadow});
+  }catch(error){
+    document.documentElement.dataset.shadowSearch='error';
+    console.warn('FundBlick shadow search check failed',error);
+  }
+}
+function validateManifest(manifest) {
+  if(!manifest||manifest.version!==1||!Number.isInteger(manifest.itemCount)||manifest.itemCount<0)throw new Error('Ungültiges Publication-Manifest.');
+  if(typeof manifest.searchIndexSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchIndexSha256))throw new Error('Ungültiger Suchindex-Hash.');
+  if(typeof manifest.searchFile!=='string'||!/^search-index\.[a-f0-9]{12}\.json$/.test(manifest.searchFile)||manifest.searchFile!=='search-index.'+manifest.searchIndexSha256.slice(0,12)+'.json')throw new Error('Ungültiger Suchindex-Pfad.');
+  if(typeof manifest.taxonomySha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.taxonomySha256)||typeof manifest.taxonomyFile!=='string'||manifest.taxonomyFile!=='taxonomy.'+manifest.taxonomySha256.slice(0,12)+'.json')throw new Error('Ungültige Taxonomie-Referenz.');
+  if(typeof manifest.searchConceptsSha256!=='string'||!/^[a-f0-9]{64}$/.test(manifest.searchConceptsSha256)||typeof manifest.searchConceptsFile!=='string'||manifest.searchConceptsFile!=='search-concepts.'+manifest.searchConceptsSha256.slice(0,12)+'.json')throw new Error('Ungültige Suchkonzept-Referenz.');
+  if(manifest.searchRouting!==undefined){
+    const r=manifest.searchRouting;
+    if(!r||r.version!==2||typeof r.sha256!=='string'||!/^[a-f0-9]{64}$/.test(r.sha256)||!Number.isInteger(r.bytes)||r.bytes<=0||typeof r.file!=='string'||r.file!=='search/'+r.sha256.slice(0,12)+'.json')throw new Error('Ungültige Search-Routing-Referenz.');
+  }
+  if(manifest.substringRouting!==undefined){
+    const r=manifest.substringRouting;
+    if(!r||r.version!==1||typeof r.sha256!=='string'||!/^[a-f0-9]{64}$/.test(r.sha256)||!Number.isInteger(r.bytes)||r.bytes<=0||typeof r.file!=='string'||r.file!=='substring/'+r.sha256.slice(0,12)+'.json')throw new Error('Ungültige Substring-Routing-Referenz.');
+  }
+  if(!Number.isInteger(manifest.shardCount)||manifest.shardCount<0||!manifest.shards||typeof manifest.shards!=='object'||Object.keys(manifest.shards).length!==manifest.shardCount)throw new Error('Ungültige Detail-Shards.');
+  let shardItems=0;
+  for(const [key,shard] of Object.entries(manifest.shards)){
+    if(!/^\d+$/.test(key)||!shard||!Number.isInteger(shard.itemCount)||shard.itemCount<0||typeof shard.sha256!=='string'||!/^[a-f0-9]{64}$/.test(shard.sha256)||typeof shard.file!=='string'||!/^shards\/\d+\.[a-f0-9]{12}\.json$/.test(shard.file)||shard.file!=='shards/'+key+'.'+shard.sha256.slice(0,12)+'.json')throw new Error('Ungültiger Detail-Shard.');
+    shardItems+=shard.itemCount;
+  }
+  if(shardItems!==manifest.itemCount)throw new Error('Shard-Anzahl passt nicht zum Manifest.');
+  return manifest;
+}
+async function loadCatalog() {
+  publicationManifest=validateManifest(await loadJson(DATA_BASE+'manifest.json',{mutable:true}));
+  const [index,taxonomy,concepts]=await Promise.all([loadVerifiedJson(DATA_BASE+publicationManifest.searchFile,publicationManifest.searchIndexSha256),loadVerifiedJson(DATA_BASE+publicationManifest.taxonomyFile,publicationManifest.taxonomySha256),loadVerifiedJson(DATA_BASE+publicationManifest.searchConceptsFile,publicationManifest.searchConceptsSha256)]);
+  if(!Array.isArray(taxonomy))throw new Error('Taxonomie hat ein ungültiges Format.');
+  if(!Array.isArray(concepts))throw new Error('Suchkonzepte haben ein ungültiges Format.');
+  searchConcepts=new Map(concepts.map(item=>[String(item?.concept||''),Array.isArray(item?.terms)?item.terms.map(normalizeSearch).filter(Boolean):[]]).filter(([concept,terms])=>concept&&terms.length));
+  taxonomyLabels=new Map(taxonomy.map(item=>[String(item?.id||''),String(item?.labels?.de||'')]).filter(([id,label])=>id&&label));
+  if(!Array.isArray(index)||index.length!==publicationManifest.itemCount)throw new Error('Suchindex passt nicht zum Manifest.');
+  if(index.some(p=>!p||!p.i||!p.n||!p.c||!Number.isInteger(p.s)||!publicationManifest.shards[String(p.s)]||('x' in p&&!Array.isArray(p.x))||('m' in p&&(!Array.isArray(p.m)||p.m.some(m=>typeof m!=='string'||!/^[A-Z]{2}$/.test(m))))))throw new Error('Suchindex enthält ungültige Einträge.');
+  if(new Set(index.map(p=>p.i)).size!==index.length)throw new Error('Suchindex enthält doppelte Product-IDs.');
+  if(index.some(p=>!taxonomyLabels.has(String(p.c))))throw new Error('Suchindex verweist auf unbekannte Kategorien.');
+  if(index.some(p=>(p.x||[]).some(concept=>!searchConcepts.has(String(concept)))))throw new Error('Suchindex verweist auf unbekannte Suchkonzepte.');
+  products=index;
+  initializeFilters();
+  restoreState();
+  if(activeCategoryPrefix){showProducts(products.filter(p=>String(p.c||'').startsWith(activeCategoryPrefix)));renderAppliedFilters();}
+  else if(new URLSearchParams(location.search).toString()) searchProducts(); else showProducts(products);
+}
+function categoryLabel(value) {
+  const id=String(value||'');
+  return taxonomyLabels.get(id) || id.split('.').filter(Boolean).pop()?.replace(/[-_]+/g,' ') || '';
+}
+function initializeFilters() {
+  const categoryFilter=document.getElementById('category-filter');
+  const brandFilter=document.getElementById('brand-filter');
+  [...new Set(products.map(p=>String(p.c||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de')).forEach(v=>{
+    const o=document.createElement('option');o.value=normalizeSearch(v);o.textContent=categoryLabel(v);categoryFilter.appendChild(o);
+  });
+  [...new Set(products.map(p=>String(p.b||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'de')).forEach(v=>{
+    const o=document.createElement('option');o.value=normalizeSearch(v);o.textContent=v;brandFilter.appendChild(o);
+  });
+}
+function restoreState() {
+  const p=new URLSearchParams(location.search);
+  uiLanguage=supportedUiLanguage(p.get('lang')||'de');
+  activeCategoryPrefix=String(p.get('categoryPrefix')||'');searchInput.value=p.get('q')||'';
+  document.getElementById('price-min').value=p.get('min')||'';
+  document.getElementById('price-max').value=p.get('max')||'';
+  for(const [id,key] of [['category-filter','category'],['brand-filter','brand'],['delivery-country','country']]){
+    const el=document.getElementById(id),v=normalizeSearch(p.get(key)||'');
+    if([...el.options].some(o=>o.value===v))el.value=v;
+  }
+  const sort=p.get('sort')||'relevance',el=document.getElementById('sort-products');
+  if([...el.options].some(o=>o.value===sort))el.value=sort;
+  applyUiLanguage();
+}
+function showLoadError() {
+  document.getElementById('products-section').innerHTML='<div class="empty" role="alert">'+escapeHtml(uiText('loadError'))+'</div>';
+}
+function indexImageUrl(p){
+  const raw=safeHttpUrl(p?.g);
+  return raw&&new URL(raw).hostname.toLowerCase()!=='example.com'?raw:'';
+}
+function deliveryState(p,country=document.getElementById('delivery-country')?.value||''){
+  if(!country)return null;
+  const result=deliveryEligibility({shipsTo:Array.isArray(p?.t)?p.t:[],markets:Array.isArray(p?.m)?p.m:[],unknown:p?.w===1},country);
+  return {...result,label:result.state==='eligible'?uiText('deliveryEligible'):result.state==='unknown'?uiText('deliveryUnknown'):uiText('deliveryUnsupported')};
+}
+function displayPriceProduct(p){
+  const country=document.getElementById('delivery-country')?.value||'';
+  const local=country&&p?.d?.[country];
+  return local&&Number.isFinite(Number(local.p))?{...p,p:Number(local.p),u:local.u||p.u}:p;
+}
+function deliveryNote(p){
+  const state=deliveryState(p);
+  return state?`<div class="delivery-note" data-state="${state.state}">${escapeHtml(state.label)}</div>`:'';
+}
+
+function showProducts(list,resetLimit=true) {
+  currentResults=list;
+  if(resetLimit)visibleLimit=matchMedia('(max-width:700px)').matches?12:24;
+  const visible=list.slice(0,visibleLimit),section=document.getElementById('products-section');
+  if(!list.length){section.innerHTML='<div class="empty">'+escapeHtml(uiText('noResults'))+'</div>';return;}
+  section.innerHTML='<div class="product-grid">'+visible.map(p=>`
+    <article class="product-card" data-product-id="${escapeHtml(p.i)}" data-shard="${Number(p.s)}">
+      <div class="product-media">${indexImageUrl(p)?`<img src="${escapeHtml(indexImageUrl(p))}" alt="${escapeHtml(p.n)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fakeimg" style="display:none">⌁</div>`:`<div class="fakeimg">⌁</div>`}</div>
+      <div class="count-note">${escapeHtml(categoryLabel(p.c)||uiText('product'))}</div>
+      <h3>${escapeHtml(p.n)}</h3>
+      <div class="meta">${escapeHtml(p.b||'')}</div>
+      ${deliveryNote(p)}
+      <div class="price">${formatPrice(displayPriceProduct(p))}</div>
+      <button type="button" class="detail-load" >${escapeHtml(uiText('details'))}</button>
+    </article>`).join('')+'</div>'+
+    (list.length>visible.length?'<button type="button" class="load-more" id="load-more">Weitere Produkte anzeigen</button>':'');
+  section.querySelectorAll('.detail-load').forEach(b=>b.addEventListener('click',()=>loadProductDetail(b.closest('.product-card'))));
+  document.getElementById('load-more')?.addEventListener('click',()=>{visibleLimit+=matchMedia('(max-width:700px)').matches?12:24;showProducts(currentResults,false)});
+}
+function countryCode(value){
+  const code=String(value||'').trim().toUpperCase();
+  return /^[A-Z]{2}$/.test(code)?code:null;
+}
+function deliveryEligibility({shipsTo=[],markets=[],unknown=false},country){
+  const target=countryCode(country);
+  if(!target)return {rank:1,state:'unknown'};
+  const destinations=Array.isArray(shipsTo)?shipsTo.map(countryCode).filter(Boolean):[];
+  const sourceMarkets=Array.isArray(markets)?markets.map(countryCode).filter(Boolean):[];
+  if(destinations.includes(target))return {rank:0,state:'eligible'};
+  if(sourceMarkets.includes(target))return {rank:0,state:'eligible'};
+  return unknown?{rank:1,state:'unknown'}:{rank:2,state:'unsupported'};
+}
+function detailOfferEligibility(offer,country){
+  const shipsTo=Array.isArray(offer?.shipsTo)?offer.shipsTo:[],market=String(offer?.market||'').toUpperCase();
+  return deliveryEligibility({shipsTo,markets:market?[market]:[],unknown:!shipsTo.length},country);
+}
+function selectDetailOffer(product,country){
+  const offers=(product?.variants||[]).flatMap(v=>v.offers||[]).filter(o=>o?.purchasable);
+  const rank=o=>detailOfferEligibility(o,country).rank;
+  const price=o=>o?.totalPrice!==null&&o?.totalPrice!==''&&Number.isFinite(Number(o.totalPrice))?Number(o.totalPrice):Infinity;
+  const currency=o=>String(o?.currency||'').trim().toUpperCase();
+  return offers.sort((a,b)=>{
+    const delivery=rank(a)-rank(b);if(delivery)return delivery;
+    const ca=currency(a),cb=currency(b);
+    if(ca===cb){const priceDiff=price(a)-price(b);if(priceDiff)return priceDiff;}
+    return String(a.id||'').localeCompare(String(b.id||''));
+  })[0]||null;
+}
+async function loadProductDetail(card) {
+  const id=card.dataset.productId, shard=card.dataset.shard;
+  const button=card.querySelector('.detail-load');
+  const file=publicationManifest?.shards?.[shard]?.file;
+  if(!file){if(button)button.textContent=uiText('detailsUnavailable');return;}
+  if(button){button.disabled=true;button.textContent=uiText('detailsLoading');}
+  try{
+    let data=shardCache.get(file);
+    if(!data){
+      data=await loadVerifiedJson(DATA_BASE+file,publicationManifest.shards[shard]?.sha256);
+      if(!data||Array.isArray(data)||typeof data!=='object')throw new Error('Ungültiger Detail-Shard.');
+      const entries=Object.entries(data),expected=publicationManifest.shards[shard]?.itemCount;
+      if(Number.isInteger(expected)&&entries.length!==expected)throw new Error('Detail-Shard passt nicht zum Manifest.');
+      for(const [detailId,detail] of entries){
+        const indexed=products.find(item=>item.i===detailId);
+        if(!detail||detail.id!==detailId||!indexed||String(indexed.s)!==String(shard)||String(detail.category||'')!==String(indexed.c||'')){
+          throw new Error('Detail-Shard enthält inkonsistente Produktdaten: '+detailId);
+        }
+      }
+      shardCache.set(file,data);
+    }
+    const p=data?.[id];
+    if(!p||p.id!==id)throw new Error('Produkt fehlt oder hat eine falsche ID im Detail-Shard: '+id);
+    const indexProduct=products.find(item=>item.i===id);
+    if(!indexProduct||String(p.category||'')!==String(indexProduct.c||''))throw new Error('Produktdetail passt nicht zum Suchindex: '+id);
+    const country=document.getElementById('delivery-country').value,offer=selectDetailOffer(p,country)||p.bestOffer||null,rawImg=safeHttpUrl(p.imageUrl),img=rawImg&&new URL(rawImg).hostname.toLowerCase()!=='example.com'?rawImg:'';
+    card.innerHTML=`<div class="product-media">${img?`<img src="${escapeHtml(img)}" alt="${escapeHtml(p.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="fakeimg" style="display:none">⌁</div>`:`<div class="fakeimg">⌁</div>`}</div>
+      <div class="count-note">${escapeHtml(categoryLabel(p.category)||uiText('product'))}</div><h3>${escapeHtml(p.name)}</h3>
+      <p class="desc">${escapeHtml(p.description||'')}</p><div class="meta">${escapeHtml(p.brand||'')}</div>
+      <div class="price">${formatPrice({p:offer?.totalPrice??p.totalPriceFrom,u:offer?.currency||p.currency})}</div>
+      ${merchantOfferAction(offer,p)}`;
+    card.querySelector('.merchant-handoff-trigger')?.addEventListener('click',()=>openMerchantHandoff(offer,p));
+  }catch(error){
+    console.error(error);
+    if(button){button.disabled=false;button.textContent=uiText('detailsRetry');}
+  }
+}
+function renderAppliedFilters(){
+  const box=document.getElementById('applied-filters'),items=[],q=searchInput.value.trim();
+  const min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
+  const cat=document.getElementById('category-filter'),brand=document.getElementById('brand-filter'),country=document.getElementById('delivery-country');
+  if(q)items.push({label:uiText('searchChip')+': '+q,clear:()=>searchInput.value=''});
+  if(min)items.push({label:uiText('from')+' '+min+' €',clear:()=>document.getElementById('price-min').value=''});
+  if(max)items.push({label:uiText('to')+' '+max+' €',clear:()=>document.getElementById('price-max').value=''});
+  if(cat.value)items.push({label:uiText('categoryChip')+': '+cat.options[cat.selectedIndex].text,clear:()=>cat.value=''});
+  if(brand.value)items.push({label:uiText('brandChip')+': '+brand.options[brand.selectedIndex].text,clear:()=>brand.value=''});
+  if(country.value)items.push({label:uiText('countryChip')+': '+country.options[country.selectedIndex].text,clear:()=>country.value=''});
+  box.innerHTML='';items.forEach(i=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=i.label+' ×';b.onclick=()=>{i.clear();searchProducts()};box.appendChild(b)});
+}
+function searchProducts(){
+  activeCategoryPrefix='';
+  const term=normalizeSearch(searchInput.value),terms=term.split(' ').filter(Boolean),concepts=resolveSearchConcepts(searchInput.value);
+  let min=document.getElementById('price-min').value,max=document.getElementById('price-max').value;
+  min=min===''?null:Number(min);max=max===''?null:Number(max);
+  if(min!==null&&max!==null&&min>max){[min,max]=[max,min];document.getElementById('price-min').value=min;document.getElementById('price-max').value=max;}
+  const cat=document.getElementById('category-filter').value,brand=document.getElementById('brand-filter').value,country=document.getElementById('delivery-country').value;
+  const results=products.map(p=>{const q=normalizeSearch(p.q||'');const padded=` ${q} `;const productConcepts=Array.isArray(p.x)?p.x:[];const conceptMatch=concepts.some(c=>productConcepts.includes(c));const tokenMatch=t=>/^[\p{Script=Latin}\p{Script=Cyrillic}\p{Script=Greek}\p{N}\p{M}]+$/u.test(t)?padded.includes(` ${t} `):q.includes(t);const score=!term?1:(q===term?100:conceptMatch?90:terms.every(tokenMatch)?50:0);const deliveryRank=deliveryState(p,country)?.rank||0;return{p,score,price:Number(p.p),deliveryRank}})
+    .filter(x=>x.score>0&&Number.isFinite(x.price)&&(min===null||x.price>=min)&&(max===null||x.price<=max)&&(!cat||normalizeSearch(x.p.c)===cat)&&(!brand||normalizeSearch(x.p.b)===brand))
+    .sort((a,b)=>{const s=document.getElementById('sort-products').value;const delivery=a.deliveryRank-b.deliveryRank;if(delivery)return delivery;return s==='price-asc'?a.price-b.price:s==='price-desc'?b.price-a.price:b.score-a.score}).map(x=>x.p);
+  showProducts(results);renderAppliedFilters();
+  const params=new URLSearchParams();if(uiLanguage!=='de')params.set('lang',uiLanguage);if(term)params.set('q',searchInput.value.trim());if(min!==null)params.set('min',min);if(max!==null)params.set('max',max);if(cat)params.set('category',cat);if(brand)params.set('brand',brand);if(country)params.set('country',country);
+  const sort=document.getElementById('sort-products').value;if(sort!=='relevance')params.set('sort',sort);
+  history.replaceState(null,'',params.toString()?'?'+params:location.pathname);
+  runShadowSearchComparison(searchInput.value);
+}
+document.querySelector('.search').addEventListener('submit',e=>{e.preventDefault();searchProducts()});
+document.getElementById('ui-language').addEventListener('change',e=>{uiLanguage=supportedUiLanguage(e.target.value);applyUiLanguage();searchProducts()});
+['price-min','price-max','category-filter','brand-filter','delivery-country','sort-products'].forEach(id=>document.getElementById(id).addEventListener('change',searchProducts));
+document.getElementById('reset-filters').addEventListener('click',()=>{searchInput.value='';['price-min','price-max'].forEach(id=>document.getElementById(id).value='');document.getElementById('category-filter').value='';document.getElementById('brand-filter').value='';document.getElementById('delivery-country').value='';document.getElementById('sort-products').value='relevance';showProducts(products);renderAppliedFilters();const params=new URLSearchParams();if(uiLanguage!=='de')params.set('lang',uiLanguage);history.replaceState(null,'',params.toString()?'?'+params:location.pathname)});
+document.querySelectorAll('[data-q]').forEach(el=>el.addEventListener('click',()=>{searchInput.value=el.dataset.q;searchProducts()}));
+document.querySelectorAll('[data-category-prefix]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();const prefix=String(el.dataset.categoryPrefix||''),select=document.getElementById('category-filter');const matches=products.filter(p=>String(p.c||'').startsWith(prefix));searchInput.value='';if(matches.length===1){select.value=normalizeSearch(matches[0].c);searchProducts();return}activeCategoryPrefix=prefix;select.value='';showProducts(matches);renderAppliedFilters();const params=new URLSearchParams();if(uiLanguage!=='de')params.set('lang',uiLanguage);params.set('categoryPrefix',prefix);history.replaceState(null,'','?'+params)}));
+document.getElementById('handoff-close')?.addEventListener('click',()=>document.getElementById('merchant-handoff')?.close());
+loadCatalog().catch(error=>{console.error('FundBlick publication load failed:',error);showLoadError()});
+</script>
+</body></html>

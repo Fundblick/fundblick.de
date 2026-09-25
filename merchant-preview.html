@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>
+(()=>{const l=(new URLSearchParams(location.search).get('lang')||'en').toLowerCase();if(['en','de','ru','ro','zh','ja','th'].includes(l))document.documentElement.lang=l})();
+</script>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>FundBlick – Händler-Simulator</title>
+<style>body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#f3f3ef;color:#172018}.bar{background:#232923;color:white;padding:10px 16px;text-align:center;font-size:12px;font-weight:800}.shop{width:min(760px,calc(100% - 32px));margin:32px auto;background:white;border:1px solid #dde3dd;border-radius:18px;overflow:hidden}.head{padding:22px;border-bottom:1px solid #e7ebe7}.body{padding:22px}.product{padding:18px;background:#f7f8f5;border-radius:12px;margin:16px 0}.actions{display:grid;gap:10px}.actions button{padding:14px;border:0;border-radius:10px;background:#202820;color:white;font-weight:800}.actions button:last-child{background:#e7ece8;color:#172018}.note{font-size:13px;color:#667168}.back{display:inline-block;margin-top:18px;color:#0d6b3a;font-weight:700}</style>
+</head>
+<body><div class="bar">FUNDBLICK · DEVELOPMENT MERCHANT SIMULATOR</div><main class="shop"><div class="head"><b id="shop-name">Demo Shop</b><div class="note" id="test-note"></div></div><div class="body"><h1 id="title"></h1><div class="product"><b id="product"></b><p id="stock"></p></div><div class="actions"><button id="cart"></button><button id="checkout"></button><button id="shipping"></button><button id="address"></button><button id="payment"></button></div><a class="back" href="preview.html" id="back"></a></div></main>
+<script>
+const TEXT={
+  en:{title:'Merchant page',test:'Simulation only – no purchase is possible.',product:'Test offer',stock:'In stock',cart:'Add to cart',checkout:'Checkout',shipping:'Shipping',address:'Delivery address',payment:'Payment method',back:'Back to FundBlick'},
+  de:{title:'Händlerseite',test:'Nur Simulation – kein Kauf möglich.',product:'Testangebot',stock:'Auf Lager',cart:'In den Warenkorb',checkout:'Zur Kasse',shipping:'Lieferung',address:'Lieferadresse',payment:'Zahlungsart',back:'Zurück zu FundBlick'},
+  ru:{title:'Страница магазина',test:'Только симуляция — покупка невозможна.',product:'Тестовое предложение',stock:'В наличии',cart:'В корзину',checkout:'Оформить заказ',shipping:'Доставка',address:'Адрес доставки',payment:'Способ оплаты',back:'Вернуться в FundBlick'},
+  ro:{title:'Pagina comerciantului',test:'Doar simulare – nu se poate cumpăra.',product:'Ofertă de test',stock:'În stoc',cart:'Adaugă în coș',checkout:'Finalizare comandă',shipping:'Livrare',address:'Adresa de livrare',payment:'Metoda de plată',back:'Înapoi la FundBlick'},
+  zh:{title:'商家页面',test:'仅为模拟页面，无法购买。',product:'测试商品',stock:'有货',cart:'加入购物车',checkout:'结账',shipping:'配送',address:'收货地址',payment:'付款方式',back:'返回 FundBlick'},
+  ja:{title:'ショップページ',test:'シミュレーションのみです。購入はできません。',product:'テスト商品',stock:'在庫あり',cart:'カートに入れる',checkout:'購入手続き',shipping:'配送',address:'お届け先住所',payment:'支払い方法',back:'FundBlick に戻る'},
+  th:{title:'หน้าร้านค้า',test:'เป็นเพียงการจำลอง ไม่สามารถสั่งซื้อได้',product:'ข้อเสนอทดสอบ',stock:'มีสินค้า',cart:'เพิ่มลงตะกร้า',checkout:'ชำระเงิน',shipping:'การจัดส่ง',address:'ที่อยู่จัดส่ง',payment:'วิธีชำระเงิน',back:'กลับไป FundBlick'}
+};
+const params=new URLSearchParams(location.search),requested=(params.get('lang')||'en').toLowerCase();
+const lang=Object.hasOwn(TEXT,requested)?requested:'en',t=TEXT[lang];
+document.documentElement.lang=lang;
+document.getElementById('title').textContent=t.title;
+document.getElementById('test-note').textContent=t.test;
+document.getElementById('product').textContent=t.product+(params.get('o')?' · '+params.get('o'):'');
+document.getElementById('stock').textContent=t.stock;
+for(const key of ['cart','checkout','shipping','address','payment','back'])document.getElementById(key).textContent=t[key];
+</script></body></html>

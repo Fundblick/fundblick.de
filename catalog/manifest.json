@@ -1,0 +1,1 @@
+{"version":1,"itemCount":4,"targetShardBytes":65536,"shardCount":1,"searchIndexSha256":"b1020ea3cc09f2b660c9a103313bfb0c0ce54949fb1850db878caa68bb88f81b","shards":{"0":{"itemCount":4,"sha256":"3d836bd7e51c53691a6025e538d9ef8d3866fa44678a6c5983b646ad3abf147d","file":"shards/0.3d836bd7e51c.json"}},"searchFile":"search-index.b1020ea3cc09.json"}
