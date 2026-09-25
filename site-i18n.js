@@ -13,6 +13,7 @@
   };
   const params=new URLSearchParams(location.search),requested=params.get('lang');
   const accessibility={de:['Zum Inhalt','Sprache wählen','Produktbereiche','Rechtliches','Aktive Filter','Produkte'],ru:['К содержимому','Выбрать язык','Категории товаров','Правовая информация','Активные фильтры','Товары'],tr:['İçeriğe geç','Dil seç','Ürün kategorileri','Yasal bilgiler','Etkin filtreler','Ürünler'],uk:['До вмісту','Вибрати мову','Категорії товарів','Правова інформація','Активні фільтри','Товари'],it:['Vai al contenuto','Scegli lingua','Categorie prodotti','Informazioni legali','Filtri attivi','Prodotti'],en:['Skip to content','Choose language','Product categories','Legal information','Active filters','Products'],ar:['انتقل إلى المحتوى','اختر اللغة','فئات المنتجات','معلومات قانونية','الفلاتر النشطة','المنتجات']};
+  const voiceNotes={de:'Optional: Der Browser kann Sprache zur Erkennung an einen externen Dienst senden. Erst der Klick auf das Mikrofon startet die Aufnahme.',ru:'Необязательно: браузер может отправлять голос во внешний сервис для распознавания. Запись начинается только после нажатия на микрофон.',tr:'İsteğe bağlı: Tarayıcı sesinizi tanıma için harici bir hizmete gönderebilir. Kayıt yalnızca mikrofona dokununca başlar.',uk:'Необов’язково: браузер може надсилати голос до зовнішньої служби розпізнавання. Запис починається лише після натискання на мікрофон.',it:'Facoltativo: il browser può inviare la voce a un servizio esterno per il riconoscimento. La registrazione inizia solo dopo aver premuto il microfono.',en:'Optional: Your browser may send speech to an external recognition service. Recording starts only when you press the microphone.',ar:'اختياري: قد يرسل المتصفح صوتك إلى خدمة خارجية للتعرّف عليه. يبدأ التسجيل فقط عند الضغط على الميكروفون.'};
   let saved='de';try{saved=localStorage.getItem('fundblick-language')||'de'}catch{}
   const lang=languages[requested]?requested:languages[saved]?saved:'de';
   const t=copy[lang],config=languages[lang];
@@ -31,15 +32,15 @@
     if(!Speech||!window.isSecureContext)return;
     const input=document.getElementById(button.dataset.voiceFor),status=document.getElementById('voice-status');
     if(!input)return;
-    button.hidden=false;button.setAttribute('aria-label',t.voiceStart);button.title=t.voiceStart;
-    let recognition=null,active=false;
-    function finish(){active=false;button.classList.remove('listening');button.setAttribute('aria-label',t.voiceStart);button.title=t.voiceStart;if(status)status.textContent=''}
+    button.hidden=false;button.setAttribute('aria-label',t.voiceStart);button.title=t.voiceStart;const disclosure=document.querySelector('.voice-disclosure');if(disclosure){disclosure.textContent=voiceNotes[lang];disclosure.hidden=false}
+    let recognition=null,active=false,hadError=false;
+    function finish(){active=false;button.classList.remove('listening');button.setAttribute('aria-label',t.voiceStart);button.title=t.voiceStart;if(status&&!hadError)status.textContent=''}
     button.addEventListener('click',()=>{
       if(active){recognition.stop();return}
-      recognition=new Speech();recognition.lang=config.speech;recognition.interimResults=false;recognition.maxAlternatives=1;
+      hadError=false;recognition=new Speech();recognition.lang=config.speech;recognition.interimResults=false;recognition.maxAlternatives=1;
       recognition.onresult=event=>{const transcript=event.results?.[0]?.[0]?.transcript?.trim();if(transcript){input.value=transcript;input.focus();input.dispatchEvent(new Event('input',{bubbles:true}))}};
-      recognition.onerror=()=>{finish();if(status)status.textContent=t.voiceError};recognition.onend=finish;
-      try{recognition.start();active=true;button.classList.add('listening');button.setAttribute('aria-label',t.voiceStop);button.title=t.voiceStop;if(status)status.textContent=t.listening}catch{finish();if(status)status.textContent=t.voiceError}
+      recognition.onerror=()=>{hadError=true;finish();if(status)status.textContent=t.voiceError};recognition.onend=finish;
+      try{recognition.start();active=true;button.classList.add('listening');button.setAttribute('aria-label',t.voiceStop);button.title=t.voiceStop;if(status)status.textContent=t.listening}catch{hadError=true;finish();if(status)status.textContent=t.voiceError}
     });
   });
 })();

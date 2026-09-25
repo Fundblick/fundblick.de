@@ -145,7 +145,7 @@
     set('facets',Object.keys(facetData).length?JSON.stringify(facetData):'');set('sort',state.sort==='relevance'?'':state.sort);history.replaceState(null,'',url);
   }
   function card(p){const tags=Object.values(p.attrs).slice(0,3).map(x=>`<span>${esc(displayValue(x))}</span>`).join('');
-    return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(tx('results'))}</div>`}<div><p>${esc(p.brand||p.category)} · ${esc(tx('testData'))}</p><h2>${esc(p.name)}</h2><p>${esc(p.description.slice(0,150))}</p><div class="tags">${tags}</div></div><div class="price"><strong>${money(p.price)}</strong><small>${esc(tx('testPrice'))}</small><span class="unavailable">${esc(tx('noOffer'))}</span></div></article>`;
+    return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(tx('results'))}</div>`}<div><p><bdi>${esc(p.brand||p.category)}</bdi> · ${esc(tx('testData'))}</p><h2 dir="auto">${esc(p.name)}</h2><p dir="auto">${esc(p.description.slice(0,150))}</p><div class="tags">${tags}</div></div><div class="price"><strong>${money(p.price)}</strong><small>${esc(tx('testPrice'))}</small><span class="unavailable">${esc(tx('noOffer'))}</span></div></article>`;
   }
   function render(){renderFilters();renderChips();let list=filtered();
     if(state.sort==='price-asc')list.sort((a,b)=>a.price-b.price);

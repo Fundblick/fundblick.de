@@ -1,0 +1,41 @@
+name: Publish FundBlick production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fundblick-production-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout production source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Package production files only
+        run: |
+          mkdir -p _site
+          cp index.html search.html search.js site-i18n.js styles.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME _site/
+          touch _site/.nojekyll
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload production artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy production
+        id: deployment
+        uses: actions/deploy-pages@v4
