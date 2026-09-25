@@ -10,12 +10,12 @@ assert.equal(params.has('brand'),false);
 assert.equal(params.has('sort'),false);
 assert.equal(params.has('scope'),false);
 
-params=new URLSearchParams('q=kopfh%C3%B6rer&brand=AudioLab&scope=kopfh%C3%B6rer');
+params=new URLSearchParams('q=kopfh%C3%B6rer&brand=AudioLab&scope=kopfhorer');
 out=state.sanitizeParams(params);
 assert.equal(out.changed,false);
 assert.equal(params.get('brand'),'AudioLab');
 
-params=new URLSearchParams('q=smartphone&brand=AudioLab&scope=kopfh%C3%B6rer');
+params=new URLSearchParams('q=smartphone&brand=AudioLab&scope=kopfhorer');
 state.sanitizeParams(params);
 assert.equal(params.has('brand'),false);
 assert.equal(params.get('scope'),'smartphone');
