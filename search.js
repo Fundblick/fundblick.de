@@ -16,6 +16,9 @@
   const tx=key=>language.translate(key);
   const facetLabels={connection:'connection',form:'form',features:'features',battery:'battery',screen:'screen',panel:'panel',size:'size',color:'color',storage:'storage',power:'power'};
   const categoryLabels={headphones:'categoryHeadphones',shoes:'categoryShoes',phone:'categoryPhones'};
+  const valueLabels={ru:{Kabellos:'Беспроводные',Kabelgebunden:'Проводные',Schwarz:'Чёрный',Weiß:'Белый',Blau:'Синий',Rot:'Красный'},tr:{Kabellos:'Kablosuz',Kabelgebunden:'Kablolu',Schwarz:'Siyah',Weiß:'Beyaz',Blau:'Mavi',Rot:'Kırmızı'},uk:{Kabellos:'Бездротові',Kabelgebunden:'Дротові',Schwarz:'Чорний',Weiß:'Білий',Blau:'Синій',Rot:'Червоний'},it:{Kabellos:'Senza fili',Kabelgebunden:'Con cavo',Schwarz:'Nero',Weiß:'Bianco',Blau:'Blu',Rot:'Rosso'},en:{Kabellos:'Wireless',Kabelgebunden:'Wired',Schwarz:'Black',Weiß:'White',Blau:'Blue',Rot:'Red'},ar:{Kabellos:'لاسلكي',Kabelgebunden:'سلكي',Schwarz:'أسود',Weiß:'أبيض',Blau:'أزرق',Rot:'أحمر'}};
+  const displayValue=value=>valueLabels[language.lang]?.[value]||value;
+  const removeWord={de:'Filter entfernen',ru:'Удалить фильтр',tr:'Filtreyi kaldır',uk:'Прибрати фільтр',it:'Rimuovi filtro',en:'Remove filter',ar:'إزالة الفلتر'};
   const queryAliases=[
     [/(?:наушники|навушники|kulakl[ıi]k|cuffie|سماعات|headphones?)/giu,'Kopfhörer'],
     [/(?:обувь|взуття|ayakkab[ıi]|scarpe|أحذية|shoes?)/giu,'Schuhe'],
@@ -113,7 +116,7 @@
   function optionsFor(key){const set=new Set(base.map(p=>key==='brand'?p.brand:p.attrs[key]).filter(Boolean));return [...set].sort((a,b)=>a.localeCompare(b,'de',{numeric:true}))}
   function group(key,label,values){if(!values.length)return '';
     const selected=key==='brand'?state.brands:state.facets[key]||new Set();
-    return `<section class="facet"><h2>${esc(key==='brand'?tx('manufacturer'):tx(facetLabels[key]||label))}</h2>${values.map(value=>{const count=filtered(key).filter(p=>(key==='brand'?p.brand:p.attrs[key])===value).length;return `<label><input type="checkbox" data-key="${esc(key)}" value="${esc(value)}" ${selected.has(value)?'checked':''}>${esc(value)}<span>${count}</span></label>`}).join('')}</section>`;
+    return `<section class="facet"><h2>${esc(key==='brand'?tx('manufacturer'):tx(facetLabels[key]||label))}</h2>${values.map(value=>{const count=filtered(key).filter(p=>(key==='brand'?p.brand:p.attrs[key])===value).length;return `<label><input type="checkbox" data-key="${esc(key)}" value="${esc(value)}" ${selected.has(value)?'checked':''}>${esc(displayValue(value))}<span>${count}</span></label>`}).join('')}</section>`;
   }
   function renderFilters(){
     const schema=category?.facets||[];
@@ -128,8 +131,8 @@
   function renderChips(){const chips=[];
     if(state.min!==null)chips.push(['min',`${tx('from')} ${money(state.min)}`]);if(state.max!==null)chips.push(['max',`${tx('to')} ${money(state.max)}`]);
     for(const brand of state.brands)chips.push(['brand:'+brand,`${tx('manufacturer')}: ${brand}`]);
-    for(const [key,values] of Object.entries(state.facets))for(const value of values)chips.push([key+':'+value,value]);
-    chipsEl.innerHTML=chips.map(([key,label])=>`<button type="button" data-remove="${esc(key)}" aria-label="Filter ${esc(label)} entfernen">${esc(label)} ×</button>`).join('');
+    for(const [key,values] of Object.entries(state.facets))for(const value of values)chips.push([key+':'+value,displayValue(value)]);
+    chipsEl.innerHTML=chips.map(([key,label])=>`<button type="button" data-remove="${esc(key)}" aria-label="${esc(removeWord[language.lang]||removeWord.de)}: ${esc(label)}">${esc(label)} ×</button>`).join('');
     chipsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
       const [key,...rest]=b.dataset.remove.split(':');const value=rest.join(':');
       if(key==='min'||key==='max')state[key]=null;else if(key==='brand')state.brands.delete(value);else state.facets[key]?.delete(value);
@@ -141,7 +144,7 @@
     const facetData=Object.fromEntries(Object.entries(state.facets).filter(([,s])=>s.size).map(([k,s])=>[k,[...s]]));
     set('facets',Object.keys(facetData).length?JSON.stringify(facetData):'');set('sort',state.sort==='relevance'?'':state.sort);history.replaceState(null,'',url);
   }
-  function card(p){const tags=Object.values(p.attrs).slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('');
+  function card(p){const tags=Object.values(p.attrs).slice(0,3).map(x=>`<span>${esc(displayValue(x))}</span>`).join('');
     return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(tx('results'))}</div>`}<div><p>${esc(p.brand||p.category)} · ${esc(tx('testData'))}</p><h2>${esc(p.name)}</h2><p>${esc(p.description.slice(0,150))}</p><div class="tags">${tags}</div></div><div class="price"><strong>${money(p.price)}</strong><small>${esc(tx('testPrice'))}</small><span class="unavailable">${esc(tx('noOffer'))}</span></div></article>`;
   }
   function render(){renderFilters();renderChips();let list=filtered();
