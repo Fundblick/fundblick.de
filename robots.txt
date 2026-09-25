@@ -1,2 +1,10 @@
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /development/
+Disallow: /preview.html
+Disallow: /merchant-preview.html
+Disallow: /out-preview.html
+Disallow: /impressum-preview.html
+Disallow: /datenschutz-preview.html
+
+Sitemap: https://fundblick.de/sitemap.xml
