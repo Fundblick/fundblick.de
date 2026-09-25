@@ -41,6 +41,7 @@ jobs:
           node --check search-intent.js
           node --check search-state-guard.js
           node --check catalog-loader.js
+          node --check image-fallback.js
           node --check search.js
           node --check product-copy-i18n.js
           node --check coupon-engine.js
@@ -65,6 +66,8 @@ jobs:
           node --check verify-product-copy-i18n.js
           node --check verify-offer-comparison.js
           node --check verify-coupon-engine.js
+          node --check verify-image-fallback.js
+          node --check verify-image-quality.js
           node --check verify-home-empty-search.js
           node --check verify-homepage-visual.js
           node --check verify-home-polish.js
@@ -102,6 +105,7 @@ jobs:
           grep -q 'search-intent.js' search.html
           grep -q 'search-state-guard.js' search.html
           grep -q 'catalog-loader.js' search.html
+          grep -q 'image-fallback.js' search.html
           grep -q 'product-copy-i18n.js' search.html
           grep -q 'coupon-engine.js' search.html
           grep -q 'offer-comparison.js' search.html
@@ -124,6 +128,7 @@ jobs:
           grep -q 'FBProductCopyI18n' product-copy-i18n.js
           grep -q 'FundBlickCoupons' coupon-engine.js
           grep -q 'FundBlickOfferComparison' offer-comparison.js
+          grep -q 'FundBlickImageFallback' image-fallback.js
           grep -q 'Filtermaschine' facet-value-i18n.js
           grep -q 'FBCommonFilterI18n' common-filter-i18n.js
           grep -q 'FB_parseSearchIntent' search-intent.js
@@ -145,13 +150,15 @@ jobs:
           node verify-product-copy-i18n.js
           node verify-offer-comparison.js
           node verify-coupon-engine.js build/catalog
+          node verify-image-fallback.js
+          node verify-image-quality.js
           node verify-home-empty-search.js
           node verify-homepage-visual.js
           node verify-home-polish.js
       - name: Package production files only
         run: |
           mkdir -p _site
-          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp -R build/catalog _site/catalog
           touch _site/.nojekyll
       - name: Configure Pages

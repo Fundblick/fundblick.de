@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const products=JSON.parse(fs.readFileSync('development/core-products.json','utf8'));
+const missing=products.filter(p=>!String(p.image||'').trim());
+assert.ok(missing.length>0,'simulator should exercise image fallbacks');
+for(const product of missing)assert.equal(product.testData,true,`non-test product without image must be rejected: ${product.id}`);
+const liveWithoutImage=products.filter(p=>p.testData!==true&&!String(p.image||'').trim());
+assert.equal(liveWithoutImage.length,0,'real/live products must not ship without an image');
+console.log(`image quality policy passed (${missing.length} simulator products use fallback placeholders)`);
