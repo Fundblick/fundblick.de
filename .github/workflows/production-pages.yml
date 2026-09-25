@@ -77,8 +77,13 @@ jobs:
           grep -q 'home-categories.css' index.html
           grep -q 'id="deal"' index.html
           grep -q 'id="categories"' index.html
-          grep -q 'id="showcaseList"' index.html
+          grep -q 'id="categoryToggle"' index.html
+          grep -q 'id="categoryMore"' index.html
           test "$(grep -o 'data-category-key=' index.html | wc -l)" -eq 16
+          test "$(grep -o 'data-category-primary' index.html | wc -l)" -eq 6
+          test "$(grep -o 'data-category-extra' index.html | wc -l)" -eq 10
+          ! grep -q 'id="showcaseList"' index.html
+          ! grep -q 'Erst das Produkt. Dann die Angebote.' index.html
           grep -q 'search-i18n.js' search.html
           grep -q 'facet-schemas.js' search.html
           grep -q 'category-display-i18n.js' search.html

@@ -10,7 +10,7 @@
   <title>FundBlick – Produkte finden, Gesamtpreise vergleichen</title>
   <link rel="stylesheet" href="styles.css?v=20260925-live17">
   <link rel="stylesheet" href="home.css?v=20260925-live17">
-  <link rel="stylesheet" href="home-categories.css?v=20260925-live17">
+  <link rel="stylesheet" href="home-categories.css?v=20260925-live18">
 </head>
 <body class="home-restored">
   <a class="skip" href="#main">Zum Inhalt</a>
@@ -44,22 +44,25 @@
           <div id="categories" class="hero-categories">
             <div class="hero-categories-head"><span data-home-key="categories">Kategorien</span></div>
             <nav class="category-links" aria-label="Produktkategorien">
-              <a data-category-key="electronics" href="search.html?q=Elektronik">Elektronik</a>
-              <a data-category-key="household" href="search.html?q=Haushalt">Haushalt</a>
-              <a data-category-key="beauty" href="search.html?q=Beauty%20%26%20Pflege">Beauty &amp; Pflege</a>
-              <a data-category-key="fashion" href="search.html?q=Mode">Mode</a>
-              <a data-category-key="shoes" href="search.html?q=Schuhe">Schuhe</a>
-              <a data-category-key="sport" href="search.html?q=Sport%20%26%20Outdoor">Sport &amp; Outdoor</a>
-              <a data-category-key="tools" href="search.html?q=Werkzeug">Werkzeug</a>
-              <a data-category-key="garden" href="search.html?q=Garten">Garten</a>
-              <a data-category-key="auto" href="search.html?q=Auto%20%26%20Motorrad">Auto &amp; Motorrad</a>
-              <a data-category-key="baby" href="search.html?q=Baby%20%26%20Kind">Baby &amp; Kind</a>
-              <a data-category-key="pets" href="search.html?q=Tierbedarf">Tierbedarf</a>
-              <a data-category-key="health" href="search.html?q=Gesundheit">Gesundheit</a>
-              <a data-category-key="office" href="search.html?q=B%C3%BCro">Büro</a>
-              <a data-category-key="toys" href="search.html?q=Spielzeug">Spielzeug</a>
-              <a data-category-key="gaming" href="search.html?q=Gaming">Gaming</a>
-              <a data-category-key="photo" href="search.html?q=Foto">Foto</a>
+              <a data-category-key="electronics" data-category-primary href="search.html?q=Elektronik">Elektronik</a>
+              <a data-category-key="household" data-category-primary href="search.html?q=Haushalt">Haushalt</a>
+              <a data-category-key="beauty" data-category-primary href="search.html?q=Beauty%20%26%20Pflege">Beauty &amp; Pflege</a>
+              <a data-category-key="fashion" data-category-primary href="search.html?q=Mode">Mode</a>
+              <a data-category-key="sport" data-category-primary href="search.html?q=Sport%20%26%20Outdoor">Sport &amp; Outdoor</a>
+              <a data-category-key="tools" data-category-primary href="search.html?q=Werkzeug">Werkzeug</a>
+              <span id="categoryMore" class="category-more" hidden>
+                <a data-category-key="shoes" data-category-extra href="search.html?q=Schuhe">Schuhe</a>
+                <a data-category-key="garden" data-category-extra href="search.html?q=Garten">Garten</a>
+                <a data-category-key="auto" data-category-extra href="search.html?q=Auto%20%26%20Motorrad">Auto &amp; Motorrad</a>
+                <a data-category-key="baby" data-category-extra href="search.html?q=Baby%20%26%20Kind">Baby &amp; Kind</a>
+                <a data-category-key="pets" data-category-extra href="search.html?q=Tierbedarf">Tierbedarf</a>
+                <a data-category-key="health" data-category-extra href="search.html?q=Gesundheit">Gesundheit</a>
+                <a data-category-key="office" data-category-extra href="search.html?q=B%C3%BCro">Büro</a>
+                <a data-category-key="toys" data-category-extra href="search.html?q=Spielzeug">Spielzeug</a>
+                <a data-category-key="gaming" data-category-extra href="search.html?q=Gaming">Gaming</a>
+                <a data-category-key="photo" data-category-extra href="search.html?q=Foto">Foto</a>
+              </span>
+              <button id="categoryToggle" class="category-toggle" type="button" aria-expanded="false" aria-controls="categoryMore">Alle Kategorien <span aria-hidden="true">＋</span></button>
             </nav>
           </div>
         </div>
@@ -77,11 +80,6 @@
         </aside>
       </div>
     </section>
-
-    <section class="section showcase" aria-labelledby="showcase-title">
-      <div class="section-head"><div><p class="eyebrow" data-home-key="sectionEyebrow">SO SIEHT EIN TREFFER AUS</p><h2 id="showcase-title" data-home-key="sectionTitle">Erst das Produkt. Dann die Angebote.</h2><p class="section-copy" data-home-key="sectionCopy">FundBlick gruppiert Händlerangebote um das Produkt. So vergleichst du den Gesamtpreis statt scheinbar verschiedener Treffer.</p></div></div>
-      <div class="product-list" id="showcaseList" aria-live="polite"></div>
-    </section>
   </main>
 
   <footer class="home-footer"><div><span class="footer-brand">FundBlick</span><small id="beta-note">Live-Beta · simulierte Testdaten</small></div><nav aria-label="Rechtliches"><a href="impressum.html" data-i18n="imprint">Impressum</a><a href="datenschutz.html" data-i18n="privacy">Datenschutz</a></nav><p id="affiliate-note">Bei Händlerlinks können wir eine Vergütung erhalten. Dein Preis ändert sich dadurch nicht.</p></footer>
@@ -90,8 +88,8 @@
   <script src="app.js?v=20260925-live15"></script>
   <script src="catalog-loader.js?v=20260925-live16"></script>
   <script src="deal-of-day.js?v=20260925-live16"></script>
-  <script src="home-extras.js?v=20260925-live16"></script>
-  <script src="home-categories.js?v=20260925-live17"></script>
+  <script src="home-extras.js?v=20260925-live18"></script>
+  <script src="home-categories.js?v=20260925-live18"></script>
   <script src="language-links.js?v=20260925-live15"></script>
 </body>
 </html>
