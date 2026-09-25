@@ -6,13 +6,14 @@
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://fundblick.de/">
   <meta name="description" content="Produkt suchen, Händlerangebote bündeln und Gesamtpreise inklusive Versand vergleichen.">
-  <meta name="theme-color" content="#f6f8f4">
+  <meta name="theme-color" content="#edf7eb">
   <title>FundBlick – Produkte finden, Gesamtpreise vergleichen</title>
   <link rel="stylesheet" href="styles.css?v=20260925-live17">
   <link rel="stylesheet" href="home.css?v=20260925-live17">
   <link rel="stylesheet" href="home-categories.css?v=20260925-live18">
+  <link rel="stylesheet" href="home-polish.css?v=20260925-live19">
 </head>
-<body class="home-restored">
+<body class="home-restored" data-home-build="20260925-live19">
   <a class="skip" href="#main">Zum Inhalt</a>
   <header class="topbar homebar">
     <a class="brand" href="/" aria-label="FundBlick Startseite">Fund<span>Blick</span></a>
@@ -39,7 +40,8 @@
             <button class="search-submit" type="submit" data-i18n="button">Suchen</button>
             <div id="suggestions" class="suggestions" role="listbox" aria-label="Suchvorschläge" hidden></div>
           </form>
-          <p id="voiceStatus" class="voice-status" role="status" aria-live="assertive"></p>
+          <div id="searchFeedback" class="search-feedback" role="alert" aria-live="assertive" hidden><span class="search-feedback-icon" aria-hidden="true">i</span><span id="searchFeedbackText"></span></div>
+          <p id="voiceStatus" class="voice-status" role="status" aria-live="polite"></p>
 
           <div id="categories" class="hero-categories">
             <div class="hero-categories-head"><span data-home-key="categories">Kategorien</span></div>
@@ -90,6 +92,7 @@
   <script src="deal-of-day.js?v=20260925-live16"></script>
   <script src="home-extras.js?v=20260925-live18"></script>
   <script src="home-categories.js?v=20260925-live18"></script>
+  <script src="home-polish.js?v=20260925-live19"></script>
   <script src="language-links.js?v=20260925-live15"></script>
 </body>
 </html>
