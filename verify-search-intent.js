@@ -1,0 +1,28 @@
+'use strict';
+const assert=require('node:assert/strict');
+global.window={};
+const {parse,hasIntent}=require('./search-intent.js');
+function facet(result,key){return result.filters.facets[key]||[];}
+let r=parse('Kopfhörer unter 120 Euro kostenloser Versand');
+assert.equal(r.filters.max,120);assert.deepEqual(facet(r,'shipping'),['Kostenloser Versand']);assert.equal(hasIntent(r),true);
+r=parse('headphones under 100 free shipping in stock');
+assert.equal(r.filters.max,100);assert.ok(facet(r,'shipping').includes('Kostenloser Versand'));assert.ok(facet(r,'shipping').includes('Sofort lieferbar'));
+r=parse('наушники до 150 евро в наличии');
+assert.equal(r.filters.max,150);assert.ok(facet(r,'shipping').includes('Sofort lieferbar'));
+r=parse('kulaklık en fazla 90 euro ücretsiz kargo');
+assert.equal(r.filters.max,90);assert.ok(facet(r,'shipping').includes('Kostenloser Versand'));
+r=parse('casque jusqu’à 200 euro livraison 2 jours');
+assert.equal(r.filters.max,200);assert.ok(facet(r,'shipping').includes('Lieferung ≤ 3 Werktage'));
+r=parse('auriculares hasta 80 euro valoración 4,5');
+assert.equal(r.filters.max,80);assert.deepEqual(facet(r,'rating'),['4.5']);
+r=parse('سماعات حد أقصى 75 euro شحن مجاني');
+assert.equal(r.filters.max,75);assert.ok(facet(r,'shipping').includes('Kostenloser Versand'));
+r=parse('هدفون حداکثر 110 euro ارسال رایگان');
+assert.equal(r.filters.max,110);assert.ok(facet(r,'shipping').includes('Kostenloser Versand'));
+r=parse('耳机 最多 100 euro 免运费');
+assert.equal(r.filters.max,100);assert.ok(facet(r,'shipping').includes('Kostenloser Versand'));
+r=parse('Kopfhörer mindestens 3 Händler');
+assert.deepEqual(facet(r,'merchants'),['3']);
+r=parse('Kopfhörer Bewertung 4,5');
+assert.deepEqual(facet(r,'rating'),['4.5']);
+console.log('multilingual search intent smoke tests passed');
