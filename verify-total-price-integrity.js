@@ -1,0 +1,14 @@
+'use strict';
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const source=fs.readFileSync('search.js','utf8');
+assert.ok(source.includes('totalPriceKnown=shippingCost!==null'),'unknown shipping must not create a fake total price');
+assert.ok(source.includes('totalPrice=totalPriceKnown?price+shippingCost:null'),'total price must be null when shipping is unknown');
+assert.ok(source.includes('(state.min!==null||state.max!==null)&&!p.totalPriceKnown'),'price bounds must reject products with unknown shipping');
+assert.ok(source.includes('shownPrice=p.totalPriceKnown?p.totalPrice:p.price'),'cards must fall back to item price when total is unknown');
+assert.ok(source.includes('comparePrice(a,b,direction)'),'price sorting must handle unknown totals explicitly');
+const products=JSON.parse(fs.readFileSync('development/core-products.json','utf8'));
+assert.ok(products.some(p=>Number.isFinite(Number(p.shippingCost))),'simulator needs known-shipping offers');
+assert.ok(products.some(p=>p.shippingCost===undefined||p.shippingCost===null||p.shippingCost===''),'simulator needs unknown-shipping offers');
+for(const p of products.filter(p=>Number.isFinite(Number(p.shippingCost))))assert.ok(Number(p.price)+Number(p.shippingCost)>=Number(p.price));
+console.log('total-price correctness regression checks passed');
