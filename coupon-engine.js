@@ -88,7 +88,7 @@
   function decorateOffer(product,offer,context={}){
     const regular=regularTotal(offer);const best=bestForOffer(product,offer,context);
     const effective=best?.effectiveTotal??regular;
-    return {...offer,regularTotal:regular,effectiveTotal:effective,promotionEvaluation:best,promotionSavings:best?.effectiveTotal!==null?best.savings:0};
+    return {...offer,regularTotal:regular,effectiveTotal:effective,promotionEvaluation:best,promotionSavings:best&&best.effectiveTotal!==null?best.savings:0};
   }
 
   function rankOffers(product,offers,context={}){
