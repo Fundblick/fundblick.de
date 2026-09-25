@@ -36,6 +36,7 @@ jobs:
           node --check category-aliases.js
           node --check search-intent.js
           node --check search.js
+          node --check product-copy-i18n.js
           node --check facet-value-i18n.js
           node --check common-filter-i18n.js
           node --check search-mobile.js
@@ -49,6 +50,7 @@ jobs:
           node --check verify-total-price-integrity.js
           node --check verify-language-navigation.js
           node --check verify-category-display-i18n.js
+          node --check verify-product-copy-i18n.js
       - name: Verify live search assets
         run: |
           grep -q 'language-links.js' index.html
@@ -58,6 +60,7 @@ jobs:
           grep -q 'common-facet-defs.js' search.html
           grep -q 'category-aliases.js' search.html
           grep -q 'search-intent.js' search.html
+          grep -q 'product-copy-i18n.js' search.html
           grep -q 'facet-value-i18n.js' search.html
           grep -q 'common-filter-i18n.js' search.html
           grep -q 'search-mobile.js' search.html
@@ -73,6 +76,7 @@ jobs:
           grep -q 'FB_CATEGORY_DISPLAY_LABELS' category-display-i18n.js
           grep -q 'FB_COMMON_FACETS' common-facet-defs.js
           grep -q 'pistola de calor' category-aliases.js
+          grep -q 'FBProductCopyI18n' product-copy-i18n.js
           grep -q 'Filtermaschine' facet-value-i18n.js
           grep -q 'FBCommonFilterI18n' common-filter-i18n.js
           grep -q 'FB_parseSearchIntent' search-intent.js
@@ -89,10 +93,11 @@ jobs:
           node verify-total-price-integrity.js
           node verify-language-navigation.js
           node verify-category-display-i18n.js
+          node verify-product-copy-i18n.js
       - name: Package production files only
         run: |
           mkdir -p _site/development
-          cp index.html search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js product-copy-i18n.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css live-health.js language-links.js site-i18n.js i18n.js app.js styles.css home.css products.json impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp development/core-products.json _site/development/
           touch _site/.nojekyll
       - name: Configure Pages
