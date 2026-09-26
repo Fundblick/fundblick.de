@@ -18,8 +18,15 @@ assert.equal(policy.resolve({...both,network:'adcell'},adcellActive,{decision:'d
 assert.equal(policy.resolve({affiliateUrl:'https://tracking.example/click',network:'adcell'},adcellActive,{decision:'denied'}).reason,'consent-required');
 const awinGranted=policy.resolve({...both,network:'awin'},awinActive,{decision:'granted'});
 assert.equal(awinGranted.mode,'affiliate');
-assert.ok(new URL(awinGranted.url).searchParams.get('cons')==='1','Awin affiliate link must carry current positive consent signal');
-assert.equal(policy.resolve({...both,network:'awin'},awinActive,{decision:'denied'}).mode,'direct','denied Awin consent must fall back to direct merchant link when available');
+assert.equal(new URL(awinGranted.url).searchParams.get('cons'),'1','Awin affiliate link must carry positive consent signal');
+const awinDenied=policy.resolve({...both,network:'awin'},awinActive,{decision:'denied'});
+assert.equal(awinDenied.mode,'affiliate-no-track','Awin may keep the merchant journey available after tracking rejection');
+assert.equal(new URL(awinDenied.url).searchParams.get('cons'),'0','Awin rejected journey must carry cons=0');
+const awinDeniedAffiliateOnly=policy.resolve({affiliateUrl:'https://tracking.example/click',network:'awin'},awinActive,{decision:'denied'});
+assert.equal(awinDeniedAffiliateOnly.allowed,true,'Awin consent-zero link must remain navigable even without a direct merchant URL');
+assert.equal(new URL(awinDeniedAffiliateOnly.url).searchParams.get('cons'),'0');
+const awinUnknown=policy.resolve({affiliateUrl:'https://tracking.example/click',network:'awin'},awinActive,{decision:null});
+assert.equal(awinUnknown.reason,'consent-required','unknown Awin consent must never silently inherit Awin default consent');
 assert.equal(policy.resolve({directUrl:'javascript:alert(1)',network:'awin'},awinActive,{decision:'denied'}).allowed,false);
 assert.equal(policy.resolve({simulated:true,...both,network:'awin'},awinActive,{decision:'granted'}).allowed,false,'simulator offers must never navigate externally');
 const normalized=normalizer.normalize({sku:'42',title:'Demo',price:'1.299,90 €',shop:'Demo Shop',direct:'https://merchant.example/p/42',track:'https://tracking.example/p/42',image:'https://merchant.example/p.jpg'},
@@ -34,4 +41,4 @@ const links=fs.readFileSync('language-links.js','utf8');
 for(const file of ['affiliate-consent-version.js','affiliate-link-policy.js','affiliate-outbound.js'])assert.ok(links.includes(file),`${file} must be bootstrapped site-wide`);
 assert.ok(!links.includes('https://www.adcell.de/js'),'FundBlick must not preload ADCELL tracking code');
 assert.ok(!links.includes('https://www.awin1.com'),'FundBlick must not preload Awin tracking code');
-console.log('affiliate routing and multi-network preparation passed');
+console.log('affiliate routing, Awin consent signals and multi-network preparation passed');
