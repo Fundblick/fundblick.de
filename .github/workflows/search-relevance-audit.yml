@@ -1,0 +1,78 @@
+name: Search relevance audit
+
+on:
+  push:
+    branches: [dev/search-relevance-v1]
+    paths:
+      - 'audit-search-relevance.js'
+      - 'audit-search-ranking.js'
+      - 'search-relevance.js'
+      - 'search-intent.js'
+      - 'equestrian-search-extension.js'
+      - 'search-relevance-e2e.spec.js'
+      - 'search.js'
+      - 'search.html'
+      - 'production-catalog-sources.json'
+      - 'development/**'
+      - '.github/workflows/search-relevance-audit.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'audit-search-relevance.js'
+      - 'audit-search-ranking.js'
+      - 'search-relevance.js'
+      - 'search-intent.js'
+      - 'equestrian-search-extension.js'
+      - 'search-relevance-e2e.spec.js'
+      - 'search.js'
+      - 'search.html'
+      - 'production-catalog-sources.json'
+      - '.github/workflows/search-relevance-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax
+        run: |
+          node --check search-relevance.js
+          node --check search-intent.js
+          node --check equestrian-search-extension.js
+          node --check audit-search-relevance.js
+          node --check audit-search-ranking.js
+          node --check search-relevance-e2e.spec.js
+      - name: Audit real production-source search quality
+        run: node audit-search-relevance.js
+      - name: Audit real production-source ranking quality
+        run: node audit-search-ranking.js
+      - name: Build real production catalog
+        run: |
+          node build-production-catalog.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          node verify-production-merchants.js build/catalog
+          rm -rf catalog
+          cp -R build/catalog catalog
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 >/tmp/fundblick-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/search.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-http.log
+          exit 1
+      - name: Browser search relevance regression
+        run: npx playwright test search-relevance-e2e.spec.js --reporter=line --workers=1

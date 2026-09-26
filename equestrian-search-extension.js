@@ -3,7 +3,7 @@
   if(!root)return;
   const schema=root.FB_CATEGORY_SCHEMAS?.equestrian;
   if(schema){
-    const extraTerms=['pferdegesundheit','pferdefutter','pferdepflege','horse','horses','horse supplement','лошадь','лошади','лошадей','конь','кони','конный спорт'];
+    const extraTerms=['pferd','pferde','reitsport','pferd reitsport','pferdegesundheit','pferdefutter','pferdepflege','horse','horses','horse supplement','лошадь','лошади','лошадей','конь','кони','конный спорт'];
     schema.terms=[...new Set([...(schema.terms||[]),...extraTerms])];
     const lang=root.FundBlickLanguage?.lang||document.documentElement.lang||'de';
     const labels={de:'Pferd & Reitsport',en:'Horse & equestrian',ru:'Лошади и конный спорт'};

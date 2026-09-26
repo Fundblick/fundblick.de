@@ -10,9 +10,30 @@
   const rating=/(?:bewertung|rating|rated|note|valoraci[oó]n|valutazione|avalia[cç][aã]o|ocena|рейтинг|evaluare|puan|оцінка|оценка|αξιολόγηση|оцена|تقييم|امتیاز|vlerësim|评分)[^\d]{0,10}(\d(?:[.,]\d)?)/iu;
   const merchants=/(?:mindestens|at least|au moins|al menos|almeno|pelo menos|co najmniej|минимум|cel puțin|en az|щонайменше|поне|najmanje|τουλάχιστον|најмање|على الأقل|حداقل|të paktën|至少|herî kêm)?\s*(\d{1,2})\s*(?:händler|shops?|stores?|marchands?|tiendas?|negozi|lojas|sklep(?:y|ów)?|магазин(?:а|ов)?|comercianți|mağaza|магазинів|магазина|trgovin(?:e|a)|καταστήματα|продавница|متاجر|فروشگاه|dyqane|商家|firoşgeh)/iu;
   const priceNumber='(\\d+(?:[.,]\\d+)?)';
+  const SPELLING_TERMS=['mosaiktisch','beistelltisch','bistrotisch','esstisch','gartentisch','terrassentisch','balkontisch','wandlampe','teelichthalter','hängeleuchte','hängelampe','pendelleuchte','stehlampe','tischlampe','deckenlampe','deckenleuchte','waschbecken','blumentopf','kleiderhaken','wandverkleidung','pferdepflege','ergänzungsfutter','zusatzfutter'];
+  const normalizeWord=value=>String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  function editDistance(a,b,limit){
+    if(a===b)return 0;if(Math.abs(a.length-b.length)>limit)return limit+1;
+    let prev=Array.from({length:b.length+1},(_,i)=>i);
+    for(let i=1;i<=a.length;i++){
+      const row=[i];let rowMin=i;
+      for(let j=1;j<=b.length;j++){const v=Math.min(prev[j]+1,row[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));row[j]=v;if(v<rowMin)rowMin=v;}
+      if(rowMin>limit)return limit+1;prev=row;
+    }
+    return prev[b.length];
+  }
+  function correctSpelling(query){
+    return String(query||'').split(/(\s+)/).map(part=>{
+      if(/^\s+$/.test(part)||part.length<5)return part;
+      const token=normalizeWord(part),limit=token.length>=8?2:1;
+      const matches=SPELLING_TERMS.map(term=>({term,d:editDistance(token,normalizeWord(term),limit)})).filter(x=>x.d<=limit).sort((a,b)=>a.d-b.d||a.term.length-b.term.length);
+      if(!matches.length||matches.length>1&&matches[0].d===matches[1].d)return part;
+      const replacement=matches[0].term;return /^[A-ZÄÖÜ]/.test(part)?replacement[0].toUpperCase()+replacement.slice(1):replacement;
+    }).join('');
+  }
   function matchPrice(query,kind){for(const prefix of RULES[kind]){const re=new RegExp(prefix.source+'\\s*'+priceNumber+'\\s*(?:€|eur|euro)?',prefix.flags);const m=query.match(re);if(m)return {value:Number(m[1].replace(',','.')),match:m[0]};}return null;}
   function parse(query){
-    const raw=String(query||'');let clean=raw;const filters={facets:{}};
+    const raw=String(query||'');let clean=correctSpelling(raw);const filters={facets:{}};
     const merchantMatch=clean.match(merchants);if(merchantMatch){filters.facets.merchants=[String(Number(merchantMatch[1]))];clean=clean.replace(merchantMatch[0],' ')}
     const ratingMatch=clean.match(rating);if(ratingMatch){filters.facets.rating=[String(Number(ratingMatch[1].replace(',','.')))];clean=clean.replace(ratingMatch[0],' ')}
     if(shippingFree.test(clean)){filters.facets.shipping=['Kostenloser Versand'];clean=clean.replace(shippingFree,' ')}
@@ -29,14 +50,14 @@
     if(parsed.filters.min!==undefined)url.searchParams.set('min',String(parsed.filters.min));
     if(parsed.filters.max!==undefined)url.searchParams.set('max',String(parsed.filters.max));
     mergeFacetParams(url,parsed.filters.facets);
-    if(rememberRaw&&parsed.raw&&parsed.clean!==parsed.raw)url.searchParams.set('rawq',parsed.raw);else if(!rememberRaw)url.searchParams.delete('rawq');
+    if(rememberRaw&&hasIntent(parsed)&&parsed.raw&&parsed.clean!==parsed.raw)url.searchParams.set('rawq',parsed.raw);else if(!rememberRaw||!hasIntent(parsed))url.searchParams.delete('rawq');
     url.searchParams.set('q',parsed.clean||parsed.raw);
     return url;
   }
-  function preprocessLocation(){if(typeof location==='undefined')return;const url=new URL(location.href),q=url.searchParams.get('q')||'';if(!q)return;const parsed=parse(q);if(!hasIntent(parsed))return;applyParsed(url,parsed);history.replaceState(null,'',url);}
-  function attachSubmitCapture(){const form=document.querySelector('.search-form'),input=document.querySelector('#query');if(!form||!input)return;const rawFromUrl=new URL(location.href).searchParams.get('rawq');if(rawFromUrl)input.value=rawFromUrl;form.addEventListener('submit',event=>{const parsed=parse(input.value.trim());if(!hasIntent(parsed))return;event.preventDefault();event.stopImmediatePropagation();const url=new URL(location.href);['min','max','brand','facets','sort','rawq'].forEach(key=>url.searchParams.delete(key));applyParsed(url,parsed);location.assign(url.toString());},true);}
-  window.FB_parseSearchIntent=parse;
+  function preprocessLocation(){if(typeof location==='undefined')return;const url=new URL(location.href),q=url.searchParams.get('q')||'';if(!q)return;const parsed=parse(q),corrected=parsed.clean!==q;if(!hasIntent(parsed)&&!corrected)return;applyParsed(url,parsed);history.replaceState(null,'',url);}
+  function attachSubmitCapture(){const form=document.querySelector('.search-form'),input=document.querySelector('#query');if(!form||!input)return;const rawFromUrl=new URL(location.href).searchParams.get('rawq');if(rawFromUrl)input.value=rawFromUrl;form.addEventListener('submit',event=>{const parsed=parse(input.value.trim());if(!hasIntent(parsed)&&parsed.clean===parsed.raw)return;event.preventDefault();event.stopImmediatePropagation();const url=new URL(location.href);['min','max','brand','facets','sort','rawq'].forEach(key=>url.searchParams.delete(key));applyParsed(url,parsed);location.assign(url.toString());},true);}
+  if(typeof window!=='undefined')window.FB_parseSearchIntent=parse;
   preprocessLocation();
   if(typeof document!=='undefined'){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',attachSubmitCapture,{once:true});else attachSubmitCapture();}
-  if(typeof module!=='undefined')module.exports={parse,hasIntent};
+  if(typeof module!=='undefined')module.exports={parse,hasIntent,correctSpelling,editDistance};
 })();
