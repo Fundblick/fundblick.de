@@ -26,7 +26,8 @@
     if(result.allowed&&result.url){
       el.setAttribute('href',result.url);
       el.setAttribute('target','_blank');
-      el.setAttribute('rel',result.mode==='affiliate'?'sponsored noopener noreferrer':'noopener noreferrer');
+      const sponsored=result.mode==='affiliate'||result.mode==='affiliate-no-track';
+      el.setAttribute('rel',sponsored?'sponsored noopener noreferrer':'noopener noreferrer');
       el.removeAttribute('aria-disabled');
     }else{
       el.removeAttribute('href');
