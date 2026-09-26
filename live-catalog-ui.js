@@ -26,7 +26,8 @@
     return byKey.get(key(name,brand))||[...byKey.values()].find(p=>norm(p.name)===norm(name))||null;
   }
   function decorate(article){
-    const product=productFor(article);if(!product||product.testData!==false)return;
+    if(!article||article.dataset.liveCatalogDecorated==='true')return false;
+    const product=productFor(article);if(!product||product.testData!==false)return false;
     const t=pack(),offer=product.bestOffer||product.offers?.[0]||{};
     const firstMeta=article.querySelector('div > p');
     if(firstMeta){firstMeta.innerHTML='';const bdi=doc.createElement('bdi');bdi.textContent=product.brand||product.category||'';firstMeta.append(bdi,doc.createTextNode(` · ${t.merchant}: ${product.merchant||offer.merchant||''}`));}
@@ -45,9 +46,15 @@
         unavailable.replaceWith(link,ad);
       }
     }
-    article.dataset.realMerchant='true';
+    article.dataset.realMerchant='true';article.dataset.liveCatalogDecorated='true';return true;
   }
-  function apply(){doc.querySelectorAll('#cards article.product').forEach(decorate);root.FundBlickAffiliateOutbound?.refresh?.();}
+  function apply(nodes){
+    const articles=[];
+    if(nodes){for(const node of nodes){if(node?.nodeType!==1)continue;if(node.matches?.('article.product'))articles.push(node);node.querySelectorAll?.('article.product').forEach(article=>articles.push(article));}}
+    else doc.querySelectorAll('#cards article.product').forEach(article=>articles.push(article));
+    let changed=false;articles.forEach(article=>{if(decorate(article))changed=true;});
+    if(changed)root.FundBlickAffiliateOutbound?.refresh?.();
+  }
   async function ready(){
     try{
       const list=await root.FundBlickCatalog?.load?.();
@@ -56,8 +63,9 @@
       apply();
     }catch{}
   }
-  const cards=doc.getElementById('cards');if(cards)new MutationObserver(()=>queueMicrotask(apply)).observe(cards,{childList:true,subtree:true});
-  doc.getElementById('language')?.addEventListener('change',()=>queueMicrotask(apply));
+  const cards=doc.getElementById('cards');
+  if(cards)new MutationObserver(records=>{const added=[];for(const record of records)record.addedNodes?.forEach(node=>added.push(node));if(added.length)queueMicrotask(()=>apply(added));}).observe(cards,{childList:true,subtree:false});
+  doc.getElementById('language')?.addEventListener('change',()=>queueMicrotask(()=>{doc.querySelectorAll('#cards article.product[data-live-catalog-decorated="true"]').forEach(article=>delete article.dataset.liveCatalogDecorated);apply();}));
   root.addEventListener('DOMContentLoaded',ready,{once:true});
   ready();
 })(typeof window!=='undefined'?window:null);
