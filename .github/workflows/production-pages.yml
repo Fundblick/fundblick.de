@@ -27,7 +27,7 @@ jobs:
           ref: main
       - name: Validate production JavaScript
         run: |
-          for f in app.js i18n.js deal-of-day.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js verify-live-catalog-v2.js verify-coupon-engine.js verify-affiliate-routing.js verify-user-flows.js; do node --check "$f"; done
+          for f in app.js i18n.js deal-of-day.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-versioned-site.js verify-live-catalog-v2.js verify-coupon-engine.js verify-affiliate-routing.js verify-user-flows.js; do node --check "$f"; done
       - name: Build and validate production catalog
         run: |
           node build-live-catalog.js build/catalog
@@ -65,6 +65,11 @@ jobs:
           test ! -e _site/products.json
           test ! -e _site/development
           touch _site/.nojekyll
+      - name: Version production assets by content
+        run: |
+          node build-versioned-site.js
+          test -s _site/asset-manifest.json
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/asset-manifest.json'));if(!m.assets||!Object.keys(m.assets).length)process.exit(1);for(const [src,dst] of Object.entries(m.assets)){if(src===dst||!/\.[a-f0-9]{12}\.(js|css)$/.test(dst)||!fs.existsSync('_site/'+dst))process.exit(1)};console.log('Hashed asset gate OK',Object.keys(m.assets).length)"
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload production artifact
