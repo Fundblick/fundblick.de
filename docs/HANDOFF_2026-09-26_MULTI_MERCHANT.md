@@ -1,13 +1,14 @@
 # FundBlick – Handoff / Arbeitsstand – 26.09.2026
 
 ## Zweck
-Diese Datei ist der verbindliche Einstiegspunkt für die nächste Arbeitssitzung. Sie dokumentiert den heute erreichten Stand nach Integration des zweiten Händlers, den dabei stabilisierten Multi-Merchant-/Facet-/Kategorie-Mechanismus sowie die wichtigsten Lernregeln. Vor neuen Änderungen zuerst diese Datei lesen.
+Diese Datei ist der verbindliche Einstiegspunkt für die nächste Arbeitssitzung. Sie dokumentiert den heute erreichten Stand nach Integration des zweiten Händlers, den stabilisierten Multi-Merchant-/Facet-/Kategorie-Mechanismus sowie das jetzt produktive Tagesangebot. Vor neuen Änderungen zuerst diese Datei lesen.
 
 ## Aktueller Produktionsstand
 - Live-Domain: `fundblick.de`
-- Aktueller produktiver `main`-Commit nach PR #15: `d9e0da6816f11e5bf28e43c2d558d6fcc2c6745e`
-- Production-Workflow nach diesem Merge: Run #184, erfolgreich.
-- Nutzer hat den Live-Stand anschließend manuell geprüft und bestätigt, dass die Änderungen sichtbar und funktionsfähig sind.
+- Produktiver Feature-Stand nach PR #16: `4c9aba7d6f714a593dee2dee5d55782ae4b6e6a7`
+- Production-Workflow nach diesem Merge: Run #186, erfolgreich.
+- Nutzer hat den vorherigen Multi-Merchant-/Facet-/Kategorie-Stand manuell geprüft und bestätigt.
+- Tagesangebot wurde anschließend produktiv ausgerollt und der Production-Workflow vollständig grün bestätigt.
 - Produktionskatalog: 1.459 reale Produkte, 0 simulierte Produkte.
 - Händlerbestand:
   - Casa Moro: 1.428 Produkte
@@ -36,7 +37,7 @@ Verifizierte Ahipos-Struktur:
 - Produktname ist niemals Dedupe-Key.
 - Affiliate-Link und direkter Händlerlink bleiben strikt getrennt.
 - Generic `delivery_cost=0` darf als 0 EUR übernommen werden.
-- Retail-only ohne Versandnachweis bleibt `shippingCost=null`; niemals kostenloser Versand erfinden.
+- Retail-only ohne Versandnachweis bleibt `shippingCost=null`; niemals kostenlosen Versand erfinden.
 - Widersprüchliche Verfügbarkeit -> konservativ `OUT_OF_STOCK` / nicht kaufbar + Konfliktkennzeichnung.
 - Händlertexte werden nicht automatisch in eigene FundBlick-Claims umgeschrieben.
 - Insbesondere Gesundheits-/Heilversprechen nicht verstärken, nicht neu formulieren und nicht als eigene FundBlick-Aussage ableiten.
@@ -53,7 +54,7 @@ Nicht alle Ahipos-Produkte pauschal in `pet.equestrian` zwingen.
 ## Startseiten-Kategorien
 Die Startseite ist nicht mehr Casa-Moro-only.
 
-Der Production-Build erzeugt jetzt ein kleines Manifest:
+Der Production-Build erzeugt ein kleines Manifest:
 - `catalog/categories.json`
 
 `home-categories.js` liest dieses Manifest und baut die sichtbaren Kategorien daraus. Statische Fallback-Links bleiben in `index.html`, falls das Manifest nicht geladen werden kann.
@@ -90,7 +91,7 @@ werden in der UI als Marke `Ahipos Horses` zusammengeführt.
 Die zwei Awin-Sheets sind Datenquellen desselben Händlers und dürfen niemals als zwei Händler erscheinen.
 
 ## Dynamische Facet-Orchestrierung
-Die Feinsuche ist jetzt ergebnisabhängig.
+Die Feinsuche ist ergebnisabhängig.
 
 Verbindliche Regel:
 Nach jeder Filteränderung müssen die übrigen Facet-Optionen aus der noch sinnvollen Ergebnismenge neu berechnet werden.
@@ -102,6 +103,79 @@ Beispiele:
 - Optionen mit 0 Treffern werden nicht angeboten, außer ein bereits ausgewählter Wert muss für den Zustand sichtbar bleiben.
 
 Die Schema-Auswahl darf nicht mehr pauschal aus der alten Casa-Moro-Dominanz kommen, sondern muss aus dem aktuellen Kontext / der gefilterten Produktfamilie bestimmt werden.
+
+# Tagesangebot – produktiver Stand
+Das Tagesangebot auf der Startseite ist jetzt aktiv und produktiv.
+
+## Grundprinzip
+FundBlick unterscheidet strikt zwischen:
+1. einem **qualifizierten Deal** mit belastbarer Vergleichsevidenz und
+2. einem **täglichen Spotlight / Heutigen Angebot** ohne behaupteten Rabatt.
+
+Wenn kein belastbarer Rabatt nachweisbar ist, darf trotzdem ein echtes, lieferbares Produkt als Tagesangebot erscheinen. In diesem Fall werden **kein Streichpreis, keine Ersparnis und kein Rabattprozentsatz erfunden**.
+
+## Qualifizierter Deal
+Ein Produkt darf als echter Deal ausgezeichnet werden, wenn eine der zugelassenen Evidenzarten vorliegt:
+- belastbarer Mehrhändler-Vergleich oder
+- echter Händler-/Feed-Referenzpreis.
+
+Zusätzliche Mindestschwellen:
+- mindestens 15 % Ersparnis
+- mindestens 10 EUR absolute Ersparnis
+
+Nur dann dürfen Vergleichspreis, Ersparnis und Rabatt sichtbar werden.
+
+## Tages-Spotlight-Fallback
+Wenn aktuell kein qualifizierter Deal vorliegt:
+- echtes Produktionsprodukt
+- `testData=false`
+- nicht simuliert
+- lieferbar
+- positiver Preis
+- Produktname vorhanden
+- Bild vorhanden
+- tägliche deterministische Rotation
+- aktueller Händlerpreis wird angezeigt
+- `reference=null`
+- `saving=null`
+- `discountPct=null`
+
+Der Fallback ist bewusst ein **Tagesangebot**, kein behauptetes Schnäppchen.
+
+## Ahipos-Preisprüfung für Tagesangebote
+Ahipos lieferte zwar Felder wie `rrp_price`, `saving`, `savings_percent`, `product_price_old` bzw. Retail-`sale_price`, aber im geprüften Feed bestand aktuell keine belastbare Rabattbasis:
+- `rrp_price` war bei den Generic-Zeilen identisch zum aktuellen Preis.
+- `saving`, `savings_percent`, `product_price_old` waren leer.
+- Retail-`sale_price` war leer.
+
+Daraus darf FundBlick keinen künstlichen Rabatt ableiten.
+
+## Tagesangebot-Pool
+Die Startseite lädt nicht den vollständigen Katalog mit 1.459 Produkten.
+
+Stattdessen erzeugt `build-live-catalog.js` einen kleinen `home-deals`-Kandidatenpool:
+- qualifizierte Deals zuerst
+- danach reale, lieferbare Spotlight-Kandidaten mit Bild
+- maximal 60 Einträge
+
+Damit bleibt die Startseite schnell und erhält trotzdem immer eine reale Auswahlbasis.
+
+## Tagesrotation
+`deal-of-day.js` wählt das Spotlight deterministisch anhand von Datum + Produkt-ID. Dadurch:
+- bleibt das Tagesangebot innerhalb eines Tages stabil,
+- kann es am Folgetag automatisch wechseln,
+- ist keine manuelle Redaktion erforderlich.
+
+## Tagesangebot-CTA
+Der CTA führt zunächst in die FundBlick-Suche und nicht ungeprüft direkt aus der Startseite zum Händler. Dadurch bleibt die bestehende Händler-/Affiliate-Handoff-Logik zentral wirksam.
+
+Beim Sprachwechsel wird die gewählte Sprache im Suchlink mitgeführt, z. B. `lang=ru`.
+
+## Tagesangebot-i18n
+- Deal-/Spotlight-Texte sind mehrsprachig hinterlegt.
+- DE/RU wurden im Browser-Gate geprüft.
+- Händler-Produktname bleibt Source-Text und wird nicht künstlich übersetzt.
+- Hinweistext auf der Startseite wurde angepasst, damit ein normales Tagesangebot nicht fälschlich wie ein Rabattversprechen wirkt.
 
 ## Relevante Runtime-Dateien
 - `search.js`
@@ -122,23 +196,38 @@ Die Schema-Auswahl darf nicht mehr pauschal aus der alten Casa-Moro-Dominanz kom
   - Multi-Source-Produktionskatalog + Kategorienmanifest
 - `production-catalog-sources.json`
   - zentrale Liste der Produktionsquellen; neue Händler dort sauber ergänzen
+- `deal-of-day.js`
+  - Dealqualifikation, Händler-Referenzpreis, tägliches Spotlight, Rotation
+- `home-deal.js`
+  - Rendering der Tagesangebot-Karte, Sprache, Preisformatierung, CTA
+- `build-live-catalog.js`
+  - Produktionskatalog + kleiner Homepage-Tagesangebot-Pool
+- `verify-deal-of-day.js`
+  - Deal-Engine-Vertrag
+- `verify-production-deal.js`
+  - Tagesangebot gegen echten Produktionskatalog
+- `home-deal-e2e.spec.js`
+  - Chromium-E2E der Startseitenkarte
 
 ## Produktions-/CI-Gates
 Wichtige Gates, die vor Live grün sein müssen:
 - Development V2 integrity
 - Production merchant catalog gate
 - Facet orchestration safety
+- Daily offer safety
 - Ahipos normalizer gate
 - Ahipos catalog integration gate
 - Ahipos data quality gate
 - Taxonomy-i18n / RU-Gates, wenn Sprache/Taxonomie betroffen ist
 
-Für den finalen Facet-/Kategorie-Fix wurden auf PR #15 nach der letzten Korrektur erneut grün bestätigt:
+Für PR #16 wurden auf dem finalen Head `934d3d194af8fb598b94c607b6dfe91c7b2844bb` erneut grün bestätigt:
 - Development V2 Integrity
 - Production Merchant Catalog Gate
-- Facet Orchestration Safety inklusive Playwright Browser-E2E
+- Facet Orchestration Safety
+- Daily Offer Safety inklusive Playwright/Chromium
 
 ## Browser-E2E – aktuell abgesicherte Fälle
+### Multi-Merchant / Facets
 - Ahipos-Händlerfilter vorhanden.
 - Händlerliste zeigt Casa Moro + Ahipos Horses DE.
 - Ahipos-Händlerfilter -> 31 Ergebnisse.
@@ -152,6 +241,21 @@ Für den finalen Facet-/Kategorie-Fix wurden auf PR #15 nach der letzten Korrekt
 - Startseite -> 7 Kategorien aus Produktionsmanifest.
 - `Pferd & Reitsport` öffnet 29 Produkte.
 - RU-Kategorielabels geprüft.
+
+### Tagesangebot
+- Tagesangebot-Inhalt sichtbar.
+- Empty-State ausgeblendet, wenn Kandidat vorhanden.
+- Produktname vorhanden.
+- Preis sichtbar.
+- Händler vorhanden.
+- Produktbild mit HTTP(S)-Quelle.
+- CTA führt auf `search.html?...`.
+- `data-deal-kind` ist `deal` oder `spotlight`.
+- Beim Spotlight bleiben Vergleichspreis, Rabatt und Ersparnis verborgen.
+- Beim echten Deal werden Vergleichspreis, Rabatt und Ersparnis angezeigt.
+- Sprachwechsel auf RU ändert UI-Texte, nicht den Händler-Produktnamen.
+- CTA übernimmt nach RU-Wechsel `lang=ru`.
+- Keine JavaScript-Pageerrors im E2E.
 
 ## Wichtige PR-/Release-Historie
 ### PR #13 – Ahipos als zweiter Händler
@@ -178,10 +282,40 @@ Ziel:
 - neue Startseiten-Kategorien sichtbar machen
 - Browser-E2E für Ahipos/Casa Moro/Startseite/RU
 
-Finaler Merge-Commit:
+Merge-Commit:
 `d9e0da6816f11e5bf28e43c2d558d6fcc2c6745e`
 
-## Heute zusätzlich gefundene Fehler / Lernregeln
+### PR #16 – echtes Tagesangebot auf der Startseite
+Ziel:
+- Tagesangebot aus echten Produktionsprodukten befüllen
+- bestehende qualifizierte Deal-Logik erhalten
+- Händler-/Feed-Referenzpreis als zweite legitime Evidenzart ermöglichen
+- täglichen realen Spotlight-Fallback einführen
+- keine Fake-Rabatte
+- kleinen Homepage-Kandidatenpool bauen
+- CTA in FundBlick-Suche führen
+- DE/RU + Sprachparameter prüfen
+- Produktions- und Browser-Gates ergänzen
+
+Finaler PR-Head vor Merge:
+`934d3d194af8fb598b94c607b6dfe91c7b2844bb`
+
+Merge-Commit:
+`4c9aba7d6f714a593dee2dee5d55782ae4b6e6a7`
+
+Production-Workflow:
+- Run #186
+- SUCCESS
+- JavaScript-Syntax ✅
+- Produktionskatalog ✅
+- Tagesangebot-Gate ✅
+- Merchant-/Kategorie-Gates ✅
+- Produktionsverdrahtung ✅
+- Packaging ✅
+- Asset-Versionierung ✅
+- GitHub Pages Deployment ✅
+
+## Heute gefundene Fehler / Lernregeln
 ### 1. Deployment grün != Feature live
 Der erste Ahipos-Release war technisch erfolgreich, aber der produktive Katalog enthielt Ahipos nicht. Deshalb nach jedem Händlerrelease final erzeugtes Artefakt / Katalog prüfen.
 
@@ -203,6 +337,34 @@ Vor Merge weiterhin finalen Diff manuell/semantisch kontrollieren. Auf PR #15 wu
 ### 6. Neue echte Produktfamilien gehören auf die Startseite
 Wenn ein echter Händler Produkte außerhalb bestehender Kategorien liefert, muss FundBlick dafür neue Taxonomie-/Startseiten-Kategorien erzeugen statt sie unsichtbar nur über Suche auffindbar zu lassen.
 
+### 7. Kein Tagesdeal erzwingen
+Ein leerer Rabatt-Datensatz darf niemals durch erfundene UVP/Streichpreise „verbessert“ werden.
+
+FundBlick-Regel:
+- echter Rabatt nur mit Evidenz,
+- sonst echtes Tages-Spotlight ohne Rabattbehauptung.
+
+### 8. Alte Gate-Annahmen mit neuer Architektur mitändern
+Der bestehende Katalog-Verifier verlangte ursprünglich für jedes `home-deals`-Produkt mindestens zwei Offers. Das war mit dem neuen realen Spotlight-Fallback nicht mehr korrekt.
+
+Der Vertrag wurde deshalb angepasst:
+- qualifizierter Vergleich darf mehrere Offers verwenden,
+- reales Spotlight darf ein einzelnes echtes Händlerangebot haben,
+- Test-/Simulationsprodukte bleiben im Produktionsmodus verboten.
+
+### 9. Lokaler Browser-E2E != finales Packaging
+Beim finalen Recheck von PR #16 fiel auf, dass ein lokaler Browser-Test Repository-Dateien direkt serviert, während Produktion Assets versioniert und nach `_site` schreibt.
+
+Der vorhandene `build-versioned-site.js` scannt jedoch die HTML-Referenzen und erzeugt die gehashten Assets selbst, sodass `home-i18n.js` korrekt in `_site` landet.
+
+Lernregel: Bei neuen Frontend-Assets sowohl lokalen Browserlauf als auch Packaging-/Versionierungsweg prüfen.
+
+### 10. Geänderte Runtime-Dateien müssen selbst im Syntax-Gate stehen
+`home-i18n.js` war geändert, aber zunächst nicht explizit im neuen Tagesangebot-Syntaxcheck enthalten. Vor Merge wurde das nachgezogen – sowohl im Daily-Offer-Gate als auch im Produktions-Syntaxcheck.
+
+### 11. Sprachwechsel muss auch Navigation/CTA erhalten
+Es reicht nicht, nur sichtbare Texte zu übersetzen. Der Browser-Gate prüft jetzt zusätzlich, dass der Tagesangebot-CTA nach RU-Wechsel `lang=ru` mitführt.
+
 ## Verbindlicher Händler-Onboarding-Ablauf ab Händler 3
 1. Feed(s) isoliert einlesen, Production unverändert lassen.
 2. Felder/IDs/Links/Preise/Versand/Verfügbarkeit inventarisieren.
@@ -223,6 +385,7 @@ Wenn ein echter Händler Produkte außerhalb bestehender Kategorien liefert, mus
 17. Finales ausgeliefertes Produktionsartefakt/Katalog prüfen.
 18. Live-Smoke aus Kundensicht.
 19. Erst dann Händler als produktiv abgeschlossen markieren.
+20. Prüfen, ob neue Händlerdaten echte Referenz-/Altpreise liefern und dadurch für das Tagesangebot qualifizieren können.
 
 ## Release-Prinzip
 `Feed verstehen -> normalisieren -> deduplizieren -> Taxonomie -> Development-UI -> Browser-E2E -> Gesamtregression -> PR -> Merge -> Production-Artefakt prüfen -> Live-Smoke.`
@@ -230,10 +393,11 @@ Wenn ein echter Händler Produkte außerhalb bestehender Kategorien liefert, mus
 Keine direkte Live-Bastelei und keine breite Reparatur auf `main`.
 
 ## Aktueller sicherer nächster Einstiegspunkt
-Der Multi-Merchant-Grundmechanismus ist jetzt live und vom Nutzer bestätigt.
+Der Multi-Merchant-Grundmechanismus ist live, die neuen Kategorien/Facets wurden vom Nutzer manuell bestätigt und das Tagesangebot ist produktiv ausgerollt.
 
 Für die nächste Sitzung zuerst entscheiden, ob:
 - Händler 3 onboarded werden soll,
+- echte Referenz-/Altpreisfelder weiterer Händler für qualifizierte Tagesdeals erschlossen werden sollen,
 - die Casa-Moro-Facet-Coverage weiter verbessert werden soll,
 - weitere Kategorien/Sprachen verbessert werden sollen,
 - oder Suchqualität/Relevanz weiter verfeinert wird.
