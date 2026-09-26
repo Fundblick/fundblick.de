@@ -1,0 +1,40 @@
+name: RU V2 browser safety
+on:
+  push:
+    branches: [dev/ru-v2-safe]
+    paths:
+      - '*.html'
+      - '*i18n.js'
+      - 'language-links.js'
+      - 'affiliate-consent.js'
+      - 'search*.js'
+      - 'live-catalog-ui.js'
+      - 'ru-v2-e2e.spec.js'
+      - '.github/workflows/ru-v2-e2e.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 >/tmp/fundblick-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/index.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-http.log
+          exit 1
+      - name: RU V2 desktop and mobile browser journeys
+        run: npx playwright test ru-v2-e2e.spec.js --reporter=line --workers=1
