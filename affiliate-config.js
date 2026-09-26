@@ -5,12 +5,12 @@
   if(root)root.FundBlickAffiliateConfig=config;
 })(typeof window!=='undefined'?window:null,function(){
   return Object.freeze({
-    version:3,
+    version:4,
     network:'MULTI',
-    defaultNetwork:'adcell',
-    mode:'prepared',
+    defaultNetwork:'awin',
+    mode:'live-awin',
     consent:Object.freeze({
-      version:'2026-09-26-v3',
+      version:'2026-09-26-v4',
       storageKey:'fundblick-affiliate-consent-v1'
     }),
     adcell:Object.freeze({
@@ -22,10 +22,10 @@
       privacyUrl:'https://www.adcell.de/datenschutz'
     }),
     awin:Object.freeze({
-      enabled:false,
-      outboundEnabled:false,
-      trackingEnabled:false,
-      liveDisclosure:false,
+      enabled:true,
+      outboundEnabled:true,
+      trackingEnabled:true,
+      liveDisclosure:true,
       vendorId:907,
       consentParam:'cons',
       privacyUrl:'https://www.awin.com/de/datenschutzerklarung'
