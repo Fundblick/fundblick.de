@@ -1,9 +1,9 @@
 'use strict';
-/* Conservative production defaults. facet-schemas.js may replace these with
-   category-aware labels. Do not expose shipping/rating/color filters until
-   the live merchant feeds provide reliable values for them. */
+/* Conservative production defaults. Do not expose a merchant filter from
+   merchantCount: that field is a numeric offer count, not a merchant name.
+   A real merchant-name facet will be enabled only when normalized feeds
+   expose merchant identity as a dedicated attribute. */
 window.FB_COMMON_FACETS=[
   {key:'price',label:'Produktpreis',type:'price'},
-  {key:'brand',label:'Hersteller / Marke',type:'brand'},
-  {key:'merchants',label:'Händler',type:'merchant'}
+  {key:'brand',label:'Hersteller / Marke',type:'brand'}
 ];
