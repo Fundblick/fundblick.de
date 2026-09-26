@@ -17,7 +17,7 @@
     sr:'Унесите производ, бренд или модел.',
     es:'Introduce un producto, una marca o modelo.',
     fr:'Saisissez un produit, une marque ou un modèle.',
-    pt:'Introduza um produto, uma marca ou um modelo.',
+    pt:'Introduza um produto, uma marca ou modelo.',
     fa:'لطفاً یک محصول، برند یا مدل وارد کنید.',
     sq:'Shkruaj një produkt, markë ose model.',
     'zh-Hans':'请输入商品、品牌或型号。',
@@ -41,7 +41,7 @@
     const select=document.querySelector('#language');if(select)select.addEventListener('change',()=>{if(input.getAttribute('aria-invalid')==='true')queueMicrotask(show);});
   }
 
-  const betaCopy={de:'Live-Beta · aktuell Testdaten',tr:'Canlı beta · şu anda test verileri',ru:'Live-бета · сейчас тестовые данные',ar:'نسخة تجريبية مباشرة · بيانات اختبار حالياً',pl:'Live beta · obecnie dane testowe',ro:'Beta live · momentan date de test',uk:'Live-бета · зараз тестові дані',en:'Live beta · currently test data',it:'Beta live · al momento dati di prova',bg:'Live beta · в момента тестови данни',hr:'Live beta · trenutačno testni podaci',el:'Live beta · προς το παρόν δοκιμαστικά δεδομένα',sr:'Live beta · тренутно тестни подаци',es:'Beta en vivo · actualmente datos de prueba',fr:'Bêta en ligne · données de test actuellement',pt:'Beta em direto · atualmente dados de teste',fa:'نسخه بتای زنده · فعلاً داده‌های آزمایشی',sq:'Beta live · aktualisht të dhëna testuese','zh-Hans':'在线测试版 · 当前为测试数据',ku:'Beta ya zindî · niha daneyên ceribandinê'};
+  const betaCopy={de:'Testbetrieb · aktuell Testdaten',tr:'Test modu · şu anda test verileri',ru:'Тестовый режим · сейчас тестовые данные',ar:'وضع الاختبار · بيانات اختبار حالياً',pl:'Tryb testowy · obecnie dane testowe',ro:'Mod de test · momentan date de test',uk:'Тестовий режим · зараз тестові дані',en:'Test mode · currently test data',it:'Modalità test · al momento dati di prova',bg:'Тестов режим · в момента тестови данни',hr:'Testni način · trenutačno testni podaci',el:'Δοκιμαστική λειτουργία · προς το παρόν δοκιμαστικά δεδομένα',sr:'Тестни режим · тренутно тестни подаци',es:'Modo de prueba · actualmente datos de prueba',fr:'Mode test · données de test actuellement',pt:'Modo de teste · atualmente dados de teste',fa:'حالت آزمایشی · فعلاً داده‌های آزمایشی',sq:'Modalitet testimi · aktualisht të dhëna testuese','zh-Hans':'测试模式 · 当前为测试数据',ku:'Moda ceribandinê · niha daneyên ceribandinê'};
   const resultsFor={de:'Ergebnisse für',tr:'Sonuçlar',ru:'Результаты для',ar:'نتائج البحث عن',pl:'Wyniki dla',ro:'Rezultate pentru',uk:'Результати для',en:'Results for',it:'Risultati per',bg:'Резултати за',hr:'Rezultati za',el:'Αποτελέσματα για',sr:'Резултати за',es:'Resultados para',fr:'Résultats pour',pt:'Resultados para',fa:'نتایج برای',sq:'Rezultate për','zh-Hans':'搜索结果',ku:'Encam ji bo'};
   function installBetaBadge(){
     const language=document.querySelector('.hero-language');if(!language)return;
@@ -66,12 +66,12 @@
 
   function loadAsset(tag,attrs){return new Promise((resolve,reject)=>{const exists=attrs.src?document.querySelector(`script[src^="${attrs.src}"]`):document.querySelector(`link[href^="${attrs.href}"]`);if(exists){resolve(exists);return;}const el=document.createElement(tag);Object.entries(attrs).forEach(([key,value])=>el.setAttribute(key,value));el.addEventListener('load',()=>resolve(el),{once:true});el.addEventListener('error',reject,{once:true});document.head.appendChild(el);});}
   function installAffiliateReadiness(){
-    loadAsset('link',{rel:'stylesheet',href:'affiliate-consent.css?v=20260925-live21'}).catch(()=>{});
-    loadAsset('script',{src:'affiliate-config.js?v=20260925-live21'})
-      .then(()=>loadAsset('script',{src:'affiliate-consent-version.js?v=20260925-live21'}))
-      .then(()=>loadAsset('script',{src:'affiliate-consent.js?v=20260925-live21'}))
-      .then(()=>loadAsset('script',{src:'affiliate-link-policy.js?v=20260925-live21'}))
-      .then(()=>loadAsset('script',{src:'affiliate-outbound.js?v=20260925-live21'}))
+    loadAsset('link',{rel:'stylesheet',href:'affiliate-consent.css?v=20260926-live29'}).catch(()=>{});
+    loadAsset('script',{src:'affiliate-config.js?v=20260926-live29'})
+      .then(()=>loadAsset('script',{src:'affiliate-consent-version.js?v=20260926-live29'}))
+      .then(()=>loadAsset('script',{src:'affiliate-consent.js?v=20260926-live29'}))
+      .then(()=>loadAsset('script',{src:'affiliate-link-policy.js?v=20260926-live29'}))
+      .then(()=>loadAsset('script',{src:'affiliate-outbound.js?v=20260926-live29'}))
       .catch(()=>{});
   }
   const select=document.querySelector('#language');if(select)select.addEventListener('change',()=>queueMicrotask(()=>apply(normalize(select.value)||'de')));
@@ -79,5 +79,5 @@
   installHomeSearchGuard();
   installCustomerPolish();
   installAffiliateReadiness();
-  window.FundBlickLanguageLinks={apply,current,emptySearch};
+  window.FundBlickLanguageLinks={apply,current,emptySearch,betaCopy};
 })();

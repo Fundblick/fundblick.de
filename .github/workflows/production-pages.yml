@@ -98,7 +98,8 @@ jobs:
           grep -q 'home-polish.js' index.html
           grep -q 'home-polish.css' index.html
           grep -q 'id="searchFeedback"' index.html
-          grep -q 'data-home-build="20260925-live19"' index.html
+          grep -q 'data-home-build="20260926-live29"' index.html
+          ! grep -q 'Live-Beta' index.html
           grep -q 'id="deal"' index.html
           grep -q 'id="categories"' index.html
           grep -q 'id="categoryToggle"' index.html
@@ -139,9 +140,15 @@ jobs:
           grep -q 'affiliate-link-policy.js' language-links.js
           grep -q 'affiliate-outbound.js' language-links.js
           grep -q 'affiliate-consent.css' language-links.js
+          grep -q 'id="affiliate-networks"' datenschutz.html
           grep -q 'id="affiliate-adcell"' datenschutz.html
           grep -q 'data-adcell-live-disclosure="false"' datenschutz.html
           grep -q 'IAB Vendor ID 766' datenschutz.html
+          grep -q 'id="affiliate-awin"' datenschutz.html
+          grep -q 'data-awin-live-disclosure="false"' datenschutz.html
+          grep -q 'Vendor ID 907' datenschutz.html
+          grep -q 'AWIN AG' datenschutz.html
+          grep -q "network:'MULTI'" affiliate-config.js
           grep -q 'outboundEnabled:false' affiliate-config.js
           grep -q 'FundBlickAffiliateLinkPolicy' affiliate-link-policy.js
           grep -q 'FundBlickAffiliateOutbound' affiliate-outbound.js

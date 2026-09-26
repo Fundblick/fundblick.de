@@ -2,11 +2,11 @@
 (function(root){
   if(!root||!root.document)return;
   const config=root.FundBlickAffiliateConfig;
-  if(!config?.adcell)return;
-  const adcell=config.adcell;
-  const decisionKey=adcell.consentStorageKey||'fundblick-adcell-consent-v1';
+  if(!config?.consent)return;
+  const consent=config.consent;
+  const decisionKey=consent.storageKey||'fundblick-affiliate-consent-v1';
   const metaKey=`${decisionKey}:meta`;
-  const currentVersion=String(adcell.consentVersion||'1');
+  const currentVersion=String(consent.version||'1');
   const read=key=>{try{return root.localStorage?.getItem(key)||null}catch{return null}};
   const remove=key=>{try{root.localStorage?.removeItem(key)}catch{}};
   const write=(key,value)=>{try{root.localStorage?.setItem(key,value)}catch{}};
@@ -20,7 +20,7 @@
   root.addEventListener('fundblick:affiliate-consent',event=>{
     const decision=event?.detail?.decision;
     if(decision!=='granted'&&decision!=='denied')return;
-    write(metaKey,JSON.stringify({decision,version:currentVersion,savedAt:new Date().toISOString(),network:'ADCELL'}));
+    write(metaKey,JSON.stringify({decision,version:currentVersion,savedAt:new Date().toISOString(),network:'MULTI'}));
   });
   root.FundBlickAffiliateConsentVersion={decisionKey,metaKey,currentVersion};
 })(typeof window!=='undefined'?window:null);

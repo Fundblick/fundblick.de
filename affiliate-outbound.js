@@ -9,6 +9,7 @@
     return {
       directUrl:el.dataset.offerDirectUrl||null,
       affiliateUrl:el.dataset.offerAffiliateUrl||null,
+      network:el.dataset.offerNetwork||el.dataset.affiliateNetwork||null,
       simulated:el.dataset.offerSimulated==='true'
     };
   }
@@ -21,6 +22,7 @@
     const result=resolveElement(el);
     el.dataset.linkMode=result.mode;
     el.dataset.linkReason=result.reason;
+    if(result.network)el.dataset.resolvedAffiliateNetwork=result.network;
     if(result.allowed&&result.url){
       el.setAttribute('href',result.url);
       el.setAttribute('target','_blank');
