@@ -23,8 +23,8 @@ async function assertRussianHome(page){
 }
 
 for(const profile of [
-  {name:'desktop',viewport:{width:1440,height:1000}},
-  {name:'mobile',viewport:{width:390,height:844}}
+  {name:'desktop',viewport:{width:1440,height:1000},mobile:false},
+  {name:'mobile',viewport:{width:390,height:844},mobile:true}
 ]){
   test.describe(`RU V2 ${profile.name}`,()=>{
     test.use({viewport:profile.viewport});
@@ -47,10 +47,22 @@ for(const profile of [
       await expect(page.locator('#query')).toHaveValue('лампа');
 
       const filters=page.locator('#filter-panel');
-      await filters.evaluate(el=>el.open=false);
-      await expect(filters).not.toHaveAttribute('open','');
-      await filters.locator('summary').click();
-      await expect(filters).toHaveAttribute('open','');
+      if(profile.mobile){
+        const mobileFilter=page.locator('.mobile-filter-toggle');
+        await expect(mobileFilter).toBeVisible();
+        await expect(mobileFilter).toContainText('Уточнить поиск');
+        await expect(mobileFilter).toHaveAttribute('aria-expanded','false');
+        await mobileFilter.click();
+        await expect(filters).toHaveAttribute('open','');
+        await expect(mobileFilter).toHaveAttribute('aria-expanded','true');
+        await page.locator('.mobile-filter-apply').click();
+        await expect(filters).not.toHaveAttribute('open','');
+      }else{
+        await filters.evaluate(el=>el.open=false);
+        await expect(filters).not.toHaveAttribute('open','');
+        await filters.locator('summary').click();
+        await expect(filters).toHaveAttribute('open','');
+      }
 
       await page.locator('#sort').selectOption('price-asc');
       await expect(page.locator('#sort')).toHaveValue('price-asc');
