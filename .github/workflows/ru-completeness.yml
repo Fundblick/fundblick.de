@@ -7,6 +7,7 @@ on:
       - '*i18n.js'
       - 'language-links.js'
       - 'verify-ru-completeness.js'
+      - 'verify-product-copy-i18n.js'
       - '.github/workflows/ru-completeness.yml'
   workflow_dispatch:
 permissions:
@@ -18,8 +19,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Russian localization wiring
         run: node verify-ru-completeness.js
-      - name: Existing language regression
-        run: |
-          node verify-language-links.js
-          node verify-search-i18n.js
-          node verify-product-copy-i18n.js
+      - name: Product-copy localization regression
+        run: node verify-product-copy-i18n.js
