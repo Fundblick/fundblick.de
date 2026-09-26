@@ -10,7 +10,7 @@ const cases=[
  [{name:'Pouf Hocker - Leder',category:'home.living'},'living',{type:'Hocker',material:'Leder'}],
  [{name:'Orientalischer Teppich aus Baumwolle',category:'home.living'},'living',{type:'Teppich',material:'Textil',style:'Orientalisch'}],
  [{name:'Keramik Waschbecken fürs Bad',category:'home.decor'},'decor',{type:'Waschbecken',material:'Keramik',room:'Bad'}],
- [{name:'Orientalischer Blumentopf Leon - M',category:'home.living'},'living',{type:'Blumentopf / Pflanzgefäß',style:'Orientalisch'}],
+ [{name:'Orientalischer Blumentopf Leon - M',category:'home.living'},'living',{type:'Vase / Blumentopf',style:'Orientalisch'}],
  [{name:'Musterfliese Marokkanische Fliesen 20x20 cm – FL7031',category:'home.living'},'living',{type:'Fliese',style:'Marokkanisch'}],
  [{name:'Indisches Holz Mandala Hossam',category:'home.living'},'living',{type:'Wanddekoration',material:'Holz',style:'Boho / Ethno'}],
  [{name:'E14-Fassung mit Zugentlastung',category:'home.living'},'living',{type:'Lampenfassung / Anschluss'}]
