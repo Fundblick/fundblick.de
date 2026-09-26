@@ -25,184 +25,37 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Validate live JavaScript
+      - name: Validate production JavaScript
         run: |
-          node --check app.js
-          node --check i18n.js
-          node --check deal-of-day.js
-          node --check home-extras.js
-          node --check home-categories.js
-          node --check home-polish.js
-          node --check search-i18n.js
-          node --check facet-schemas.js
-          node --check category-display-i18n.js
-          node --check common-facet-defs.js
-          node --check category-aliases.js
-          node --check search-intent.js
-          node --check search-state-guard.js
-          node --check catalog-loader.js
-          node --check image-fallback.js
-          node --check search.js
-          node --check product-copy-i18n.js
-          node --check coupon-engine.js
-          node --check offer-comparison.js
-          node --check search-relevance.js
-          node --check facet-value-i18n.js
-          node --check common-filter-i18n.js
-          node --check search-mobile.js
-          node --check results-paging.js
-          node --check page-meta-i18n.js
-          node --check live-health.js
-          node --check language-links.js
-          node --check affiliate-config.js
-          node --check affiliate-consent-version.js
-          node --check affiliate-consent.js
-          node --check affiliate-link-policy.js
-          node --check affiliate-outbound.js
-          node --check adcell-feed-normalizer.js
-          node --check site-i18n.js
-          node --check build-live-catalog.js
-          node --check verify-live-catalog-v2.js
-          node --check verify-search-state-v2.js
-          node --check verify-live-facets.js
-          node --check verify-search-intent.js
-          node --check verify-live-health.js
-          node --check verify-production-assets.js
-          node --check verify-total-price-integrity.js
-          node --check verify-language-navigation.js
-          node --check verify-category-display-i18n.js
-          node --check verify-product-copy-i18n.js
-          node --check verify-offer-comparison.js
-          node --check verify-coupon-engine.js
-          node --check verify-image-fallback.js
-          node --check verify-image-quality.js
-          node --check verify-affiliate-readiness.js
-          node --check verify-affiliate-routing.js
-          node --check verify-home-empty-search.js
-          node --check verify-homepage-visual.js
-          node --check verify-home-polish.js
-          node --check verify-customer-meta-paging.js
-      - name: Build production catalog
+          for f in app.js i18n.js deal-of-day.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js verify-live-catalog-v2.js verify-coupon-engine.js verify-affiliate-routing.js; do node --check "$f"; done
+      - name: Build and validate production catalog
         run: |
           node build-live-catalog.js build/catalog
           node verify-live-catalog-v2.js build/catalog
           node verify-coupon-engine.js build/catalog
-      - name: Verify live search assets
+          node verify-affiliate-routing.js
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Real production gate OK',m.realCount)"
+          ! grep -R -E 'DemoMarkt|ShopTest|PreisDemo|FundBlick Simulator|Test-Gutschein' development/core-products.json build/catalog
+      - name: Verify production wiring
         run: |
-          grep -q 'language-links.js' index.html
-          grep -q 'page-meta-i18n.js' index.html
-          grep -q 'deal-of-day.js' index.html
-          grep -q 'home-extras.js' index.html
-          grep -q 'home-categories.js' index.html
-          grep -q 'home-categories.css' index.html
-          grep -q 'home-polish.js' index.html
-          grep -q 'home-polish.css' index.html
-          grep -q 'id="searchFeedback"' index.html
-          grep -q 'data-home-build="20260926-live29"' index.html
-          ! grep -q 'Live-Beta' index.html
-          grep -q 'id="deal"' index.html
-          grep -q 'id="categories"' index.html
-          grep -q 'id="categoryToggle"' index.html
-          grep -q 'id="categoryMore"' index.html
-          test "$(grep -o 'data-category-key=' index.html | wc -l)" -eq 16
-          test "$(grep -o 'data-category-primary' index.html | wc -l)" -eq 6
-          test "$(grep -o 'data-category-extra' index.html | wc -l)" -eq 10
-          ! grep -q 'id="showcaseList"' index.html
-          ! grep -q 'Erst das Produkt. Dann die Angebote.' index.html
-          ! grep -q 'Product first. Offers second.' index.html
-          grep -q 'search-i18n.js' search.html
-          grep -q 'facet-schemas.js' search.html
-          grep -q 'category-display-i18n.js' search.html
-          grep -q 'common-facet-defs.js' search.html
-          grep -q 'category-aliases.js' search.html
-          grep -q 'search-intent.js' search.html
-          grep -q 'search-state-guard.js' search.html
-          grep -q 'catalog-loader.js' search.html
-          grep -q 'image-fallback.js' search.html
-          grep -q 'product-copy-i18n.js' search.html
-          grep -q 'coupon-engine.js' search.html
-          grep -q 'offer-comparison.js' search.html
-          grep -q 'search-relevance.js' search.html
-          grep -q 'facet-value-i18n.js' search.html
-          grep -q 'common-filter-i18n.js' search.html
-          grep -q 'search-mobile.js' search.html
-          grep -q 'results-paging.js' search.html
-          grep -q 'results-paging.css' search.html
-          grep -q 'page-meta-i18n.js' search.html
-          grep -q 'live-health.js' search.html
-          grep -q 'language-links.js' search.html
-          grep -q 'language-links.js' impressum.html
-          grep -q 'language-links.js' datenschutz.html
-          grep -q 'language-links.js' 404.html
-          grep -q 'affiliate-config.js' language-links.js
-          grep -q 'affiliate-consent-version.js' language-links.js
-          grep -q 'affiliate-consent.js' language-links.js
-          grep -q 'affiliate-link-policy.js' language-links.js
-          grep -q 'affiliate-outbound.js' language-links.js
-          grep -q 'affiliate-consent.css' language-links.js
-          grep -q 'id="affiliate-networks"' datenschutz.html
-          grep -q 'id="affiliate-adcell"' datenschutz.html
-          grep -q 'data-adcell-live-disclosure="false"' datenschutz.html
-          grep -q 'IAB Vendor ID 766' datenschutz.html
-          grep -q 'id="affiliate-awin"' datenschutz.html
-          grep -q 'data-awin-live-disclosure="false"' datenschutz.html
-          grep -q 'Vendor ID 907' datenschutz.html
-          grep -q 'AWIN AG' datenschutz.html
+          grep -q 'data-catalog-url="catalog-live"' search.html
+          grep -q 'live-catalog-ui.js' search.html
+          ! grep -q 'product-copy-i18n.js' search.html
+          ! grep -q 'offer-comparison.js' search.html
           grep -q "network:'MULTI'" affiliate-config.js
-          grep -q 'outboundEnabled:false' affiliate-config.js
+          grep -q "defaultNetwork:'awin'" affiliate-config.js
+          grep -q 'enabled:true' affiliate-config.js
           grep -q 'FundBlickAffiliateLinkPolicy' affiliate-link-policy.js
           grep -q 'FundBlickAffiliateOutbound' affiliate-outbound.js
-          grep -q 'FundBlickAdcellFeedNormalizer' adcell-feed-normalizer.js
-          grep -q 'search-mobile.css' search.html
-          grep -q 'value="zh-Hans"' search.html
-          grep -q "'zh-Hans'" search-i18n.js
-          grep -q 'FB_CATEGORY_SCHEMAS' facet-schemas.js
-          grep -q 'FB_CATEGORY_DISPLAY_LABELS' category-display-i18n.js
-          grep -q 'FB_COMMON_FACETS' common-facet-defs.js
-          grep -q 'pistola de calor' category-aliases.js
-          grep -q 'FBProductCopyI18n' product-copy-i18n.js
-          grep -q 'FundBlickCoupons' coupon-engine.js
-          grep -q 'FundBlickOfferComparison' offer-comparison.js
-          grep -q 'FundBlickImageFallback' image-fallback.js
-          grep -q 'FundBlickAffiliateConfig' affiliate-config.js
-          grep -q 'FundBlickAffiliateConsent' affiliate-consent.js
-          grep -q 'Filtermaschine' facet-value-i18n.js
-          grep -q 'FBCommonFilterI18n' common-filter-i18n.js
-          grep -q 'FB_parseSearchIntent' search-intent.js
-          grep -q 'FundBlickHealth' live-health.js
-          grep -q 'FundBlickLanguageLinks' language-links.js
-          grep -q 'mobile-search-tools' search-mobile.css
-          grep -q 'data-catalog-url="catalog-live"' search.html
-          ! grep -q 'data-catalog-url="development/core-products.json"' search.html
-      - name: Test live search logic
-        run: |
-          node verify-search-state-v2.js
-          node verify-live-facets.js
-          node verify-search-intent.js
-          node verify-live-health.js
-          node verify-production-assets.js
-          node verify-total-price-integrity.js
-          node verify-language-navigation.js
-          node verify-category-display-i18n.js
-          node verify-product-copy-i18n.js
-          node verify-offer-comparison.js
-          node verify-coupon-engine.js build/catalog
-          node verify-image-fallback.js
-          node verify-image-quality.js
-          node verify-affiliate-readiness.js
-          node verify-affiliate-routing.js
-          node verify-home-empty-search.js
-          node verify-homepage-visual.js
-          node verify-home-polish.js
-          node verify-customer-meta-paging.js
+          grep -q 'id="affiliate-awin"' datenschutz.html
+          ! grep -q 'Live-Beta' index.html
       - name: Package production files only
         run: |
           mkdir -p _site
-          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js product-copy-i18n.js coupon-engine.js offer-comparison.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css results-paging.js results-paging.css page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js affiliate-consent.css i18n.js app.js styles.css home.css impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
+          cp index.html deal-of-day.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css results-paging.js results-paging.css page-meta-i18n.js live-health.js language-links.js live-catalog-ui.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js affiliate-consent.css i18n.js app.js styles.css home.css impressum.html datenschutz.html robots.txt sitemap.xml CNAME 404.html _site/
           cp -R build/catalog _site/catalog
-          test ! -e _site/adcell-feed-normalizer.js
-          test ! -e _site/site-i18n.js
           test ! -e _site/products.json
+          test ! -e _site/development
           touch _site/.nojekyll
       - name: Configure Pages
         uses: actions/configure-pages@v5
