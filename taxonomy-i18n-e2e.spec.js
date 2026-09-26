@@ -3,8 +3,8 @@ const {test,expect}=require('@playwright/test');
 const BASE='http://127.0.0.1:4173';
 
 for(const profile of [
-  {name:'desktop',viewport:{width:1440,height:1000}},
-  {name:'mobile',viewport:{width:390,height:844}}
+  {name:'desktop',viewport:{width:1440,height:1000},mobile:false},
+  {name:'mobile',viewport:{width:390,height:844},mobile:true}
 ]){
   test(`RU taxonomy labels preserve filter/source values on ${profile.name}`,async({page})=>{
     await page.setViewportSize(profile.viewport);
@@ -44,6 +44,15 @@ for(const profile of [
     await expect(page.locator('.product .tags')).toContainText('Металл');
     await expect(page.locator('.product .tags')).toContainText('Марокканский стиль');
     await expect(page.locator('.product h2')).toHaveText('Hakenleiste Belluno');
+
+    // On mobile, use the actual mobile filter control before interacting with the checkbox.
+    if(profile.mobile){
+      const mobileFilter=page.locator('.mobile-filter-toggle');
+      await expect(mobileFilter).toBeVisible();
+      await mobileFilter.click();
+      await expect(page.locator('#filter-panel')).toHaveAttribute('open','');
+      await expect(mobileFilter).toHaveAttribute('aria-expanded','true');
+    }
 
     // Translation must never rewrite the functional source value used for filtering.
     await sideTable.check();
