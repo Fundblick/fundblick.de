@@ -33,3 +33,10 @@ test('exact brand search remains stable',async({page})=>{
   await expect(page.locator('#cards article.product h2').first()).toContainText(/EQUINOX/i);
   expect(new URL(page.url()).searchParams.get('q')).toBe('Equinox');
 });
+
+test('product type prefix outranks feed order',async({page})=>{
+  await page.goto(base+'?q=Mosaiktisch&lang=de',{waitUntil:'networkidle'});
+  await waitResults(page);
+  await expect(page.locator('#summary')).toContainText(/^137 /);
+  await expect(page.locator('#cards article.product h2').first()).toHaveText(/^Mosaiktisch\b/i);
+});
