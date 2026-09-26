@@ -6,6 +6,13 @@ async function waitResults(page){
   await expect(page.locator('#summary')).not.toContainText('Produkte werden geladen');
 }
 
+async function firstTitle(page,query){
+  await page.goto(base+'?q='+encodeURIComponent(query)+'&lang=de',{waitUntil:'networkidle'});
+  await waitResults(page);
+  await expect(page.locator('#cards article.product').first()).toBeVisible();
+  return (await page.locator('#cards article.product h2').first().textContent()||'').trim();
+}
+
 test('semantic equestrian query finds joint product',async({page})=>{
   const errors=[];page.on('pageerror',error=>errors.push(String(error)));
   await page.goto(base+'?q='+encodeURIComponent('Pferd Gelenke')+'&lang=de',{waitUntil:'networkidle'});
@@ -39,4 +46,17 @@ test('product type prefix outranks feed order',async({page})=>{
   await waitResults(page);
   await expect(page.locator('#cards article.product').first()).toBeVisible();
   await expect(page.locator('#cards article.product h2').first()).toHaveText(/^Mosaiktisch\b/i);
+});
+
+test('brand plus product type is stable across word order',async({page})=>{
+  const forward=await firstTitle(page,'Equinox Zusatzfutter');
+  const reverse=await firstTitle(page,'Zusatzfutter Equinox');
+  expect(reverse).toBe(forward);
+  expect(forward).toMatch(/EQUINOX/i);
+});
+
+test('partial product term plus specification ranks a matching title first',async({page})=>{
+  const title=await firstTitle(page,'Mosaik Stern');
+  expect(title).toMatch(/Mosaik/i);
+  expect(title).toMatch(/Stern/i);
 });
