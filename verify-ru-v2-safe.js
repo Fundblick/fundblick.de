@@ -10,6 +10,14 @@ const staticI18n=read('search-static-i18n.js');
 for(const text of ['Назад на главную','Товары загружаются','Цены и наличие основаны на подключённых данных продавцов'])if(!staticI18n.includes(text)){console.error(`search-static-i18n.js: missing Russian copy ${text}`);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(staticI18n.includes(forbidden)){console.error(`search-static-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 
+// Homepage localization must also remain presentation-only.
+const homeHtml=read('index.html');
+if(!homeHtml.includes('home-i18n.js')){console.error('index.html: missing home-i18n.js');failed=true;}
+const home=read('home-i18n.js');
+for(const text of ['Ищите. Сравнивайте предложения. Готово.','Категории','Предложение дня','ПОЧЕМУ FUNDBLICK?','Выходные данные','Конфиденциальность'])if(!home.includes(text)){console.error(`home-i18n.js: missing ${text}`);failed=true;}
+for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(home.includes(forbidden)){console.error(`home-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
+for(const key of ['headline','lead','searchPlaceholder','catLiving','catFurniture','catLighting','catDecor','affiliateNote'])if(!homeHtml.includes(`data-home-i18n="${key}"`)&&!homeHtml.includes(`data-home-i18n-placeholder="${key}"`)){console.error(`index.html: missing home i18n key ${key}`);failed=true;}
+
 // Dynamic common facets and category schemas need Russian display labels.
 const common=read('common-filter-i18n.js');
 for(const text of ['Рейтинг','Магазины и предложения','Бесплатная доставка','В наличии','Доставка ≤ 3 рабочих дней'])if(!common.includes(text)){console.error(`common-filter-i18n.js: missing ${text}`);failed=true;}
