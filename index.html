@@ -8,114 +8,20 @@
   <meta name="description" content="Produkt suchen und verfügbare Händlerangebote übersichtlich vergleichen.">
   <meta name="theme-color" content="#edf7eb">
   <meta name="application-name" content="FundBlick">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="FundBlick">
-  <meta property="og:title" content="FundBlick – Produkte finden, Händlerangebote vergleichen">
-  <meta property="og:description" content="Produkt suchen und verfügbare Händlerangebote übersichtlich vergleichen.">
-  <meta property="og:url" content="https://fundblick.de/">
-  <meta name="twitter:card" content="summary">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20rx%3D%2716%27%20fill%3D%27%23183025%27%2F%3E%3Ccircle%20cx%3D%2728%27%20cy%3D%2728%27%20r%3D%2714%27%20fill%3D%27%23c9f56b%27%2F%3E%3Ccircle%20cx%3D%2728%27%20cy%3D%2728%27%20r%3D%277%27%20fill%3D%27%23183025%27%2F%3E%3Cpath%20d%3D%27M38%2038%2051%2051%27%20stroke%3D%27%23c9f56b%27%20stroke-width%3D%277%27%20stroke-linecap%3D%27round%27%2F%3E%3C%2Fsvg%3E">
-  <title>FundBlick – Produkte finden, Gesamtpreise vergleichen</title>
-  <link rel="stylesheet" href="styles.css?v=20260925-live22">
-  <link rel="stylesheet" href="home.css?v=20260925-live17">
-  <link rel="stylesheet" href="home-categories.css?v=20260925-live18">
-  <link rel="stylesheet" href="home-polish.css?v=20260926-live27">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"FundBlick","url":"https://fundblick.de/","potentialAction":{"@type":"SearchAction","target":"https://fundblick.de/search.html?q={search_term_string}","query-input":"required name=search_term_string"}}</script>
+  <meta property="og:type" content="website"><meta property="og:site_name" content="FundBlick"><meta property="og:title" content="FundBlick – Produkte finden, Händlerangebote vergleichen"><meta property="og:description" content="Produkt suchen und verfügbare Händlerangebote übersichtlich vergleichen."><meta property="og:url" content="https://fundblick.de/">
+  <title>FundBlick – Produkte finden, Händlerangebote vergleichen</title>
+  <link rel="stylesheet" href="styles.css?v=20260925-live22"><link rel="stylesheet" href="home.css?v=20260925-live17"><link rel="stylesheet" href="home-categories.css?v=20260925-live18"><link rel="stylesheet" href="home-polish.css?v=20260926-live27">
 </head>
-<body class="home-restored" data-home-build="20260926-live31">
-  <a class="skip" href="#main">Zum Inhalt</a>
-  <header class="topbar homebar">
-    <a class="brand" href="/" aria-label="FundBlick Startseite">Fund<span>Blick</span></a>
-    <nav aria-label="Hauptnavigation">
-      <a href="#categories" data-home-key="categories">Kategorien</a>
-      <a href="#deal" data-home-key="deal">Tagesangebot</a>
-    </nav>
-  </header>
-
-  <main id="main">
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <label class="hero-language"><span aria-hidden="true">🌐</span><span class="hero-language-label">Sprache</span><select id="language" aria-label="Sprache wählen"><option value="de">DE · Deutsch</option><option value="tr">TR · Türkçe</option><option value="ru">RU · Русский</option><option value="ar">AR · العربية</option><option value="pl">PL · Polski</option><option value="ro">RO · Română</option><option value="uk">UK · Українська</option><option value="en">EN · English</option><option value="it">IT · Italiano</option><option value="bg">BG · Български</option><option value="hr">HR · Hrvatski</option><option value="el">EL · Ελληνικά</option><option value="sr">SR · Српски</option><option value="es">ES · Español</option><option value="fr">FR · Français</option><option value="pt">PT · Português</option><option value="fa">FA · فارسی</option><option value="sq">SQ · Shqip</option><option value="zh-Hans">ZH · 简体中文</option><option value="ku">KU · Kurdî</option></select></label>
-          <p class="eyebrow" data-i18n="eyebrow">PRODUKTSUCHE · HÄNDLERPREISE</p>
-          <h1 data-i18n="hero">Suchen. Angebote vergleichen. Fertig.</h1>
-          <p class="lead" data-i18n="lead">Produkt eingeben – FundBlick zeigt dir aktuell angebundene Händlerangebote und die verfügbaren Preis- und Produktinformationen.</p>
-
-          <form class="search" role="search" id="searchForm">
-            <label class="sr-only" for="q">Produkte suchen</label>
-            <span class="search-icon" aria-hidden="true">⌕</span>
-            <input id="q" type="search" role="combobox" aria-autocomplete="list" aria-controls="suggestions" aria-expanded="false" aria-activedescendant="" autocomplete="off" placeholder="Produkt, Marke oder Modell suchen …">
-            <button id="voiceButton" class="voice-button" type="button" hidden aria-label="Spracheingabe starten" title="Spracheingabe starten">🎙</button>
-            <button class="search-submit" type="submit" data-i18n="button">Suchen</button>
-            <div id="suggestions" class="suggestions" role="listbox" aria-label="Suchvorschläge" hidden></div>
-          </form>
-          <div id="searchFeedback" class="search-feedback" role="alert" aria-live="assertive" hidden><span class="search-feedback-icon" aria-hidden="true">i</span><span id="searchFeedbackText"></span></div>
-          <p id="voiceStatus" class="voice-status" role="status" aria-live="polite"></p>
-
-          <div id="categories" class="hero-categories">
-            <div class="hero-categories-head"><span data-home-key="categories">Kategorien</span></div>
-            <nav class="category-links" aria-label="Produktkategorien">
-              <a data-category-key="electronics" data-category-primary href="search.html?q=Elektronik">Elektronik</a>
-              <a data-category-key="household" data-category-primary href="search.html?q=Haushalt">Haushalt</a>
-              <a data-category-key="beauty" data-category-primary href="search.html?q=Beauty%20%26%20Pflege">Beauty &amp; Pflege</a>
-              <a data-category-key="fashion" data-category-primary href="search.html?q=Mode">Mode</a>
-              <a data-category-key="sport" data-category-primary href="search.html?q=Sport%20%26%20Outdoor">Sport &amp; Outdoor</a>
-              <a data-category-key="tools" data-category-primary href="search.html?q=Werkzeug">Werkzeug</a>
-              <span id="categoryMore" class="category-more" hidden>
-                <a data-category-key="shoes" data-category-extra href="search.html?q=Schuhe">Schuhe</a>
-                <a data-category-key="garden" data-category-extra href="search.html?q=Garten">Garten</a>
-                <a data-category-key="auto" data-category-extra href="search.html?q=Auto%20%26%20Motorrad">Auto &amp; Motorrad</a>
-                <a data-category-key="baby" data-category-extra href="search.html?q=Baby%20%26%20Kind">Baby &amp; Kind</a>
-                <a data-category-key="pets" data-category-extra href="search.html?q=Tierbedarf">Tierbedarf</a>
-                <a data-category-key="health" data-category-extra href="search.html?q=Gesundheit">Gesundheit</a>
-                <a data-category-key="office" data-category-extra href="search.html?q=B%C3%BCro">Büro</a>
-                <a data-category-key="toys" data-category-extra href="search.html?q=Spielzeug">Spielzeug</a>
-                <a data-category-key="gaming" data-category-extra href="search.html?q=Gaming">Gaming</a>
-                <a data-category-key="photo" data-category-extra href="search.html?q=Foto">Foto</a>
-              </span>
-              <button id="categoryToggle" class="category-toggle" type="button" aria-expanded="false" aria-controls="categoryMore">Alle Kategorien <span aria-hidden="true">＋</span></button>
-            </nav>
-          </div>
-        </div>
-
-        <aside class="compare-demo deal-card" id="deal" aria-label="Schnäppchen des Tages">
-          <div class="demo-head"><div><span class="deal-flame" aria-hidden="true">◆</span><span data-home-key="dealTitle">Schnäppchen des Tages</span></div><span data-home-key="checked">automatisch geprüft</span></div>
-          <div id="deal-content" hidden>
-            <div class="demo-product"><div class="demo-img" id="dealImage" aria-hidden="true">🎯</div><div><small id="dealBrand">FundBlick</small><strong id="dealName">Produkt</strong><span data-home-key="note">Nur Angebote mit ausreichend belastbaren Vergleichsdaten erscheinen hier.</span></div></div>
-            <div class="deal-saving"><span data-home-key="fundPrice">FundBlick-Preis</span><strong id="dealPrice">—</strong><div><s id="dealReference">—</s><b id="dealDiscount">—</b></div></div>
-            <div class="deal-evidence"><div><b id="dealMerchants">—</b><span data-home-key="compared">aktuell verglichen</span></div><div><b id="dealSaving">—</b><span data-home-key="savingLabel">Ersparnis zum Vergleichswert</span></div></div>
-            <a class="deal-cta" id="dealCta" href="search.html"><span data-home-key="compare">Angebote vergleichen</span><span aria-hidden="true">→</span></a>
-          </div>
-          <div id="deal-empty" class="deal-empty"><div aria-hidden="true">✓</div><strong>Heute kein qualifiziertes Schnäppchen</strong></div>
-          <p class="deal-note" data-home-key="note">Nur Angebote mit ausreichend belastbaren Vergleichsdaten erscheinen hier.</p>
-        </aside>
-      </div>
-    </section>
-
-    <section class="home-value" aria-labelledby="howFundblickWorks">
-      <div class="home-value-inner">
-        <p class="eyebrow" data-value-key="eyebrow">WARUM FUNDBLICK?</p>
-        <h2 id="howFundblickWorks" data-value-key="title">So arbeitet FundBlick für dich.</h2>
-        <p class="home-value-lead" data-value-key="lead">Weniger Sucherei, weniger Preisfallen – und schneller zum wirklich erreichbaren Gesamtpreis.</p>
-        <div class="home-value-grid">
-          <article class="home-value-card"><span class="home-value-step" aria-hidden="true">1</span><h3 data-value-key="searchTitle">Produkt suchen</h3><p data-value-key="searchText">Produkt, Marke oder Modell eingeben. FundBlick führt dich direkt zu passenden Treffern und Filtern.</p></article>
-          <article class="home-value-card"><span class="home-value-step" aria-hidden="true">2</span><h3 data-value-key="compareTitle">Gesamtpreis statt Lockpreis</h3><p data-value-key="compareText">Produktpreis, Versand und verfügbare Händlerangebote werden gemeinsam betrachtet – nicht nur der auffällige Einstiegspreis.</p></article>
-          <article class="home-value-card"><span class="home-value-step" aria-hidden="true">3</span><h3 data-value-key="promoTitle">Aktionen ohne Code-Lotterie</h3><p data-value-key="promoText">Verifizierte Gutscheine und Aktionen werden nur dann berücksichtigt, wenn sie zum Angebot und zu ihren Bedingungen passen.</p></article>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="home-footer"><div><span class="footer-brand">FundBlick</span></div><nav aria-label="Rechtliches"><a href="impressum.html" data-i18n="imprint">Impressum</a><a href="datenschutz.html" data-i18n="privacy">Datenschutz</a></nav><p id="affiliate-note">Bei Händlerlinks können wir eine Vergütung erhalten. Dein Preis ändert sich dadurch nicht.</p></footer>
-
-  <script src="i18n.js?v=20260925-live15"></script>
-  <script src="app.js?v=20260925-live15"></script>
-  <script src="catalog-loader.js?v=20260926-live31"></script>
-  <script src="deal-of-day.js?v=20260925-live16"></script>
-  <script src="home-extras.js?v=20260925-live18"></script>
-  <script src="home-categories.js?v=20260925-live18"></script>
-  <script src="home-polish.js?v=20260925-live23"></script>
-  <script src="language-links.js?v=20260926-live31"></script>
-  <script src="page-meta-i18n.js?v=20260925-live25"></script>
-</body>
-</html>
+<body class="home-restored" data-home-build="20260926-fast32">
+<a class="skip" href="#main">Zum Inhalt</a>
+<header class="topbar homebar"><a class="brand" href="/" aria-label="FundBlick Startseite">Fund<span>Blick</span></a><nav aria-label="Hauptnavigation"><a href="#categories">Kategorien</a><a href="#deal">Tagesangebot</a></nav></header>
+<main id="main"><section class="hero"><div class="hero-inner"><div class="hero-copy">
+<label class="hero-language"><span aria-hidden="true">🌐</span><span class="hero-language-label">Sprache</span><select id="language" aria-label="Sprache wählen"><option value="de">DE · Deutsch</option><option value="tr">TR · Türkçe</option><option value="ru">RU · Русский</option><option value="ar">AR · العربية</option><option value="pl">PL · Polski</option><option value="ro">RO · Română</option><option value="uk">UK · Українська</option><option value="en">EN · English</option><option value="it">IT · Italiano</option><option value="fr">FR · Français</option><option value="es">ES · Español</option><option value="pt">PT · Português</option></select></label>
+<p class="eyebrow">PRODUKTSUCHE · HÄNDLERPREISE</p><h1>Suchen. Angebote vergleichen. Fertig.</h1><p class="lead">Produkt eingeben – FundBlick zeigt dir aktuell angebundene Händlerangebote und die verfügbaren Preis- und Produktinformationen.</p>
+<form class="search" role="search" id="searchForm" action="search.html" method="get"><label class="sr-only" for="q">Produkte suchen</label><span class="search-icon" aria-hidden="true">⌕</span><input id="q" name="q" type="search" autocomplete="off" placeholder="Produkt, Marke oder Modell suchen …"><button class="search-submit" type="submit">Suchen</button></form>
+<div id="categories" class="hero-categories"><div class="hero-categories-head"><span>Kategorien</span></div><nav class="category-links" aria-label="Produktkategorien"><a href="search.html?category=home.living">Wohnen &amp; Haushalt</a><a href="search.html?category=home.furniture">Möbel</a><a href="search.html?category=home.lighting">Lampen &amp; Beleuchtung</a><a href="search.html?category=home.decor">Dekoration</a></nav></div>
+</div><aside class="compare-demo deal-card" id="deal" aria-label="Schnäppchen des Tages"><div class="demo-head"><div><span class="deal-flame" aria-hidden="true">◆</span><span>Schnäppchen des Tages</span></div><span>automatisch geprüft</span></div><div id="deal-empty" class="deal-empty"><div aria-hidden="true">✓</div><strong>Heute kein qualifiziertes Schnäppchen</strong></div><p class="deal-note">Nur Angebote mit ausreichend belastbaren Vergleichsdaten erscheinen hier.</p></aside></div></section>
+<section class="home-value" aria-labelledby="howFundblickWorks"><div class="home-value-inner"><p class="eyebrow">WARUM FUNDBLICK?</p><h2 id="howFundblickWorks">So arbeitet FundBlick für dich.</h2><p class="home-value-lead">Weniger Sucherei – schneller zum passenden Händlerangebot.</p><div class="home-value-grid"><article class="home-value-card"><span class="home-value-step">1</span><h3>Produkt suchen</h3><p>Produkt, Marke oder Modell eingeben.</p></article><article class="home-value-card"><span class="home-value-step">2</span><h3>Angebote vergleichen</h3><p>Verfügbare Preis- und Produktinformationen übersichtlich vergleichen.</p></article><article class="home-value-card"><span class="home-value-step">3</span><h3>Zum Händler</h3><p>Passendes Angebot auswählen und direkt zum Händler wechseln.</p></article></div></div></section></main>
+<footer class="home-footer"><div><span class="footer-brand">FundBlick</span></div><nav aria-label="Rechtliches"><a href="impressum.html">Impressum</a><a href="datenschutz.html">Datenschutz</a></nav><p>Bei Händlerlinks können wir eine Vergütung erhalten. Dein Preis ändert sich dadurch nicht.</p></footer>
+<script>document.getElementById('language')?.addEventListener('change',function(){try{localStorage.setItem('fundblick-language',this.value)}catch(e){}});</script>
+</body></html>
