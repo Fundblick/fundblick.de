@@ -27,7 +27,7 @@ jobs:
           ref: main
       - name: Validate production JavaScript
         run: |
-          for f in app.js i18n.js deal-of-day.js home-deal.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-affiliate-routing.js verify-user-flows.js; do node --check "$f"; done
+          for f in app.js i18n.js home-i18n.js deal-of-day.js home-deal.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-affiliate-routing.js verify-user-flows.js; do node --check "$f"; done
       - name: Build and validate production catalog
         run: |
           node verify-deal-of-day.js
@@ -54,6 +54,7 @@ jobs:
           grep -q 'search.html?category=pet.equestrian' index.html
           grep -q 'search.html?category=pet.dog' index.html
           grep -q 'search.html?category=health.supplements' index.html
+          grep -q 'home-i18n.js' index.html
           grep -q 'catalog-loader.js' index.html
           grep -q 'deal-of-day.js' index.html
           grep -q 'home-deal.js' index.html
