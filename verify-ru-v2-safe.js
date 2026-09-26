@@ -10,11 +10,11 @@ const staticI18n=read('search-static-i18n.js');
 for(const text of ['Назад на главную','Товары загружаются','Цены и наличие основаны на подключённых данных продавцов'])if(!staticI18n.includes(text)){console.error(`search-static-i18n.js: missing Russian copy ${text}`);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(staticI18n.includes(forbidden)){console.error(`search-static-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 
-// Homepage localization must also remain presentation-only.
+// Homepage localization must also remain presentation-only and honor direct ?lang=ru entry.
 const homeHtml=read('index.html');
 if(!homeHtml.includes('home-i18n.js')){console.error('index.html: missing home-i18n.js');failed=true;}
 const home=read('home-i18n.js');
-for(const text of ['Ищите. Сравнивайте предложения. Готово.','Категории','Предложение дня','ПОЧЕМУ FUNDBLICK?','Выходные данные','Конфиденциальность'])if(!home.includes(text)){console.error(`home-i18n.js: missing ${text}`);failed=true;}
+for(const text of ['Ищите. Сравнивайте предложения. Готово.','Категории','Предложение дня','ПОЧЕМУ FUNDBLICK?','Выходные данные','Конфиденциальность','new URLSearchParams(location.search).get(\'lang\')'])if(!home.includes(text)){console.error(`home-i18n.js: missing ${text}`);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(home.includes(forbidden)){console.error(`home-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 for(const key of ['headline','lead','searchPlaceholder','catLiving','catFurniture','catLighting','catDecor','affiliateNote'])if(!homeHtml.includes(`data-home-i18n="${key}"`)&&!homeHtml.includes(`data-home-i18n-placeholder="${key}"`)){console.error(`index.html: missing home i18n key ${key}`);failed=true;}
 
@@ -24,6 +24,13 @@ if(!imprint.includes('legal-i18n.js')){console.error('impressum.html: missing le
 const legal=read('legal-i18n.js');
 for(const text of ['Выходные данные','Сведения согласно § 5 DDG','Германия','Контакты','Версия от 17 сентября 2026 г.'])if(!legal.includes(text)){console.error(`legal-i18n.js: missing ${text}`);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(legal.includes(forbidden)){console.error(`legal-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
+
+// Error page must honor direct Russian links and keep the 404 shell localized.
+const errorHtml=read('404.html');
+const errorI18n=read('error-i18n.js');
+if(!errorHtml.includes('error-i18n.js')){console.error('404.html: missing error-i18n.js');failed=true;}
+for(const text of ['Здесь ничего не найдено.','Запрошенная страница не существует или была перемещена.','К поиску товаров','new URLSearchParams(location.search).get(\'lang\')'])if(!errorI18n.includes(text)){console.error(`error-i18n.js: missing ${text}`);failed=true;}
+for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(errorI18n.includes(forbidden)){console.error(`error-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 
 // Privacy policy must cover every block, including inactive affiliate disclosures, without navigation changes.
 const privacyHtml=read('datenschutz.html');
