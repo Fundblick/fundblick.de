@@ -1,4 +1,5 @@
 'use strict';
+// Production ranking contract: broad searches must not fall back to feed order.
 const fs=require('node:fs');
 const R=require('./search-relevance.js');
 const sources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
