@@ -3,11 +3,14 @@
   const values=v=>Array.isArray(v)?v:(v===undefined||v===null||v===''?[]:[v]);
   function enrich(product){
     const family=product?.family;
-    const classified=root.FBHomeFacetClassifier?.classify?.(product,family)||{};
+    const classifiers=[root.FBHomeFacetClassifier,root.FBEquineFacetClassifier].filter(x=>x?.classify);
     product.attrs=product.attrs||{};
-    for(const [key,value] of Object.entries(classified)){
-      const merged=[...new Set([...values(product.attrs[key]),...values(value)].map(String).filter(Boolean))];
-      if(merged.length)product.attrs[key]=merged.length===1?merged[0]:merged;
+    for(const classifier of classifiers){
+      const classified=classifier.classify(product,family)||{};
+      for(const [key,value] of Object.entries(classified)){
+        const merged=[...new Set([...values(product.attrs[key]),...values(value)].map(String).filter(Boolean))];
+        if(merged.length)product.attrs[key]=merged.length===1?merged[0]:merged;
+      }
     }
     return product;
   }
