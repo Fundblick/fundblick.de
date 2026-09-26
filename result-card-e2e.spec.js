@@ -33,6 +33,34 @@ test('out-of-stock Equinox card does not imply availability or known shipping',a
   await expect(card.locator('.merchant-link')).toBeVisible();
 });
 
+test('Casa Moro cards use the same real merchant information contract',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto(base+'?q='+encodeURIComponent('Mosaiktisch')+'&lang=de',{waitUntil:'networkidle'});
+  await waitCard(page);
+  const card=page.locator('#cards article.product').first();
+  await expect(card.locator('.product-facts')).toContainText('Händler: Casa Moro DE');
+  await expect(card.locator('.product-facts')).toContainText(/Hersteller \/ Marke:/);
+  await expect(card.locator('.availability-status')).toBeVisible();
+  await expect(card.locator('.price strong')).toContainText('€');
+  await expect(card.locator('.price small').first()).not.toContainText(/Test|unbekannt$/i);
+  await expect(card.locator('.merchant-link')).toHaveText('Zum Händler');
+  expect(errors).toEqual([]);
+});
+
+test('mobile result card keeps facts price availability and CTA inside viewport',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto(base+'?q='+encodeURIComponent('Mosaiktisch')+'&lang=de',{waitUntil:'networkidle'});
+  await waitCard(page);
+  const card=page.locator('#cards article.product').first();
+  await expect(card.locator('.product-facts')).toContainText('Händler: Casa Moro DE');
+  await expect(card.locator('.availability-status')).toBeVisible();
+  await expect(card.locator('.merchant-link')).toBeVisible();
+  const cardBox=await card.boundingBox(),ctaBox=await card.locator('.merchant-link').boundingBox();
+  expect(cardBox).not.toBeNull();expect(ctaBox).not.toBeNull();
+  expect(cardBox.x).toBeGreaterThanOrEqual(0);expect(cardBox.x+cardBox.width).toBeLessThanOrEqual(390);
+  expect(ctaBox.x).toBeGreaterThanOrEqual(0);expect(ctaBox.x+ctaBox.width).toBeLessThanOrEqual(390);
+});
+
 test('Russian result card localizes new customer-facing facts',async({page})=>{
   await page.goto(base+'?q='+encodeURIComponent('Ahipos Flexen')+'&lang=ru',{waitUntil:'networkidle'});
   await waitCard(page);
