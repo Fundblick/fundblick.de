@@ -33,6 +33,7 @@ test('homepage renders a real daily offer without invented discount evidence',as
   const sourceName=await page.locator('#dealName').textContent();
   await page.locator('#language').selectOption('ru');
   await expect(page.locator('#dealCta span').first()).toHaveText('Посмотреть предложение');
+  await expect(page.locator('#dealCta')).toHaveAttribute('href',/search\.html\?.*lang=ru/);
   await expect(page.locator('#dealName')).toHaveText(sourceName||'');
   expect(errors).toEqual([]);
 });
