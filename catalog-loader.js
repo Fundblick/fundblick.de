@@ -1,18 +1,18 @@
 'use strict';
 (function(root){
-  const LARGE_CATALOG_THRESHOLD=600,MAX_QUERY_PRODUCTS=320,MAX_QUERY_SHARDS=32;
+  const LARGE_CATALOG_THRESHOLD=600,MAX_QUERY_PRODUCTS=320,MAX_QUERY_SHARDS=32,MAX_CATEGORY_SHARDS=12;
   const normalizeSearch=value=>String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^\p{L}\p{N}.]+/gu,' ').trim();
   const tokensFor=query=>normalizeSearch(query).split(/\s+/).filter(token=>token.length>1);
   const allShardIds=manifest=>Object.keys(manifest?.shards||{}).sort((a,b)=>Number(a)-Number(b));
   function rowScore(row,tokens){const name=normalizeSearch(row?.n),brand=normalizeSearch(row?.b),category=normalizeSearch(row?.c),q=normalizeSearch(row?.q);let score=0,matched=0;for(const token of tokens){let hit=0;if(name.includes(token))hit=12;else if(category.includes(token))hit=8;else if(brand.includes(token))hit=5;else if(q.includes(token))hit=1;if(hit){matched++;score+=hit;}}if(tokens.length&&matched===tokens.length)score+=12;return score;}
   function selectShardIds(manifest,index,query,detectedFamily,category=''){
     const all=allShardIds(manifest),rows=Array.isArray(index)?index:[],exact=String(category||'').trim();
-    if(exact){const ids=[];for(const row of rows){if(String(row?.c||'')!==exact)continue;const id=String(row?.s??'');if(id&&manifest.shards?.[id]&&!ids.includes(id))ids.push(id);}return ids;}
+    if(exact){const ids=[];for(const row of rows){if(String(row?.c||'')!==exact)continue;const id=String(row?.s??'');if(id&&manifest.shards?.[id]&&!ids.includes(id))ids.push(id);if(ids.length>=MAX_CATEGORY_SHARDS)break;}return ids;}
     const tokens=tokensFor(query);if(Number(manifest?.itemCount||0)<=LARGE_CATALOG_THRESHOLD||!tokens.length)return all;
     const ranked=rows.map(row=>({row,score:rowScore(row,tokens)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||String(a.row?.i||'').localeCompare(String(b.row?.i||''))).slice(0,MAX_QUERY_PRODUCTS);
     if(!ranked.length)return all;const ids=[];for(const {row} of ranked){const id=String(row?.s??'');if(id&&manifest.shards?.[id]&&!ids.includes(id))ids.push(id);if(ids.length>=MAX_QUERY_SHARDS)break;}return ids.length?ids:all;
   }
-  if(typeof module!=='undefined'&&module.exports)module.exports={LARGE_CATALOG_THRESHOLD,MAX_QUERY_PRODUCTS,MAX_QUERY_SHARDS,normalizeSearch,selectShardIds,rowScore};
+  if(typeof module!=='undefined'&&module.exports)module.exports={LARGE_CATALOG_THRESHOLD,MAX_QUERY_PRODUCTS,MAX_QUERY_SHARDS,MAX_CATEGORY_SHARDS,normalizeSearch,selectShardIds,rowScore};
   if(!root||typeof root.fetch!=='function')return;
   const nativeFetch=root.fetch.bind(root);let manifestPromise=null,indexPromise=null,homePromise=null;const shardPromises=new Map(),queryPromises=new Map();
   const fetchJson=async url=>{const response=await nativeFetch(url,{cache:'no-store'});if(!response.ok)throw new Error(`Catalog request failed: ${url} (${response.status})`);return response.json();};
