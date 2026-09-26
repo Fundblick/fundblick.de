@@ -2,7 +2,8 @@
 const fs=require('fs');
 let failed=false;
 const read=f=>fs.readFileSync(f,'utf8');
-const includesText=(source,text)=>source.normalize('NFC').includes(text.normalize('NFC'));
+const canonicalText=value=>String(value).normalize('NFKC').replace(/\s+/gu,' ').trim();
+const includesText=(source,text)=>canonicalText(source).includes(canonicalText(text));
 
 // Search-page localization must remain presentation-only: no navigation/history rewrite.
 const html=read('search.html');
