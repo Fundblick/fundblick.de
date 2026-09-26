@@ -7,6 +7,13 @@ on:
       - 'search.html'
       - 'verify-taxonomy-i18n.js'
       - '.github/workflows/taxonomy-i18n.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'taxonomy-value-i18n.js'
+      - 'search.html'
+      - 'verify-taxonomy-i18n.js'
+      - '.github/workflows/taxonomy-i18n.yml'
   workflow_dispatch:
 permissions:
   contents: read
