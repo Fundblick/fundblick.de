@@ -50,16 +50,21 @@
     const key=config?.consent?.storageKey||'fundblick-affiliate-consent-v1';let decision=readDecision(root.localStorage,key);
     const lang=()=>normalizeLang(doc.querySelector('#language')?.value||root.FundBlickLanguageLinks?.current?.()||doc.documentElement.lang||'de');
     const copy=()=>COPY[lang()]||COPY.de;
+    const statusText=(label,enabled)=>{
+      if(lang()==='ru')return enabled?`${label} технически активен.`:`${label} в настоящее время технически отключён.`;
+      if(lang()==='en')return enabled?`${label} is technically enabled.`:`${label} is currently technically disabled.`;
+      return enabled?`${label} ist technisch aktiviert.`:`${label} ist derzeit technisch deaktiviert.`;
+    };
     const updatePrivacyStatus=()=>{
       NETWORKS.forEach(network=>{
         const label=LABELS[network],enabled=networkEnabled(config,network);
-        doc.querySelectorAll(`[data-${network}-status]`).forEach(el=>{el.textContent=enabled?`${label} ist technisch aktiviert.`:`${label} ist derzeit technisch deaktiviert.`;});
+        doc.querySelectorAll(`[data-${network}-status]`).forEach(el=>{el.textContent=statusText(label,enabled);});
         doc.querySelectorAll(`[data-${network}-active]`).forEach(el=>{el.hidden=!enabled;});
         doc.querySelectorAll(`[data-${network}-inactive]`).forEach(el=>{el.hidden=enabled;});
       });
     };
     const ensureSettingsButton=()=>{
-      doc.querySelectorAll('[data-affiliate-settings]').forEach(btn=>{btn.hidden=!anyEnabled(config);btn.addEventListener('click',openSettings);});
+      doc.querySelectorAll('[data-affiliate-settings]').forEach(btn=>{btn.hidden=!anyEnabled(config);btn.textContent=copy().settings;btn.addEventListener('click',openSettings);});
       if(!anyEnabled(config))return;
       const nav=doc.querySelector('footer nav');if(!nav||nav.querySelector('[data-affiliate-settings]'))return;
       const btn=doc.createElement('button');btn.type='button';btn.className='fb-consent-link';btn.dataset.affiliateSettings='';btn.textContent=copy().settings;btn.addEventListener('click',openSettings);nav.appendChild(btn);
@@ -76,7 +81,7 @@
     }
     function openSettings(){renderBanner(true);}
     setDataState(doc,config,decision);updatePrivacyStatus();ensureSettingsButton();if(anyEnabled(config)&&!decision)renderBanner();
-    const select=doc.querySelector('#language');if(select)select.addEventListener('change',()=>queueMicrotask(()=>{ensureSettingsButton();if(doc.querySelector('#fbConsent'))renderBanner(true);}));
+    const select=doc.querySelector('#language');if(select)select.addEventListener('change',()=>queueMicrotask(()=>{updatePrivacyStatus();ensureSettingsButton();if(doc.querySelector('#fbConsent'))renderBanner(true);}));
     root.FundBlickAffiliateConsent.state=()=>({decision,trackingAllowed:canTrack(config,decision),enabled:anyEnabled(config),networks:Object.fromEntries(NETWORKS.map(network=>[network,{enabled:networkEnabled(config,network),trackingAllowed:canTrack(config,decision,network)}]))});
     root.FundBlickAffiliateConsent.setDecision=persist;root.FundBlickAffiliateConsent.openSettings=openSettings;
   }

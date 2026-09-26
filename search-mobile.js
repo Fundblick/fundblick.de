@@ -6,8 +6,31 @@
   const heading=document.querySelector('.results-heading');
   const results=document.getElementById('results');
   if(!panel||!sort||!chips||!heading)return;
-  const language=window.FundBlickLanguage||{translate:key=>key};
+  const language=window.FundBlickLanguage||{lang:'de',translate:key=>key};
   const tx=key=>language.translate(key);
+  const mobileCopy={
+    de:{apply:'Filter anwenden',results:'Ergebnisse'},
+    tr:{apply:'Filtreleri uygula',results:'sonuç'},
+    ru:{apply:'Применить фильтры',results:'результатов'},
+    ar:{apply:'تطبيق الفلاتر',results:'نتائج'},
+    pl:{apply:'Zastosuj filtry',results:'wyników'},
+    ro:{apply:'Aplică filtrele',results:'rezultate'},
+    uk:{apply:'Застосувати фільтри',results:'результатів'},
+    en:{apply:'Apply filters',results:'results'},
+    it:{apply:'Applica filtri',results:'risultati'},
+    bg:{apply:'Приложи филтрите',results:'резултата'},
+    hr:{apply:'Primijeni filtre',results:'rezultata'},
+    el:{apply:'Εφαρμογή φίλτρων',results:'αποτελέσματα'},
+    sr:{apply:'Примени филтере',results:'резултата'},
+    es:{apply:'Aplicar filtros',results:'resultados'},
+    fr:{apply:'Appliquer les filtres',results:'résultats'},
+    pt:{apply:'Aplicar filtros',results:'resultados'},
+    fa:{apply:'اعمال فیلترها',results:'نتیجه'},
+    sq:{apply:'Zbato filtrat',results:'rezultate'},
+    'zh-Hans':{apply:'应用筛选',results:'个结果'},
+    ku:{apply:'Parzûnan bi kar bîne',results:'encam'}
+  };
+  const mc=()=>mobileCopy[language.lang]||mobileCopy.en;
   const tools=document.createElement('div');tools.className='mobile-search-tools';tools.setAttribute('aria-label',tx('refine'));
   const filter=document.createElement('button');filter.type='button';filter.className='mobile-filter-toggle';filter.setAttribute('aria-controls','filter-panel');
   const filterText=document.createElement('span');filterText.textContent=tx('refine');
@@ -30,7 +53,8 @@
   function updateApply(){
     const n=activeCount();
     const r=visibleResultCount();
-    apply.textContent=n?`${n} Filter anwenden${r!==null?` · ${r} Ergebnisse`:''}`:`Filter anwenden${r!==null?` · ${r} Ergebnisse`:''}`;
+    const copy=mc();
+    apply.textContent=n?`${n} · ${copy.apply}${r!==null?` · ${r} ${copy.results}`:''}`:`${copy.apply}${r!==null?` · ${r} ${copy.results}`:''}`;
   }
   function updateExpanded(){filter.setAttribute('aria-expanded',String(panel.open));}
   function updateCount(){const n=activeCount();count.textContent=String(n);count.hidden=n===0;filter.setAttribute('aria-label',n?`${tx('refine')} · ${n}`:tx('refine'));updateApply();}

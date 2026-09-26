@@ -1,19 +1,21 @@
-name: Russian completeness
+name: Russian V2 safety
 on:
   push:
-    branches: [dev/ru-completeness]
+    branches: [dev/ru-v2-safe]
     paths:
       - '*.html'
       - '*i18n.js'
       - 'language-links.js'
+      - 'affiliate-consent.js'
       - 'search.js'
+      - 'search-mobile.js'
       - 'live-catalog-ui.js'
       - 'facet-schemas.js'
       - 'common-facet-defs.js'
       - 'facet-value-i18n.js'
       - 'common-filter-i18n.js'
       - 'category-display-i18n.js'
-      - 'verify-ru-completeness.js'
+      - 'verify-ru-v2-safe.js'
       - 'verify-product-copy-i18n.js'
       - '.github/workflows/ru-completeness.yml'
   workflow_dispatch:
@@ -24,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Russian localization wiring
-        run: node verify-ru-completeness.js
+      - name: RU V2 localization safety gate
+        run: node verify-ru-v2-safe.js
       - name: Product-copy localization regression
         run: node verify-product-copy-i18n.js
