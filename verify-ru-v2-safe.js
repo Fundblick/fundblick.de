@@ -2,13 +2,12 @@
 const fs=require('fs');
 let failed=false;
 const read=f=>fs.readFileSync(f,'utf8');
-const requireText=(file,text)=>{if(!read(file).includes(text)){console.error(`${file}: missing ${text}`);failed=true;}};
 
 // Search-page localization must remain presentation-only: no navigation/history rewrite.
 const html=read('search.html');
 for(const script of ['search-i18n.js','search-static-i18n.js','facet-value-i18n.js','common-filter-i18n.js'])if(!html.includes(script)){console.error(`search.html: missing ${script}`);failed=true;}
 const staticI18n=read('search-static-i18n.js');
-for(const text of ['Назад на главную','Товары загружаются','Цены и наличие поступают'])if(!staticI18n.includes(text)){console.error(`search-static-i18n.js: missing Russian copy ${text}`);failed=true;}
+for(const text of ['Назад на главную','Товары загружаются','Цены и наличие основаны на подключённых данных продавцов'])if(!staticI18n.includes(text)){console.error(`search-static-i18n.js: missing Russian copy ${text}`);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(staticI18n.includes(forbidden)){console.error(`search-static-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 
 // Dynamic common facets and category schemas need Russian display labels.
