@@ -1,0 +1,47 @@
+name: AHIPOS catalog integration gate
+
+on:
+  push:
+    branches:
+      - dev/ahipos-v1
+    paths:
+      - 'ahipos-feed-normalizer.js'
+      - 'verify-ahipos-normalizer.js'
+      - 'development/ahipos-products-*.json'
+      - 'build-ahipos-development-catalog.js'
+      - 'verify-ahipos-catalog-integration.js'
+      - 'taxonomy-registry.js'
+      - 'facet-schemas.js'
+      - 'search-facet-engine-v2.js'
+      - 'audit-merchant-onboarding.js'
+      - '.github/workflows/ahipos-catalog-integration.yml'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check ahipos-feed-normalizer.js
+          node --check build-ahipos-development-catalog.js
+          node --check verify-ahipos-catalog-integration.js
+          node --check taxonomy-registry.js
+          node --check search-facet-engine-v2.js
+          node --check audit-merchant-onboarding.js
+      - name: Normalizer contract
+        run: node verify-ahipos-normalizer.js
+      - name: Source integration contract
+        run: node verify-ahipos-catalog-integration.js
+      - name: Build isolated combined development catalog
+        run: node build-ahipos-development-catalog.js build/ahipos-catalog
+      - name: Verify built catalog
+        run: node verify-ahipos-catalog-integration.js build/ahipos-catalog
+      - name: Merchant onboarding audit
+        run: node audit-merchant-onboarding.js build/ahipos-catalog
+      - name: Taxonomy registry regression
+        run: node verify-taxonomy-registry.js

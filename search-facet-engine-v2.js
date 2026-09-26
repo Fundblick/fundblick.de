@@ -1,9 +1,16 @@
 'use strict';
 (function(root){
   const values=v=>Array.isArray(v)?v:(v===undefined||v===null||v===''?[]:[v]);
+  function equestrianType(product){
+    const name=String(product?.name||'');
+    if(/^(?:AHIPOS\s+)?(?:Gelenk-Bundle|Immun\s*&\s*Detox\s*Bundle)$/i.test(name.trim()))return 'Bundle';
+    if(/Ice Clay|Coolness Paste/i.test(name))return 'Pferdepflege';
+    return 'Ergänzungsfutter';
+  }
   function enrich(product){
     const family=product?.family;
     const classified=root.FBHomeFacetClassifier?.classify?.(product,family)||{};
+    if(family==='equestrian'&&!classified.type)classified.type=equestrianType(product);
     product.attrs=product.attrs||{};
     for(const [key,value] of Object.entries(classified)){
       const merged=[...new Set([...values(product.attrs[key]),...values(value)].map(String).filter(Boolean))];
@@ -34,6 +41,6 @@
     const own=new Set(values(product?.attrs?.[key]).map(String));
     return [...selected].some(v=>own.has(String(v)));
   }
-  root.FBFacetEngineV2={enrich,availableValues,dominantSchema,facetsFor,matches};
+  root.FBFacetEngineV2={enrich,availableValues,dominantSchema,facetsFor,matches,equestrianType};
   if(typeof module!=='undefined'&&module.exports)module.exports=root.FBFacetEngineV2;
 })(typeof window!=='undefined'?window:globalThis);

@@ -1,0 +1,96 @@
+name: AHIPOS full regression
+
+on:
+  push:
+    branches:
+      - dev/ahipos-v1
+    paths:
+      - '.github/workflows/ahipos-full-regression.yml'
+      - 'ahipos-*'
+      - 'verify-ahipos-*'
+      - 'development/ahipos-products-*.json'
+      - 'equestrian-*'
+      - 'facet-schemas.js'
+      - 'search-facet-engine-v2.js'
+      - 'search.html'
+      - 'taxonomy-registry.js'
+      - 'audit-merchant-onboarding.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Existing development contracts
+        run: |
+          node development/verify-catalog.js
+          node development/verify-publication-apply.js
+          node development/verify-seo-preview-apply.js
+          node development/verify-delivery-contract.js
+          node development/verify-merchant-handoff.js
+          node development/verify-outbound-click.js
+          node development/verify-ui-language.js
+          node development/verify-frontend-language.js
+          node development/verify-search-routing.js
+          node development/verify-substring-routing.js
+          node development/verify-substring-browser-shadow.js
+          node development/verify-search-shadow.js
+
+      - name: Existing localization and taxonomy contracts
+        run: |
+          node verify-ru-v2-safe.js
+          node verify-taxonomy-i18n.js
+          node verify-taxonomy-registry.js
+
+      - name: AHIPOS contracts
+        run: |
+          node verify-ahipos-normalizer.js
+          node verify-ahipos-catalog-integration.js
+          node verify-ahipos-data-quality.js
+
+      - name: Build isolated AHIPOS development catalog
+        run: node build-ahipos-development-catalog.js build/ahipos-catalog
+
+      - name: Verify built AHIPOS catalog and onboarding
+        run: |
+          node verify-ahipos-catalog-integration.js build/ahipos-catalog
+          node audit-merchant-onboarding.js build/ahipos-catalog
+
+      - name: Syntax check touched runtime files
+        run: |
+          node --check ahipos-feed-normalizer.js
+          node --check equestrian-search-extension.js
+          node --check equestrian-taxonomy-i18n.js
+          node --check facet-schemas.js
+          node --check search-facet-engine-v2.js
+          node --check taxonomy-registry.js
+          node --check audit-merchant-onboarding.js
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start isolated AHIPOS site
+        run: |
+          rm -rf catalog
+          cp -R build/ahipos-catalog catalog
+          python3 -m http.server 4173 >/tmp/fundblick-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/search.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-http.log
+          exit 1
+
+      - name: AHIPOS browser regression
+        run: npx playwright test ahipos-search-e2e.spec.js --reporter=line --workers=1
