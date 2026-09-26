@@ -5,11 +5,13 @@ const policy=require('./affiliate-link-policy.js');
 const normalizer=require('./adcell-feed-normalizer.js');
 const config=require('./affiliate-config.js');
 
-for(const [name,provider] of Object.entries({adcell:config.adcell,awin:config.awin})){
-  assert.equal(provider.enabled,false,`${name} must stay inactive before activation`);
-  assert.equal(provider.outboundEnabled,false,`${name} outbound links must stay inactive before activation`);
-  assert.equal(provider.trackingEnabled,false,`${name} tracking must stay inactive before activation`);
-}
+assert.equal(config.adcell.enabled,false,'ADCELL must stay inactive');
+assert.equal(config.adcell.outboundEnabled,false,'ADCELL outbound must stay inactive');
+assert.equal(config.adcell.trackingEnabled,false,'ADCELL tracking must stay inactive');
+assert.equal(config.awin.enabled,true,'Awin must be active for real merchant offers');
+assert.equal(config.awin.outboundEnabled,true,'Awin outbound links must be active');
+assert.equal(config.awin.trackingEnabled,true,'Awin consent-aware tracking must be active');
+assert.equal(config.awin.liveDisclosure,true,'Awin privacy disclosure must be live');
 const adcellActive={defaultNetwork:'adcell',adcell:{enabled:true,outboundEnabled:true,trackingEnabled:true},awin:{enabled:false,outboundEnabled:false,trackingEnabled:false}};
 const awinActive={defaultNetwork:'awin',adcell:{enabled:false,outboundEnabled:false,trackingEnabled:false},awin:{enabled:true,outboundEnabled:true,trackingEnabled:true,consentParam:'cons'}};
 const both={directUrl:'https://merchant.example/item',affiliateUrl:'https://tracking.example/click'};
@@ -41,4 +43,4 @@ const links=fs.readFileSync('language-links.js','utf8');
 for(const file of ['affiliate-consent-version.js','affiliate-link-policy.js','affiliate-outbound.js'])assert.ok(links.includes(file),`${file} must be bootstrapped site-wide`);
 assert.ok(!links.includes('https://www.adcell.de/js'),'FundBlick must not preload ADCELL tracking code');
 assert.ok(!links.includes('https://www.awin1.com'),'FundBlick must not preload Awin tracking code');
-console.log('affiliate routing, Awin consent signals and multi-network preparation passed');
+console.log('affiliate routing and live Awin consent signals passed');
