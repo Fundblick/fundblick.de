@@ -6,6 +6,7 @@ on:
       - '*.html'
       - '*i18n.js'
       - 'language-links.js'
+      - 'affiliate-consent.js'
       - 'search.js'
       - 'search-mobile.js'
       - 'live-catalog-ui.js'
