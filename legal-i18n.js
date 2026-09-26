@@ -11,5 +11,6 @@
   };
   const t=copy[lang]||copy.en;
   document.documentElement.lang=lang;
+  document.title=t.imprintTitle+' – FundBlick';
   document.querySelectorAll('[data-legal-i18n]').forEach(el=>{const key=el.dataset.legalI18n;if(t[key])el.textContent=t[key];});
 })();
