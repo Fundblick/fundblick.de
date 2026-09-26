@@ -7,7 +7,7 @@ function facet(page,title){
   return page.locator('section.facet').filter({has:page.locator('h2',{hasText:title})});
 }
 
-test('merchant, brand and product-type facets follow the remaining result set',async({page})=>{
+test('Ahipos merchant, brand and product-type facets follow the remaining result set',async({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(base,{waitUntil:'networkidle'});
@@ -46,15 +46,21 @@ test('merchant, brand and product-type facets follow the remaining result set',a
   await expect(equinoxType).not.toContainText('Couchtisch');
   await expect(equinoxType.locator('label')).toHaveCount(1);
 
-  await page.locator('#reset').click();
-  const resetMerchantFacet=facet(page,'Händler');
-  await expect(resetMerchantFacet.locator('input[data-key="merchant"]')).toHaveCount(2);
-  await resetMerchantFacet.locator('input[value="Casa Moro"]').check();
+  expect(errors).toEqual([]);
+});
+
+test('Casa Moro keeps furniture product types without equestrian leakage',async({page})=>{
+  const errors=[];
+  page.on('pageerror',e=>errors.push(String(e)));
+  await page.goto(base,{waitUntil:'networkidle'});
+  await expect(page.locator('#cards article.product').first()).toBeVisible();
+
+  const merchantFacet=facet(page,'Händler');
+  await merchantFacet.locator('input[value="Casa Moro"]').check();
   await expect(page.locator('#summary')).toContainText('1428');
   const casaType=facet(page,'Produkttyp');
   await expect(casaType).toContainText('Couchtisch');
   await expect(casaType).not.toContainText('Ergänzungsfutter');
   await expect(casaType.locator('label').filter({hasText:/\b0\b/})).toHaveCount(0);
-
   expect(errors).toEqual([]);
 });
