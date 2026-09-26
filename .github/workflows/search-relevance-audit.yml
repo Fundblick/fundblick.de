@@ -5,6 +5,7 @@ on:
     branches: [dev/search-relevance-v1]
     paths:
       - 'audit-search-relevance.js'
+      - 'audit-search-ranking.js'
       - 'search-relevance.js'
       - 'search-intent.js'
       - 'equestrian-search-extension.js'
@@ -18,6 +19,7 @@ on:
     branches: [main]
     paths:
       - 'audit-search-relevance.js'
+      - 'audit-search-ranking.js'
       - 'search-relevance.js'
       - 'search-intent.js'
       - 'equestrian-search-extension.js'
@@ -46,9 +48,12 @@ jobs:
           node --check search-intent.js
           node --check equestrian-search-extension.js
           node --check audit-search-relevance.js
+          node --check audit-search-ranking.js
           node --check search-relevance-e2e.spec.js
       - name: Audit real production-source search quality
         run: node audit-search-relevance.js
+      - name: Audit real production-source ranking quality
+        run: node audit-search-ranking.js
       - name: Build real production catalog
         run: |
           node build-production-catalog.js build/catalog
