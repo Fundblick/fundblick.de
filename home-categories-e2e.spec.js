@@ -7,22 +7,25 @@ test('homepage categories follow the production taxonomy manifest',async({page})
   const errors=[];
   page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
-  const links=page.locator('.category-links a[data-live-category="true"]');
+  const categoryNav=page.getByRole('navigation',{name:'Produktkategorien'});
+  const links=categoryNav.locator('a[data-live-category="true"]');
   await expect(links).toHaveCount(7);
-  await expect(page.locator('.category-links')).toContainText('Pferd & Reitsport');
-  await expect(page.locator('.category-links')).toContainText('Hund');
-  await expect(page.locator('.category-links')).toContainText('Gesundheit & Nahrungsergänzung');
-  await expect(page.locator('.category-links a[data-catalog-category="pet.equestrian"]')).toHaveAttribute('title','29 Produkte');
-  await expect(page.locator('.category-links a[data-catalog-category="pet.dog"]')).toHaveAttribute('title','1 Produkt');
-  await expect(page.locator('.category-links a[data-catalog-category="health.supplements"]')).toHaveAttribute('title','1 Produkt');
+  await expect(categoryNav).toContainText('Pferd & Reitsport');
+  await expect(categoryNav).toContainText('Hund');
+  await expect(categoryNav).toContainText('Gesundheit & Nahrungsergänzung');
+  await expect(categoryNav.locator('a[data-catalog-category="pet.equestrian"]')).toHaveAttribute('title','29 Produkte');
+  await expect(categoryNav.locator('a[data-catalog-category="pet.dog"]')).toHaveAttribute('title','1 Produkt');
+  await expect(categoryNav.locator('a[data-catalog-category="health.supplements"]')).toHaveAttribute('title','1 Produkt');
 
   await page.locator('#language').selectOption('ru');
-  await expect(page.locator('.category-links')).toContainText('Лошади и конный спорт');
-  await expect(page.locator('.category-links')).toContainText('Собаки');
-  await expect(page.locator('.category-links')).toContainText('Здоровье и пищевые добавки');
+  const categoryNavRu=page.getByRole('navigation',{name:'Категории товаров'});
+  await expect(categoryNavRu).toContainText('Лошади и конный спорт');
+  await expect(categoryNavRu).toContainText('Собаки');
+  await expect(categoryNavRu).toContainText('Здоровье и пищевые добавки');
 
   await page.locator('#language').selectOption('de');
-  await page.locator('.category-links a[data-catalog-category="pet.equestrian"]').click();
+  const categoryNavDe=page.getByRole('navigation',{name:'Produktkategorien'});
+  await categoryNavDe.locator('a[data-catalog-category="pet.equestrian"]').click();
   await page.waitForLoadState('networkidle');
   await expect(page).toHaveURL(/search\.html\?.*category=pet\.equestrian/);
   await expect(page.locator('#summary')).toContainText('29');
