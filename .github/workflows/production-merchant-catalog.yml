@@ -1,0 +1,43 @@
+name: Production merchant catalog gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'production-catalog-sources.json'
+      - 'build-production-catalog.js'
+      - 'build-live-catalog.js'
+      - 'development/core-products.json'
+      - 'development/ahipos-products-*.json'
+      - 'verify-production-merchants.js'
+      - '.github/workflows/production-pages.yml'
+      - '.github/workflows/production-merchant-catalog.yml'
+  push:
+    branches: [fix/ahipos-production-catalog]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check build-production-catalog.js
+          node --check verify-production-merchants.js
+      - name: Build combined production catalog
+        run: node build-production-catalog.js build/catalog
+      - name: Existing production catalog verification
+        run: |
+          node verify-live-catalog-v2.js build/catalog
+          node verify-coupon-engine.js build/catalog
+          node verify-user-flows.js build/catalog
+      - name: Merchant presence verification
+        run: node verify-production-merchants.js build/catalog
+      - name: Production catalog remains real-only
+        run: node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.simulatedCount!==0||m.realCount!==m.itemCount)process.exit(1);console.log('Real-only catalog OK',m.itemCount)"
