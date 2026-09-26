@@ -3,6 +3,8 @@
 (function(){
   let language='de';
   try{language=localStorage.getItem('fundblick-language')||'de'}catch{}
+  const requested=new URLSearchParams(location.search).get('lang');
+  if(requested)language=requested;
   if(language!=='ru')return;
   const copy={
   "1": "Политика конфиденциальности",
@@ -77,6 +79,11 @@
   document.documentElement.lang='ru';
   document.title='Политика конфиденциальности – FundBlick';
   document.querySelector('meta[name="description"]')?.setAttribute('content','Политика конфиденциальности FundBlick.');
+  const shellHome=document.querySelector('.fb-shell-home');
+  if(shellHome)shellHome.textContent='Главная';
+  const shellTagline=document.querySelector('.fb-legal-footer span');
+  if(shellTagline)shellTagline.textContent='Поиск товаров · сравнение цен';
+  document.querySelector('.fb-shell-brand')?.setAttribute('aria-label','Главная FundBlick');
   for(const [key,value] of Object.entries(copy)){
     const target=document.querySelector('[data-privacy-i18n="'+key+'"]');
     if(!target)continue;
