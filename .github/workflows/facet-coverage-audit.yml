@@ -1,0 +1,28 @@
+name: Facet coverage audit
+on:
+  push:
+    branches: [dev/facet-engine-hardening]
+    paths:
+      - 'home-facet-classifier.js'
+      - 'audit-home-facet-coverage.js'
+      - 'build-live-catalog.js'
+      - 'development/core-products.json'
+      - '.github/workflows/facet-coverage-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Classifier regression
+        run: node verify-home-facets.js
+      - name: Rebuild production catalog
+        run: |
+          rm -rf build/facet-audit-catalog
+          node build-live-catalog.js build/facet-audit-catalog
+          node verify-live-catalog-v2.js build/facet-audit-catalog
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/facet-audit-catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Facet audit production gate OK',m.realCount)"
+      - name: Coverage audit
+        run: node audit-home-facet-coverage.js build/facet-audit-catalog

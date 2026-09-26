@@ -1,0 +1,55 @@
+name: Dev facet integration
+on:
+  push:
+    branches: [dev/facet-engine-hardening]
+permissions:
+  contents: write
+jobs:
+  integrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev/facet-engine-hardening
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wire facet enrichment and dynamic options
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('search.js')
+          s=p.read_text()
+          old="""    p.attrs=features(p);\n    if(rating!==null)p.attrs.rating=rating;"""
+          new="""    p.attrs=features(p);\n    if(window.FBFacetEngineV2?.enrich)window.FBFacetEngineV2.enrich(p);\n    if(rating!==null)p.attrs.rating=rating;"""
+          if old in s:
+              s=s.replace(old,new,1)
+          elif 'FBFacetEngineV2?.enrich' not in s:
+              raise SystemExit('normalize integration anchor missing')
+          old2="""    const schema=schemaFor(category?.id),specialized=(schema?.facets||[]).filter(facetVisible).map(f=>group(f.key,f.label,optionsForFacet(f),f)).join(''),colorValues=optionsForKey('color'),common=window.FB_COMMON_FACETS||[],commonGroup=key=>{const f=common.find(x=>x.key===key);return f?group(f.key,f.label,optionsForFacet(f),f):''};"""
+          new2="""    const schema=schemaFor(category?.id),facetSource=window.FBFacetEngineV2?.facetsFor?window.FBFacetEngineV2.facetsFor(base,schema):schema?.facets||[],specialized=facetSource.filter(facetVisible).map(f=>group(f.key,f.label,(f.options||[]).map(o=>o.value),f)).join(''),colorValues=optionsForKey('color'),common=window.FB_COMMON_FACETS||[],commonGroup=key=>{const f=common.find(x=>x.key===key);return f?group(f.key,f.label,optionsForFacet(f),f):''};"""
+          if old2 in s:
+              s=s.replace(old2,new2,1)
+          elif 'facetSource=window.FBFacetEngineV2' not in s:
+              raise SystemExit('renderFilters integration anchor missing')
+          p.write_text(s)
+          PY
+      - name: Verify JavaScript and facet regression tests
+        run: |
+          node --check home-facet-classifier.js
+          node --check search-facet-engine-v2.js
+          node --check search.js
+          node verify-home-facets.js
+          node verify-facet-engine-v2.js
+          grep -q 'search-facet-engine-v2.js' search.html
+          grep -q 'FBFacetEngineV2?.enrich' search.js
+          grep -q 'facetSource=window.FBFacetEngineV2' search.js
+      - name: Commit generated integration
+        run: |
+          if git diff --quiet; then exit 0; fi
+          git config user.name 'FundBlick CI'
+          git config user.email 'actions@users.noreply.github.com'
+          git add search.js
+          git commit -m 'search: integrate dynamic facet engine into search runtime'
+          git push origin HEAD:dev/facet-engine-hardening
