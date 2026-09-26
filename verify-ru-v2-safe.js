@@ -35,6 +35,12 @@ for(let id=1;id<=69;id++)if(id!==60&&!privacy.includes('"'+id+'":')){console.err
 for(const text of ['Политика конфиденциальности','Голосовой ввод','Срок хранения','Awin','ADCELL','Главная'])if(!privacy.includes(text)){console.error('datenschutz-i18n.js: missing '+text);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(privacy.includes(forbidden)){console.error('datenschutz-i18n.js: forbidden navigation mutation '+forbidden);failed=true;}
 
+// Affiliate runtime is loaded asynchronously on legal pages and must not overwrite Russian privacy status text with German.
+const affiliateConsent=read('affiliate-consent.js');
+for(const text of ['технически активен.','в настоящее время технически отключён.','Настройки отслеживания'])if(!affiliateConsent.includes(text)){console.error(`affiliate-consent.js: missing Russian runtime copy ${text}`);failed=true;}
+if(!affiliateConsent.includes('updatePrivacyStatus();ensureSettingsButton();')){console.error('affiliate-consent.js: language-change privacy repaint missing');failed=true;}
+for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(affiliateConsent.includes(forbidden)){console.error(`affiliate-consent.js: forbidden navigation mutation ${forbidden}`);failed=true;}
+
 // Dynamic common facets and category schemas need Russian display labels.
 const common=read('common-filter-i18n.js');
 for(const text of ['Рейтинг','Магазины и предложения','Бесплатная доставка','В наличии','Доставка ≤ 3 рабочих дней'])if(!common.includes(text)){console.error(`common-filter-i18n.js: missing ${text}`);failed=true;}
