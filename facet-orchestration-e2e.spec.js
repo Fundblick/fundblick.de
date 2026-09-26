@@ -46,9 +46,10 @@ test('merchant, brand and product-type facets follow the remaining result set',a
   await expect(equinoxType).not.toContainText('Couchtisch');
   await expect(equinoxType.locator('label')).toHaveCount(1);
 
-  await brandFacet.locator('input[value="Equinox Equine"]').uncheck();
-  await merchantFacet.locator('input[value="Ahipos Horses DE"]').uncheck();
-  await facet(page,'Händler').locator('input[value="Casa Moro"]').check();
+  await page.locator('#reset').click();
+  const resetMerchantFacet=facet(page,'Händler');
+  await expect(resetMerchantFacet.locator('input[data-key="merchant"]')).toHaveCount(2);
+  await resetMerchantFacet.locator('input[value="Casa Moro"]').check();
   await expect(page.locator('#summary')).toContainText('1428');
   const casaType=facet(page,'Produkttyp');
   await expect(casaType).toContainText('Couchtisch');
