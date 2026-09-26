@@ -14,9 +14,9 @@
   .mobile-search-tools button:active{transform:translateY(1px)}
   .mobile-filter-count{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--green);color:#fff;font-size:11px}
   .mobile-filter-count[hidden]{display:none}
-  #filter-panel:not([open]){padding:12px 16px}
-  #filter-panel:not([open])>summary{margin:0}
-  #filter-panel[open]{scroll-margin-top:142px}
+  #filter-panel>summary{display:none}
+  #filter-panel:not([open]){display:none}
+  #filter-panel[open]{scroll-margin-top:142px;padding-top:16px}
   #sort{scroll-margin-top:142px}
 }
 @media(max-width:470px){.results-page>.search-form{top:6px}.mobile-search-tools{top:72px}}
