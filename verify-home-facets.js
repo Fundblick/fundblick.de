@@ -13,13 +13,21 @@ const cases=[
  [{name:'Orientalischer Blumentopf Leon - M',category:'home.living'},'living',{type:'Vase / Blumentopf',style:'Orientalisch'}],
  [{name:'Musterfliese Marokkanische Fliesen 20x20 cm – FL7031',category:'home.living'},'living',{type:'Fliese',style:'Marokkanisch'}],
  [{name:'Indisches Holz Mandala Hossam',category:'home.living'},'living',{type:'Wanddekoration',material:'Holz',style:'Boho / Ethno'}],
- [{name:'E14-Fassung mit Zugentlastung',category:'home.living'},'living',{type:'Lampenfassung / Anschluss'}]
+ [{name:'E14-Fassung mit Zugentlastung',category:'home.living'},'living',{type:'Lampenfassung / Anschluss'}],
+ [{name:'Orientalischer Kamelhocker Sadia - Braun',category:'home.living'},'living',{type:'Hocker'}],
+ [{name:'Esszimmerstuhl Beige - 4er Set',category:'home.furniture'},'furniture',{type:'Stuhl'}],
+ [{name:'Polsterstuhl Esszimmerstuhl - 2er Set',category:'home.furniture'},'furniture',{type:'Stuhl'}],
+ [{name:'Pflanzenregal Vicenza',category:'home.furniture'},'furniture',{type:'Regal'}],
+ [{name:'Orientalischer Teetisch Safi D40',category:'home.furniture'},'furniture',{type:'Beistelltisch'}],
+ [{name:'Tee- Tisch Karam 50cm',category:'home.furniture'},'furniture',{type:'Beistelltisch'}]
 ];
 for(const [p,f,expected] of cases){const got=classify(p,f);for(const [k,v] of Object.entries(expected)){const values=Array.isArray(got[k])?got[k]:[got[k]];assert(values.includes(v),`${p.name}: expected ${k}=${v}, got ${JSON.stringify(got[k])}`)}}
 assert.equal(inferFamily({name:'Pouf Hocker - Leder',category:'home.living'},'living'),'furniture');
 assert.equal(inferFamily({name:'Marokkanische Pendelleuchte',category:'home.decor'},'decor'),'lighting');
 assert.equal(inferFamily({name:'Keramik Waschbecken fürs Bad',category:'home.decor'},'decor'),'living');
 assert.equal(inferFamily({name:'E14-Fassung mit Zugentlastung',category:'home.living'},'living'),'lighting');
+assert.equal(inferFamily({name:'Orientalischer Kamelhocker Sadia - Braun',category:'home.living'},'living'),'furniture');
+assert.equal(inferFamily({name:'Pflanzenregal Vicenza',category:'home.furniture'},'furniture'),'furniture');
 const orientalOnly=classify({name:'Orientalischer Beistelltisch aus Holz'},'furniture');
 assert.equal(orientalOnly.style,'Orientalisch','Orientalisch must not imply Marokkanisch');
 assert.deepStrictEqual(classify({name:'Produkt ohne belastbare Merkmale'},'furniture'),{});
