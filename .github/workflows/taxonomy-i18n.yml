@@ -1,0 +1,35 @@
+name: Taxonomy i18n safety
+on:
+  push:
+    branches: [dev/facet-i18n-v1]
+    paths:
+      - 'taxonomy-value-i18n.js'
+      - 'search.html'
+      - 'verify-taxonomy-i18n.js'
+      - '.github/workflows/taxonomy-i18n.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'taxonomy-value-i18n.js'
+      - 'search.html'
+      - 'verify-taxonomy-i18n.js'
+      - '.github/workflows/taxonomy-i18n.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: JavaScript syntax
+        run: node --check taxonomy-value-i18n.js
+      - name: Taxonomy localization safety
+        run: node verify-taxonomy-i18n.js
+      - name: Existing RU V2 safety
+        run: node verify-ru-v2-safe.js
+      - name: Product-copy regression
+        run: node verify-product-copy-i18n.js
