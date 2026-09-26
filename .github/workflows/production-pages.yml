@@ -27,19 +27,22 @@ jobs:
           ref: main
       - name: Validate production JavaScript
         run: |
-          for f in app.js i18n.js deal-of-day.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js verify-live-catalog-v2.js verify-coupon-engine.js verify-affiliate-routing.js; do node --check "$f"; done
+          for f in app.js i18n.js deal-of-day.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js verify-live-catalog-v2.js verify-coupon-engine.js verify-affiliate-routing.js verify-user-flows.js; do node --check "$f"; done
       - name: Build and validate production catalog
         run: |
           node build-live-catalog.js build/catalog
           node verify-live-catalog-v2.js build/catalog
           node verify-coupon-engine.js build/catalog
           node verify-affiliate-routing.js
+          node verify-user-flows.js build/catalog
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Real production gate OK',m.realCount)"
           ! grep -R -E 'DemoMarkt|ShopTest|PreisDemo|FundBlick Simulator|Test-Gutschein' development/core-products.json build/catalog
       - name: Verify production wiring
         run: |
           grep -q 'data-catalog-url="catalog-live"' search.html
           grep -q 'live-catalog-ui.js' search.html
+          grep -q 'home-categories.js' index.html
+          grep -q 'href="/" data-i18n="homeLink"' search.html
           ! grep -q 'product-copy-i18n.js' search.html
           ! grep -q 'offer-comparison.js' search.html
           grep -q "network:'MULTI'" affiliate-config.js
