@@ -40,7 +40,11 @@
     const title=normalize(fields.title),brand=normalize(fields.brand),description=normalize(fields.description),semantic=normalize([description,CATEGORY_TERMS[fields.category]||'',fields.productType].filter(Boolean).join(' '));
     const all=`${title} ${brand} ${semantic}`;
     if(!tokens.every(token=>tokenMatch(token,all)))return -100000;
-    let score=0;if(title===phrase)score+=120;else if(title.includes(phrase))score+=70;if(brand===phrase)score+=90;else if(brand.includes(phrase))score+=45;
+    let score=0;
+    if(title===phrase)score+=120;
+    else if(title.startsWith(phrase+' '))score+=95;
+    else if(title.includes(phrase))score+=70;
+    if(brand===phrase)score+=90;else if(brand.includes(phrase))score+=45;
     for(const token of tokens){
       if(title.includes(token))score+=18;else if(tokenMatch(token,title))score+=10;
       if(brand.includes(token))score+=14;else if(tokenMatch(token,brand))score+=7;
