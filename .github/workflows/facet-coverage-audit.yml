@@ -1,10 +1,12 @@
 name: Facet coverage audit
 on:
   push:
-    branches: [dev/facet-engine-hardening]
+    branches: [dev/facet-engine-hardening, dev/facet-quality-pass-2]
     paths:
       - 'home-facet-classifier.js'
       - 'audit-home-facet-coverage.js'
+      - 'audit-home-facet-gaps.js'
+      - 'verify-home-facets.js'
       - 'build-live-catalog.js'
       - 'development/core-products.json'
       - '.github/workflows/facet-coverage-audit.yml'
@@ -26,3 +28,5 @@ jobs:
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/facet-audit-catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Facet audit production gate OK',m.realCount)"
       - name: Coverage audit
         run: node audit-home-facet-coverage.js build/facet-audit-catalog
+      - name: Gap and style-quality audit
+        run: node audit-home-facet-gaps.js build/facet-audit-catalog
