@@ -41,7 +41,12 @@ jobs:
         run: |
           grep -q 'data-catalog-url="catalog-live"' search.html
           grep -q 'live-catalog-ui.js' search.html
-          grep -q 'home-categories.js' index.html
+          grep -q 'search.html?category=home.living' index.html
+          grep -q 'search.html?category=home.furniture' index.html
+          grep -q 'search.html?category=home.lighting' index.html
+          grep -q 'search.html?category=home.decor' index.html
+          ! grep -q 'catalog-loader.js' index.html
+          ! grep -q 'home-categories.js' index.html
           grep -q 'href="/" data-i18n="homeLink"' search.html
           ! grep -q 'product-copy-i18n.js' search.html
           ! grep -q 'offer-comparison.js' search.html
