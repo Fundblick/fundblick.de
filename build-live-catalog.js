@@ -5,7 +5,7 @@ const crypto=require('node:crypto');
 const Coupons=require('./coupon-engine.js');
 
 const outputRoot=process.argv[2]||path.join('build','catalog');
-const sourceFiles=['development/core-products.json'];
+const sourceFiles=['development/core-products.json','development/merchant-data/awin-120341-ahipos.json'];
 const targetShardBytes=24576;
 const maxItemsPerShard=8;
 const homeDealLimit=60;
@@ -13,12 +13,23 @@ const merchantNames=['DemoMarkt','ShopTest','PreisDemo','DirektTest','Handel24',
 const priceDeltas=[0,-0.025,0.018,-0.012,0.035,-0.02,0.012];
 const shippingPattern=[0,4.5,0,5.99,2.99,0,3.49];
 const deliveryOffsets=[0,1,2,-1,3,1,2];
+const awinPublisherId=String(process.env.AWIN_PUBLISHER_ID||'3106259').trim();
 
 const sha256=value=>crypto.createHash('sha256').update(value).digest('hex');
 const normalize=value=>String(value||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
 const money=value=>Math.round(Number(value)*100)/100;
 const numeric=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value))?Number(value):null;
 const isRealProduct=raw=>raw?.testData===false||String(raw?.source?.network||'').toLowerCase()==='awin';
+
+function awinAffiliateUrl(raw){
+  if(raw?.affiliateUrl)return String(raw.affiliateUrl);
+  const network=String(raw?.source?.network||raw?.network||'').toLowerCase();
+  const advertiserId=String(raw?.source?.advertiserId||raw?.merchantId||'').trim();
+  const directUrl=String(raw?.directUrl||'').trim();
+  if(network!=='awin'||!awinPublisherId||!advertiserId||!directUrl)return '';
+  try{const parsed=new URL(directUrl);if(!/^https?:$/.test(parsed.protocol))return '';}catch{return ''}
+  return `https://www.awin1.com/cread.php?awinmid=${encodeURIComponent(advertiserId)}&awinaffid=${encodeURIComponent(awinPublisherId)}&ued=${encodeURIComponent(directUrl)}`;
+}
 
 function simulatedPromotions(raw,index,price,shippingCost){
   const base={active:true,verification:'verified',validFrom:'2026-01-01T00:00:00Z',validUntil:'2099-12-31T23:59:59Z',source:{type:'simulator',name:'FundBlick Simulator'},simulated:true};
@@ -61,7 +72,7 @@ function realOffers(raw){
     id:`${raw.id}-offer-1`,merchantId:String(raw?.source?.advertiserId||raw.merchantId||merchant),merchant,
     price,shippingCost,shippingKnown,totalPrice,totalPriceKnown:shippingKnown,effectiveTotal:totalPrice,
     currency:String(raw.currency||'EUR'),deliveryDays:numeric(raw.deliveryDays),availability:String(raw.availability||'').toUpperCase()||(raw.inStock===false?'OUT_OF_STOCK':'IN_STOCK'),inStock:raw.inStock!==false,
-    simulated:false,promotions:[],network,directUrl:String(raw.directUrl||''),affiliateUrl:String(raw.affiliateUrl||''),updatedAt:raw.updatedAt||null
+    simulated:false,promotions:[],network,directUrl:String(raw.directUrl||''),affiliateUrl:awinAffiliateUrl(raw),updatedAt:raw.updatedAt||null
   }];
 }
 
@@ -75,6 +86,7 @@ function enrichProduct(raw){
   const knownEffective=offers.map(offer=>numeric(offer.effectiveTotal)).filter(value=>value!==null);
   return {
     ...raw,
+    affiliateUrl:real?awinAffiliateUrl(raw):raw.affiliateUrl,
     sourcePrice:Number(raw.price),price:best.price,shippingCost:best.shippingCost,
     totalPrice:best.totalPrice,effectiveTotalPrice:best.effectiveTotal,promotionSavings:best.promotionSavings||0,
     inStock:best.inStock,deliveryDays:best.deliveryDays,merchantCount:offers.length,offers,bestOffer:best,bestEffectiveOffer:best,
