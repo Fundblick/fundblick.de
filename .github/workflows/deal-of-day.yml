@@ -6,6 +6,7 @@ on:
     paths:
       - 'deal-of-day.js'
       - 'home-deal.js'
+      - 'home-i18n.js'
       - 'index.html'
       - 'home.css'
       - 'catalog-loader.js'
@@ -22,6 +23,7 @@ on:
     paths:
       - 'deal-of-day.js'
       - 'home-deal.js'
+      - 'home-i18n.js'
       - 'index.html'
       - 'home.css'
       - 'catalog-loader.js'
@@ -51,6 +53,7 @@ jobs:
         run: |
           node --check deal-of-day.js
           node --check home-deal.js
+          node --check home-i18n.js
           node --check verify-deal-of-day.js
           node --check verify-production-deal.js
           node --check home-deal-e2e.spec.js
