@@ -25,6 +25,16 @@ const legal=read('legal-i18n.js');
 for(const text of ['Выходные данные','Сведения согласно § 5 DDG','Германия','Контакты','Версия от 17 сентября 2026 г.'])if(!legal.includes(text)){console.error(`legal-i18n.js: missing ${text}`);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(legal.includes(forbidden)){console.error(`legal-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 
+// Privacy policy must cover every block, including inactive affiliate disclosures, without navigation changes.
+const privacyHtml=read('datenschutz.html');
+const privacy=read('datenschutz-i18n.js');
+if(!privacyHtml.includes('datenschutz-i18n.js')){console.error('datenschutz.html: missing RU V2 privacy translator');failed=true;}
+const blocks=[...privacyHtml.matchAll(/data-privacy-i18n="(\\d+)"/g)].map(match=>Number(match[1]));
+if(blocks.length!==69||blocks.some((id,index)=>id!==index+1)){console.error('datenschutz.html: privacy block mapping incomplete');failed=true;}
+for(let id=1;id<=69;id++)if(id!==60&&!privacy.includes('"'+id+'":')){console.error('datenschutz-i18n.js: missing block '+id);failed=true;}
+for(const text of ['Политика конфиденциальности','Голосовой ввод','Срок хранения','Awin','ADCELL','Главная'])if(!privacy.includes(text)){console.error('datenschutz-i18n.js: missing '+text);failed=true;}
+for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(privacy.includes(forbidden)){console.error('datenschutz-i18n.js: forbidden navigation mutation '+forbidden);failed=true;}
+
 // Dynamic common facets and category schemas need Russian display labels.
 const common=read('common-filter-i18n.js');
 for(const text of ['Рейтинг','Магазины и предложения','Бесплатная доставка','В наличии','Доставка ≤ 3 рабочих дней'])if(!common.includes(text)){console.error(`common-filter-i18n.js: missing ${text}`);failed=true;}
