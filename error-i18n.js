@@ -9,5 +9,6 @@
   };
   const t=copy[lang]||copy.en;
   document.documentElement.lang=lang;
+  document.title=(lang==='ru'?'Страница не найдена':lang==='de'?'Seite nicht gefunden':'Page not found')+' – FundBlick';
   document.querySelectorAll('[data-error-i18n]').forEach(el=>{const key=el.dataset.errorI18n;if(t[key])el.textContent=t[key];});
 })();
