@@ -14,10 +14,10 @@
     schema.terms=[...new Set([...(schema.terms||[]),...terms])];
   }
   const home={
-    'home.living':{label:'Wohnen & Haushalt',icon:'🏠',terms:['home.living','wohnen','haushalt','waschbecken','brunnen','tablett']},
-    'home.furniture':{label:'Möbel',icon:'🪑',terms:['home.furniture','möbel','moebel','tisch','stuhl','sessel','regal','schrank']},
-    'home.lighting':{label:'Lampen & Beleuchtung',icon:'💡',terms:['home.lighting','lampe','leuchte','beleuchtung','laterne','windlicht']},
-    'home.decor':{label:'Dekoration',icon:'🪴',terms:['home.decor','dekoration','deko','kissen','korb','schale','vase']}
+    'home.living':{label:'Wohnen & Haushalt',icon:'🏠',terms:['wohnen','haushalt','waschbecken','brunnen','tablett']},
+    'home.furniture':{label:'Möbel',icon:'🪑',terms:['möbel','moebel','tisch','stuhl','sessel','regal','schrank']},
+    'home.lighting':{label:'Lampen & Beleuchtung',icon:'💡',terms:['lampe','leuchte','beleuchtung','laterne','windlicht']},
+    'home.decor':{label:'Dekoration',icon:'🪴',terms:['dekoration','deko','kissen','korb','schale','vase']}
   };
   for(const [key,schema] of Object.entries(home))schemas[key]={...(schemas[key]||{}),...schema,facets:schemas[key]?.facets||[]};
   window.FB_detectCategory=function(query){const q=String(query||'').toLocaleLowerCase('de');let best=null,bestLen=0;for(const [key,s] of Object.entries(schemas)){for(const term of s.terms||[]){if(q.includes(String(term).toLocaleLowerCase('de'))&&String(term).length>bestLen){best={id:key,key,...s};bestLen=String(term).length}}}return best;};
