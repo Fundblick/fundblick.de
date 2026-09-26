@@ -1,0 +1,40 @@
+name: Search relevance audit
+
+on:
+  push:
+    branches: [dev/search-relevance-v1]
+    paths:
+      - 'audit-search-relevance.js'
+      - 'search-relevance.js'
+      - 'search.js'
+      - 'production-catalog-sources.json'
+      - 'development/**'
+      - '.github/workflows/search-relevance-audit.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'audit-search-relevance.js'
+      - 'search-relevance.js'
+      - 'search.js'
+      - 'production-catalog-sources.json'
+      - '.github/workflows/search-relevance-audit.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax
+        run: |
+          node --check search-relevance.js
+          node --check audit-search-relevance.js
+      - name: Audit real production-source search quality
+        run: node audit-search-relevance.js
