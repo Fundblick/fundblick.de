@@ -1,0 +1,33 @@
+name: AHIPOS normalizer gate
+
+on:
+  pull_request:
+    paths:
+      - 'ahipos-feed-normalizer.js'
+      - 'verify-ahipos-normalizer.js'
+      - 'tests/fixtures/ahipos-feed-fixture.json'
+      - '.github/workflows/ahipos-normalizer.yml'
+  push:
+    branches:
+      - 'dev/ahipos-v1'
+    paths:
+      - 'ahipos-feed-normalizer.js'
+      - 'verify-ahipos-normalizer.js'
+      - 'tests/fixtures/ahipos-feed-fixture.json'
+      - '.github/workflows/ahipos-normalizer.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax check
+        run: node --check ahipos-feed-normalizer.js && node --check verify-ahipos-normalizer.js
+      - name: Verify AHIPOS feed normalization contract
+        run: node verify-ahipos-normalizer.js
