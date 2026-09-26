@@ -1,9 +1,12 @@
 name: Facet coverage audit
 on:
   push:
-    branches: [dev/facet-engine-hardening, dev/facet-quality-pass-2]
+    branches: [dev/facet-engine-hardening, dev/facet-quality-pass-2, dev/taxonomy-foundation]
     paths:
       - 'home-facet-classifier.js'
+      - 'taxonomy-registry.js'
+      - 'verify-taxonomy-registry.js'
+      - 'audit-merchant-onboarding.js'
       - 'audit-home-facet-coverage.js'
       - 'audit-home-facet-gaps.js'
       - 'verify-home-facets.js'
@@ -20,6 +23,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Classifier regression
         run: node verify-home-facets.js
+      - name: Taxonomy registry consistency
+        run: node verify-taxonomy-registry.js
       - name: Rebuild production catalog
         run: |
           rm -rf build/facet-audit-catalog
@@ -30,3 +35,5 @@ jobs:
         run: node audit-home-facet-coverage.js build/facet-audit-catalog
       - name: Gap and style-quality audit
         run: node audit-home-facet-gaps.js build/facet-audit-catalog
+      - name: Merchant onboarding reuse baseline
+        run: node audit-merchant-onboarding.js build/facet-audit-catalog
