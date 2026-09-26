@@ -21,6 +21,8 @@ jobs:
         run: |
           node --check audit-seo-landing-candidates.js
           node --check build-seo-landings.js
+          node --check seo-landing-e2e.spec.js
+          node --check home-i18n.js
       - name: Audit real production landing candidates
         run: node audit-seo-landing-candidates.js
       - name: Build production catalog
@@ -38,3 +40,23 @@ jobs:
           grep -q '394 Produkte aus 394 Produktgruppen' build/seo/themen/moebel/index.html
           ! grep -q 'pet.dog' build/seo/landing-manifest.json
           ! grep -q 'health.supplements' build/seo/landing-manifest.json
+          test "$(grep -o 'href="/themen/' index.html | wc -l)" -eq 6
+          grep -q 'href="search.html?category=home.furniture"' index.html
+          grep -q 'href="search.html?category=pet.equestrian"' index.html
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start homepage and SEO sites
+        run: |
+          python3 -m http.server 4173 >/tmp/fundblick-home.log 2>&1 &
+          python3 -m http.server 4174 --directory build/seo >/tmp/fundblick-seo.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4174/themen/moebel/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-home.log
+          cat /tmp/fundblick-seo.log
+          exit 1
+      - name: Browser SEO and internal-link regression
+        run: npx playwright test seo-landing-e2e.spec.js --reporter=line --workers=1
