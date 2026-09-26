@@ -18,6 +18,13 @@ for(const text of ['Ищите. Сравнивайте предложения. �
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(home.includes(forbidden)){console.error(`home-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 for(const key of ['headline','lead','searchPlaceholder','catLiving','catFurniture','catLighting','catDecor','affiliateNote'])if(!homeHtml.includes(`data-home-i18n="${key}"`)&&!homeHtml.includes(`data-home-i18n-placeholder="${key}"`)){console.error(`index.html: missing home i18n key ${key}`);failed=true;}
 
+// Legal localization is isolated and must not mutate navigation/history.
+const imprint=read('impressum.html');
+if(!imprint.includes('legal-i18n.js')){console.error('impressum.html: missing legal-i18n.js');failed=true;}
+const legal=read('legal-i18n.js');
+for(const text of ['Выходные данные','Сведения согласно § 5 DDG','Германия','Контакты','Версия от 17 сентября 2026 г.'])if(!legal.includes(text)){console.error(`legal-i18n.js: missing ${text}`);failed=true;}
+for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(legal.includes(forbidden)){console.error(`legal-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
+
 // Dynamic common facets and category schemas need Russian display labels.
 const common=read('common-filter-i18n.js');
 for(const text of ['Рейтинг','Магазины и предложения','Бесплатная доставка','В наличии','Доставка ≤ 3 рабочих дней'])if(!common.includes(text)){console.error(`common-filter-i18n.js: missing ${text}`);failed=true;}
@@ -31,7 +38,7 @@ const mobile=read('search-mobile.js');
 for(const text of ['Применить фильтры','результатов'])if(!mobile.includes(text)){console.error(`search-mobile.js: missing ${text}`);failed=true;}
 
 // RU V2 must not reintroduce the failed RU V1 page-level runtime wiring.
-for(const file of ['index.html','search.html']){
+for(const file of ['index.html','search.html','impressum.html']){
   const src=read(file);
   if(src.includes('ru-page-i18n.js')){console.error(`${file}: RU V1 runtime wiring reintroduced`);failed=true;}
 }
