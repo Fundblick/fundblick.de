@@ -1,9 +1,8 @@
 'use strict';
-/* Conservative production defaults. Do not expose a merchant filter from
-   merchantCount: that field is a numeric offer count, not a merchant name.
-   A real merchant-name facet will be enabled only when normalized feeds
-   expose merchant identity as a dedicated attribute. */
+/* Production common facets. Merchant identity is now normalized as a
+   dedicated string attribute and is intentionally separate from brand. */
 window.FB_COMMON_FACETS=[
   {key:'price',label:'Produktpreis',type:'price'},
+  {key:'merchant',label:'Händler',type:'multi'},
   {key:'brand',label:'Hersteller / Marke',type:'brand'}
 ];

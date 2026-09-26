@@ -1,0 +1,88 @@
+name: Facet orchestration safety
+
+on:
+  push:
+    branches: [dev/facet-orchestration-v1]
+    paths:
+      - 'search.js'
+      - 'facet-schemas.js'
+      - 'common-facet-defs.js'
+      - 'common-filter-i18n.js'
+      - 'search-facet-engine-v2.js'
+      - 'facet-orchestration-e2e.spec.js'
+      - 'home-categories-e2e.spec.js'
+      - 'home-categories.js'
+      - 'index.html'
+      - 'production-catalog-sources.json'
+      - 'build-production-catalog.js'
+      - 'verify-production-categories.js'
+      - '.github/workflows/facet-orchestration.yml'
+      - '.github/workflows/production-pages.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'search.js'
+      - 'facet-schemas.js'
+      - 'common-facet-defs.js'
+      - 'common-filter-i18n.js'
+      - 'search-facet-engine-v2.js'
+      - 'facet-orchestration-e2e.spec.js'
+      - 'home-categories-e2e.spec.js'
+      - 'home-categories.js'
+      - 'index.html'
+      - 'production-catalog-sources.json'
+      - 'build-production-catalog.js'
+      - 'verify-production-categories.js'
+      - '.github/workflows/facet-orchestration.yml'
+      - '.github/workflows/production-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  browser-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check search.js
+          node --check facet-schemas.js
+          node --check common-facet-defs.js
+          node --check common-filter-i18n.js
+          node --check search-facet-engine-v2.js
+          node --check home-categories.js
+          node --check build-production-catalog.js
+          node --check verify-production-categories.js
+          node --check facet-orchestration-e2e.spec.js
+          node --check home-categories-e2e.spec.js
+      - name: Build real multi-merchant production catalog
+        run: |
+          node build-production-catalog.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          node verify-production-merchants.js build/catalog
+          node verify-production-categories.js build/catalog
+          rm -rf catalog
+          cp -R build/catalog catalog
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 >/tmp/fundblick-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/search.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-http.log
+          exit 1
+      - name: Merchant, brand and dynamic facet regression
+        run: npx playwright test facet-orchestration-e2e.spec.js --reporter=line --workers=1
+      - name: Homepage taxonomy category regression
+        run: npx playwright test home-categories-e2e.spec.js --reporter=line --workers=1

@@ -32,3 +32,17 @@ fs.readFileSync=function(file,...args){
 
 process.argv[2]=outputRoot;
 require('./build-live-catalog.js');
+
+const preferred=['home.living','home.furniture','home.lighting','home.decor','pet.equestrian','pet.dog','health.supplements'];
+const counts=new Map();
+for(const product of combined){
+  if(!product||product.active===false)continue;
+  const category=String(product.category||'').trim();
+  const price=Number(product.price);
+  if(!category||!product.id||!product.name||!Number.isFinite(price)||price<=0)continue;
+  counts.set(category,(counts.get(category)||0)+1);
+}
+const rank=id=>{const index=preferred.indexOf(id);return index>=0?index:preferred.length;};
+const categories=[...counts.entries()].map(([id,count])=>({id,count})).sort((a,b)=>rank(a.id)-rank(b.id)||b.count-a.count||a.id.localeCompare(b.id,'de'));
+fs.writeFileSync(path.join(outputRoot,'categories.json'),JSON.stringify({version:1,categories})+'\n');
+console.log(`production categories built: ${categories.length} categories`);
