@@ -23,6 +23,7 @@ test('merchant, brand and product-type facets follow the remaining result set',a
   await expect(page.locator('#summary')).toContainText('31');
 
   const brandFacet=facet(page,'Hersteller');
+  await expect(brandFacet.locator('input[data-key="brand"]')).toHaveCount(2);
   await expect(brandFacet).toContainText('Ahipos Horses');
   await expect(brandFacet).toContainText('Equinox Equine');
   await expect(brandFacet).not.toContainText('ahipos-horses');
