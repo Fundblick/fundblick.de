@@ -4,6 +4,17 @@ Branch: `dev/ru-v2-safe`
 Baseline: production `main` at `81415310c9f794dc728de4f51262476cb449b1ea`
 Production changes: FORBIDDEN until all gates below pass.
 
+## Current gate status – 26 September 2026
+- Production `main` rechecked unchanged at baseline `81415310c9f794dc728de4f51262476cb449b1ea`.
+- RU V2 implementation remains isolated on `dev/ru-v2-safe`.
+- Static RU localization safety gate: PASS (GitHub Actions run `36255403620`).
+- Product-copy localization regression: PASS in the same run.
+- Chromium browser E2E, desktop + mobile: PASS (GitHub Actions run `36255371764`).
+- Browser journeys covered: direct `?lang=ru` entry, homepage, search submit, result page, desktop/mobile filter controls, sorting, home navigation, Back, Forward, privacy page and 404 page.
+- Runtime page errors asserted empty during the browser journeys.
+- Browser testing found and led to fixes for two issues before release: direct RU entry on the homepage/404 path and asynchronous affiliate-status fallback to German on the privacy page.
+- No merge to `main`, no production deployment and no live rollout has been performed.
+
 ## Incident finding from RU V1
 RU V1 mixed localization with runtime/navigation changes. Static/regression CI was green but did not exercise the actual browser journey. Production deployment success therefore did not prove usable navigation. The recovery restored `index.html`, `search.html`, `language-links.js` and `live-catalog-ui.js` to the known-good runtime behavior.
 
