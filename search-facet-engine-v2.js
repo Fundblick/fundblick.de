@@ -17,14 +17,23 @@
     const order=configured.length?configured.map(String):[...counts.keys()].sort((a,b)=>a.localeCompare(b,'de',{numeric:true}));
     return order.filter(v=>counts.has(v)).map(value=>({value,count:counts.get(value)}));
   }
+  function dominantSchema(products,schema){
+    if(schema)return schema;
+    const schemas=root.FB_CATEGORY_SCHEMAS||{};
+    const counts=new Map();
+    for(const p of products||[]){const family=String(p?.family||'');if(schemas[family])counts.set(family,(counts.get(family)||0)+1);}
+    const winner=[...counts.entries()].sort((a,b)=>b[1]-a[1])[0]?.[0];
+    return winner?schemas[winner]:null;
+  }
   function facetsFor(products,schema){
-    return (schema?.facets||[]).map(f=>({...f,options:availableValues(products,f.key,f.values||[])})).filter(f=>f.options.length);
+    const effective=dominantSchema(products,schema);
+    return (effective?.facets||[]).map(f=>({...f,options:availableValues(products,f.key,f.values||[])})).filter(f=>f.options.length);
   }
   function matches(product,key,selected){
     if(!selected?.size)return true;
     const own=new Set(values(product?.attrs?.[key]).map(String));
     return [...selected].some(v=>own.has(String(v)));
   }
-  root.FBFacetEngineV2={enrich,availableValues,facetsFor,matches};
+  root.FBFacetEngineV2={enrich,availableValues,dominantSchema,facetsFor,matches};
   if(typeof module!=='undefined'&&module.exports)module.exports=root.FBFacetEngineV2;
 })(typeof window!=='undefined'?window:globalThis);
