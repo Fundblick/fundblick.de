@@ -1,0 +1,33 @@
+name: AHIPOS data quality gate
+
+on:
+  push:
+    branches:
+      - dev/ahipos-v1
+    paths:
+      - 'development/ahipos-products-*.json'
+      - 'verify-ahipos-data-quality.js'
+      - '.github/workflows/ahipos-data-quality.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'development/ahipos-products-*.json'
+      - 'verify-ahipos-data-quality.js'
+      - '.github/workflows/ahipos-data-quality.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax check
+        run: node --check verify-ahipos-data-quality.js
+      - name: Verify AHIPOS real-data quality contract
+        run: node verify-ahipos-data-quality.js
