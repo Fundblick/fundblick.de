@@ -8,6 +8,7 @@
   };
   const supported=new Set(Object.keys(copy));
   function saved(){try{return localStorage.getItem('fundblick-language')}catch{return null}}
+  function requested(){try{return new URLSearchParams(location.search).get('lang')}catch{return null}}
   function language(){return supported.has(select.value)?select.value:(supported.has(saved())?saved():'de')}
   function apply(){
     const lang=language(),t=copy[lang]||copy.de;
@@ -17,7 +18,7 @@
     document.querySelectorAll('[data-home-i18n-aria]').forEach(el=>{const key=el.dataset.homeI18nAria;if(t[key])el.setAttribute('aria-label',t[key]);});
     try{localStorage.setItem('fundblick-language',lang)}catch{}
   }
-  const initial=saved();if(supported.has(initial))select.value=initial;
+  const initial=requested()||saved();if(supported.has(initial))select.value=initial;
   select.addEventListener('change',apply);
   apply();
 })();
