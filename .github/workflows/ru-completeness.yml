@@ -1,0 +1,25 @@
+name: Russian completeness
+on:
+  push:
+    branches: [dev/ru-completeness]
+    paths:
+      - '*.html'
+      - '*i18n.js'
+      - 'language-links.js'
+      - 'verify-ru-completeness.js'
+      - '.github/workflows/ru-completeness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Russian localization wiring
+        run: node verify-ru-completeness.js
+      - name: Existing language regression
+        run: |
+          node verify-language-links.js
+          node verify-search-i18n.js
+          node verify-product-copy-i18n.js
