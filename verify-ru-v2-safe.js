@@ -50,7 +50,7 @@ for(const forbidden of ['history.pushState','history.replaceState','location.hre
 
 // Dynamic common facets and category schemas need Russian display labels.
 const common=read('common-filter-i18n.js');
-for(const text of ['Рейтинг','Магазины и предложения','Бесплатная доставка','В наличии','Доставка ≤ 3 рабочих дней'])if(!common.includes(text)){console.error(`common-filter-i18n.js: missing ${text}`);failed=true;}
+for(const text of ['Рейтинг','Магазины и предложения','Бесплатная доставка','В наличии','Доставка ≤ 3 рабочих дня'])if(!common.includes(text)){console.error(`common-filter-i18n.js: missing ${text}`);failed=true;}
 const schemas=read('facet-schemas.js');
 for(const text of ['Тип товара','Материал','Стиль','Область применения','Цена товара','Производитель / бренд','Магазин'])if(!schemas.includes(text)){console.error(`facet-schemas.js: missing ${text}`);failed=true;}
 const values=read('facet-value-i18n.js');

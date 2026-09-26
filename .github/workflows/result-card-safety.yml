@@ -1,0 +1,50 @@
+name: Result card safety
+
+on:
+  push:
+    branches: [dev/result-cards-v1]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  browser-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Syntax checks
+        run: |
+          node --check live-catalog-ui.js
+          node --check result-card-e2e.spec.js
+      - name: Build real production catalog
+        run: |
+          node build-production-catalog.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          rm -rf catalog
+          cp -R build/catalog catalog
+      - name: Verify card production wiring
+        run: |
+          test -s result-card.css
+          grep -q 'result-card.css' search.html
+          grep -q 'live-catalog-ui.js' search.html
+          grep -q 'result-card.css' .github/workflows/production-pages.yml
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 >/tmp/fundblick-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/search.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-http.log
+          exit 1
+      - name: Browser result card regression
+        run: npx playwright test result-card-e2e.spec.js --reporter=line --workers=1
