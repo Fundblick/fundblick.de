@@ -56,7 +56,9 @@ test('Casa Moro keeps furniture product types without equestrian leakage',async(
   await expect(page.locator('#cards article.product').first()).toBeVisible();
 
   const merchantFacet=facet(page,'Händler');
-  await merchantFacet.locator('input[value="Casa Moro"]').check();
+  const casaLabel=merchantFacet.locator('label').filter({hasText:'Casa Moro'});
+  await expect(casaLabel).toHaveCount(1);
+  await casaLabel.locator('input[data-key="merchant"]').check();
   await expect(page.locator('#summary')).toContainText('1428');
   const casaType=facet(page,'Produkttyp');
   await expect(casaType).toContainText('Couchtisch');
