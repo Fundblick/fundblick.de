@@ -10,7 +10,7 @@ const fixturePath=process.argv[2]||path.join(__dirname,'tests','fixtures','ahipo
 const compact=JSON.parse(fs.readFileSync(fixturePath,'utf8'));
 const generic=compact.generic.map(([id,productPath,price,inStock],i)=>({
   merchant_product_id:id,product_name:`AHIPOS source product ${id}`,description:`source-description-${id}`,
-  search_price:price,currency:'EUR',in_stock:inStock,stock_quantity:inStock==='1'?'10':'0',
+  search_price:price,currency:'EUR',in_stock:inStock,stock_quantity:inStock==='1'?'10':'0',delivery_cost:'0',
   merchant_deep_link:`https://ahipos-horses.de${productPath}?variant=${id}`,
   aw_deep_link:`https://www.awin1.com/pclick.php?p=g${i+1}&m=120341`,merchant_image_url:`https://cdn.example.test/g/${id}.jpg`,
   merchant_category:'Sporting Goods, Outdoor Recreation, Equestrian, Horse Care, Horse Vitamins & Supplements'
@@ -21,12 +21,7 @@ const retail=compact.retail.map(([id,productPath,price,availability],i)=>({
   aw_deep_link:`https://www.awin1.com/cread.php?awinmid=120341&p=r${i+1}`,image_link:`https://cdn.example.test/r/${id}.jpg`,
   brand:'ahipos-horses',gtin:`fixture-${id}`,mpn:'',google_product_category:'Sporting Goods > Outdoor Recreation > Equestrian > Horse Care > Horse Vitamins & Supplements'
 }));
-
-function csv(rows){
-  const headers=[...new Set(rows.flatMap(r=>Object.keys(r)))];
-  const q=v=>{const s=String(v??'');return /[",\n\r]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;};
-  return [headers.join(','),...rows.map(r=>headers.map(h=>q(r[h])).join(','))].join('\n')+'\n';
-}
+function csv(rows){const headers=[...new Set(rows.flatMap(r=>Object.keys(r)))];const q=v=>{const s=String(v??'');return /[",\n\r]/.test(s)?`"${s.replace(/"/g,'""')}"`:s;};return [headers.join(','),...rows.map(r=>headers.map(h=>q(r[h])).join(','))].join('\n')+'\n';}
 function gzTemp(name,rows){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'fundblick-ahipos-'));const file=path.join(dir,name+'.csv.gz');fs.writeFileSync(file,zlib.gzipSync(Buffer.from(csv(rows),'utf8')));return file;}
 
 const genericRows=normalizer.readCsv(gzTemp('generic',generic));
@@ -38,7 +33,7 @@ assert.deepEqual(result.stats,{genericRows:28,retailRows:29,overlap:26,uniqueVar
 assert.equal(normalizer.validate(result).length,0,'normalizer validation must be green');
 assert.equal(new Set(result.variants.map(v=>v.merchantVariantId)).size,31,'variant IDs must be unique');
 assert.equal(result.products.length,25,'product path grouping must stay stable');
-assert(result.products.every(p=>p.category==='pet.equestrian'),'must not reuse Casa-Moro family as fallback');
+assert(result.products.every(p=>p.category==='pet.equestrian'),'fixture must remain equestrian');
 assert(result.variants.every(v=>v.affiliateUrl!==v.directUrl),'affiliate/direct links must remain distinct');
 assert(result.variants.every(v=>v.affiliateUrl.includes('awin1.com')),'affiliate links must remain Awin links');
 assert(result.variants.every(v=>v.directUrl.includes('ahipos-horses.de')),'direct links must remain merchant links');
@@ -48,5 +43,13 @@ assert(conflicts.every(v=>v.availability==='OUT_OF_STOCK'&&!v.purchasable),'avai
 const overlapIds=new Set(generic.map(x=>x.merchant_product_id).filter(id=>retail.some(y=>y.id===id)));
 for(const id of overlapIds){const a=generic.find(x=>x.merchant_product_id===id),b=retail.find(x=>x.id===id);assert.equal(normalizer.money(a.search_price),normalizer.money(b.price),`${id}: source prices must match`);}
 for(const row of generic.slice(0,5)){const v=result.variants.find(x=>x.merchantVariantId===row.merchant_product_id);assert.equal(v.description,row.description,`${row.merchant_product_id}: source description must be preserved`);}
+const catalogRows=normalizer.toCatalogRows(result);
+assert.equal(catalogRows.length,31,'catalog adapter must emit one row per unique variant');
+assert.equal(new Set(catalogRows.map(x=>x.productGroupId)).size,25,'catalog adapter must preserve product grouping');
+assert(catalogRows.every(x=>x.sourceText===true&&x.source?.network==='awin'),'catalog rows must preserve provenance');
+assert(catalogRows.every(x=>x.shippingCost===0),'fixture shipping must come from generic delivery_cost');
+assert.equal(normalizer.classifyCategory([{name:'Synomax Sirup für Hunde',merchantCategory:'Animals & Pet Supplies'}]),'pet.dog');
+assert.equal(normalizer.classifyCategory([{name:'Human Inmuno Pills (Mensch)',merchantCategory:'Health & Beauty'}]),'health.supplements');
+assert.equal(normalizer.classifyCategory([{name:'AHIPOS Elektrolyt',googleProductCategory:'Equestrian > Horse Care'}]),'pet.equestrian');
 assert(!JSON.stringify(compact).includes('awinaffid='),'fixture must not contain publisher affiliate credentials');
 console.log('AHIPOS_NORMALIZER_GATE_GREEN',JSON.stringify(result.stats));
