@@ -105,11 +105,27 @@ function splitShards(items){
 }
 
 function dealCandidateScore(product){
+  const current=numeric(product?.price),merchantReference=numeric(product?.originalPrice??product?.referencePrice??product?.rrpPrice);
+  if(current!==null&&merchantReference!==null&&merchantReference>current){
+    const saving=merchantReference-current,pct=saving/merchantReference;
+    if(saving>=10&&pct>=0.15)return pct*2000+saving*2+100;
+  }
   const offers=Array.isArray(product?.offers)?product.offers:[];
   if(offers.length<2)return 0;
   const regular=offers.map(offer=>numeric(offer.totalPrice)).filter(value=>value!==null).sort((a,b)=>a-b);if(regular.length<2)return 0;
   const reference=regular[Math.floor((regular.length-1)/2)];const effective=offers.map(offer=>numeric(offer.effectiveTotal??offer.totalPrice)).filter(value=>value!==null);if(!effective.length)return 0;
-  const best=Math.min(...effective),saving=Math.max(0,reference-best),pct=reference>0?saving/reference:0;return pct*1000+saving*2+Number(product.merchantCount||0);
+  const best=Math.min(...effective),saving=Math.max(0,reference-best),pct=reference>0?saving/reference:0;
+  if(saving<10||pct<0.15)return 0;
+  return pct*1000+saving*2+Number(product.merchantCount||0);
+}
+
+function homeCandidatePool(items){
+  const ranked=items.map(product=>({product,score:dealCandidateScore(product)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.product.id.localeCompare(b.product.id));
+  const selected=[],seen=new Set();
+  for(const {product} of ranked){if(selected.length>=homeDealLimit)break;selected.push(product);seen.add(product.id);}
+  const fallback=items.filter(product=>product.testData===false&&product.inStock!==false&&numeric(product.price)>0&&String(product.image||'').trim()&&!seen.has(product.id)).sort((a,b)=>a.id.localeCompare(b.id));
+  for(const product of fallback){if(selected.length>=homeDealLimit)break;selected.push(product);seen.add(product.id);}
+  return selected;
 }
 
 function main(){
@@ -121,10 +137,10 @@ function main(){
   shards.forEach((products,index)=>{const json=JSON.stringify(products),hash=sha256(json),file=`shards/${index}.${hash.slice(0,12)}.json`;fs.writeFileSync(path.join(outputRoot,file),json+'\n');shardMeta[String(index)]={itemCount:products.length,sha256:hash,file};products.forEach(product=>productShard.set(product.id,index));});
   const searchIndex=items.map(product=>({i:product.id,n:product.name,b:String(product.brand||''),c:String(product.category||''),q:normalize([product.name,product.brand,product.category,product.description].filter(Boolean).join(' ')),p:product.price,t:numeric(product.totalPrice),r:numeric(product.totalPrice),o:product.merchantCount,u:String(product.currency||'EUR'),s:productShard.get(product.id)}));
   const indexJson=JSON.stringify(searchIndex),indexHash=sha256(indexJson),searchFile=`search-index.${indexHash.slice(0,12)}.json`;fs.writeFileSync(path.join(outputRoot,searchFile),indexJson+'\n');
-  const scored=items.map(product=>({product,score:dealCandidateScore(product)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.product.id.localeCompare(b.product.id));
-  const homeDealItems=scored.slice(0,Math.min(homeDealLimit,scored.length)).map(x=>x.product),homeDealJson=JSON.stringify(homeDealItems),homeDealHash=sha256(homeDealJson),homeDealFile=`home-deals.${homeDealHash.slice(0,12)}.json`;fs.writeFileSync(path.join(outputRoot,homeDealFile),homeDealJson+'\n');
-  const manifest={version:3,source:dataMode==='real'?'affiliate-live':'curated-test',dataMode,offerSchema:'fundblick-offer-v3',promotionSchema:'fundblick-promotion-v1',itemCount:items.length,realCount,simulatedCount,targetShardBytes,maxItemsPerShard,shardCount:shards.length,searchIndexSha256:indexHash,searchFile,homeDealFile,homeDealCount:homeDealItems.length,homeDealLimit,shards:shardMeta};
+  const homeDealItems=homeCandidatePool(items),homeDealJson=JSON.stringify(homeDealItems),homeDealHash=sha256(homeDealJson),homeDealFile=`home-deals.${homeDealHash.slice(0,12)}.json`;fs.writeFileSync(path.join(outputRoot,homeDealFile),homeDealJson+'\n');
+  const qualifiedHomeDealCount=homeDealItems.filter(product=>dealCandidateScore(product)>0).length;
+  const manifest={version:3,source:dataMode==='real'?'affiliate-live':'curated-test',dataMode,offerSchema:'fundblick-offer-v3',promotionSchema:'fundblick-promotion-v1',itemCount:items.length,realCount,simulatedCount,targetShardBytes,maxItemsPerShard,shardCount:shards.length,searchIndexSha256:indexHash,searchFile,homeDealFile,homeDealCount:homeDealItems.length,qualifiedHomeDealCount,homeDealLimit,shards:shardMeta};
   fs.writeFileSync(path.join(outputRoot,'manifest.json'),JSON.stringify(manifest)+'\n');
-  console.log(`live catalog built: ${items.length} items (${realCount} real, ${simulatedCount} simulated), ${shards.length} shards, mode=${dataMode}`);
+  console.log(`live catalog built: ${items.length} items (${realCount} real, ${simulatedCount} simulated), ${shards.length} shards, mode=${dataMode}, dailyPool=${homeDealItems.length}, qualifiedDeals=${qualifiedHomeDealCount}`);
 }
 main();

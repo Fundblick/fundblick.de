@@ -68,5 +68,15 @@ for(const row of index){
 }
 const homeDeals=JSON.parse(fs.readFileSync(path.join(root,manifest.homeDealFile),'utf8'));
 assert.ok(Array.isArray(homeDeals));assert.equal(homeDeals.length,manifest.homeDealCount);assert.ok(homeDeals.length<=60);
-for(const product of homeDeals){assert.ok(seen.has(product.id));assert.ok(Array.isArray(product.offers)&&product.offers.length>=2,'deal candidate must compare at least two offers');}
-console.log(`catalog verification passed: mode=${manifest.dataMode}, items=${manifest.itemCount}, real=${realProducts}, simulated=${simulatedProducts}`);
+if(manifest.dataMode==='real')assert.ok(homeDeals.length>=1,'real production catalog needs homepage daily-offer candidates');
+for(const product of homeDeals){
+  assert.ok(seen.has(product.id),`homepage candidate missing from catalog ${product.id}`);
+  assert.ok(Array.isArray(product.offers)&&product.offers.length>=1,`homepage candidate needs at least one offer ${product.id}`);
+  if(manifest.dataMode==='real'){
+    assert.equal(product.testData,false,`homepage candidate must be real ${product.id}`);
+    assert.notEqual(product.inStock,false,`homepage candidate must be in stock ${product.id}`);
+    assert.ok(String(product.image||'').trim(),`homepage candidate needs image ${product.id}`);
+    assert.ok(product.offers.every(offer=>offer.simulated===false),`homepage candidate cannot use simulated offers ${product.id}`);
+  }
+}
+console.log(`catalog verification passed: mode=${manifest.dataMode}, items=${manifest.itemCount}, real=${realProducts}, simulated=${simulatedProducts}, homepageCandidates=${homeDeals.length}`);

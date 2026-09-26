@@ -1,0 +1,85 @@
+name: Daily offer safety
+
+on:
+  push:
+    branches: [dev/deal-of-day-v1]
+    paths:
+      - 'deal-of-day.js'
+      - 'home-deal.js'
+      - 'home-i18n.js'
+      - 'index.html'
+      - 'home.css'
+      - 'catalog-loader.js'
+      - 'build-live-catalog.js'
+      - 'build-production-catalog.js'
+      - 'verify-live-catalog-v2.js'
+      - 'verify-deal-of-day.js'
+      - 'verify-production-deal.js'
+      - 'home-deal-e2e.spec.js'
+      - '.github/workflows/deal-of-day.yml'
+      - '.github/workflows/production-pages.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deal-of-day.js'
+      - 'home-deal.js'
+      - 'home-i18n.js'
+      - 'index.html'
+      - 'home.css'
+      - 'catalog-loader.js'
+      - 'build-live-catalog.js'
+      - 'build-production-catalog.js'
+      - 'verify-live-catalog-v2.js'
+      - 'verify-deal-of-day.js'
+      - 'verify-production-deal.js'
+      - 'home-deal-e2e.spec.js'
+      - '.github/workflows/deal-of-day.yml'
+      - '.github/workflows/production-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check deal-of-day.js
+          node --check home-deal.js
+          node --check home-i18n.js
+          node --check verify-deal-of-day.js
+          node --check verify-production-deal.js
+          node --check home-deal-e2e.spec.js
+      - name: Deal engine contract
+        run: node verify-deal-of-day.js
+      - name: Build and validate real production catalog
+        run: |
+          node build-production-catalog.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          node verify-production-merchants.js build/catalog
+          node verify-production-categories.js build/catalog
+          node verify-production-deal.js build/catalog
+          rm -rf catalog
+          cp -R build/catalog catalog
+      - name: Install Playwright
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 >/tmp/fundblick-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-http.log
+          exit 1
+      - name: Homepage daily offer browser regression
+        run: npx playwright test home-deal-e2e.spec.js --reporter=line --workers=1
