@@ -59,6 +59,12 @@ jobs:
           grep -q 'search.html?category=pet.equestrian' index.html
           grep -q 'search.html?category=pet.dog' index.html
           grep -q 'search.html?category=health.supplements' index.html
+          grep -q 'href="/themen/wohnen/"' index.html
+          grep -q 'href="/themen/moebel/"' index.html
+          grep -q 'href="/themen/beleuchtung/"' index.html
+          grep -q 'href="/themen/dekoration/"' index.html
+          grep -q 'href="/themen/pferd-reitsport/"' index.html
+          grep -q 'href="/themen/pferde-ergaenzungsfutter/"' index.html
           grep -q 'home-i18n.js' index.html
           grep -q 'catalog-loader.js' index.html
           grep -q 'deal-of-day.js' index.html
