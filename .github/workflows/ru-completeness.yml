@@ -1,0 +1,30 @@
+name: Russian completeness
+on:
+  push:
+    branches: [dev/ru-completeness]
+    paths:
+      - '*.html'
+      - '*i18n.js'
+      - 'language-links.js'
+      - 'search.js'
+      - 'live-catalog-ui.js'
+      - 'facet-schemas.js'
+      - 'common-facet-defs.js'
+      - 'facet-value-i18n.js'
+      - 'common-filter-i18n.js'
+      - 'category-display-i18n.js'
+      - 'verify-ru-completeness.js'
+      - 'verify-product-copy-i18n.js'
+      - '.github/workflows/ru-completeness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Russian localization wiring
+        run: node verify-ru-completeness.js
+      - name: Product-copy localization regression
+        run: node verify-product-copy-i18n.js
