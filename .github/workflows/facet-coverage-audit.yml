@@ -1,0 +1,30 @@
+name: Facet coverage audit
+on:
+  push:
+    branches: [dev/facet-engine-hardening]
+    paths:
+      - 'home-facet-classifier.js'
+      - 'audit-home-facet-coverage.js'
+      - '.github/workflows/facet-coverage-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Classifier regression
+        run: node verify-home-facets.js
+      - name: Locate production-like catalog
+        id: catalog
+        shell: bash
+        run: |
+          set -euo pipefail
+          for d in build/catalog catalog catalog-live public/catalog; do
+            if [ -f "$d/manifest.json" ]; then echo "dir=$d" >> "$GITHUB_OUTPUT"; exit 0; fi
+          done
+          echo 'No catalog manifest found in checkout.' >&2
+          exit 1
+      - name: Coverage audit
+        run: node audit-home-facet-coverage.js "${{ steps.catalog.outputs.dir }}"
