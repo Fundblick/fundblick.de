@@ -6,6 +6,8 @@ on:
     paths:
       - 'search.js'
       - 'facet-schemas.js'
+      - 'common-facet-defs.js'
+      - 'common-filter-i18n.js'
       - 'search-facet-engine-v2.js'
       - 'facet-orchestration-e2e.spec.js'
       - 'production-catalog-sources.json'
@@ -16,6 +18,8 @@ on:
     paths:
       - 'search.js'
       - 'facet-schemas.js'
+      - 'common-facet-defs.js'
+      - 'common-filter-i18n.js'
       - 'search-facet-engine-v2.js'
       - 'facet-orchestration-e2e.spec.js'
       - 'production-catalog-sources.json'
@@ -39,6 +43,8 @@ jobs:
         run: |
           node --check search.js
           node --check facet-schemas.js
+          node --check common-facet-defs.js
+          node --check common-filter-i18n.js
           node --check search-facet-engine-v2.js
           node --check facet-orchestration-e2e.spec.js
       - name: Build real multi-merchant production catalog
