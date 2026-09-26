@@ -29,7 +29,7 @@ for(const forbidden of ['history.pushState','history.replaceState','location.hre
 const privacyHtml=read('datenschutz.html');
 const privacy=read('datenschutz-i18n.js');
 if(!privacyHtml.includes('datenschutz-i18n.js')){console.error('datenschutz.html: missing RU V2 privacy translator');failed=true;}
-const blocks=[...privacyHtml.matchAll(/data-privacy-i18n="(\\d+)"/g)].map(match=>Number(match[1]));
+const blocks=[...privacyHtml.matchAll(/data-privacy-i18n="(\d+)"/g)].map(match=>Number(match[1]));
 if(blocks.length!==69||blocks.some((id,index)=>id!==index+1)){console.error('datenschutz.html: privacy block mapping incomplete');failed=true;}
 for(let id=1;id<=69;id++)if(id!==60&&!privacy.includes('"'+id+'":')){console.error('datenschutz-i18n.js: missing block '+id);failed=true;}
 for(const text of ['Политика конфиденциальности','Голосовой ввод','Срок хранения','Awin','ADCELL','Главная'])if(!privacy.includes(text)){console.error('datenschutz-i18n.js: missing '+text);failed=true;}
