@@ -32,10 +32,19 @@
     }).filter(Boolean);
   }
 
+  function amazonRefinementState(){
+    const raw=window.FundBlickAmazonRefinementState||{};
+    return {
+      searchIndex:cleanText(raw.searchIndex,64),
+      browseNodeId:cleanText(raw.browseNodeId,64),
+      brand:cleanText(raw.brand,100)
+    };
+  }
+
   function emitAmazonRefinements(route,data){
     if(route.upstreamProvider!=='amazon-creators-api')return;
     const refinements=sanitizeRefinements(data?.refinements);
-    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-refinements',{detail:{provider:'amazon-creators-api',marketplace:String(data?.marketplace||'www.amazon.de'),refinements}}))}catch{}
+    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-refinements',{detail:{provider:'amazon-creators-api',marketplace:String(data?.marketplace||'www.amazon.de'),refinements,active:amazonRefinementState()}}))}catch{}
   }
 
   function registerRoute(route){
@@ -62,6 +71,12 @@
         url.searchParams.set('q',String(query||'').trim());
         const maxLimit=Math.min(Math.max(Number(route.maxLimit||24),1),24);
         url.searchParams.set('limit',String(Math.min(Math.max(Number(context.limit||maxLimit),1),maxLimit)));
+        if(isAmazon){
+          const refinement=amazonRefinementState();
+          if(refinement.searchIndex)url.searchParams.set('searchIndex',refinement.searchIndex);
+          if(refinement.browseNodeId)url.searchParams.set('browseNodeId',refinement.browseNodeId);
+          if(refinement.brand)url.searchParams.set('brand',refinement.brand);
+        }
         const response=await fetch(url,{method:'GET',headers:{accept:'application/json'},cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
         if(!response.ok)throw new Error(`${route.upstreamProvider} relay ${response.status}`);
         const data=await response.json();
@@ -73,7 +88,7 @@
     });
   }
 
-  window.FundBlickExternalRelay={sanitizeRefinements};
+  window.FundBlickExternalRelay={sanitizeRefinements,amazonRefinementState};
   routes.forEach(registerRoute);
   api.evaluate?.();
 })();
