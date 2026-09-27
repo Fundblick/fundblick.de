@@ -9,6 +9,8 @@
   const amazonMock=params.get('externalAmazonRelayMock')==='1';
   const ebayMock=params.get('externalEbayRelayMock')==='1';
   const legacyMock=params.get('externalRelayMock')==='1';
+  const amazonCache={signature:'',items:[]};
+  window.FundBlickAmazonPaginationState=window.FundBlickAmazonPaginationState||{page:1,total:0,loaded:0,canLoadMore:false};
 
   function safeEndpoint(value,isMock){
     try{
@@ -51,18 +53,40 @@
     };
   }
 
+  function amazonPage(){
+    const value=Number(window.FundBlickAmazonPaginationState?.page||1);
+    return Number.isInteger(value)&&value>=1&&value<=10?value:1;
+  }
+
+  function resetAmazonPagination(){
+    amazonCache.signature='';amazonCache.items=[];
+    window.FundBlickAmazonPaginationState={page:1,total:0,loaded:0,canLoadMore:false};
+  }
+
+  function dedupeAmazon(items){
+    const seen=new Set();
+    return items.filter(item=>{const key=String(item?.id||item?.url||'');if(!key||seen.has(key))return false;seen.add(key);return true});
+  }
+
   function emitAmazonRefinements(route,data,baseQuery){
     if(route.upstreamProvider!=='amazon-creators-api')return;
     const refinements=sanitizeRefinements(data?.refinements);
     try{window.dispatchEvent(new CustomEvent('fundblick:amazon-refinements',{detail:{provider:'amazon-creators-api',marketplace:String(data?.marketplace||'www.amazon.de'),baseQuery:cleanText(baseQuery,160),refinements,active:amazonRefinementState()}}))}catch{}
   }
 
-  function emitAmazonSearchStatus(route,data,baseQuery){
+  function emitAmazonSearchStatus(route,data,baseQuery,loadedCount){
     if(route.upstreamProvider!=='amazon-creators-api')return;
     const active=amazonRefinementState();
     const hasActive=Object.values(active).some(Boolean);
-    const itemCount=Array.isArray(data?.items)?data.items.length:0;
-    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-search-status',{detail:{provider:'amazon-creators-api',baseQuery:cleanText(baseQuery,160),itemCount,hasActive,active}}))}catch{}
+    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-search-status',{detail:{provider:'amazon-creators-api',baseQuery:cleanText(baseQuery,160),itemCount:Number(loadedCount||0),hasActive,active}}))}catch{}
+  }
+
+  function emitAmazonPagination(route,data,page,loadedCount){
+    if(route.upstreamProvider!=='amazon-creators-api')return;
+    const total=Math.max(Number(data?.totalResultCount||0),Number(loadedCount||0));
+    const canLoadMore=page<10&&loadedCount<total&&Array.isArray(data?.items)&&data.items.length>0;
+    window.FundBlickAmazonPaginationState={page,total,loaded:loadedCount,canLoadMore};
+    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-pagination',{detail:{page,total,loaded:loadedCount,canLoadMore}}))}catch{}
   }
 
   function registerRoute(route){
@@ -90,8 +114,13 @@
         url.searchParams.set('q',baseQuery);
         const maxLimit=Math.min(Math.max(Number(route.maxLimit||24),1),24);
         url.searchParams.set('limit',String(Math.min(Math.max(Number(context.limit||maxLimit),1),maxLimit)));
+        let page=1,signature='';
         if(isAmazon){
           const refinement=amazonRefinementState();
+          signature=baseQuery+'|'+JSON.stringify(refinement);
+          if(amazonCache.signature!==signature){resetAmazonPagination();amazonCache.signature=signature}
+          page=amazonPage();
+          url.searchParams.set('itemPage',String(page));
           if(refinement.searchIndex)url.searchParams.set('searchIndex',refinement.searchIndex);
           if(refinement.browseNodeId)url.searchParams.set('browseNodeId',refinement.browseNodeId);
           if(refinement.brand)url.searchParams.set('brand',refinement.brand);
@@ -105,14 +134,20 @@
         const data=await response.json();
         if(data?.schemaVersion!==1||!Array.isArray(data?.items))throw new Error(`${route.upstreamProvider} relay schema mismatch`);
         if(data?.provider&&data.provider!==route.upstreamProvider)throw new Error(`${route.upstreamProvider} relay provider mismatch`);
-        emitAmazonRefinements(route,data,baseQuery);
-        emitAmazonSearchStatus(route,data,baseQuery);
+        if(isAmazon){
+          if(page===1)amazonCache.items=[];
+          amazonCache.items=dedupeAmazon([...amazonCache.items,...data.items]);
+          emitAmazonRefinements(route,data,baseQuery);
+          emitAmazonSearchStatus(route,data,baseQuery,amazonCache.items.length);
+          emitAmazonPagination(route,data,page,amazonCache.items.length);
+          return amazonCache.items;
+        }
         return data.items;
       }
     });
   }
 
-  window.FundBlickExternalRelay={sanitizeRefinements,amazonRefinementState};
+  window.FundBlickExternalRelay={sanitizeRefinements,amazonRefinementState,resetAmazonPagination};
   routes.forEach(registerRoute);
   api.evaluate?.();
 })();
