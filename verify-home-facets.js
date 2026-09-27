@@ -25,14 +25,22 @@ const cases=[
  [{name:'Marokkanischer Eisen-Wandhaken',category:'home.lighting',googleProductCategory:'Lighting'},'lighting',{type:'Haken / Hakenleiste',material:'Metall'}],
  [{name:'Holz Wandverkleidung White Washed Coral',category:'home.living',googleProductCategory:'Furniture'},'living',{type:'Wanddekoration',material:'Holz'}],
  [{name:'Marokko-Mosaikbrunnen Asfor Blau',category:'home.decor',googleProductCategory:'Home Decor'},'decor',{type:'Brunnen'}],
- [{name:'Boho Samtkissen Santa - Beige',category:'home.decor'},'decor',{type:'Kissen / Sitzkissen'}],
+ [{name:'Boho Samtkissen Santa - Beige',category:'home.decor'},'decor',{type:'Kissen / Sitzkissen',material:'Textil'}],
  [{name:'Indischer Holz Paravent Ramez',category:'home.living'},'living',{type:'Paravent / Raumteiler',material:'Holz'}],
  [{name:'Schreibtisch Organizer mit 6 Fächern – Weiß',category:'home.furniture'},'furniture',{type:'Organizer / Stiftehalter'}],
- [{name:'Stiftehalter 3 Fächern – Teakholz',category:'home.living'},'living',{type:'Organizer / Stiftehalter'}],
+ [{name:'Stiftehalter 3 Fächern – Teakholz',category:'home.living'},'living',{type:'Organizer / Stiftehalter',material:'Holz'}],
  [{name:'Eckwäschekorb Viona M',category:'home.decor'},'decor',{type:'Korb / Aufbewahrung'}],
  [{name:'Waschtisch Aufsatzbecken',category:'home.furniture'},'furniture',{type:'Waschbecken'}],
  [{name:'Holz Klappstuhl Eliano 2er-Set',category:'home.furniture'},'furniture',{type:'Stuhl',material:'Holz'}],
- [{name:'Orientalische Fernsehkommode Harim',category:'home.furniture'},'furniture',{type:'Kommode / Schrank',style:'Orientalisch'}]
+ [{name:'Orientalische Fernsehkommode Harim',category:'home.furniture'},'furniture',{type:'Kommode / Schrank',style:'Orientalisch'}],
+ [{name:'Messinglampe Salwa L',category:'home.lighting'},'lighting',{type:'Hänge- / Pendelleuchte',material:'Messing'}],
+ [{name:'Silberlampe Marana',category:'home.lighting'},'lighting',{type:'Hänge- / Pendelleuchte',material:'Silber / Metalloptik'}],
+ [{name:'Rattankorb Nila Natur',category:'home.decor'},'decor',{material:'Rattan'}],
+ [{name:'Baumwollkissen Kera',category:'home.decor'},'decor',{material:'Textil'}],
+ [{name:'Bambuskorb Natur',category:'home.living'},'living',{material:'Naturfaser'}],
+ [{name:'Glaswindlicht Nael Transparent',category:'home.decor'},'decor',{material:'Glas'}],
+ [{name:'Holzschale Amal',category:'home.decor'},'decor',{material:'Holz'}],
+ [{name:'Marmorwaschbecken Atlas',category:'home.living'},'living',{material:'Stein'}]
 ];
 for(const [p,f,expected] of cases){const got=classify(p,f);for(const [k,v] of Object.entries(expected)){const values=Array.isArray(got[k])?got[k]:[got[k]];assert(values.includes(v),`${p.name}: expected ${k}=${v}, got ${JSON.stringify(got[k])}`)}}
 assert.equal(inferFamily({name:'Pouf Hocker - Leder',category:'home.living'},'living'),'furniture');
