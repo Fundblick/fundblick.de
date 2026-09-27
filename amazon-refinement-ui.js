@@ -5,14 +5,8 @@
   if(!host||!api)return;
 
   const t=window.FundBlickExternalI18n||{};
-  const labels={
-    de:{title:'Amazon-Suche verfeinern',reset:'Amazon-Filter zurücksetzen'},
-    en:{title:'Refine Amazon search',reset:'Reset Amazon filters'},
-    ru:{title:'Уточнить поиск Amazon',reset:'Сбросить фильтры Amazon'}
-  };
-  const params=new URLSearchParams(location.search);
-  const rawLang=params.get('lang')||document.documentElement.lang||'de';
-  const copy=labels[rawLang]||labels[rawLang.split('-')[0]]||labels.en;
+  const title=`Amazon · ${String(t.filters||'Refine search')}`;
+  const resetLabel=String(t.reset||'Reset filters');
   let refinements=[];
   window.FundBlickAmazonRefinementState=window.FundBlickAmazonRefinementState||{searchIndex:'',browseNodeId:'',brand:''};
 
@@ -30,7 +24,7 @@
     if(!supported.length){host.hidden=true;host.innerHTML='';return}
     const active=state();
     host.hidden=false;
-    host.innerHTML=`<div class="amazon-refinement-head"><strong>${esc(copy.title)}</strong><button type="button" id="amazon-refinement-reset">${esc(copy.reset||t.reset||'Reset')}</button></div><div class="amazon-refinement-groups">${supported.map(group=>`<fieldset class="amazon-refinement-group"><legend>${esc(group.displayName)}</legend><div class="amazon-refinement-options">${group.bins.slice(0,12).map(bin=>`<button type="button" class="amazon-refinement-chip${active[group.key]===bin.id?' is-active':''}" data-amazon-refinement-key="${esc(group.key)}" data-amazon-refinement-value="${esc(bin.id)}">${esc(bin.displayName)}</button>`).join('')}</div></fieldset>`).join('')}</div>`;
+    host.innerHTML=`<div class="amazon-refinement-head"><strong>${esc(title)}</strong><button type="button" id="amazon-refinement-reset">${esc(resetLabel)}</button></div><div class="amazon-refinement-groups">${supported.map(group=>`<fieldset class="amazon-refinement-group"><legend>${esc(group.displayName)}</legend><div class="amazon-refinement-options">${group.bins.slice(0,12).map(bin=>`<button type="button" class="amazon-refinement-chip${active[group.key]===bin.id?' is-active':''}" data-amazon-refinement-key="${esc(group.key)}" data-amazon-refinement-value="${esc(bin.id)}">${esc(bin.displayName)}</button>`).join('')}</div></fieldset>`).join('')}</div>`;
     bind();
   }
 
