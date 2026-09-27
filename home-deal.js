@@ -20,6 +20,8 @@
   const localeMap={de:'de-DE',en:'en-GB',ru:'ru-RU',tr:'tr-TR',ar:'ar',pl:'pl-PL',ro:'ro-RO',uk:'uk-UA',it:'it-IT',fr:'fr-FR',es:'es-ES',pt:'pt-PT'};
   const money=value=>new Intl.NumberFormat(localeMap[lang()]||'en-GB',{style:'currency',currency:'EUR'}).format(Number(value));
   const searchUrl=query=>'search.html?'+new URLSearchParams({q:query,lang:lang()}).toString();
+  const safeHttpUrl=value=>{if(!value)return null;try{const url=new URL(String(value),location.href);return /^https?:$/.test(url.protocol)?url.href:null;}catch{return null;}};
+  const merchantUrl=deal=>safeHttpUrl(deal?.best?.directUrl)||safeHttpUrl(deal?.directUrl)||null;
   let products=[];
   function render(){
     const content=document.querySelector('#deal-content'),empty=document.querySelector('#deal-empty');
@@ -41,7 +43,11 @@
     else{reference.textContent='';discount.textContent='';saving.textContent='';evidence.textContent=text.current;}
     document.querySelector('#dealMerchant').textContent=deal.merchant||'—';
     document.querySelector('#dealMerchantLabel').textContent=text.merchant;
-    const cta=document.querySelector('#dealCta');cta.href=searchUrl(deal.name);cta.querySelector('span').textContent=text.offer;
+    const cta=document.querySelector('#dealCta'),direct=merchantUrl(deal);
+    cta.href=direct||searchUrl(deal.name);
+    if(direct){cta.target='_blank';cta.rel='noopener noreferrer';cta.dataset.directMerchant='true';}
+    else{cta.removeAttribute('target');cta.removeAttribute('rel');delete cta.dataset.directMerchant;}
+    cta.querySelector('span').textContent=text.offer;
   }
   document.querySelector('#language')?.addEventListener('change',()=>queueMicrotask(render));
   if(root.FundBlickCatalog?.load)root.FundBlickCatalog.load().then(list=>{products=Array.isArray(list)?list:[];render();}).catch(()=>{products=[];render();});
