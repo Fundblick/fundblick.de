@@ -41,10 +41,10 @@
     };
   }
 
-  function emitAmazonRefinements(route,data){
+  function emitAmazonRefinements(route,data,baseQuery){
     if(route.upstreamProvider!=='amazon-creators-api')return;
     const refinements=sanitizeRefinements(data?.refinements);
-    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-refinements',{detail:{provider:'amazon-creators-api',marketplace:String(data?.marketplace||'www.amazon.de'),refinements,active:amazonRefinementState()}}))}catch{}
+    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-refinements',{detail:{provider:'amazon-creators-api',marketplace:String(data?.marketplace||'www.amazon.de'),baseQuery:cleanText(baseQuery,160),refinements,active:amazonRefinementState()}}))}catch{}
   }
 
   function registerRoute(route){
@@ -67,8 +67,9 @@
       tier:Number(route.tier)||100,
       timeoutMs:Number(route.timeoutMs)||2200,
       async search(query,context={}){
+        const baseQuery=cleanText(query,160);
         const url=new URL(base+'/search');
-        url.searchParams.set('q',String(query||'').trim());
+        url.searchParams.set('q',baseQuery);
         const maxLimit=Math.min(Math.max(Number(route.maxLimit||24),1),24);
         url.searchParams.set('limit',String(Math.min(Math.max(Number(context.limit||maxLimit),1),maxLimit)));
         if(isAmazon){
@@ -82,7 +83,7 @@
         const data=await response.json();
         if(data?.schemaVersion!==1||!Array.isArray(data?.items))throw new Error(`${route.upstreamProvider} relay schema mismatch`);
         if(data?.provider&&data.provider!==route.upstreamProvider)throw new Error(`${route.upstreamProvider} relay provider mismatch`);
-        emitAmazonRefinements(route,data);
+        emitAmazonRefinements(route,data,baseQuery);
         return data.items;
       }
     });
