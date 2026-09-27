@@ -47,23 +47,39 @@
     try{
       const raw=await withTimeout(Promise.resolve().then(()=>provider.search(q,context)),provider.timeoutMs||providerTimeoutMs);
       const items=(Array.isArray(raw)?raw:[]).map(x=>normalize(x,provider)).filter(Boolean);
-      emit('external-provider',{provider:provider.id,status:'success',itemCount:items.length,durationMs:Math.round(performance.now()-started)});
+      emit('external-provider',{provider:provider.id,status:'success',itemCount:items.length,durationMs:Math.round(performance.now()-started),tier:Number(provider.tier)||100});
       return items;
     }catch(error){
       const timeout=String(error?.message||'')==='provider-timeout';
       console.warn('FundBlick external provider failed:',provider.id,timeout?'timeout':error);
-      emit('external-provider',{provider:provider.id,status:timeout?'timeout':'error',itemCount:0,durationMs:Math.round(performance.now()-started)});
+      emit('external-provider',{provider:provider.id,status:timeout?'timeout':'error',itemCount:0,durationMs:Math.round(performance.now()-started),tier:Number(provider.tier)||100});
       return [];
     }
   }
 
-  function enabledProviders(){return providers.filter(p=>p&&p.enabled!==false&&typeof p.search==='function')}
+  function providerTier(provider){
+    const tier=Number(provider?.tier);
+    return Number.isFinite(tier)&&tier>0?tier:100;
+  }
+
+  function enabledProviders(){return providers.filter(p=>p&&p.enabled!==false&&typeof p.search==='function').sort((a,b)=>providerTier(a)-providerTier(b))}
+
+  function dedupe(items){
+    const seen=new Set();
+    return items.filter(item=>{const key=item.url+'|'+item.title.toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
+  }
 
   async function search(q,context={}){
     const enabled=enabledProviders();
-    const groups=await Promise.all(enabled.map(p=>runProvider(p,q,context)));
-    const seen=new Set();
-    return groups.flat().filter(item=>{const key=item.url+'|'+item.title.toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
+    const tiers=[...new Set(enabled.map(providerTier))].sort((a,b)=>a-b);
+    for(const tier of tiers){
+      const group=enabled.filter(provider=>providerTier(provider)===tier);
+      const groups=await Promise.all(group.map(p=>runProvider(p,q,{...context,tier})));
+      const items=dedupe(groups.flat());
+      emit('external-tier',{tier,providerCount:group.length,itemCount:items.length});
+      if(items.length)return items;
+    }
+    return [];
   }
 
   function registerProvider(provider){
@@ -145,7 +161,7 @@
   window.FundBlickExternalSearch={registerProvider,search,threshold,providerTimeoutMs,evaluate};
 
   // DEV-only mock: explicit URL parameter required. Never active by default.
-  if(params.get('externalMock')==='1')registerProvider({id:'mock-web',async search(q){
+  if(params.get('externalMock')==='1')registerProvider({id:'mock-web',tier:10,async search(q){
     if(!/akkuschrauber/i.test(q))return [];
     return [
       {id:'mock-1',title:'18 V Akku-Bohrschrauber – Beispieltreffer',brand:'Beispielmarke',merchant:'Externer Testhändler',price:99.99,currency:'EUR',shipping:'Versandinformationen aus externer Quelle',url:'https://example.com/a',attributes:{Spannung:'18 V',Ausführung:'mit Akku'}},
