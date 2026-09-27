@@ -83,6 +83,8 @@ assert(refinementUi.includes('Price:LowToHigh')&&refinementUi.includes('Price:Hi
 assert(refinementUi.includes('amazon-min-rating'),'Amazon minimum rating control missing');
 assert(refinementUi.includes('amazon-advanced-apply'),'Amazon advanced apply control missing');
 assert(refinementUi.includes('amazon-refinement-empty'),'Amazon zero-result refinement notice missing');
+assert(refinementUi.includes('normalizePriceRange'),'Amazon price range normalization missing');
+assert(refinementUi.includes('Number(min)>Number(max)'),'Amazon reversed price range swap guard missing');
 assert(refinementUi.includes('history.pushState'),'Amazon refinement browser-history support missing');
 assert(refinementUi.includes("addEventListener('popstate'"),'Amazon refinement browser-history restoration missing');
 assert(css.includes('.amazon-refinement-chip'),'Amazon refinement chip styling missing');
