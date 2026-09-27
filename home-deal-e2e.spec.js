@@ -3,7 +3,7 @@ const {test,expect}=require('@playwright/test');
 
 const base='http://127.0.0.1:4173/';
 
-test('homepage renders a real daily offer and sends CTA directly to the merchant',async({page})=>{
+test('homepage renders a real daily offer and sends CTA through affiliate link when available',async({page})=>{
   const errors=[];
   page.on('pageerror',error=>errors.push(String(error)));
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
@@ -16,12 +16,30 @@ test('homepage renders a real daily offer and sends CTA directly to the merchant
   await expect(page.locator('#dealMerchant')).not.toHaveText('');
   await expect(page.locator('#dealImage')).toHaveAttribute('src',/^https?:\/\//);
 
+  const expected=await page.evaluate(async()=>{
+    const products=await window.FundBlickCatalog.load();
+    const deal=window.FundBlickDealOfDay.selectDaily(products);
+    const affiliate=deal?.best?.affiliateUrl||deal?.affiliateUrl||'';
+    const direct=deal?.best?.directUrl||deal?.directUrl||'';
+    return {affiliate,direct};
+  });
+  expect(expected.affiliate||expected.direct).toBeTruthy();
+
   const cta=page.locator('#dealCta');
-  await expect(cta).toHaveAttribute('data-direct-merchant','true');
+  await expect(cta).toHaveAttribute('data-outbound-merchant','true');
   await expect(cta).toHaveAttribute('href',/^https?:\/\//);
   await expect(cta).not.toHaveAttribute('href',/search\.html/);
   await expect(cta).toHaveAttribute('target','_blank');
   await expect(cta).toHaveAttribute('rel',/noopener/);
+
+  if(expected.affiliate){
+    await expect(cta).toHaveAttribute('data-outbound-mode','affiliate');
+    await expect(cta).toHaveAttribute('href',expected.affiliate);
+    await expect(cta).toHaveAttribute('rel',/sponsored/);
+  }else{
+    await expect(cta).toHaveAttribute('data-outbound-mode','direct');
+    await expect(cta).toHaveAttribute('href',expected.direct);
+  }
 
   const kind=await content.getAttribute('data-deal-kind');
   expect(['deal','spotlight']).toContain(kind);
