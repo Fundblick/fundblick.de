@@ -8,7 +8,7 @@
   if(!root||!cards||!query)return;
 
   const t=window.FundBlickExternalI18n||{eyebrow:'MORE OFFERS ON THE WEB',title:'More offers on the web',none:'FundBlick currently has no matching partner offers of its own.',few:n=>`FundBlick currently has only ${n} matching results of its own.`,note:'The following results come from an external source and are not FundBlick partner offers.',external:'External offer',view:'View externally',filters:'Filter external results',brand:'Brand',price:'Price',from:'From',to:'To',apply:'Apply',reset:'Reset external filters',merchant:'Merchant',results:n=>`${n} external results`};
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]||c));
   const locale=document.documentElement.lang||'de-DE';
   const money=(n,currency='EUR')=>new Intl.NumberFormat(locale,{style:'currency',currency}).format(Number(n));
   const providers=[];
@@ -99,9 +99,11 @@
     renderBody();
   }
 
+  function realMerchantCount(){return cards.querySelectorAll('.product[data-real-merchant="true"]').length}
+
   async function evaluate(){
     const q=query.value.trim();
-    const ownCount=cards.querySelectorAll('.product').length;
+    const ownCount=realMerchantCount();
     if(!q||ownCount>=threshold){render([],ownCount);return}
     const current=++runId;
     const items=await search(q,{ownCount,threshold,language:params.get('lang')||document.documentElement.lang||'de',market:'DE'});
