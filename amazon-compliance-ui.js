@@ -23,10 +23,11 @@
       box.id=DISCLOSURE_ID;
       box.className='amazon-disclosure';
       box.setAttribute('aria-label','Hinweise zu Amazon-Angeboten');
+      box.innerHTML=`<strong>Amazon-Hinweis</strong><p>${ASSOCIATE_NOTICE}</p><p>${CONTENT_NOTICE}</p><p>${PRICE_NOTICE}</p>`;
+      box.dataset.amazonDisclosureReady='1';
       const heading=root.querySelector('.external-results-heading');
       (heading?.parentNode||root).insertBefore(box,heading?.nextSibling||root.firstChild);
     }
-    box.innerHTML=`<strong>Amazon-Hinweis</strong><p>${ASSOCIATE_NOTICE}</p><p>${CONTENT_NOTICE}</p><p>${PRICE_NOTICE}</p>`;
   }
 
   function decorate(){
@@ -45,8 +46,14 @@
     }
   }
 
-  const observer=new MutationObserver(decorate);
+  let scheduled=false;
+  const scheduleDecorate=()=>{
+    if(scheduled)return;
+    scheduled=true;
+    queueMicrotask(()=>{scheduled=false;decorate()});
+  };
+  const observer=new MutationObserver(scheduleDecorate);
   observer.observe(root,{childList:true,subtree:true});
-  window.addEventListener('fundblick:external-search',()=>queueMicrotask(decorate));
+  window.addEventListener('fundblick:external-search',scheduleDecorate);
   decorate();
 })();
