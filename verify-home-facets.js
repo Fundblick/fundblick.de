@@ -37,7 +37,10 @@ const cases=[
  [{name:'Silberlampe Marana',category:'home.lighting'},'lighting',{type:'Hänge- / Pendelleuchte',material:'Silber / Metalloptik'}],
  [{name:'Rattankorb Nila Natur',category:'home.decor'},'decor',{material:'Rattan'}],
  [{name:'Baumwollkissen Kera',category:'home.decor'},'decor',{material:'Textil'}],
- [{name:'Bambuskorb Natur',category:'home.living'},'living',{material:'Naturfaser'}]
+ [{name:'Bambuskorb Natur',category:'home.living'},'living',{material:'Naturfaser'}],
+ [{name:'Glaswindlicht Nael Transparent',category:'home.decor'},'decor',{material:'Glas'}],
+ [{name:'Holzschale Amal',category:'home.decor'},'decor',{material:'Holz'}],
+ [{name:'Marmorwaschbecken Atlas',category:'home.living'},'living',{material:'Stein'}]
 ];
 for(const [p,f,expected] of cases){const got=classify(p,f);for(const [k,v] of Object.entries(expected)){const values=Array.isArray(got[k])?got[k]:[got[k]];assert(values.includes(v),`${p.name}: expected ${k}=${v}, got ${JSON.stringify(got[k])}`)}}
 assert.equal(inferFamily({name:'Pouf Hocker - Leder',category:'home.living'},'living'),'furniture');
