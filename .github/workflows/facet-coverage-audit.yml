@@ -1,7 +1,7 @@
 name: Facet coverage audit
 on:
   push:
-    branches: [dev/facet-engine-hardening, dev/facet-quality-pass-2, dev/taxonomy-foundation, dev/casa-moro-facet-coverage-v1]
+    branches: [dev/facet-engine-hardening, dev/facet-quality-pass-2, dev/taxonomy-foundation, dev/casa-moro-facet-coverage-v1, dev/casa-moro-material-coverage-v1]
     paths:
       - 'home-facet-classifier.js'
       - 'taxonomy-registry.js'
