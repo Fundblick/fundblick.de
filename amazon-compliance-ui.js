@@ -7,6 +7,7 @@
   const PRICE_NOTICE='Der angegebene Amazon-Preis kann seit der letzten Aktualisierung gestiegen sein. Maßgeblich ist der Preis auf Amazon.de zum Zeitpunkt des Kaufs.';
   const CONTENT_NOTICE='Bestimmte auf dieser Website angezeigte Inhalte stammen von Amazon. Diese Inhalte werden in der vorliegenden Form bereitgestellt und können jederzeit geändert oder entfernt werden.';
   const ASSOCIATE_NOTICE='Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.';
+  const LINK_NOTICE='(bezahlter Link)';
 
   function formatTime(date){
     try{return new Intl.DateTimeFormat('de-DE',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Berlin',timeZoneName:'short'}).format(date)}
@@ -38,10 +39,23 @@
       if(card.dataset.amazonCompliance==='1')continue;
       const price=card.querySelector('.price');
       if(!price)continue;
-      const note=document.createElement('small');
-      note.className='amazon-price-notice';
-      note.textContent=`Amazon-Preis: Stand ${formatTime(now)}. ${PRICE_NOTICE}`;
-      price.appendChild(note);
+
+      const cta=price.querySelector('.external-cta');
+      if(cta&&!price.querySelector('.amazon-link-disclosure')){
+        const disclosure=document.createElement('small');
+        disclosure.className='amazon-link-disclosure';
+        disclosure.textContent=LINK_NOTICE;
+        cta.insertAdjacentElement('afterend',disclosure);
+        cta.setAttribute('aria-describedby',(cta.getAttribute('aria-describedby')||'').split(/\s+/).filter(Boolean).concat('amazon-link-disclosure-'+card.dataset.provider+'-'+Math.random().toString(36).slice(2,8)).join(' '));
+        disclosure.id=cta.getAttribute('aria-describedby').split(/\s+/).filter(Boolean).slice(-1)[0];
+      }
+
+      if(!price.querySelector('.amazon-price-notice')){
+        const note=document.createElement('small');
+        note.className='amazon-price-notice';
+        note.textContent=`Amazon-Preis: Stand ${formatTime(now)}. ${PRICE_NOTICE}`;
+        price.appendChild(note);
+      }
       card.dataset.amazonCompliance='1';
     }
   }
