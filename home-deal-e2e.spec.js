@@ -3,7 +3,7 @@ const {test,expect}=require('@playwright/test');
 
 const base='http://127.0.0.1:4173/';
 
-test('homepage renders a real daily offer without invented discount evidence',async({page})=>{
+test('homepage renders a real daily offer and sends CTA directly to the merchant',async({page})=>{
   const errors=[];
   page.on('pageerror',error=>errors.push(String(error)));
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
@@ -15,7 +15,13 @@ test('homepage renders a real daily offer without invented discount evidence',as
   await expect(page.locator('#dealPrice')).toContainText('€');
   await expect(page.locator('#dealMerchant')).not.toHaveText('');
   await expect(page.locator('#dealImage')).toHaveAttribute('src',/^https?:\/\//);
-  await expect(page.locator('#dealCta')).toHaveAttribute('href',/search\.html\?/);
+
+  const cta=page.locator('#dealCta');
+  await expect(cta).toHaveAttribute('data-direct-merchant','true');
+  await expect(cta).toHaveAttribute('href',/^https?:\/\//);
+  await expect(cta).not.toHaveAttribute('href',/search\.html/);
+  await expect(cta).toHaveAttribute('target','_blank');
+  await expect(cta).toHaveAttribute('rel',/noopener/);
 
   const kind=await content.getAttribute('data-deal-kind');
   expect(['deal','spotlight']).toContain(kind);
@@ -31,9 +37,11 @@ test('homepage renders a real daily offer without invented discount evidence',as
   }
 
   const sourceName=await page.locator('#dealName').textContent();
+  const destination=await cta.getAttribute('href');
   await page.locator('#language').selectOption('ru');
   await expect(page.locator('#dealCta span').first()).toHaveText('Посмотреть предложение');
-  await expect(page.locator('#dealCta')).toHaveAttribute('href',/search\.html\?.*lang=ru/);
+  await expect(cta).toHaveAttribute('href',destination||'');
   await expect(page.locator('#dealName')).toHaveText(sourceName||'');
+  await expect(page.locator('.home-value')).toHaveCount(0);
   expect(errors).toEqual([]);
 });
