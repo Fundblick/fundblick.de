@@ -11,6 +11,8 @@ for(const pair of [
   ["Beistelltisch:'side_table'","side_table:'Приставной столик'"],
   ["Bank:'bench'","bench:'Скамья'"],
   ["'Sessel / Sofa':'armchair_sofa'","armchair_sofa:'Кресло / диван'"],
+  ["'Paravent / Raumteiler':'room_divider'","room_divider:'Ширма / перегородка'"],
+  ["'Organizer / Stiftehalter':'organizer_pen_holder'","organizer_pen_holder:'Органайзер / подставка для ручек'"],
   ["Holz:'wood'","wood:'Дерево'"],
   ["Metall:'metal'","metal:'Металл'"],
   ["Textil:'textile'","textile:'Текстиль'"],
