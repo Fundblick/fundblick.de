@@ -13,9 +13,12 @@ on:
       - 'development/external-query-pack-fixture.json'
       - 'external-relay-config.js'
       - 'external-relay-provider.js'
+      - 'amazon-compliance-ui.js'
       - 'external-search.css'
       - 'external-search-e2e.spec.js'
+      - 'amazon-compliance-e2e.spec.js'
       - 'verify-external-search-fallback.js'
+      - 'verify-amazon-compliance-ui.js'
       - '.github/workflows/external-search-fallback.yml'
 
 permissions:
@@ -36,8 +39,11 @@ jobs:
           node --check external-query-pack-provider.js
           node --check external-relay-config.js
           node --check external-relay-provider.js
+          node --check amazon-compliance-ui.js
           node --check external-search-e2e.spec.js
+          node --check amazon-compliance-e2e.spec.js
           node verify-external-search-fallback.js
+          node verify-amazon-compliance-ui.js
 
   browser-e2e:
     runs-on: ubuntu-latest
@@ -60,4 +66,4 @@ jobs:
           cat /tmp/fundblick-external-http.log
           exit 1
       - name: External fallback browser regression
-        run: npx playwright test external-search-e2e.spec.js --reporter=line --workers=1
+        run: npx playwright test external-search-e2e.spec.js amazon-compliance-e2e.spec.js --reporter=line --workers=1
