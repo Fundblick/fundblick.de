@@ -2,7 +2,7 @@
 const {test,expect}=require('@playwright/test');
 const base='http://127.0.0.1:4173/search.html';
 
-test('Amazon refinement chip starts a second-stage relay search',async({page})=>{
+async function mockBrandRelay(page){
   const requests=[];
   await page.route('http://127.0.0.1:4173/__mock_amazon_relay__/search**',async route=>{
     const url=new URL(route.request().url());
@@ -15,15 +15,15 @@ test('Amazon refinement chip starts a second-stage relay search',async({page})=>
         {id:'amazon-makita',title:'Makita Akku-Bohrschrauber',brand:'Makita',merchant:'Amazon',image:'',price:109.9,currency:'EUR',shipping:'',url:'https://example.com/amazon-makita',attributes:{Brand:'Makita'}}
       ];
     await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
-      schemaVersion:1,
-      provider:'amazon-creators-api',
-      marketplace:'www.amazon.de',
-      itemCount:items.length,
-      refinements:[{type:'other',id:'Brand',displayName:'Marke',bins:[{id:'Bosch',displayName:'Bosch'},{id:'Makita',displayName:'Makita'}]}],
-      items
+      schemaVersion:1,provider:'amazon-creators-api',marketplace:'www.amazon.de',itemCount:items.length,
+      refinements:[{type:'other',id:'Brand',displayName:'Marke',bins:[{id:'Bosch',displayName:'Bosch'},{id:'Makita',displayName:'Makita'}]}],items
     })});
   });
+  return requests;
+}
 
+test('Amazon refinement chip starts a second-stage relay search',async({page})=>{
+  const requests=await mockBrandRelay(page);
   await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1',{waitUntil:'networkidle'});
   await expect(page.locator('#external-results')).toBeVisible({timeout:10000});
   await expect(page.locator('#amazon-refinements')).toBeVisible();
@@ -101,6 +101,24 @@ test('Amazon refinement URL state survives reload and is used by first refined r
     const requestUrl=new URL(value);
     return requestUrl.searchParams.get('searchIndex')==='Tools'&&requestUrl.searchParams.get('browseNodeId')==='12345'&&requestUrl.searchParams.get('brand')==='Bosch';
   })).toBeTruthy();
+});
+
+test('browser back restores previous Amazon refinement state',async({page})=>{
+  await mockBrandRelay(page);
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1',{waitUntil:'networkidle'});
+  const bosch=page.locator('[data-amazon-refinement-key="brand"][data-amazon-refinement-value="Bosch"]');
+  await expect(bosch).toBeVisible({timeout:10000});
+  await bosch.click();
+  await expect(page.locator('#external-results .external-product')).toHaveCount(1,{timeout:10000});
+  expect(new URL(page.url()).searchParams.get('amazonBrand')).toBe('Bosch');
+  await page.locator('#amazon-refinement-reset').click();
+  await expect(page.locator('#external-results .external-product')).toHaveCount(2,{timeout:10000});
+  expect(new URL(page.url()).searchParams.get('amazonBrand')).toBeNull();
+
+  await page.goBack({waitUntil:'domcontentloaded'});
+  await expect.poll(async()=>new URL(page.url()).searchParams.get('amazonBrand')).toBe('Bosch');
+  await expect.poll(async()=>page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState().brand)).toBe('Bosch');
+  await expect(page.locator('#external-results .external-product')).toHaveCount(1,{timeout:10000});
 });
 
 test('changing the base query clears stale Amazon refinement state',async({page})=>{
