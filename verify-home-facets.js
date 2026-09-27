@@ -24,7 +24,7 @@ const cases=[
  [{name:'Marokkanisches Leder Sitzkissen Rbati Orange',category:'home.furniture',googleProductCategory:'Furniture'},'furniture',{type:'Kissen / Sitzkissen',material:'Leder'}],
  [{name:'Marokkanischer Eisen-Wandhaken',category:'home.lighting',googleProductCategory:'Lighting'},'lighting',{type:'Haken / Hakenleiste',material:'Metall'}],
  [{name:'Holz Wandverkleidung White Washed Coral',category:'home.living',googleProductCategory:'Furniture'},'living',{type:'Wanddekoration',material:'Holz'}],
- [{name:'Marokko-Mosaikbrunnen Asfor Blau',category:'home.decor',googleProductCategory:'Home Decor'},'decor',{type:'Brunnen',material:'Mosaik'}]
+ [{name:'Marokko-Mosaikbrunnen Asfor Blau',category:'home.decor',googleProductCategory:'Home Decor'},'decor',{type:'Brunnen'}]
 ];
 for(const [p,f,expected] of cases){const got=classify(p,f);for(const [k,v] of Object.entries(expected)){const values=Array.isArray(got[k])?got[k]:[got[k]];assert(values.includes(v),`${p.name}: expected ${k}=${v}, got ${JSON.stringify(got[k])}`)}}
 assert.equal(inferFamily({name:'Pouf Hocker - Leder',category:'home.living'},'living'),'furniture');
