@@ -26,6 +26,7 @@ assert(i18n.includes('copy[rawLang]||copy[rawLang.split(\'-\')[0]]||copy.en'),'e
 assert(js.includes('rel="noopener noreferrer nofollow"'),'external link safety attributes missing');
 assert(js.includes("params.get('externalMock')==='1'"),'dev mock must require explicit URL flag');
 assert(packProvider.includes("params.get('externalPack')!=='1'"),'query-pack provider must require explicit development flag');
+assert(packProvider.includes("tier:10"),'query-pack provider must be a structured tier provider');
 assert(packProvider.includes('publishable!==false'),'query-pack provider must reject publishable packs');
 assert(packProvider.includes('schemaVersion!==1'),'query-pack provider schema gate missing');
 assert(pack.schemaVersion===1,'query-pack fixture schema mismatch');
@@ -35,6 +36,9 @@ assert(Array.isArray(pack.items)&&pack.items.length>0,'query-pack fixture items 
 assert(js.includes('const threshold=6'),'fallback threshold changed unexpectedly');
 assert(js.includes('providerTimeoutMs=2500'),'provider timeout guard missing');
 assert(js.includes('withTimeout'),'provider timeout implementation missing');
+assert(js.includes('providerTier'),'provider tier resolver missing');
+assert(js.includes("emit('external-tier'"),'provider tier telemetry hook missing');
+assert(js.includes('if(items.length)return items'),'provider tier short-circuit missing');
 assert(js.includes("emit('external-provider'"),'provider telemetry hook missing');
 assert(js.includes("emit('external-search'"),'search telemetry hook missing');
 assert(!/external-search'[^\n]*query\s*:/i.test(js),'raw query must not be emitted in search telemetry');
@@ -53,5 +57,6 @@ assert(e2e.includes('query-pack provider feeds the same external UI contract'),'
 assert(e2e.includes('not fetched without explicit development flag'),'query-pack opt-in E2E missing');
 assert(e2e.includes('provider errors and timeouts fail open'),'provider fail-open E2E missing');
 assert(e2e.includes('telemetry contains no raw query'),'privacy telemetry E2E missing');
+assert(e2e.includes('provider tiers stop after the first tier'),'provider tier E2E missing');
 
 console.log('external-search-fallback safety checks: OK');
