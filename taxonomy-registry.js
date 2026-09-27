@@ -4,10 +4,10 @@
     version:2,
     principle:'canonical-product-type-plus-facets',
     families:{
-      furniture:{label:'Möbel',types:['Hocker','Mosaiktisch','Beistelltisch','Bistrotisch','Couchtisch','Esstisch / Gartentisch','Stuhl','Bank','Sessel / Sofa','Kommode / Schrank','Regal']},
+      furniture:{label:'Möbel',types:['Hocker','Mosaiktisch','Beistelltisch','Bistrotisch','Couchtisch','Esstisch / Gartentisch','Stuhl','Bank','Sessel / Sofa','Kommode / Schrank','Regal','Paravent / Raumteiler']},
       lighting:{label:'Beleuchtung',types:['Hänge- / Pendelleuchte','Wandlampe','Deckenleuchte','Steh- / Tischlampe','Laterne','Windlicht','Teelichthalter','Lampenfassung / Anschluss']},
       decor:{label:'Dekoration',types:['Vase / Blumentopf','Figur','Spiegel','Kissen / Sitzkissen','Schale / Tablett','Wanddekoration','Haken / Hakenleiste','Korb','Teppich','Fliese','Kerze / Kerzenhalter','Dose / Box / Schmuckkasten']},
-      living:{label:'Wohnen / Haushalt',types:['Blumentopf / Pflanzgefäß','Korb / Aufbewahrung','Waschbecken','Brunnen','Teppich','Badaccessoire','Küchenaccessoire','Textilie','Wohnaccessoire']},
+      living:{label:'Wohnen / Haushalt',types:['Blumentopf / Pflanzgefäß','Korb / Aufbewahrung','Waschbecken','Brunnen','Teppich','Badaccessoire','Küchenaccessoire','Textilie','Wohnaccessoire','Organizer / Stiftehalter']},
       equestrian:{label:'Pferd & Reitsport',types:['Ergänzungsfutter','Pferdepflege','Bundle']}
     },
     facets:{
