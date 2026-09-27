@@ -31,6 +31,8 @@ test('Amazon relay results show required FundBlick Amazon disclosure and price t
   await expect(page.locator('#amazon-associate-disclosure')).toBeVisible();
   await expect(page.locator('#amazon-associate-disclosure')).toContainText('Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.');
   await expect(page.locator('#amazon-associate-disclosure')).toContainText('kann seit der letzten Aktualisierung gestiegen sein');
+  await expect(amazon.locator('.amazon-link-disclosure')).toHaveText('(bezahlter Link)');
+  await expect(amazon.locator('.external-cta')).toHaveAttribute('aria-describedby',/amazon-link-disclosure-/);
   await expect(amazon.locator('.amazon-price-notice')).toContainText('Amazon-Preis: Stand');
   await expect(amazon.locator('.amazon-price-notice')).toContainText('Maßgeblich ist der Preis auf Amazon.de zum Zeitpunkt des Kaufs.');
 });
