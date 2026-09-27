@@ -7,22 +7,31 @@ const js=fs.readFileSync('external-search.js','utf8');
 const i18n=fs.readFileSync('external-search-i18n.js','utf8');
 const css=fs.readFileSync('external-search.css','utf8');
 const packProvider=fs.readFileSync('external-query-pack-provider.js','utf8');
+const webConfig=fs.readFileSync('external-web-fallback-config.js','utf8');
+const webI18n=fs.readFileSync('external-web-fallback-i18n.js','utf8');
+const googlePse=fs.readFileSync('external-google-pse.js','utf8');
 const pack=JSON.parse(fs.readFileSync('development/external-query-pack-fixture.json','utf8'));
 const e2e=fs.readFileSync('external-search-e2e.spec.js','utf8');
 
 assert(html.includes('id="external-results"'),'external results container missing');
+assert(html.includes('id="external-web-fallback"'),'web fallback container missing');
 assert(html.includes('external-search-i18n.js'),'external search i18n script missing');
 assert(html.indexOf('external-search-i18n.js')<html.indexOf('external-search.js'),'external i18n must load before external search');
 assert(html.indexOf('external-search.js')<html.indexOf('external-query-pack-provider.js'),'query-pack provider must load after external search API');
+assert(html.indexOf('external-web-fallback-config.js')<html.indexOf('external-google-pse.js'),'web fallback config must load before Google renderer');
+assert(html.indexOf('external-web-fallback-i18n.js')<html.indexOf('external-google-pse.js'),'web fallback i18n must load before Google renderer');
 assert(html.includes('external-search.css'),'external search stylesheet missing');
 assert(js.includes("sourceType:'external'"),'external source type marker missing');
 assert(i18n.includes("external:'Externes Angebot'"),'German external result disclosure missing');
 assert(i18n.includes("external:'Внешнее предложение'"),'Russian external result disclosure missing');
 for(const key of ['de','tr','ru','ar','pl','ro','uk','en','it','bg','hr','el','sr','es','fr','pt','fa','sq','ku']){
   assert(i18n.includes(`    ${key}:{`),`external i18n missing ${key}`);
+  assert(webI18n.includes(`    ${key}:{`),`web fallback i18n missing ${key}`);
 }
 assert(i18n.includes("    'zh-Hans':{"),'external i18n missing zh-Hans');
+assert(webI18n.includes("    'zh-Hans':{"),'web fallback i18n missing zh-Hans');
 assert(i18n.includes('copy[rawLang]||copy[rawLang.split(\'-\')[0]]||copy.en'),'exact locale resolution missing');
+assert(webI18n.includes("copy[raw]||copy[raw.split('-')[0]]||copy.en"),'web fallback exact locale resolution missing');
 assert(js.includes('rel="noopener noreferrer nofollow"'),'external link safety attributes missing');
 assert(js.includes("params.get('externalMock')==='1'"),'dev mock must require explicit URL flag');
 assert(packProvider.includes("params.get('externalPack')!=='1'"),'query-pack provider must require explicit development flag');
@@ -46,9 +55,19 @@ assert(js.includes('queryLength:q.length'),'privacy-safe query length metric mis
 assert(js.includes('safeUrl'),'external URLs must pass protocol validation');
 assert(js.includes('data-external-facet'),'external facet wiring missing');
 assert(js.includes('runId'),'stale async result guard missing');
-assert(!/api[_-]?key\s*[:=]\s*['"][^'"]+/i.test(js+i18n+packProvider),'possible API key embedded in frontend');
+assert(webConfig.includes('enabled:false'),'web fallback must be disabled by default');
+assert(webConfig.includes("provider:'google-programmable-search-element'"),'Google PSE provider config missing');
+assert(webConfig.includes('tier:90'),'web fallback must remain last-resort tier 90');
+assert(webConfig.includes("cx:''"),'live Google engine id must not be configured in development');
+assert(googlePse.includes("params.get('externalGoogleMock')==='1'"),'Google PSE dev activation flag missing');
+assert(googlePse.includes("d.externalCount>0"),'Google PSE must stay off when structured results exist');
+assert(googlePse.includes("https://cse.google.com/cse.js?cx="),'Google PSE loader missing');
+assert(googlePse.includes("tag:'searchresults-only'"),'Google PSE must render results-only mode');
+assert(googlePse.includes('may contain ads'),'Google PSE advertising disclosure fallback missing');
+assert(!/api[_-]?key\s*[:=]\s*['"][^'"]+/i.test(js+i18n+packProvider+webConfig+webI18n+googlePse),'possible API key embedded in frontend');
 assert(css.includes('.external-product'),'external card styling missing');
 assert(css.includes('.external-filter-panel'),'external filter styling missing');
+assert(css.includes('.external-web-fallback'),'web fallback styling missing');
 assert(e2e.includes('zero own results triggers external fallback'),'zero-result E2E missing');
 assert(e2e.includes('six own results suppress external fallback'),'threshold E2E missing');
 assert(e2e.includes('Russian fallback copy is localized'),'localization E2E missing');
@@ -58,5 +77,8 @@ assert(e2e.includes('not fetched without explicit development flag'),'query-pack
 assert(e2e.includes('provider errors and timeouts fail open'),'provider fail-open E2E missing');
 assert(e2e.includes('telemetry contains no raw query'),'privacy telemetry E2E missing');
 assert(e2e.includes('provider tiers stop after the first tier'),'provider tier E2E missing');
+assert(e2e.includes('Google PSE is not requested without explicit dev activation'),'Google PSE opt-in E2E missing');
+assert(e2e.includes('Google PSE renders only after structured fallback has no results'),'Google PSE last-resort E2E missing');
+assert(e2e.includes('Google PSE stays off when structured tier returns products'),'Google PSE structured short-circuit E2E missing');
 
 console.log('external-search-fallback safety checks: OK');
