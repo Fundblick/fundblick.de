@@ -36,7 +36,7 @@
   };
   const cleanRating=value=>{
     const n=Number(value);
-    return Number.isFinite(n)&&n>=1&&n<=5?String(Math.round(n*10)/10):'';
+    return Number.isInteger(n)&&n>=1&&n<=4?String(n):'';
   };
   const cleanSort=value=>SORT_ALLOWED.has(String(value||''))?String(value):'';
   const normalizePriceRange=(minPrice,maxPrice)=>{
@@ -116,7 +116,7 @@
     const relevance=sortText('relevance')||'Relevance';
     const priceAsc=sortText('price-asc')||'Price: low to high';
     const priceDesc=sortText('price-desc')||'Price: high to low';
-    return `<fieldset class="amazon-refinement-advanced"><legend>${esc(priceLabel)} · ★ · ${esc(sortLabel)}</legend><div class="amazon-refinement-advanced-grid"><label>${esc(fromLabel)}<input id="amazon-min-price" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(active.minPrice)}"></label><label>${esc(toLabel)}<input id="amazon-max-price" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(active.maxPrice)}"></label><label>★<select id="amazon-min-rating"><option value="">–</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${active.minRating===String(n)?'selected':''}>${n}+ ★</option>`).join('')}</select></label><label>${esc(sortLabel)}<select id="amazon-sort"><option value="">${esc(relevance)}</option><option value="Price:LowToHigh" ${active.sortBy==='Price:LowToHigh'?'selected':''}>${esc(priceAsc)}</option><option value="Price:HighToLow" ${active.sortBy==='Price:HighToLow'?'selected':''}>${esc(priceDesc)}</option></select></label><button type="button" id="amazon-advanced-apply">${esc(applyLabel)}</button></div></fieldset>`;
+    return `<fieldset class="amazon-refinement-advanced"><legend>${esc(priceLabel)} · ★ · ${esc(sortLabel)}</legend><div class="amazon-refinement-advanced-grid"><label>${esc(fromLabel)}<input id="amazon-min-price" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(active.minPrice)}"></label><label>${esc(toLabel)}<input id="amazon-max-price" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(active.maxPrice)}"></label><label>★<select id="amazon-min-rating"><option value="">–</option>${[1,2,3,4].map(n=>`<option value="${n}" ${active.minRating===String(n)?'selected':''}>${n}+ ★</option>`).join('')}</select></label><label>${esc(sortLabel)}<select id="amazon-sort"><option value="">${esc(relevance)}</option><option value="Price:LowToHigh" ${active.sortBy==='Price:LowToHigh'?'selected':''}>${esc(priceAsc)}</option><option value="Price:HighToLow" ${active.sortBy==='Price:HighToLow'?'selected':''}>${esc(priceDesc)}</option></select></label><button type="button" id="amazon-advanced-apply">${esc(applyLabel)}</button></div></fieldset>`;
   }
 
   function paginationControls(){
