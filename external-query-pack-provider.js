@@ -20,6 +20,7 @@
   let cache=null;
   api.registerProvider({
     id:'development-query-pack',
+    tier:10,
     async search(query){
       cache=cache||await loadPack();
       if(String(cache.query||'').trim().toLocaleLowerCase()!==String(query||'').trim().toLocaleLowerCase())return [];
