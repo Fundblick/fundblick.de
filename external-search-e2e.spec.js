@@ -159,3 +159,35 @@ test('provider tiers stop after the first tier with usable results',async({page}
   await expect(page.locator('#external-results .external-product')).toHaveCount(1);
   await expect(page.locator('#external-results .external-product')).toHaveAttribute('data-provider','structured-tier');
 });
+
+test('Google PSE is not requested without explicit dev activation',async({page})=>{
+  const requested=[];page.on('request',request=>requested.push(request.url()));
+  await page.goto(base+'?q='+encodeURIComponent('WebFallbackTest')+'&lang=de',{waitUntil:'networkidle'});
+  await waitSearch(page);
+  await page.waitForTimeout(400);
+  expect(requested.some(url=>url.startsWith('https://cse.google.com/cse.js'))).toBeFalsy();
+  await expect(page.locator('#external-web-fallback')).toBeHidden();
+});
+
+test('Google PSE renders only after structured fallback has no results',async({page})=>{
+  await page.route('https://cse.google.com/cse.js**',async route=>{
+    await route.fulfill({status:200,contentType:'application/javascript',body:`window.google={search:{cse:{element:{render:function(cfg){window.__pseRender=cfg;document.getElementById(cfg.div).innerHTML='<div id="pse-test-result">Google test result</div>';},getElement:function(){return {execute:function(q){window.__pseQuery=q;}}}}}}};`});
+  });
+  await page.goto(base+'?q='+encodeURIComponent('WebFallbackTest')+'&lang=de&externalGoogleMock=1',{waitUntil:'networkidle'});
+  await waitSearch(page);
+  await expect(page.locator('#external-results')).toBeHidden();
+  await expect(page.locator('#external-web-fallback')).toBeVisible({timeout:5000});
+  await expect(page.locator('#pse-test-result')).toHaveText('Google test result');
+  const state=await page.evaluate(()=>({render:window.__pseRender,query:window.__pseQuery}));
+  expect(state.render.tag).toBe('searchresults-only');
+  expect(state.query).toBe('WebFallbackTest');
+});
+
+test('Google PSE stays off when structured tier returns products',async({page})=>{
+  const requested=[];page.on('request',request=>requested.push(request.url()));
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalMock=1&externalGoogleMock=1',{waitUntil:'networkidle'});
+  await waitExternal(page);
+  await page.waitForTimeout(400);
+  expect(requested.some(url=>url.startsWith('https://cse.google.com/cse.js'))).toBeFalsy();
+  await expect(page.locator('#external-web-fallback')).toBeHidden();
+});
