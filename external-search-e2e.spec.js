@@ -101,3 +101,39 @@ test('query-pack does not answer a different query',async({page})=>{
   await waitSearch(page);
   await expect(page.locator('#external-results')).toBeHidden({timeout:5000});
 });
+
+test('provider errors and timeouts fail open without blocking FundBlick',async({page})=>{
+  const pageErrors=[];page.on('pageerror',e=>pageErrors.push(String(e)));
+  await page.goto(base+'?q='+encodeURIComponent('Fehlergerät')+'&lang=de',{waitUntil:'networkidle'});
+  await waitSearch(page);
+  const telemetry=await page.evaluate(async()=>{
+    const events=[];
+    const handler=e=>events.push(e.detail);
+    window.addEventListener('fundblick:external-provider',handler);
+    window.FundBlickExternalSearch.registerProvider({id:'throwing-provider',async search(){throw new Error('test-provider-error')}});
+    window.FundBlickExternalSearch.registerProvider({id:'hanging-provider',timeoutMs:50,async search(){return new Promise(()=>{})}});
+    await window.FundBlickExternalSearch.evaluate();
+    window.removeEventListener('fundblick:external-provider',handler);
+    return events;
+  });
+  await expect(page.locator('#external-results')).toBeHidden();
+  expect(telemetry.some(e=>e.provider==='throwing-provider'&&e.status==='error')).toBeTruthy();
+  expect(telemetry.some(e=>e.provider==='hanging-provider'&&e.status==='timeout')).toBeTruthy();
+  expect(pageErrors).toEqual([]);
+});
+
+test('external search telemetry contains no raw query',async({page})=>{
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalMock=1',{waitUntil:'networkidle'});
+  await waitExternal(page);
+  const detail=await page.evaluate(async()=>{
+    let last=null;const handler=e=>{last=e.detail};
+    window.addEventListener('fundblick:external-search',handler);
+    await window.FundBlickExternalSearch.evaluate();
+    window.removeEventListener('fundblick:external-search',handler);
+    return last;
+  });
+  expect(detail.used).toBeTruthy();
+  expect(detail.externalCount).toBe(4);
+  expect(detail.queryLength).toBe('Akkuschrauber'.length);
+  expect(Object.prototype.hasOwnProperty.call(detail,'query')).toBeFalsy();
+});
