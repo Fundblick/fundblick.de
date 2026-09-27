@@ -1,0 +1,53 @@
+name: Google indexability safety
+
+on:
+  push:
+    branches: ['dev/**']
+    paths:
+      - 'robots.txt'
+      - 'index.html'
+      - 'search.html'
+      - '404.html'
+      - 'build-seo-landings.js'
+      - 'verify-google-indexability.js'
+      - 'build-production-catalog.js'
+      - 'development/**'
+      - '.github/workflows/google-indexability.yml'
+      - '.github/workflows/production-pages.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'robots.txt'
+      - 'index.html'
+      - 'search.html'
+      - '404.html'
+      - 'build-seo-landings.js'
+      - 'verify-google-indexability.js'
+      - 'build-production-catalog.js'
+      - 'development/**'
+      - '.github/workflows/google-indexability.yml'
+      - '.github/workflows/production-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax checks
+        run: |
+          node --check build-seo-landings.js
+          node --check verify-google-indexability.js
+      - name: Build real production catalog and SEO pages
+        run: |
+          node build-production-catalog.js build/catalog
+          node build-seo-landings.js build/catalog build/seo
+      - name: Verify Google indexability contract
+        run: node verify-google-indexability.js build/seo
