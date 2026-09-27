@@ -21,7 +21,13 @@
   const money=value=>new Intl.NumberFormat(localeMap[lang()]||'en-GB',{style:'currency',currency:'EUR'}).format(Number(value));
   const searchUrl=query=>'search.html?'+new URLSearchParams({q:query,lang:lang()}).toString();
   const safeHttpUrl=value=>{if(!value)return null;try{const url=new URL(String(value),location.href);return /^https?:$/.test(url.protocol)?url.href:null;}catch{return null;}};
-  const merchantUrl=deal=>safeHttpUrl(deal?.best?.directUrl)||safeHttpUrl(deal?.directUrl)||null;
+  const outboundFor=deal=>{
+    const affiliate=safeHttpUrl(deal?.best?.affiliateUrl)||safeHttpUrl(deal?.affiliateUrl)||null;
+    const direct=safeHttpUrl(deal?.best?.directUrl)||safeHttpUrl(deal?.directUrl)||null;
+    if(affiliate)return {url:affiliate,affiliate:true};
+    if(direct)return {url:direct,affiliate:false};
+    return {url:null,affiliate:false};
+  };
   let products=[];
   function render(){
     const content=document.querySelector('#deal-content'),empty=document.querySelector('#deal-empty');
@@ -43,10 +49,16 @@
     else{reference.textContent='';discount.textContent='';saving.textContent='';evidence.textContent=text.current;}
     document.querySelector('#dealMerchant').textContent=deal.merchant||'—';
     document.querySelector('#dealMerchantLabel').textContent=text.merchant;
-    const cta=document.querySelector('#dealCta'),direct=merchantUrl(deal);
-    cta.href=direct||searchUrl(deal.name);
-    if(direct){cta.target='_blank';cta.rel='noopener noreferrer';cta.dataset.directMerchant='true';}
-    else{cta.removeAttribute('target');cta.removeAttribute('rel');delete cta.dataset.directMerchant;}
+    const cta=document.querySelector('#dealCta'),outbound=outboundFor(deal);
+    cta.href=outbound.url||searchUrl(deal.name);
+    if(outbound.url){
+      cta.target='_blank';
+      cta.rel=outbound.affiliate?'sponsored noopener noreferrer':'noopener noreferrer';
+      cta.dataset.outboundMerchant='true';
+      cta.dataset.outboundMode=outbound.affiliate?'affiliate':'direct';
+    }else{
+      cta.removeAttribute('target');cta.removeAttribute('rel');delete cta.dataset.outboundMerchant;delete cta.dataset.outboundMode;
+    }
     cta.querySelector('span').textContent=text.offer;
   }
   document.querySelector('#language')?.addEventListener('change',()=>queueMicrotask(render));
