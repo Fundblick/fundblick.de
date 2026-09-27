@@ -27,7 +27,7 @@ jobs:
           ref: main
       - name: Validate production JavaScript
         run: |
-          for f in app.js i18n.js home-i18n.js deal-of-day.js home-deal.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-seo-landings.js audit-seo-landing-candidates.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-affiliate-routing.js verify-user-flows.js; do node --check "$f"; done
+          for f in app.js i18n.js home-i18n.js deal-of-day.js home-deal.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-seo-landings.js audit-seo-landing-candidates.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-affiliate-routing.js verify-user-flows.js verify-google-indexability.js; do node --check "$f"; done
       - name: Build and validate production catalog
         run: |
           node verify-deal-of-day.js
@@ -41,6 +41,7 @@ jobs:
           node verify-user-flows.js build/catalog
           node audit-seo-landing-candidates.js
           node build-seo-landings.js build/catalog build/seo
+          node verify-google-indexability.js build/seo
           test "$(find build/seo/themen -name index.html | wc -l)" -eq 6
           test -s build/seo/sitemap.xml
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Real production gate OK',m.realCount)"
