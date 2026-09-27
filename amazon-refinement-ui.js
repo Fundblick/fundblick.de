@@ -38,28 +38,36 @@
     return Number.isFinite(n)&&n>=1&&n<=5?String(Math.round(n*10)/10):'';
   };
   const cleanSort=value=>SORT_ALLOWED.has(String(value||''))?String(value):'';
+  const normalizePriceRange=(minPrice,maxPrice)=>{
+    let min=cleanPrice(minPrice),max=cleanPrice(maxPrice);
+    if(min&&max&&Number(min)>Number(max))[min,max]=[max,min];
+    return {minPrice:min,maxPrice:max};
+  };
   const emptyState=()=>({searchIndex:'',browseNodeId:'',brand:'',minPrice:'',maxPrice:'',minRating:'',sortBy:''});
-  const readUrlState=()=>{
-    const params=new URLSearchParams(location.search);
+  const normalizeState=raw=>{
+    const range=normalizePriceRange(raw?.minPrice,raw?.maxPrice);
     return {
-      searchIndex:cleanStateValue(params.get(URL_KEYS.searchIndex),64),
-      browseNodeId:cleanStateValue(params.get(URL_KEYS.browseNodeId),64),
-      brand:cleanStateValue(params.get(URL_KEYS.brand),100),
-      minPrice:cleanPrice(params.get(URL_KEYS.minPrice)),
-      maxPrice:cleanPrice(params.get(URL_KEYS.maxPrice)),
-      minRating:cleanRating(params.get(URL_KEYS.minRating)),
-      sortBy:cleanSort(params.get(URL_KEYS.sortBy))
+      searchIndex:cleanStateValue(raw?.searchIndex,64),
+      browseNodeId:cleanStateValue(raw?.browseNodeId,64),
+      brand:cleanStateValue(raw?.brand,100),
+      minPrice:range.minPrice,
+      maxPrice:range.maxPrice,
+      minRating:cleanRating(raw?.minRating),
+      sortBy:cleanSort(raw?.sortBy)
     };
   };
-  const normalizeState=raw=>({
-    searchIndex:cleanStateValue(raw?.searchIndex,64),
-    browseNodeId:cleanStateValue(raw?.browseNodeId,64),
-    brand:cleanStateValue(raw?.brand,100),
-    minPrice:cleanPrice(raw?.minPrice),
-    maxPrice:cleanPrice(raw?.maxPrice),
-    minRating:cleanRating(raw?.minRating),
-    sortBy:cleanSort(raw?.sortBy)
-  });
+  const readUrlState=()=>{
+    const params=new URLSearchParams(location.search);
+    return normalizeState({
+      searchIndex:params.get(URL_KEYS.searchIndex),
+      browseNodeId:params.get(URL_KEYS.browseNodeId),
+      brand:params.get(URL_KEYS.brand),
+      minPrice:params.get(URL_KEYS.minPrice),
+      maxPrice:params.get(URL_KEYS.maxPrice),
+      minRating:params.get(URL_KEYS.minRating),
+      sortBy:params.get(URL_KEYS.sortBy)
+    });
+  };
 
   window.FundBlickAmazonRefinementState=normalizeState(window.FundBlickAmazonRefinementState||readUrlState());
 
@@ -181,5 +189,5 @@
   });
 
   if(hasActive())syncUrl('replace');
-  window.FundBlickAmazonRefinementUI={render,reset:resetState,getState:()=>({...state()}),readUrlState};
+  window.FundBlickAmazonRefinementUI={render,reset:resetState,getState:()=>({...state()}),readUrlState,normalizePriceRange};
 })();
