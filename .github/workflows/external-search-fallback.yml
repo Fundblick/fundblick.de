@@ -19,6 +19,7 @@ on:
       - 'external-search-e2e.spec.js'
       - 'amazon-refinement-e2e.spec.js'
       - 'amazon-pagination-e2e.spec.js'
+      - 'amazon-rating-e2e.spec.js'
       - 'amazon-compliance-e2e.spec.js'
       - 'verify-external-search-fallback.js'
       - 'verify-amazon-pagination.js'
@@ -48,6 +49,7 @@ jobs:
           node --check external-search-e2e.spec.js
           node --check amazon-refinement-e2e.spec.js
           node --check amazon-pagination-e2e.spec.js
+          node --check amazon-rating-e2e.spec.js
           node --check amazon-compliance-e2e.spec.js
           node --check verify-amazon-pagination.js
           node verify-external-search-fallback.js
@@ -75,4 +77,4 @@ jobs:
           cat /tmp/fundblick-external-http.log
           exit 1
       - name: External fallback browser regression
-        run: npx playwright test external-search-e2e.spec.js amazon-refinement-e2e.spec.js amazon-pagination-e2e.spec.js amazon-compliance-e2e.spec.js --reporter=line --workers=1
+        run: npx playwright test external-search-e2e.spec.js amazon-refinement-e2e.spec.js amazon-pagination-e2e.spec.js amazon-rating-e2e.spec.js amazon-compliance-e2e.spec.js --reporter=line --workers=1
