@@ -18,6 +18,11 @@ assert(html.includes('external-search.css'),'external search stylesheet missing'
 assert(js.includes("sourceType:'external'"),'external source type marker missing');
 assert(i18n.includes("external:'Externes Angebot'"),'German external result disclosure missing');
 assert(i18n.includes("external:'Внешнее предложение'"),'Russian external result disclosure missing');
+for(const key of ['de','tr','ru','ar','pl','ro','uk','en','it','bg','hr','el','sr','es','fr','pt','fa','sq','ku']){
+  assert(i18n.includes(`    ${key}:{`),`external i18n missing ${key}`);
+}
+assert(i18n.includes("    'zh-Hans':{"),'external i18n missing zh-Hans');
+assert(i18n.includes('copy[rawLang]||copy[rawLang.split(\'-\')[0]]||copy.en'),'exact locale resolution missing');
 assert(js.includes('rel="noopener noreferrer nofollow"'),'external link safety attributes missing');
 assert(js.includes("params.get('externalMock')==='1'"),'dev mock must require explicit URL flag');
 assert(packProvider.includes("params.get('externalPack')!=='1'"),'query-pack provider must require explicit development flag');
@@ -43,6 +48,7 @@ assert(css.includes('.external-filter-panel'),'external filter styling missing')
 assert(e2e.includes('zero own results triggers external fallback'),'zero-result E2E missing');
 assert(e2e.includes('six own results suppress external fallback'),'threshold E2E missing');
 assert(e2e.includes('Russian fallback copy is localized'),'localization E2E missing');
+assert(e2e.includes('zh-Hans keeps exact language key'),'zh-Hans locale E2E missing');
 assert(e2e.includes('query-pack provider feeds the same external UI contract'),'query-pack E2E missing');
 assert(e2e.includes('not fetched without explicit development flag'),'query-pack opt-in E2E missing');
 assert(e2e.includes('provider errors and timeouts fail open'),'provider fail-open E2E missing');
