@@ -74,3 +74,21 @@ test('Amazon refinements support category to browse-node to brand chain',async({
   const state=await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState());
   expect(state).toEqual({searchIndex:'Tools',browseNodeId:'12345',brand:'Bosch'});
 });
+
+test('changing the base query clears stale Amazon refinement state',async({page})=>{
+  await page.route('http://127.0.0.1:4173/__mock_amazon_relay__/search**',async route=>{
+    const url=new URL(route.request().url());
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+      schemaVersion:1,provider:'amazon-creators-api',marketplace:'www.amazon.de',itemCount:1,
+      refinements:[{type:'other',id:'Brand',displayName:'Marke',bins:[{id:'Bosch',displayName:'Bosch'}]}],
+      items:[{id:'q-'+url.searchParams.get('q'),title:'Amazon '+url.searchParams.get('q'),brand:'Bosch',merchant:'Amazon',image:'',price:80,currency:'EUR',shipping:'',url:'https://example.com/'+encodeURIComponent(url.searchParams.get('q')),attributes:{Brand:'Bosch'}}]
+    })});
+  });
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1',{waitUntil:'networkidle'});
+  await expect(page.locator('[data-amazon-refinement-key="brand"][data-amazon-refinement-value="Bosch"]')).toBeVisible({timeout:10000});
+  await page.locator('[data-amazon-refinement-key="brand"][data-amazon-refinement-value="Bosch"]').click();
+  expect(await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState().brand)).toBe('Bosch');
+  await page.locator('#query').fill('Bohrhammer');
+  expect(await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState())).toEqual({searchIndex:'',browseNodeId:'',brand:''});
+  await expect(page.locator('#amazon-refinements')).toBeHidden();
+});
