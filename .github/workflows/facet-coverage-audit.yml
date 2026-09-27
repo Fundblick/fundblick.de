@@ -9,6 +9,7 @@ on:
       - 'audit-merchant-onboarding.js'
       - 'audit-home-facet-coverage.js'
       - 'audit-home-facet-gaps.js'
+      - 'audit-material-evidence.js'
       - 'verify-home-facets.js'
       - 'build-live-catalog.js'
       - 'development/core-products.json'
@@ -35,5 +36,7 @@ jobs:
         run: node audit-home-facet-coverage.js build/facet-audit-catalog
       - name: Gap and style-quality audit
         run: node audit-home-facet-gaps.js build/facet-audit-catalog
+      - name: Material evidence audit
+        run: node audit-material-evidence.js build/facet-audit-catalog
       - name: Merchant onboarding reuse baseline
         run: node audit-merchant-onboarding.js build/facet-audit-catalog
