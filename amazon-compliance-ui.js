@@ -13,7 +13,7 @@
     catch{return date.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})}
   }
 
-  function amazonCards(){return [...root.querySelectorAll('.external-product[data-provider="amazon-creators-api"]')]}
+  function amazonCards(){return [...root.querySelectorAll('.external-product[data-provider="amazon-creators-api"],.external-product[data-provider="amazon-creators-api-relay"]')]}
 
   function ensureDisclosure(cards){
     let box=root.querySelector('#'+DISCLOSURE_ID);
