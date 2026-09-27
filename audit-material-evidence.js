@@ -20,3 +20,7 @@ console.log('\nEXPLICIT_EVIDENCE');
 withExplicit.forEach(r=>console.log(JSON.stringify(r)));
 console.log('\nRAW_MATERIAL_UNRECOGNIZED');
 withRaw.filter(r=>!r.hits.length).forEach(r=>console.log(JSON.stringify(r)));
+if(withRaw.length||withExplicit.length){
+  throw new Error(`Missed material evidence: rawMaterial=${withRaw.length}, explicitToken=${withExplicit.length}`);
+}
+console.log('Material evidence gate OK: no explicit material evidence is being dropped.');
