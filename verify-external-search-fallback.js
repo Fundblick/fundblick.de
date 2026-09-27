@@ -28,6 +28,12 @@ assert(pack.publishable===false,'query-pack fixture must never be publishable');
 assert(pack.purpose==='development-provider-validation','query-pack fixture purpose mismatch');
 assert(Array.isArray(pack.items)&&pack.items.length>0,'query-pack fixture items missing');
 assert(js.includes('const threshold=6'),'fallback threshold changed unexpectedly');
+assert(js.includes('providerTimeoutMs=2500'),'provider timeout guard missing');
+assert(js.includes('withTimeout'),'provider timeout implementation missing');
+assert(js.includes("emit('external-provider'"),'provider telemetry hook missing');
+assert(js.includes("emit('external-search'"),'search telemetry hook missing');
+assert(!/external-search'[^\n]*query\s*:/i.test(js),'raw query must not be emitted in search telemetry');
+assert(js.includes('queryLength:q.length'),'privacy-safe query length metric missing');
 assert(js.includes('safeUrl'),'external URLs must pass protocol validation');
 assert(js.includes('data-external-facet'),'external facet wiring missing');
 assert(js.includes('runId'),'stale async result guard missing');
@@ -39,5 +45,7 @@ assert(e2e.includes('six own results suppress external fallback'),'threshold E2E
 assert(e2e.includes('Russian fallback copy is localized'),'localization E2E missing');
 assert(e2e.includes('query-pack provider feeds the same external UI contract'),'query-pack E2E missing');
 assert(e2e.includes('not fetched without explicit development flag'),'query-pack opt-in E2E missing');
+assert(e2e.includes('provider errors and timeouts fail open'),'provider fail-open E2E missing');
+assert(e2e.includes('telemetry contains no raw query'),'privacy telemetry E2E missing');
 
 console.log('external-search-fallback safety checks: OK');
