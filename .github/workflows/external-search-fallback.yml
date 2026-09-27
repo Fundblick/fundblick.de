@@ -11,6 +11,9 @@ on:
       - 'external-search-i18n.js'
       - 'external-query-pack-provider.js'
       - 'development/external-query-pack-fixture.json'
+      - 'external-web-fallback-config.js'
+      - 'external-web-fallback-i18n.js'
+      - 'external-google-pse.js'
       - 'external-search.css'
       - 'external-search-e2e.spec.js'
       - 'verify-external-search-fallback.js'
@@ -32,6 +35,9 @@ jobs:
           node --check external-search.js
           node --check external-search-i18n.js
           node --check external-query-pack-provider.js
+          node --check external-web-fallback-config.js
+          node --check external-web-fallback-i18n.js
+          node --check external-google-pse.js
           node --check external-search-e2e.spec.js
           node verify-external-search-fallback.js
 
