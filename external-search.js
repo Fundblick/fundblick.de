@@ -2,6 +2,7 @@
 (function(){
   const params=new URLSearchParams(location.search);
   const threshold=6;
+  const providerTimeoutMs=2500;
   const root=document.querySelector('#external-results');
   const cards=document.querySelector('#cards');
   const query=document.querySelector('#query');
@@ -14,6 +15,10 @@
   const providers=[];
   const state={items:[],brand:new Set(),attrs:{},min:null,max:null,ownCount:0};
   let timer=null,runId=0;
+
+  const emit=(name,detail)=>{
+    try{window.dispatchEvent(new CustomEvent(`fundblick:${name}`,{detail}))}catch{}
+  };
 
   function safeUrl(value){
     try{const url=new URL(String(value));return /^https?:$/.test(url.protocol)?url.href:''}catch{return ''}
@@ -31,13 +36,31 @@
     return `<article class="product external-product" data-source-type="external" data-provider="${esc(item.provider)}">${item.image?`<img src="${esc(item.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(t.external)}</div>`}<div><p><bdi>${esc(item.brand||item.merchant||item.provider)}</bdi> · ${esc(t.external)}</p><h2 dir="auto">${esc(item.title)}</h2>${item.merchant?`<p>${esc(t.merchant)}: ${esc(item.merchant)}</p>`:''}${item.shipping?`<p>${esc(item.shipping)}</p>`:''}<div class="tags">${tags}</div></div><div class="price">${item.price!==null?`<strong>${money(item.price,item.currency)}</strong>`:''}<a class="external-cta" href="${esc(item.url)}" target="_blank" rel="noopener noreferrer nofollow">${esc(t.view)}</a></div></article>`;
   }
 
-  async function runProvider(provider,q,context){
-    try{const raw=await provider.search(q,context);return (Array.isArray(raw)?raw:[]).map(x=>normalize(x,provider)).filter(Boolean)}
-    catch(error){console.warn('FundBlick external provider failed:',provider.id,error);return []}
+  async function withTimeout(promise,ms){
+    let handle;
+    try{return await Promise.race([promise,new Promise((_,reject)=>{handle=setTimeout(()=>reject(new Error('provider-timeout')),ms)})])}
+    finally{clearTimeout(handle)}
   }
 
+  async function runProvider(provider,q,context){
+    const started=performance.now();
+    try{
+      const raw=await withTimeout(Promise.resolve().then(()=>provider.search(q,context)),provider.timeoutMs||providerTimeoutMs);
+      const items=(Array.isArray(raw)?raw:[]).map(x=>normalize(x,provider)).filter(Boolean);
+      emit('external-provider',{provider:provider.id,status:'success',itemCount:items.length,durationMs:Math.round(performance.now()-started)});
+      return items;
+    }catch(error){
+      const timeout=String(error?.message||'')==='provider-timeout';
+      console.warn('FundBlick external provider failed:',provider.id,timeout?'timeout':error);
+      emit('external-provider',{provider:provider.id,status:timeout?'timeout':'error',itemCount:0,durationMs:Math.round(performance.now()-started)});
+      return [];
+    }
+  }
+
+  function enabledProviders(){return providers.filter(p=>p&&p.enabled!==false&&typeof p.search==='function')}
+
   async function search(q,context={}){
-    const enabled=providers.filter(p=>p&&p.enabled!==false&&typeof p.search==='function');
+    const enabled=enabledProviders();
     const groups=await Promise.all(enabled.map(p=>runProvider(p,q,context)));
     const seen=new Set();
     return groups.flat().filter(item=>{const key=item.url+'|'+item.title.toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
@@ -102,20 +125,24 @@
   function realMerchantCount(){return cards.querySelectorAll('.product[data-real-merchant="true"]').length}
 
   async function evaluate(){
+    const started=performance.now();
     const q=query.value.trim();
     const ownCount=realMerchantCount();
-    if(!q||ownCount>=threshold){render([],ownCount);return}
+    const providerCount=enabledProviders().length;
+    if(!q){render([],ownCount);emit('external-search',{used:false,reason:'empty-query',ownCount,providerCount,externalCount:0,durationMs:0});return}
+    if(ownCount>=threshold){render([],ownCount);emit('external-search',{used:false,reason:'enough-own-results',ownCount,providerCount,externalCount:0,durationMs:0});return}
     const current=++runId;
     const items=await search(q,{ownCount,threshold,language:params.get('lang')||document.documentElement.lang||'de',market:'DE'});
     if(current!==runId)return;
     render(items,ownCount);
+    emit('external-search',{used:true,reason:'below-threshold',ownCount,providerCount,externalCount:items.length,durationMs:Math.round(performance.now()-started),queryLength:q.length});
   }
 
   const observer=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(evaluate,100)});
   observer.observe(cards,{childList:true,subtree:false});
   query.addEventListener('change',()=>{clearTimeout(timer);timer=setTimeout(evaluate,100)});
 
-  window.FundBlickExternalSearch={registerProvider,search,threshold,evaluate};
+  window.FundBlickExternalSearch={registerProvider,search,threshold,providerTimeoutMs,evaluate};
 
   // DEV-only mock: explicit URL parameter required. Never active by default.
   if(params.get('externalMock')==='1')registerProvider({id:'mock-web',async search(q){
