@@ -1,8 +1,22 @@
 'use strict';
 window.FundBlickExternalRelayConfig={
   enabled:false,
-  provider:'cloudflare-workers-free-relay',
-  endpoint:'',
-  tier:10,
-  timeoutMs:2200
+  routes:[
+    {
+      id:'amazon-creators-api-relay',
+      upstreamProvider:'amazon-creators-api',
+      endpoint:'',
+      tier:10,
+      timeoutMs:2200,
+      maxLimit:10
+    },
+    {
+      id:'ebay-browse-relay',
+      upstreamProvider:'ebay-browse',
+      endpoint:'',
+      tier:20,
+      timeoutMs:2200,
+      maxLimit:24
+    }
+  ]
 };
