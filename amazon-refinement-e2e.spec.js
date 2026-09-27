@@ -33,10 +33,12 @@ test('Amazon refinement chip starts a second-stage relay search',async({page})=>
   await expect(page.locator('#external-results .external-product')).toHaveCount(1,{timeout:10000});
   await expect(page.locator('#external-results .external-product')).toContainText('Bosch Akku-Bohrschrauber');
   expect(requests.some(url=>new URL(url).searchParams.get('brand')==='Bosch')).toBeTruthy();
+  expect(new URL(page.url()).searchParams.get('amazonBrand')).toBe('Bosch');
   await expect(bosch).toHaveClass(/is-active/);
 
   await page.locator('#amazon-refinement-reset').click();
   await expect(page.locator('#external-results .external-product')).toHaveCount(2,{timeout:10000});
+  expect(new URL(page.url()).searchParams.get('amazonBrand')).toBeNull();
   expect(requests.filter(url=>!new URL(url).searchParams.get('brand')).length).toBeGreaterThanOrEqual(2);
 });
 
@@ -71,8 +73,34 @@ test('Amazon refinements support category to browse-node to brand chain',async({
 
   const final=requests.map(value=>new URL(value)).find(url=>url.searchParams.get('searchIndex')==='Tools'&&url.searchParams.get('browseNodeId')==='12345'&&url.searchParams.get('brand')==='Bosch');
   expect(final).toBeTruthy();
+  const currentUrl=new URL(page.url());
+  expect(currentUrl.searchParams.get('amazonSearchIndex')).toBe('Tools');
+  expect(currentUrl.searchParams.get('amazonBrowseNode')).toBe('12345');
+  expect(currentUrl.searchParams.get('amazonBrand')).toBe('Bosch');
   const state=await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState());
   expect(state).toEqual({searchIndex:'Tools',browseNodeId:'12345',brand:'Bosch'});
+});
+
+test('Amazon refinement URL state survives reload and is used by first refined request',async({page})=>{
+  const requests=[];
+  await page.route('http://127.0.0.1:4173/__mock_amazon_relay__/search**',async route=>{
+    const url=new URL(route.request().url());
+    requests.push(url.href);
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({
+      schemaVersion:1,provider:'amazon-creators-api',marketplace:'www.amazon.de',itemCount:1,
+      refinements:[{type:'other',id:'Brand',displayName:'Marke',bins:[{id:'Bosch',displayName:'Bosch'}]}],
+      items:[{id:'persist',title:'Persistierter Bosch Treffer',brand:'Bosch',merchant:'Amazon',image:'',price:79,currency:'EUR',shipping:'',url:'https://example.com/persist',attributes:{Brand:'Bosch'}}]
+    })});
+  });
+  const url=base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1&amazonSearchIndex=Tools&amazonBrowseNode=12345&amazonBrand=Bosch';
+  await page.goto(url,{waitUntil:'networkidle'});
+  await expect(page.locator('#external-results .external-product')).toContainText('Persistierter Bosch Treffer',{timeout:10000});
+  const state=await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState());
+  expect(state).toEqual({searchIndex:'Tools',browseNodeId:'12345',brand:'Bosch'});
+  expect(requests.some(value=>{
+    const requestUrl=new URL(value);
+    return requestUrl.searchParams.get('searchIndex')==='Tools'&&requestUrl.searchParams.get('browseNodeId')==='12345'&&requestUrl.searchParams.get('brand')==='Bosch';
+  })).toBeTruthy();
 });
 
 test('changing the base query clears stale Amazon refinement state',async({page})=>{
@@ -90,5 +118,6 @@ test('changing the base query clears stale Amazon refinement state',async({page}
   expect(await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState().brand)).toBe('Bosch');
   await page.locator('#query').fill('Bohrhammer');
   expect(await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState())).toEqual({searchIndex:'',browseNodeId:'',brand:''});
+  expect(new URL(page.url()).searchParams.get('amazonBrand')).toBeNull();
   await expect(page.locator('#amazon-refinements')).toBeHidden();
 });
