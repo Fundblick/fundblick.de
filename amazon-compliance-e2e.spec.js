@@ -26,7 +26,7 @@ test('Amazon relay results show required FundBlick Amazon disclosure and price t
 
   await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1',{waitUntil:'networkidle'});
   await expect(page.locator('#external-results')).toBeVisible({timeout:10000});
-  const amazon=page.locator('.external-product[data-provider="amazon-creators-api"]');
+  const amazon=page.locator('.external-product[data-provider="amazon-creators-api-relay"]');
   await expect(amazon).toHaveCount(1);
   await expect(page.locator('#amazon-associate-disclosure')).toBeVisible();
   await expect(page.locator('#amazon-associate-disclosure')).toContainText('Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.');
