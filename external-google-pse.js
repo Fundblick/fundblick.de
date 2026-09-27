@@ -2,6 +2,7 @@
 (function(){
   const params=new URLSearchParams(location.search);
   const cfg=window.FundBlickExternalWebFallbackConfig||{};
+  const t=window.FundBlickExternalWebI18n||{eyebrow:'WEB SEARCH',title:'More web results',note:'These results are provided by Google and may contain ads.'};
   const containerId='external-web-fallback';
   const root=document.getElementById(containerId);
   const query=document.getElementById('query');
@@ -15,6 +16,8 @@
   let loaded=false;
   let loading=null;
   let rendered=false;
+
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
 
   function hide(){
     root.hidden=true;
@@ -50,7 +53,7 @@
       const api=window.google?.search?.cse?.element;
       if(!api||typeof api.render!=='function')throw new Error('google-pse-api-unavailable');
       root.hidden=false;
-      root.innerHTML='<div class="external-web-fallback-heading"><p class="eyebrow">WEB-SUCHE</p><h2>Weitere Webergebnisse</h2><p>Diese Ergebnisse werden von Google bereitgestellt und können Werbung enthalten.</p></div><div id="external-google-pse-results"></div>';
+      root.innerHTML=`<div class="external-web-fallback-heading"><p class="eyebrow">${esc(t.eyebrow)}</p><h2>${esc(t.title)}</h2><p>${esc(t.note)}</p></div><div id="external-google-pse-results"></div>`;
       api.render({div:'external-google-pse-results',tag:'searchresults-only',gname:'fundblick-web-fallback',attributes:{queryParameterName:'q'}});
       const element=api.getElement?.('fundblick-web-fallback');
       if(element&&typeof element.execute==='function')element.execute(q);
