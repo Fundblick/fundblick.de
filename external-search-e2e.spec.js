@@ -160,6 +160,30 @@ test('provider tiers stop after the first tier with usable results',async({page}
   await expect(page.locator('#external-results .external-product')).toHaveAttribute('data-provider','structured-tier');
 });
 
+test('relay is not requested without explicit development activation',async({page})=>{
+  const requested=[];page.on('request',request=>requested.push(request.url()));
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de',{waitUntil:'networkidle'});
+  await waitSearch(page);await page.waitForTimeout(300);
+  expect(requested.some(url=>url.includes('/__mock_external_relay__/search'))).toBeFalsy();
+});
+
+test('zero-cost relay feeds normalized product cards through the same engine',async({page})=>{
+  await page.route('http://127.0.0.1:4173/__mock_external_relay__/search**',async route=>{
+    const url=new URL(route.request().url());
+    expect(url.searchParams.get('q')).toBe('Akkuschrauber');
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'ebay-browse',marketplace:'EBAY_DE',itemCount:2,items:[
+      {id:'relay-1',title:'Relay Akku-Bohrschrauber 18 V',brand:'RelayMarke',merchant:'eBay Händler',image:'',price:89.9,currency:'EUR',shipping:'Versand 0 EUR',url:'https://example.com/relay-1',attributes:{Spannung:'18 V',Ausführung:'mit Akku'}},
+      {id:'relay-2',title:'Relay Akkuschrauber Solo 18 V',brand:'RelayMarke',merchant:'eBay Händler 2',image:'',price:69.9,currency:'EUR',shipping:'',url:'https://example.com/relay-2',attributes:{Spannung:'18 V',Ausführung:'Solo-Gerät'}}
+    ]})});
+  });
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalRelayMock=1',{waitUntil:'networkidle'});
+  await waitSearch(page);await waitExternal(page);
+  await expect(page.locator('#external-results .external-product')).toHaveCount(2);
+  await expect(page.locator('#external-results .external-product').first()).toContainText('Relay Akku-Bohrschrauber 18 V');
+  await expect(page.locator('#external-results .external-product').first()).toContainText('89,90');
+  await expect(page.locator('#external-results .external-product').first()).toHaveAttribute('data-provider','cloudflare-workers-free-relay');
+});
+
 test('Google PSE is not requested without explicit dev activation',async({page})=>{
   const requested=[];page.on('request',request=>requested.push(request.url()));
   await page.goto(base+'?q='+encodeURIComponent('WebFallbackTest')+'&lang=de',{waitUntil:'networkidle'});
@@ -169,7 +193,7 @@ test('Google PSE is not requested without explicit dev activation',async({page})
   await expect(page.locator('#external-web-fallback')).toBeHidden();
 });
 
-test('Google PSE renders only after structured fallback has no results',async({page})=>{
+test('Google PSE research fixture renders only after structured fallback has no results',async({page})=>{
   await page.route('https://cse.google.com/cse.js**',async route=>{
     await route.fulfill({status:200,contentType:'application/javascript',body:`window.google={search:{cse:{element:{render:function(cfg){window.__pseRender=cfg;document.getElementById(cfg.div).innerHTML='<div id="pse-test-result">Google test result</div>';},getElement:function(){return {execute:function(q){window.__pseQuery=q;}}}}}}};`});
   });
@@ -183,7 +207,7 @@ test('Google PSE renders only after structured fallback has no results',async({p
   expect(state.query).toBe('WebFallbackTest');
 });
 
-test('Google PSE stays off when structured tier returns products',async({page})=>{
+test('Google PSE research fixture stays off when structured tier returns products',async({page})=>{
   const requested=[];page.on('request',request=>requested.push(request.url()));
   await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalMock=1&externalGoogleMock=1',{waitUntil:'networkidle'});
   await waitExternal(page);
