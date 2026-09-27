@@ -8,11 +8,29 @@
   const t=window.FundBlickExternalI18n||{};
   const title=`Amazon · ${String(t.filters||'Refine search')}`;
   const resetLabel=String(t.reset||'Reset filters');
+  const URL_KEYS={searchIndex:'amazonSearchIndex',browseNodeId:'amazonBrowseNode',brand:'amazonBrand'};
   let refinements=[];
-  window.FundBlickAmazonRefinementState=window.FundBlickAmazonRefinementState||{searchIndex:'',browseNodeId:'',brand:''};
 
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
   const clean=s=>String(s||'').replace(/\s+/g,' ').trim().slice(0,160);
+  const cleanStateValue=(value,max)=>clean(value).slice(0,max);
+  const emptyState=()=>({searchIndex:'',browseNodeId:'',brand:''});
+  const readUrlState=()=>{
+    const params=new URLSearchParams(location.search);
+    return {
+      searchIndex:cleanStateValue(params.get(URL_KEYS.searchIndex),64),
+      browseNodeId:cleanStateValue(params.get(URL_KEYS.browseNodeId),64),
+      brand:cleanStateValue(params.get(URL_KEYS.brand),100)
+    };
+  };
+  const normalizeState=raw=>({
+    searchIndex:cleanStateValue(raw?.searchIndex,64),
+    browseNodeId:cleanStateValue(raw?.browseNodeId,64),
+    brand:cleanStateValue(raw?.brand,100)
+  });
+
+  window.FundBlickAmazonRefinementState=normalizeState(window.FundBlickAmazonRefinementState||readUrlState());
+
   const state=()=>window.FundBlickAmazonRefinementState;
   const hasActive=()=>Object.values(state()).some(Boolean);
   const valueKey=refinement=>{
@@ -22,8 +40,25 @@
     return '';
   };
 
-  function resetState({keepUi=false}={}){
-    window.FundBlickAmazonRefinementState={searchIndex:'',browseNodeId:'',brand:''};
+  function syncUrl(mode='replace'){
+    const url=new URL(location.href);
+    const active=state();
+    for(const [key,param] of Object.entries(URL_KEYS)){
+      if(active[key])url.searchParams.set(param,active[key]);
+      else url.searchParams.delete(param);
+    }
+    const next=url.pathname+url.search+url.hash;
+    if(mode==='push')history.pushState({fundblickAmazonRefinement:true},'',next);
+    else history.replaceState(history.state,'',next);
+  }
+
+  function setState(next,{historyMode='replace'}={}){
+    window.FundBlickAmazonRefinementState=normalizeState(next);
+    syncUrl(historyMode);
+  }
+
+  function resetState({keepUi=false,historyMode='replace'}={}){
+    setState(emptyState(),{historyMode});
     if(!keepUi)refinements=[];
     render();
   }
@@ -44,12 +79,12 @@
       const next={...state(),[key]:state()[key]===value?'':value};
       if(key==='searchIndex'){next.browseNodeId='';next.brand=''}
       if(key==='browseNodeId')next.brand='';
-      window.FundBlickAmazonRefinementState=next;
+      setState(next,{historyMode:'push'});
       render();
       await api.evaluate?.();
     }));
     host.querySelector('#amazon-refinement-reset')?.addEventListener('click',async()=>{
-      resetState({keepUi:true});
+      resetState({keepUi:true,historyMode:'push'});
       await api.evaluate?.();
     });
   }
@@ -76,5 +111,13 @@
     if(hasActive()||refinements.length)resetState();
   });
 
-  window.FundBlickAmazonRefinementUI={render,reset:resetState,getState:()=>({...state()})};
+  window.addEventListener('popstate',async()=>{
+    window.FundBlickAmazonRefinementState=readUrlState();
+    refinements=[];
+    render();
+    await api.evaluate?.();
+  });
+
+  if(hasActive())syncUrl('replace');
+  window.FundBlickAmazonRefinementUI={render,reset:resetState,getState:()=>({...state()}),readUrlState};
 })();
