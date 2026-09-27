@@ -8,8 +8,8 @@
   if(!root||!cards||!query)return;
 
   const t=window.FundBlickExternalI18n||{eyebrow:'MORE OFFERS ON THE WEB',title:'More offers on the web',none:'FundBlick currently has no matching partner offers of its own.',few:n=>`FundBlick currently has only ${n} matching results of its own.`,note:'The following results come from an external source and are not FundBlick partner offers.',external:'External offer',view:'View externally',filters:'Filter external results',brand:'Brand',price:'Price',from:'From',to:'To',apply:'Apply',reset:'Reset external filters',merchant:'Merchant',results:n=>`${n} external results`};
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]||c));
-  const locale=document.documentElement.lang||'de-DE';
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
+  const locale=params.get('lang')||document.documentElement.lang||'de-DE';
   const money=(n,currency='EUR')=>new Intl.NumberFormat(locale,{style:'currency',currency}).format(Number(n));
   const providers=[];
   const state={items:[],brand:new Set(),attrs:{},min:null,max:null,ownCount:0};
