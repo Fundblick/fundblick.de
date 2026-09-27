@@ -77,3 +77,27 @@ test('mobile external result and filters stay inside viewport',async({page})=>{
     const box=await el.boundingBox();expect(box).not.toBeNull();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(390);
   }
 });
+
+test('query-pack provider feeds the same external UI contract',async({page})=>{
+  const requested=[];page.on('request',request=>requested.push(request.url()));
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalPack=1',{waitUntil:'networkidle'});
+  await waitSearch(page);await waitExternal(page);
+  await expect(page.locator('#external-results .external-product')).toHaveCount(4);
+  await expect(page.locator('#external-results .external-product').first()).toContainText('Pack-Test');
+  await expect(page.locator('#external-results .external-product').first()).toHaveAttribute('data-provider','development-query-pack');
+  expect(requested.some(url=>url.includes('development/external-query-pack-fixture.json'))).toBeTruthy();
+});
+
+test('query-pack fixture is not fetched without explicit development flag',async({page})=>{
+  const requested=[];page.on('request',request=>requested.push(request.url()));
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de',{waitUntil:'networkidle'});
+  await waitSearch(page);
+  await expect(page.locator('#external-results')).toBeHidden();
+  expect(requested.some(url=>url.includes('development/external-query-pack-fixture.json'))).toBeFalsy();
+});
+
+test('query-pack does not answer a different query',async({page})=>{
+  await page.goto(base+'?q='+encodeURIComponent('Bohrhammer')+'&lang=de&externalPack=1',{waitUntil:'networkidle'});
+  await waitSearch(page);
+  await expect(page.locator('#external-results')).toBeHidden({timeout:5000});
+});
