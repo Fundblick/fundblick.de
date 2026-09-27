@@ -39,3 +39,38 @@ test('Amazon refinement chip starts a second-stage relay search',async({page})=>
   await expect(page.locator('#external-results .external-product')).toHaveCount(2,{timeout:10000});
   expect(requests.filter(url=>!new URL(url).searchParams.get('brand')).length).toBeGreaterThanOrEqual(2);
 });
+
+test('Amazon refinements support category to browse-node to brand chain',async({page})=>{
+  const requests=[];
+  await page.route('http://127.0.0.1:4173/__mock_amazon_relay__/search**',async route=>{
+    const url=new URL(route.request().url());
+    requests.push(url.href);
+    const searchIndex=url.searchParams.get('searchIndex')||'';
+    const browseNodeId=url.searchParams.get('browseNodeId')||'';
+    const brand=url.searchParams.get('brand')||'';
+    let refinements;
+    if(!searchIndex){
+      refinements=[{type:'searchIndex',id:'SearchIndex',displayName:'Kategorie',bins:[{id:'Tools',displayName:'Werkzeuge'}]}];
+    }else if(!browseNodeId){
+      refinements=[{type:'browseNode',id:'BrowseNode',displayName:'Unterkategorie',bins:[{id:'12345',displayName:'Akkuschrauber'}]}];
+    }else{
+      refinements=[{type:'other',id:'Brand',displayName:'Marke',bins:[{id:'Bosch',displayName:'Bosch'},{id:'Makita',displayName:'Makita'}]}];
+    }
+    const items=[{id:'chain-'+(brand||browseNodeId||searchIndex||'all'),title:`Amazon Treffer ${brand||browseNodeId||searchIndex||'Alle'}`,brand:brand||'Test',merchant:'Amazon',image:'',price:99,currency:'EUR',shipping:'',url:'https://example.com/chain-'+encodeURIComponent(brand||browseNodeId||searchIndex||'all'),attributes:{}}];
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'amazon-creators-api',marketplace:'www.amazon.de',itemCount:1,refinements,items})});
+  });
+
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1',{waitUntil:'networkidle'});
+  await expect(page.locator('[data-amazon-refinement-key="searchIndex"][data-amazon-refinement-value="Tools"]')).toBeVisible({timeout:10000});
+  await page.locator('[data-amazon-refinement-key="searchIndex"][data-amazon-refinement-value="Tools"]').click();
+  await expect(page.locator('[data-amazon-refinement-key="browseNodeId"][data-amazon-refinement-value="12345"]')).toBeVisible({timeout:10000});
+  await page.locator('[data-amazon-refinement-key="browseNodeId"][data-amazon-refinement-value="12345"]').click();
+  await expect(page.locator('[data-amazon-refinement-key="brand"][data-amazon-refinement-value="Bosch"]')).toBeVisible({timeout:10000});
+  await page.locator('[data-amazon-refinement-key="brand"][data-amazon-refinement-value="Bosch"]').click();
+  await expect(page.locator('#external-results .external-product')).toContainText('Amazon Treffer Bosch');
+
+  const final=requests.map(value=>new URL(value)).find(url=>url.searchParams.get('searchIndex')==='Tools'&&url.searchParams.get('browseNodeId')==='12345'&&url.searchParams.get('brand')==='Bosch');
+  expect(final).toBeTruthy();
+  const state=await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState());
+  expect(state).toEqual({searchIndex:'Tools',browseNodeId:'12345',brand:'Bosch'});
+});
