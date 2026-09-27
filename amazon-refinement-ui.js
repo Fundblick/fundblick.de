@@ -23,6 +23,7 @@
   const SORT_ALLOWED=new Set(Object.values(SORT_MAP));
   let refinements=[];
   let amazonEmpty=false;
+  let pagination={...(window.FundBlickAmazonPaginationState||{page:1,total:0,loaded:0,canLoadMore:false})};
 
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
   const clean=s=>String(s||'').replace(/\s+/g,' ').trim().slice(0,160);
@@ -80,6 +81,12 @@
     return '';
   };
 
+  function resetPagination(){
+    window.FundBlickExternalRelay?.resetAmazonPagination?.();
+    pagination={page:1,total:0,loaded:0,canLoadMore:false};
+    window.FundBlickAmazonPaginationState={...pagination};
+  }
+
   function syncUrl(mode='replace'){
     const url=new URL(location.href);
     const active=state();
@@ -92,14 +99,15 @@
     else history.replaceState(history.state,'',next);
   }
 
-  function setState(next,{historyMode='replace'}={}){
+  function setState(next,{historyMode='replace',resetPage=true}={}){
     window.FundBlickAmazonRefinementState=normalizeState(next);
     amazonEmpty=false;
+    if(resetPage)resetPagination();
     syncUrl(historyMode);
   }
 
   function resetState({keepUi=false,historyMode='replace'}={}){
-    setState(emptyState(),{historyMode});
+    setState(emptyState(),{historyMode,resetPage:true});
     if(!keepUi)refinements=[];
     render();
   }
@@ -111,13 +119,19 @@
     return `<fieldset class="amazon-refinement-advanced"><legend>${esc(priceLabel)} · ★ · ${esc(sortLabel)}</legend><div class="amazon-refinement-advanced-grid"><label>${esc(fromLabel)}<input id="amazon-min-price" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(active.minPrice)}"></label><label>${esc(toLabel)}<input id="amazon-max-price" type="number" min="0" step="0.01" inputmode="decimal" value="${esc(active.maxPrice)}"></label><label>★<select id="amazon-min-rating"><option value="">–</option>${[1,2,3,4,5].map(n=>`<option value="${n}" ${active.minRating===String(n)?'selected':''}>${n}+ ★</option>`).join('')}</select></label><label>${esc(sortLabel)}<select id="amazon-sort"><option value="">${esc(relevance)}</option><option value="Price:LowToHigh" ${active.sortBy==='Price:LowToHigh'?'selected':''}>${esc(priceAsc)}</option><option value="Price:HighToLow" ${active.sortBy==='Price:HighToLow'?'selected':''}>${esc(priceDesc)}</option></select></label><button type="button" id="amazon-advanced-apply">${esc(applyLabel)}</button></div></fieldset>`;
   }
 
+  function paginationControls(){
+    if(!pagination.canLoadMore)return '';
+    const target=Math.min(Number(pagination.total||0),Number(window.FundBlickExternalRelay?.visibleLimit||24));
+    return `<div class="amazon-pagination"><span>${Number(pagination.loaded||0)} / ${target}</span><button type="button" id="amazon-load-more">Amazon +10</button></div>`;
+  }
+
   function render(){
     const supported=refinements.map(r=>({...r,key:valueKey(r)})).filter(r=>r.key&&Array.isArray(r.bins)&&r.bins.length);
-    if(!supported.length&&!hasActive()){host.hidden=true;host.innerHTML='';return}
+    if(!supported.length&&!hasActive()&&!pagination.canLoadMore){host.hidden=true;host.innerHTML='';return}
     const active=state();
     host.hidden=false;
     const emptyNotice=amazonEmpty&&hasActive()?`<div class="amazon-refinement-empty" role="status"><strong>Amazon · 0</strong><span>${esc(resetLabel)}</span></div>`:'';
-    host.innerHTML=`<div class="amazon-refinement-head"><strong>${esc(title)}</strong><button type="button" id="amazon-refinement-reset">${esc(resetLabel)}</button></div>${emptyNotice}${advancedControls(active)}${supported.length?`<div class="amazon-refinement-groups">${supported.map(group=>`<fieldset class="amazon-refinement-group"><legend>${esc(group.displayName)}</legend><div class="amazon-refinement-options">${group.bins.slice(0,12).map(bin=>`<button type="button" class="amazon-refinement-chip${active[group.key]===bin.id?' is-active':''}" aria-pressed="${active[group.key]===bin.id?'true':'false'}" data-amazon-refinement-key="${esc(group.key)}" data-amazon-refinement-value="${esc(bin.id)}">${esc(bin.displayName)}</button>`).join('')}</div></fieldset>`).join('')}</div>`:''}`;
+    host.innerHTML=`<div class="amazon-refinement-head"><strong>${esc(title)}</strong><button type="button" id="amazon-refinement-reset">${esc(resetLabel)}</button></div>${emptyNotice}${advancedControls(active)}${supported.length?`<div class="amazon-refinement-groups">${supported.map(group=>`<fieldset class="amazon-refinement-group"><legend>${esc(group.displayName)}</legend><div class="amazon-refinement-options">${group.bins.slice(0,12).map(bin=>`<button type="button" class="amazon-refinement-chip${active[group.key]===bin.id?' is-active':''}" aria-pressed="${active[group.key]===bin.id?'true':'false'}" data-amazon-refinement-key="${esc(group.key)}" data-amazon-refinement-value="${esc(bin.id)}">${esc(bin.displayName)}</button>`).join('')}</div></fieldset>`).join('')}</div>`:''}${paginationControls()}`;
     bind();
   }
 
@@ -148,6 +162,13 @@
       resetState({keepUi:true,historyMode:'push'});
       await api.evaluate?.();
     });
+    host.querySelector('#amazon-load-more')?.addEventListener('click',async()=>{
+      const nextPage=Math.min(Number(pagination.page||1)+1,10);
+      pagination={...pagination,page:nextPage,canLoadMore:false};
+      window.FundBlickAmazonPaginationState={...pagination};
+      render();
+      await api.evaluate?.();
+    });
   }
 
   window.addEventListener('fundblick:amazon-refinements',event=>{
@@ -166,6 +187,17 @@
     render();
   });
 
+  window.addEventListener('fundblick:amazon-pagination',event=>{
+    pagination={
+      page:Math.max(1,Math.min(Number(event.detail?.page||1),10)),
+      total:Math.max(0,Number(event.detail?.total||0)),
+      loaded:Math.max(0,Number(event.detail?.loaded||0)),
+      canLoadMore:event.detail?.canLoadMore===true
+    };
+    window.FundBlickAmazonPaginationState={...pagination};
+    render();
+  });
+
   window.addEventListener('fundblick:external-provider',event=>{
     const provider=String(event.detail?.provider||'');
     const status=String(event.detail?.status||'');
@@ -177,17 +209,18 @@
   });
 
   query?.addEventListener('input',()=>{
-    if(hasActive()||refinements.length)resetState();
+    if(hasActive()||refinements.length||pagination.page>1)resetState();
   });
 
   window.addEventListener('popstate',async()=>{
     window.FundBlickAmazonRefinementState=readUrlState();
     refinements=[];
     amazonEmpty=false;
+    resetPagination();
     render();
     await api.evaluate?.();
   });
 
   if(hasActive())syncUrl('replace');
-  window.FundBlickAmazonRefinementUI={render,reset:resetState,getState:()=>({...state()}),readUrlState,normalizePriceRange};
+  window.FundBlickAmazonRefinementUI={render,reset:resetState,getState:()=>({...state()}),readUrlState,normalizePriceRange,getPagination:()=>({...pagination})};
 })();
