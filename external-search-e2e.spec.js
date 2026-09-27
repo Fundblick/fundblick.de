@@ -160,26 +160,50 @@ test('provider tiers stop after the first tier with usable results',async({page}
   await expect(page.locator('#external-results .external-product')).toHaveAttribute('data-provider','structured-tier');
 });
 
-test('relay is not requested without explicit development activation',async({page})=>{
+test('Amazon relay is not requested without explicit development activation',async({page})=>{
   const requested=[];page.on('request',request=>requested.push(request.url()));
   await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de',{waitUntil:'networkidle'});
   await waitSearch(page);await page.waitForTimeout(300);
-  expect(requested.some(url=>url.includes('/__mock_external_relay__/search'))).toBeFalsy();
+  expect(requested.some(url=>url.includes('/__mock_amazon_relay__/search'))).toBeFalsy();
+  expect(requested.some(url=>url.includes('/__mock_ebay_relay__/search'))).toBeFalsy();
 });
 
-test('zero-cost relay feeds normalized product cards through the same engine',async({page})=>{
-  await page.route('http://127.0.0.1:4173/__mock_external_relay__/search**',async route=>{
+test('Amazon relay wins before eBay fallback',async({page})=>{
+  let amazonCalls=0,ebayCalls=0;
+  await page.route('http://127.0.0.1:4173/__mock_amazon_relay__/search**',async route=>{
+    amazonCalls++;
     const url=new URL(route.request().url());
     expect(url.searchParams.get('q')).toBe('Akkuschrauber');
-    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'ebay-browse',marketplace:'EBAY_DE',itemCount:2,items:[
-      {id:'relay-1',title:'Relay Akku-Bohrschrauber 18 V',brand:'RelayMarke',merchant:'eBay Händler',image:'',price:89.9,currency:'EUR',shipping:'Versand 0 EUR',url:'https://example.com/relay-1',attributes:{Spannung:'18 V',Ausführung:'mit Akku'}},
-      {id:'relay-2',title:'Relay Akkuschrauber Solo 18 V',brand:'RelayMarke',merchant:'eBay Händler 2',image:'',price:69.9,currency:'EUR',shipping:'',url:'https://example.com/relay-2',attributes:{Spannung:'18 V',Ausführung:'Solo-Gerät'}}
+    expect(Number(url.searchParams.get('limit'))).toBeLessThanOrEqual(10);
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'amazon-creators-api',marketplace:'www.amazon.de',itemCount:2,items:[
+      {id:'amazon-1',title:'Amazon Akku-Bohrschrauber 18 V',brand:'AmazonTest',merchant:'Amazon',image:'',price:94.9,currency:'EUR',shipping:'',url:'https://example.com/amazon-1',attributes:{Spannung:'18 V',Ausführung:'mit Akku'}},
+      {id:'amazon-2',title:'Amazon Akkuschrauber 12 V',brand:'AmazonTest',merchant:'Amazon',image:'',price:64.9,currency:'EUR',shipping:'',url:'https://example.com/amazon-2',attributes:{Spannung:'12 V'}}
     ]})});
   });
-  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalRelayMock=1',{waitUntil:'networkidle'});
+  await page.route('http://127.0.0.1:4173/__mock_ebay_relay__/search**',async route=>{ebayCalls++;await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'ebay-browse',items:[{id:'ebay-1',title:'eBay should not render',url:'https://example.com/ebay-1'}]})});});
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1&externalEbayRelayMock=1',{waitUntil:'networkidle'});
   await waitSearch(page);await waitExternal(page);
+  expect(amazonCalls).toBeGreaterThan(0);
+  expect(ebayCalls).toBe(0);
   await expect(page.locator('#external-results .external-product')).toHaveCount(2);
-  await expect(page.locator('#external-results .external-product').first()).toContainText('Relay Akku-Bohrschrauber 18 V');
-  await expect(page.locator('#external-results .external-product').first()).toContainText('89,90');
-  await expect(page.locator('#external-results .external-product').first()).toHaveAttribute('data-provider','cloudflare-workers-free-relay');
+  await expect(page.locator('#external-results .external-product').first()).toContainText('Amazon Akku-Bohrschrauber');
+  await expect(page.locator('#external-results .external-product').first()).toHaveAttribute('data-provider','amazon-creators-api-relay');
+});
+
+test('eBay relay is used when Amazon relay fails',async({page})=>{
+  let amazonCalls=0,ebayCalls=0;
+  await page.route('http://127.0.0.1:4173/__mock_amazon_relay__/search**',async route=>{amazonCalls++;await route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({error:'provider_unavailable',items:[]})});});
+  await page.route('http://127.0.0.1:4173/__mock_ebay_relay__/search**',async route=>{
+    ebayCalls++;
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'ebay-browse',marketplace:'EBAY_DE',itemCount:1,items:[
+      {id:'ebay-fallback-1',title:'eBay Fallback Akkuschrauber',brand:'FallbackMarke',merchant:'eBay Händler',image:'',price:79.9,currency:'EUR',shipping:'',url:'https://example.com/ebay-fallback-1',attributes:{Spannung:'18 V'}}
+    ]})});
+  });
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1&externalEbayRelayMock=1',{waitUntil:'networkidle'});
+  await waitSearch(page);await waitExternal(page);
+  expect(amazonCalls).toBeGreaterThan(0);
+  expect(ebayCalls).toBeGreaterThan(0);
+  await expect(page.locator('#external-results .external-product')).toHaveCount(1);
+  await expect(page.locator('#external-results .external-product').first()).toContainText('eBay Fallback Akkuschrauber');
+  await expect(page.locator('#external-results .external-product').first()).toHaveAttribute('data-provider','ebay-browse-relay');
 });
