@@ -44,16 +44,23 @@ assert(!/external-search'[^\n]*query\s*:/i.test(js),'raw query must not be emitt
 assert(js.includes('queryLength:q.length'),'privacy-safe query length metric missing');
 assert(js.includes('safeUrl'),'external URLs must pass protocol validation');
 assert(js.includes('runId'),'stale async result guard missing');
+
 assert(relayConfig.includes('enabled:false'),'relay must be disabled by default');
-assert(relayConfig.includes("provider:'cloudflare-workers-free-relay'"),'relay provider id missing');
-assert(relayConfig.includes("endpoint:''"),'relay endpoint must be empty in development config');
-assert(relayConfig.includes('tier:10'),'relay must remain structured tier 10');
-assert(relayProvider.includes("params.get('externalRelayMock')==='1'"),'relay dev activation flag missing');
-assert(relayProvider.includes("cfg.provider==='cloudflare-workers-free-relay'"),'relay provider gate missing');
+assert(relayConfig.includes("id:'amazon-creators-api-relay'"),'Amazon relay route missing');
+assert(relayConfig.includes("upstreamProvider:'amazon-creators-api'"),'Amazon upstream provider missing');
+assert(relayConfig.includes("id:'ebay-browse-relay'"),'eBay relay route missing');
+assert(relayConfig.includes("upstreamProvider:'ebay-browse'"),'eBay upstream provider missing');
+assert(relayConfig.indexOf("upstreamProvider:'amazon-creators-api'")<relayConfig.indexOf("upstreamProvider:'ebay-browse'"),'Amazon route must be declared before eBay');
+assert(relayConfig.includes('tier:10'),'Amazon relay tier 10 missing');
+assert(relayConfig.includes('tier:20'),'eBay relay tier 20 missing');
+assert(relayConfig.includes('maxLimit:10'),'Amazon SearchItems max limit missing');
+assert(relayProvider.includes("params.get('externalAmazonRelayMock')==='1'"),'Amazon relay dev activation flag missing');
+assert(relayProvider.includes("params.get('externalEbayRelayMock')==='1'"),'eBay relay dev activation flag missing');
 assert(relayProvider.includes("url.protocol!=='https:'"),'live relay must require HTTPS');
 assert(relayProvider.includes("credentials:'omit'"),'relay request must omit browser credentials');
 assert(relayProvider.includes("cache:'no-store'"),'relay request must not use browser cache');
 assert(relayProvider.includes('schemaVersion!==1'),'relay schema validation missing');
+assert(relayProvider.includes('relay provider mismatch'),'relay provider identity check missing');
 assert(!/api[_-]?key\s*[:=]\s*['"][^'"]+/i.test(js+i18n+packProvider+relayConfig+relayProvider),'possible API key embedded in frontend');
 assert(css.includes('.external-product'),'external card styling missing');
 assert(css.includes('.external-filter-panel'),'external filter styling missing');
@@ -62,7 +69,8 @@ assert(e2e.includes('six own results suppress external fallback'),'threshold E2E
 assert(e2e.includes('provider errors and timeouts fail open'),'provider fail-open E2E missing');
 assert(e2e.includes('telemetry contains no raw query'),'privacy telemetry E2E missing');
 assert(e2e.includes('provider tiers stop after the first tier'),'provider tier E2E missing');
-assert(e2e.includes('relay is not requested without explicit development activation'),'relay opt-in E2E missing');
-assert(e2e.includes('zero-cost relay feeds normalized product cards'),'relay product E2E missing');
+assert(e2e.includes('Amazon relay is not requested without explicit development activation'),'Amazon relay opt-in E2E missing');
+assert(e2e.includes('Amazon relay wins before eBay fallback'),'Amazon-first E2E missing');
+assert(e2e.includes('eBay relay is used when Amazon relay fails'),'eBay fallback E2E missing');
 
 console.log('external-search-fallback safety checks: OK');
