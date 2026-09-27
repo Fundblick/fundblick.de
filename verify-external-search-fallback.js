@@ -61,6 +61,9 @@ assert(relayProvider.includes("credentials:'omit'"),'relay request must omit bro
 assert(relayProvider.includes("cache:'no-store'"),'relay request must not use browser cache');
 assert(relayProvider.includes('schemaVersion!==1'),'relay schema validation missing');
 assert(relayProvider.includes('relay provider mismatch'),'relay provider identity check missing');
+assert(relayProvider.includes('sanitizeRefinements'),'Amazon relay refinement sanitizer missing');
+assert(relayProvider.includes('fundblick:amazon-refinements'),'Amazon refinement metadata event missing');
+assert(relayProvider.includes("provider:'amazon-creators-api'"),'Amazon refinement event provider identity missing');
 assert(!/api[_-]?key\s*[:=]\s*['"][^'"]+/i.test(js+i18n+packProvider+relayConfig+relayProvider),'possible API key embedded in frontend');
 assert(css.includes('.external-product'),'external card styling missing');
 assert(css.includes('.external-filter-panel'),'external filter styling missing');
