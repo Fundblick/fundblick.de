@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "purpose": "development-provider-validation",
+  "publishable": false,
+  "generatedAt": "2026-09-27T00:00:00.000Z",
+  "query": "Akkuschrauber",
+  "provider": "fixture-pack",
+  "environment": "fixture",
+  "marketplace": "DE",
+  "itemCount": 4,
+  "items": [
+    {
+      "id": "fixture-1",
+      "sourceType": "external",
+      "provider": "fixture-pack",
+      "title": "18 V Akku-Bohrschrauber – Pack-Test",
+      "brand": "Beispielmarke",
+      "merchant": "Externer Testhändler",
+      "image": "",
+      "price": 99.99,
+      "currency": "EUR",
+      "shipping": "Versandinformationen aus externer Quelle",
+      "url": "https://example.com/pack-a",
+      "attributes": {"Spannung":"18 V","Ausführung":"mit Akku"}
+    },
+    {
+      "id": "fixture-2",
+      "sourceType": "external",
+      "provider": "fixture-pack",
+      "title": "Kompakter Akkuschrauber 12 V – Pack-Test",
+      "brand": "Testwerkzeug",
+      "merchant": "Externer Testhändler",
+      "image": "",
+      "price": 59.90,
+      "currency": "EUR",
+      "shipping": "",
+      "url": "https://example.com/pack-b",
+      "attributes": {"Spannung":"12 V","Ausführung":"mit Akku"}
+    },
+    {
+      "id": "fixture-3",
+      "sourceType": "external",
+      "provider": "fixture-pack",
+      "title": "18 V Akkuschrauber Solo – Pack-Test",
+      "brand": "Testwerkzeug",
+      "merchant": "Werkzeug Beispielshop",
+      "image": "",
+      "price": 79.00,
+      "currency": "EUR",
+      "shipping": "",
+      "url": "https://example.com/pack-c",
+      "attributes": {"Spannung":"18 V","Ausführung":"Solo-Gerät"}
+    },
+    {
+      "id": "fixture-4",
+      "sourceType": "external",
+      "provider": "fixture-pack",
+      "title": "12 V Akku-Bohrschrauber Set – Pack-Test",
+      "brand": "Beispielmarke",
+      "merchant": "Werkzeug Beispielshop",
+      "image": "",
+      "price": 119.00,
+      "currency": "EUR",
+      "shipping": "",
+      "url": "https://example.com/pack-d",
+      "attributes": {"Spannung":"12 V","Ausführung":"Set"}
+    }
+  ]
+}
