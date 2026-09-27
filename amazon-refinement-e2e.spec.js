@@ -143,3 +143,25 @@ test('changing the base query clears stale Amazon refinement state',async({page}
   expect(new URL(page.url()).searchParams.get('amazonBrand')).toBeNull();
   await expect(page.locator('#amazon-refinements')).toBeHidden();
 });
+
+test('Amazon zero results keep refinement context while eBay fallback is shown',async({page})=>{
+  await page.route('http://127.0.0.1:4173/__mock_amazon_relay__/search**',async route=>{
+    const url=new URL(route.request().url());
+    const active=url.searchParams.get('brand')==='Bosch';
+    const items=active?[]:[{id:'amazon-base',title:'Amazon Basis',brand:'Bosch',merchant:'Amazon',image:'',price:99,currency:'EUR',shipping:'',url:'https://example.com/amazon-base',attributes:{Brand:'Bosch'}}];
+    const refinements=[{type:'other',id:'Brand',displayName:'Marke',bins:[{id:'Bosch',displayName:'Bosch'}]}];
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'amazon-creators-api',marketplace:'www.amazon.de',itemCount:items.length,refinements,items})});
+  });
+  await page.route('http://127.0.0.1:4173/__mock_ebay_relay__/search**',async route=>{
+    await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({schemaVersion:1,provider:'ebay-browse',itemCount:1,items:[{id:'ebay-fallback',title:'eBay Ersatztreffer',brand:'Test',merchant:'eBay',image:'',price:88,currency:'EUR',shipping:'',url:'https://example.com/ebay-fallback',attributes:{}}]})});
+  });
+
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1&externalEbayRelayMock=1',{waitUntil:'networkidle'});
+  const bosch=page.locator('[data-amazon-refinement-key="brand"][data-amazon-refinement-value="Bosch"]');
+  await expect(bosch).toBeVisible({timeout:10000});
+  await bosch.click();
+  await expect(page.locator('.amazon-refinement-empty')).toBeVisible({timeout:10000});
+  await expect(page.locator('.amazon-refinement-empty')).toContainText('Amazon · 0');
+  await expect(page.locator('#external-results .external-product')).toContainText('eBay Ersatztreffer',{timeout:10000});
+  expect(await page.evaluate(()=>window.FundBlickAmazonRefinementUI.getState().brand)).toBe('Bosch');
+});
