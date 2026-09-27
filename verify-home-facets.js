@@ -28,7 +28,7 @@ const cases=[
  [{name:'Boho Samtkissen Santa - Beige',category:'home.decor'},'decor',{type:'Kissen / Sitzkissen'}],
  [{name:'Indischer Holz Paravent Ramez',category:'home.living'},'living',{type:'Paravent / Raumteiler',material:'Holz'}],
  [{name:'Schreibtisch Organizer mit 6 Fächern – Weiß',category:'home.furniture'},'furniture',{type:'Organizer / Stiftehalter'}],
- [{name:'Stiftehalter 3 Fächern – Teakholz',category:'home.living'},'living',{type:'Organizer / Stiftehalter',material:'Holz'}],
+ [{name:'Stiftehalter 3 Fächern – Teakholz',category:'home.living'},'living',{type:'Organizer / Stiftehalter'}],
  [{name:'Eckwäschekorb Viona M',category:'home.decor'},'decor',{type:'Korb / Aufbewahrung'}],
  [{name:'Waschtisch Aufsatzbecken',category:'home.furniture'},'furniture',{type:'Waschbecken'}],
  [{name:'Holz Klappstuhl Eliano 2er-Set',category:'home.furniture'},'furniture',{type:'Stuhl',material:'Holz'}],
