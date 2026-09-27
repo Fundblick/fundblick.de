@@ -10,6 +10,7 @@
   const ebayMock=params.get('externalEbayRelayMock')==='1';
   const legacyMock=params.get('externalRelayMock')==='1';
   const amazonCache={signature:'',items:[]};
+  const AMAZON_VISIBLE_LIMIT=24;
   window.FundBlickAmazonPaginationState=window.FundBlickAmazonPaginationState||{page:1,total:0,loaded:0,canLoadMore:false};
 
   function safeEndpoint(value,isMock){
@@ -84,9 +85,10 @@
   function emitAmazonPagination(route,data,page,loadedCount){
     if(route.upstreamProvider!=='amazon-creators-api')return;
     const total=Math.max(Number(data?.totalResultCount||0),Number(loadedCount||0));
-    const canLoadMore=page<10&&loadedCount<total&&Array.isArray(data?.items)&&data.items.length>0;
+    const displayTarget=Math.min(total,AMAZON_VISIBLE_LIMIT);
+    const canLoadMore=page<10&&loadedCount<displayTarget&&Array.isArray(data?.items)&&data.items.length>0;
     window.FundBlickAmazonPaginationState={page,total,loaded:loadedCount,canLoadMore};
-    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-pagination',{detail:{page,total,loaded:loadedCount,canLoadMore}}))}catch{}
+    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-pagination',{detail:{page,total,loaded:loadedCount,displayTarget,canLoadMore}}))}catch{}
   }
 
   function registerRoute(route){
@@ -147,7 +149,7 @@
     });
   }
 
-  window.FundBlickExternalRelay={sanitizeRefinements,amazonRefinementState,resetAmazonPagination};
+  window.FundBlickExternalRelay={sanitizeRefinements,amazonRefinementState,resetAmazonPagination,visibleLimit:AMAZON_VISIBLE_LIMIT};
   routes.forEach(registerRoute);
   api.evaluate?.();
 })();
