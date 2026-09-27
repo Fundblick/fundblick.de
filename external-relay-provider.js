@@ -57,6 +57,14 @@
     try{window.dispatchEvent(new CustomEvent('fundblick:amazon-refinements',{detail:{provider:'amazon-creators-api',marketplace:String(data?.marketplace||'www.amazon.de'),baseQuery:cleanText(baseQuery,160),refinements,active:amazonRefinementState()}}))}catch{}
   }
 
+  function emitAmazonSearchStatus(route,data,baseQuery){
+    if(route.upstreamProvider!=='amazon-creators-api')return;
+    const active=amazonRefinementState();
+    const hasActive=Object.values(active).some(Boolean);
+    const itemCount=Array.isArray(data?.items)?data.items.length:0;
+    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-search-status',{detail:{provider:'amazon-creators-api',baseQuery:cleanText(baseQuery,160),itemCount,hasActive,active}}))}catch{}
+  }
+
   function registerRoute(route){
     if(!route?.id||!route?.upstreamProvider)return;
     const isAmazon=route.upstreamProvider==='amazon-creators-api';
@@ -98,6 +106,7 @@
         if(data?.schemaVersion!==1||!Array.isArray(data?.items))throw new Error(`${route.upstreamProvider} relay schema mismatch`);
         if(data?.provider&&data.provider!==route.upstreamProvider)throw new Error(`${route.upstreamProvider} relay provider mismatch`);
         emitAmazonRefinements(route,data,baseQuery);
+        emitAmazonSearchStatus(route,data,baseQuery);
         return data.items;
       }
     });
