@@ -45,7 +45,7 @@ test('six own results suppress external fallback',async({page})=>{
   await waitExternal(page);
   await page.evaluate(()=>{
     const cards=document.querySelector('#cards');
-    cards.innerHTML=Array.from({length:6},(_,i)=>`<article class="product"><h2>Own ${i}</h2></article>`).join('');
+    cards.innerHTML=Array.from({length:6},(_,i)=>`<article class="product" data-real-merchant="true"><h2>Own ${i}</h2></article>`).join('');
   });
   await expect(page.locator('#external-results')).toBeHidden({timeout:5000});
 });
@@ -54,7 +54,7 @@ test('few own results keep external fallback below own results',async({page})=>{
   await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalMock=1',{waitUntil:'networkidle'});
   await waitExternal(page);
   await page.evaluate(()=>{
-    document.querySelector('#cards').innerHTML='<article class="product"><h2>Own A</h2></article><article class="product"><h2>Own B</h2></article>';
+    document.querySelector('#cards').innerHTML='<article class="product" data-real-merchant="true"><h2>Own A</h2></article><article class="product" data-real-merchant="true"><h2>Own B</h2></article>';
   });
   await expect(page.locator('#external-results')).toBeVisible();
   await expect(page.locator('#external-results .external-results-heading')).toContainText('nur 2 eigene passende Treffer');
