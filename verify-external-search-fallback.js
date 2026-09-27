@@ -76,6 +76,7 @@ assert(relayProvider.includes("url.searchParams.set('brand'"),'Amazon brand refi
 assert(refinementUi.includes('FundBlickAmazonRefinementState'),'Amazon refinement state missing');
 assert(refinementUi.includes('fundblick:amazon-refinements'),'Amazon refinement event listener missing');
 assert(refinementUi.includes('data-amazon-refinement-key'),'Amazon refinement chip contract missing');
+assert(refinementUi.includes('aria-pressed'),'Amazon refinement accessibility state missing');
 assert(refinementUi.includes('api.evaluate'),'Amazon refinement must trigger second-stage search');
 assert(refinementUi.includes("amazonSearchIndex"),'Amazon searchIndex URL persistence missing');
 assert(refinementUi.includes("amazonBrowseNode"),'Amazon browseNode URL persistence missing');
@@ -86,6 +87,7 @@ assert(css.includes('.amazon-refinement-chip'),'Amazon refinement chip styling m
 assert(refinementE2e.includes('second-stage relay search'),'Amazon refinement E2E missing');
 assert(refinementE2e.includes("searchParams.get('brand')==='Bosch'"),'Amazon refinement relay-query assertion missing');
 assert(refinementE2e.includes('URL state survives reload'),'Amazon refinement URL reload E2E missing');
+assert(refinementE2e.includes('browser back restores previous Amazon refinement state'),'Amazon refinement browser-history E2E missing');
 assert(!/api[_-]?key\s*[:=]\s*['"][^'"]+/i.test(js+i18n+packProvider+relayConfig+relayProvider+refinementUi),'possible API key embedded in frontend');
 assert(css.includes('.external-product'),'external card styling missing');
 assert(css.includes('.external-filter-panel'),'external filter styling missing');
