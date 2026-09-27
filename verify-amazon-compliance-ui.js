@@ -16,6 +16,9 @@ assert(js.includes('Maßgeblich ist der Preis auf Amazon.de zum Zeitpunkt des Ka
 assert(js.includes('Bestimmte auf dieser Website angezeigte Inhalte stammen von Amazon.'),'Amazon content-source notice missing');
 assert(js.includes("timeZone:'Europe/Berlin'"),'Amazon freshness timestamp must use Europe/Berlin');
 assert(js.includes('amazon-price-notice'),'Amazon per-price freshness note missing');
+assert(js.includes("COPY[rawLang]||COPY[rawLang.split('-')[0]]||COPY.en"),'Amazon compliance locale fallback missing');
+for(const key of ['de','en','tr','ru','ar','pl','ro','uk','it','bg','hr','el','sr','es','fr','pt','fa','sq','ku']) assert(js.includes(`    ${key}:{`),`Amazon compliance copy missing ${key}`);
+assert(js.includes("    'zh-Hans':{"),'Amazon compliance copy missing zh-Hans');
 assert(css.includes('.amazon-disclosure'),'Amazon disclosure styling missing');
 assert(css.includes('.amazon-link-disclosure'),'Amazon paid-link disclosure styling missing');
 assert(css.includes('.amazon-price-notice'),'Amazon price notice styling missing');
