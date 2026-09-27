@@ -144,3 +144,18 @@ test('external search telemetry contains no raw query',async({page})=>{
   expect(detail.queryLength).toBe('Akkuschrauber'.length);
   expect(Object.prototype.hasOwnProperty.call(detail,'query')).toBeFalsy();
 });
+
+test('provider tiers stop after the first tier with usable results',async({page})=>{
+  await page.goto(base+'?q='+encodeURIComponent('TierTest')+'&lang=de',{waitUntil:'networkidle'});
+  await waitSearch(page);
+  const calls=await page.evaluate(async()=>{
+    const calls=[];
+    window.FundBlickExternalSearch.registerProvider({id:'structured-tier',tier:10,async search(){calls.push('structured');return [{id:'tier-1',title:'Structured result',brand:'Tier',merchant:'Tier merchant',price:10,currency:'EUR',url:'https://example.com/tier-1',attributes:{}}]}});
+    window.FundBlickExternalSearch.registerProvider({id:'web-tier',tier:90,async search(){calls.push('web');return [{id:'tier-2',title:'Web result',url:'https://example.com/tier-2'}]}});
+    await window.FundBlickExternalSearch.evaluate();
+    return calls;
+  });
+  expect(calls).toEqual(['structured']);
+  await expect(page.locator('#external-results .external-product')).toHaveCount(1);
+  await expect(page.locator('#external-results .external-product')).toHaveAttribute('data-provider','structured-tier');
+});
