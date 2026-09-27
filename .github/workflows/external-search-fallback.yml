@@ -21,6 +21,7 @@ on:
       - 'amazon-pagination-e2e.spec.js'
       - 'amazon-compliance-e2e.spec.js'
       - 'verify-external-search-fallback.js'
+      - 'verify-amazon-pagination.js'
       - 'verify-amazon-compliance-ui.js'
       - '.github/workflows/external-search-fallback.yml'
 
@@ -48,7 +49,9 @@ jobs:
           node --check amazon-refinement-e2e.spec.js
           node --check amazon-pagination-e2e.spec.js
           node --check amazon-compliance-e2e.spec.js
+          node --check verify-amazon-pagination.js
           node verify-external-search-fallback.js
+          node verify-amazon-pagination.js
           node verify-amazon-compliance-ui.js
 
   browser-e2e:
