@@ -24,6 +24,7 @@
 
   function cleanText(value,max=140){return String(value||'').replace(/\s+/g,' ').trim().slice(0,max)}
   function cleanNumber(value,min,max){const n=Number(value);return Number.isFinite(n)&&n>=min&&n<=max?n:null}
+  function cleanRating(value){const n=Number(value);return Number.isInteger(n)&&n>=1&&n<=4?n:null}
   const AMAZON_SORTS=new Set(['Relevance','Price:LowToHigh','Price:HighToLow','AvgCustomerReviews','NewestArrivals']);
 
   function sanitizeRefinements(raw){
@@ -41,7 +42,7 @@
     const raw=window.FundBlickAmazonRefinementState||{};
     const minPrice=cleanNumber(raw.minPrice,0,1000000);
     const maxPrice=cleanNumber(raw.maxPrice,0,1000000);
-    const minRating=cleanNumber(raw.minRating,1,5);
+    const minRating=cleanRating(raw.minRating);
     const sortBy=AMAZON_SORTS.has(String(raw.sortBy||''))?String(raw.sortBy):'';
     return {
       searchIndex:cleanText(raw.searchIndex,64),
