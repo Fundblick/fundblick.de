@@ -20,6 +20,8 @@
   }
 
   function cleanText(value,max=140){return String(value||'').replace(/\s+/g,' ').trim().slice(0,max)}
+  function cleanNumber(value,min,max){const n=Number(value);return Number.isFinite(n)&&n>=min&&n<=max?n:null}
+  const AMAZON_SORTS=new Set(['Relevance','Price:LowToHigh','Price:HighToLow','AvgCustomerReviews','NewestArrivals']);
 
   function sanitizeRefinements(raw){
     if(!Array.isArray(raw))return [];
@@ -34,10 +36,18 @@
 
   function amazonRefinementState(){
     const raw=window.FundBlickAmazonRefinementState||{};
+    const minPrice=cleanNumber(raw.minPrice,0,1000000);
+    const maxPrice=cleanNumber(raw.maxPrice,0,1000000);
+    const minRating=cleanNumber(raw.minRating,1,5);
+    const sortBy=AMAZON_SORTS.has(String(raw.sortBy||''))?String(raw.sortBy):'';
     return {
       searchIndex:cleanText(raw.searchIndex,64),
       browseNodeId:cleanText(raw.browseNodeId,64),
-      brand:cleanText(raw.brand,100)
+      brand:cleanText(raw.brand,100),
+      minPrice:minPrice===null?'':String(minPrice),
+      maxPrice:maxPrice===null?'':String(maxPrice),
+      minRating:minRating===null?'':String(minRating),
+      sortBy
     };
   }
 
@@ -77,6 +87,10 @@
           if(refinement.searchIndex)url.searchParams.set('searchIndex',refinement.searchIndex);
           if(refinement.browseNodeId)url.searchParams.set('browseNodeId',refinement.browseNodeId);
           if(refinement.brand)url.searchParams.set('brand',refinement.brand);
+          if(refinement.minPrice)url.searchParams.set('minPrice',refinement.minPrice);
+          if(refinement.maxPrice)url.searchParams.set('maxPrice',refinement.maxPrice);
+          if(refinement.minRating)url.searchParams.set('minRating',refinement.minRating);
+          if(refinement.sortBy)url.searchParams.set('sortBy',refinement.sortBy);
         }
         const response=await fetch(url,{method:'GET',headers:{accept:'application/json'},cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
         if(!response.ok)throw new Error(`${route.upstreamProvider} relay ${response.status}`);
