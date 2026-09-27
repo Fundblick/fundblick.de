@@ -19,6 +19,25 @@
     }catch{return ''}
   }
 
+  function cleanText(value,max=140){return String(value||'').replace(/\s+/g,' ').trim().slice(0,max)}
+
+  function sanitizeRefinements(raw){
+    if(!Array.isArray(raw))return [];
+    return raw.slice(0,12).map(refinement=>{
+      const id=cleanText(refinement?.id,64);
+      const type=cleanText(refinement?.type,32);
+      const displayName=cleanText(refinement?.displayName||id,100);
+      const bins=Array.isArray(refinement?.bins)?refinement.bins.slice(0,50).map(bin=>({id:cleanText(bin?.id,100),displayName:cleanText(bin?.displayName||bin?.id,140)})).filter(bin=>bin.id&&bin.displayName):[];
+      return id&&bins.length?{type,id,displayName,bins}:null;
+    }).filter(Boolean);
+  }
+
+  function emitAmazonRefinements(route,data){
+    if(route.upstreamProvider!=='amazon-creators-api')return;
+    const refinements=sanitizeRefinements(data?.refinements);
+    try{window.dispatchEvent(new CustomEvent('fundblick:amazon-refinements',{detail:{provider:'amazon-creators-api',marketplace:String(data?.marketplace||'www.amazon.de'),refinements}}))}catch{}
+  }
+
   function registerRoute(route){
     if(!route?.id||!route?.upstreamProvider)return;
     const isAmazon=route.upstreamProvider==='amazon-creators-api';
@@ -48,11 +67,13 @@
         const data=await response.json();
         if(data?.schemaVersion!==1||!Array.isArray(data?.items))throw new Error(`${route.upstreamProvider} relay schema mismatch`);
         if(data?.provider&&data.provider!==route.upstreamProvider)throw new Error(`${route.upstreamProvider} relay provider mismatch`);
+        emitAmazonRefinements(route,data);
         return data.items;
       }
     });
   }
 
+  window.FundBlickExternalRelay={sanitizeRefinements};
   routes.forEach(registerRoute);
   api.evaluate?.();
 })();
