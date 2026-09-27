@@ -23,8 +23,13 @@
   }
 
   async function runProvider(provider,q,context){
-    try{return (Array.isArray(await provider.search(q,context))?await provider.search(q,context):[]).map(x=>normalize(x,provider)).filter(Boolean)}
-    catch(error){console.warn('FundBlick external provider failed:',provider.id,error);return []}
+    try{
+      const result=await provider.search(q,context);
+      return (Array.isArray(result)?result:[]).map(x=>normalize(x,provider)).filter(Boolean);
+    }catch(error){
+      console.warn('FundBlick external provider failed:',provider.id,error);
+      return [];
+    }
   }
 
   async function search(q,context={}){
