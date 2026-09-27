@@ -22,6 +22,7 @@
   const SORT_MAP={relevance:'Relevance','price-asc':'Price:LowToHigh','price-desc':'Price:HighToLow'};
   const SORT_ALLOWED=new Set(Object.values(SORT_MAP));
   let refinements=[];
+  let amazonEmpty=false;
 
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
   const clean=s=>String(s||'').replace(/\s+/g,' ').trim().slice(0,160);
@@ -85,6 +86,7 @@
 
   function setState(next,{historyMode='replace'}={}){
     window.FundBlickAmazonRefinementState=normalizeState(next);
+    amazonEmpty=false;
     syncUrl(historyMode);
   }
 
@@ -106,7 +108,8 @@
     if(!supported.length&&!hasActive()){host.hidden=true;host.innerHTML='';return}
     const active=state();
     host.hidden=false;
-    host.innerHTML=`<div class="amazon-refinement-head"><strong>${esc(title)}</strong><button type="button" id="amazon-refinement-reset">${esc(resetLabel)}</button></div>${advancedControls(active)}${supported.length?`<div class="amazon-refinement-groups">${supported.map(group=>`<fieldset class="amazon-refinement-group"><legend>${esc(group.displayName)}</legend><div class="amazon-refinement-options">${group.bins.slice(0,12).map(bin=>`<button type="button" class="amazon-refinement-chip${active[group.key]===bin.id?' is-active':''}" aria-pressed="${active[group.key]===bin.id?'true':'false'}" data-amazon-refinement-key="${esc(group.key)}" data-amazon-refinement-value="${esc(bin.id)}">${esc(bin.displayName)}</button>`).join('')}</div></fieldset>`).join('')}</div>`:''}`;
+    const emptyNotice=amazonEmpty&&hasActive()?`<div class="amazon-refinement-empty" role="status"><strong>Amazon · 0</strong><span>${esc(resetLabel)}</span></div>`:'';
+    host.innerHTML=`<div class="amazon-refinement-head"><strong>${esc(title)}</strong><button type="button" id="amazon-refinement-reset">${esc(resetLabel)}</button></div>${emptyNotice}${advancedControls(active)}${supported.length?`<div class="amazon-refinement-groups">${supported.map(group=>`<fieldset class="amazon-refinement-group"><legend>${esc(group.displayName)}</legend><div class="amazon-refinement-options">${group.bins.slice(0,12).map(bin=>`<button type="button" class="amazon-refinement-chip${active[group.key]===bin.id?' is-active':''}" aria-pressed="${active[group.key]===bin.id?'true':'false'}" data-amazon-refinement-key="${esc(group.key)}" data-amazon-refinement-value="${esc(bin.id)}">${esc(bin.displayName)}</button>`).join('')}</div></fieldset>`).join('')}</div>`:''}`;
     bind();
   }
 
@@ -147,6 +150,14 @@
     render();
   });
 
+  window.addEventListener('fundblick:amazon-search-status',event=>{
+    const eventQuery=clean(event.detail?.baseQuery);
+    const currentQuery=clean(query?.value);
+    if(eventQuery&&eventQuery!==currentQuery)return;
+    amazonEmpty=event.detail?.hasActive===true&&Number(event.detail?.itemCount||0)===0;
+    render();
+  });
+
   window.addEventListener('fundblick:external-provider',event=>{
     const provider=String(event.detail?.provider||'');
     const status=String(event.detail?.status||'');
@@ -164,6 +175,7 @@
   window.addEventListener('popstate',async()=>{
     window.FundBlickAmazonRefinementState=readUrlState();
     refinements=[];
+    amazonEmpty=false;
     render();
     await api.evaluate?.();
   });
