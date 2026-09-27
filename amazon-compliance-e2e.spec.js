@@ -24,13 +24,13 @@ test('Amazon relay results show required FundBlick Amazon disclosure and price t
     })});
   });
 
-  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalRelayMock=amazon',{waitUntil:'networkidle'});
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalAmazonRelayMock=1',{waitUntil:'networkidle'});
   await expect(page.locator('#external-results')).toBeVisible({timeout:10000});
   const amazon=page.locator('.external-product[data-provider="amazon-creators-api"]');
   await expect(amazon).toHaveCount(1);
   await expect(page.locator('#amazon-associate-disclosure')).toBeVisible();
   await expect(page.locator('#amazon-associate-disclosure')).toContainText('Als Amazon-Partner verdiene ich an qualifizierten Verkäufen.');
   await expect(page.locator('#amazon-associate-disclosure')).toContainText('kann seit der letzten Aktualisierung gestiegen sein');
-  await expect(amazon.locator('.amazon-price-notice')).toContainText(/Amazon-Preis: Stand .*Uhr|Amazon-Preis: Stand/);
+  await expect(amazon.locator('.amazon-price-notice')).toContainText('Amazon-Preis: Stand');
   await expect(amazon.locator('.amazon-price-notice')).toContainText('Maßgeblich ist der Preis auf Amazon.de zum Zeitpunkt des Kaufs.');
 });
