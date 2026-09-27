@@ -12,6 +12,7 @@
   window.FundBlickAmazonRefinementState=window.FundBlickAmazonRefinementState||{searchIndex:'',browseNodeId:'',brand:''};
 
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]||c));
+  const clean=s=>String(s||'').replace(/\s+/g,' ').trim().slice(0,160);
   const state=()=>window.FundBlickAmazonRefinementState;
   const hasActive=()=>Object.values(state()).some(Boolean);
   const valueKey=refinement=>{
@@ -54,6 +55,9 @@
   }
 
   window.addEventListener('fundblick:amazon-refinements',event=>{
+    const eventQuery=clean(event.detail?.baseQuery);
+    const currentQuery=clean(query?.value);
+    if(eventQuery&&eventQuery!==currentQuery)return;
     refinements=Array.isArray(event.detail?.refinements)?event.detail.refinements:[];
     render();
   });
