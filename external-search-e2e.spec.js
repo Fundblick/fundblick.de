@@ -68,6 +68,13 @@ test('Russian fallback copy is localized while external source data stays intact
   await expect(page.locator('#external-results .external-product').first()).toContainText('18 V Akku-Bohrschrauber');
 });
 
+test('zh-Hans keeps exact language key instead of falling back to English',async({page})=>{
+  await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=zh-Hans&externalMock=1',{waitUntil:'networkidle'});
+  await waitExternal(page);
+  await expect(page.locator('#external-results .external-results-heading h2')).toHaveText('更多网络优惠');
+  await expect(page.locator('#external-results .external-cta').first()).toHaveText('打开外部网站');
+});
+
 test('mobile external result and filters stay inside viewport',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto(base+'?q='+encodeURIComponent('Akkuschrauber')+'&lang=de&externalMock=1',{waitUntil:'networkidle'});
