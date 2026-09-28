@@ -1,0 +1,35 @@
+name: Search Console report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 5 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Validate collector
+        run: |
+          node --check search-console-collector.js
+          node search-console-collector.spec.js
+      - name: Collect Search Console data
+        env:
+          SEARCH_CONSOLE_ACCESS_TOKEN: ${{ secrets.SEARCH_CONSOLE_ACCESS_TOKEN }}
+          SEARCH_CONSOLE_SITE_URL: ${{ vars.SEARCH_CONSOLE_SITE_URL || 'sc-domain:fundblick.de' }}
+        run: node search-console-collector.js build/analytics/search-console.json
+      - name: Upload private workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: search-console-report
+          path: build/analytics/search-console.json
+          retention-days: 30
+          if-no-files-found: error
