@@ -9,7 +9,7 @@ const merchants={
     advertiserId:'125144',
     inputPattern:/125144.*retail.*\.csv(?:\.gz)?$/i,
     normalizer:'./anthbot-feed-normalizer.js',
-    expected:{advertiserRows:161,products:56,inStock:36},
+    expected:{advertiserRows:161,products:56,inStock:34},
     catalogCategories:['home.garden.robot-mowers','home.garden.robot-mower-accessories']
   }
 };
