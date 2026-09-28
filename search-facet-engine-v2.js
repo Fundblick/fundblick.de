@@ -7,10 +7,23 @@
     if(/Ice Clay|Coolness Paste/i.test(name))return 'Pferdepflege';
     return 'Ergänzungsfutter';
   }
+  function feedFacets(product){
+    const raw=product?.rawAttributes||{};
+    const facets=raw.facets&&typeof raw.facets==='object'?raw.facets:{};
+    const out={};
+    if(Number.isFinite(Number(facets.lawnAreaM2)))out.lawnAreaM2=Number(facets.lawnAreaM2);
+    if(facets.connectivity4G===true)out.connectivity4G='4G';
+    if(facets.model)out.model=String(facets.model);
+    if(raw.refurbished===true||raw.condition==='refurbished')out.condition='Generalüberholt';
+    else if(raw.condition==='new'||raw.feedCondition==='new')out.condition='Neu';
+    return out;
+  }
   function enrich(product){
     const family=product?.family;
     const classified=root.FBHomeFacetClassifier?.classify?.(product,family)||{};
     if(family==='equestrian'&&!classified.type)classified.type=equestrianType(product);
+    const backed=feedFacets(product);
+    for(const [key,value] of Object.entries(backed))if(classified[key]===undefined)classified[key]=value;
     product.attrs=product.attrs||{};
     for(const [key,value] of Object.entries(classified)){
       const merged=[...new Set([...values(product.attrs[key]),...values(value)].map(String).filter(Boolean))];
@@ -41,6 +54,6 @@
     const own=new Set(values(product?.attrs?.[key]).map(String));
     return [...selected].some(v=>own.has(String(v)));
   }
-  root.FBFacetEngineV2={enrich,availableValues,dominantSchema,facetsFor,matches,equestrianType};
+  root.FBFacetEngineV2={enrich,availableValues,dominantSchema,facetsFor,matches,equestrianType,feedFacets};
   if(typeof module!=='undefined'&&module.exports)module.exports=root.FBFacetEngineV2;
 })(typeof window!=='undefined'?window:globalThis);
