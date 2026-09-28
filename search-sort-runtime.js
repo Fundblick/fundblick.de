@@ -1,15 +1,5 @@
 'use strict';
 (function(root){
-  if(!root||!root.document)return;
-  const doc=root.document;
-  const cards=doc.getElementById('cards');
-  const sort=doc.getElementById('sort');
-  if(!cards||!sort)return;
-
-  let scheduled=false;
-  let applying=false;
-  const collator=new Intl.Collator(doc.documentElement.lang||'de',{numeric:true,sensitivity:'base'});
-
   function numberFromMoney(text){
     const raw=String(text||'').replace(/\s/g,'').replace(/[^\d,.-]/g,'');
     if(!raw)return Number.POSITIVE_INFINITY;
@@ -21,7 +11,16 @@
     const value=Number(normalized);
     return Number.isFinite(value)?value:Number.POSITIVE_INFINITY;
   }
+  if(typeof module!=='undefined'&&module.exports)module.exports={numberFromMoney};
+  if(!root||!root.document)return;
+  const doc=root.document;
+  const cards=doc.getElementById('cards');
+  const sort=doc.getElementById('sort');
+  if(!cards||!sort)return;
 
+  let scheduled=false;
+  let applying=false;
+  const collator=new Intl.Collator(doc.documentElement.lang||'de',{numeric:true,sensitivity:'base'});
   function visiblePrice(article){return numberFromMoney(article.querySelector('.price strong')?.textContent);}
   function brand(article){return String(article.querySelector('.product-brand bdi, p bdi')?.textContent||'').trim();}
   function name(article){return String(article.querySelector('h2')?.textContent||'').trim();}
