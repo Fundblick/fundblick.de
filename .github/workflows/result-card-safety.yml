@@ -11,6 +11,7 @@ on:
       - 'result-card-e2e.spec.js'
       - 'search.html'
       - '.github/workflows/result-card-safety.yml'
+      - '.github/workflows/production-pages.yml'
   pull_request:
     branches: [main]
 
