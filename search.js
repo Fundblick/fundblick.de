@@ -120,7 +120,8 @@
     const text=`${raw.name} ${raw.description||''}`,taxonomy=String(raw.category||''),family=inferFamily(text,taxonomy),price=Number(raw.price),shippingCost=maybeNumber(raw.shippingCost),rating=maybeNumber(raw.rating),merchantCount=maybeNumber(raw.merchantCount),deliveryDays=maybeNumber(raw.deliveryDays),totalPriceKnown=shippingCost!==null,totalPrice=totalPriceKnown?price+shippingCost:null;
     const merchant=normalizeMerchant(raw.merchant||raw.bestOffer?.merchant||raw.offers?.[0]?.merchant||raw.advertiserName||'');
     const brand=normalizeBrand(raw.brand,merchant);
-    const p={name:String(raw.name),brand,merchant,description:String(raw.description||''),category:String(raw.category||''),price,shippingCost,totalPrice,totalPriceKnown,image:String(raw.image||''),family,rating,merchantCount,inStock:raw.inStock===true,deliveryDays};
+    const rawAttributes=raw.rawAttributes&&typeof raw.rawAttributes==='object'&&!Array.isArray(raw.rawAttributes)?raw.rawAttributes:{};
+    const p={name:String(raw.name),brand,merchant,description:String(raw.description||''),category:String(raw.category||''),price,shippingCost,totalPrice,totalPriceKnown,image:String(raw.image||''),family,rating,merchantCount,inStock:raw.inStock===true,deliveryDays,rawAttributes};
     p.attrs=features(p);
     if(window.FBFacetEngineV2?.enrich)window.FBFacetEngineV2.enrich(p);
     if(rating!==null)p.attrs.rating=rating;
@@ -178,5 +179,5 @@
   sortEl.addEventListener('change',()=>{state.sort=sortEl.value;render()});
   function runSearch(){const translated=queryAliases.reduce((q,[pattern,value])=>q.replace(pattern,value),state.query);category=detect(translated);const tokens=interpret(translated);base=products.filter(p=>queryMatch(p,tokens));render()}
   const readProducts=url=>fetch(url).then(r=>{if(!r.ok)throw Error('Product data unavailable: '+url);return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Invalid product data');return data});
-  Promise.all([readProducts('products.json'),cardsEl.dataset.catalogUrl?readProducts(cardsEl.dataset.catalogUrl):Promise.resolve([])]).then(groups=>{products=groups.flat().map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent=tx('loadError');cardsEl.innerHTML=`<div class="empty"><h2>${esc(tx('loadError'))}</h2><p>${esc(tx('tryLater'))}</p></div>`});
+  Promise.all([readProducts('products.json'),cardsEl.dataset.catalogUrl?readProducts(cardsEl.dataset.catalogUrl):Promise.resolve([])]).then(groups=>{products=groups.flat().map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent=tx('loadError');cardsEl.innerHTML=''});
 })();
