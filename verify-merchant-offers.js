@@ -19,4 +19,8 @@ assert.equal(offers.forProduct(other,before).length,0,'voucher must not leak to 
 assert.equal(offers.forProduct(foreign,before).length,0,'voucher must not leak to another merchant');
 assert.equal(offers.forProduct(immun,after).length,0,'expired voucher must disappear automatically');
 assert.equal(hit[0].offerUrl,null,'partial/truncated Awin offer URL must never be invented');
-console.log('Merchant offer voucher gate passed');
+const ru=offers.localized(hit[0],'ru');
+assert.equal(ru.title,'Скидка 10 % на AHIPOS SULFO IMMUN','Russian voucher title must be explicitly localized');
+assert.equal(ru.description,'Сульфорафан и спирулина (3 варианта)','Russian voucher description must be explicitly localized');
+assert.equal(offers.publicOffer(hit[0],'ru').title,ru.title,'public offer must preserve requested localization');
+console.log('Merchant offer voucher gate passed (DE + RU)');
