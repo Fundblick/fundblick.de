@@ -7,7 +7,7 @@ function facet(page,title){
   return page.locator('section.facet').filter({has:page.locator('h2',{hasText:title})});
 }
 
-test('Ahipos merchant, brand and product-type facets follow the remaining result set',async({page})=>{
+test('multi-merchant facets follow the remaining result set',async({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(base,{waitUntil:'networkidle'});
@@ -15,9 +15,10 @@ test('Ahipos merchant, brand and product-type facets follow the remaining result
 
   const merchantFacet=facet(page,'Händler');
   await expect(merchantFacet).toBeVisible();
-  await expect(merchantFacet.locator('input[data-key="merchant"]')).toHaveCount(2);
+  await expect(merchantFacet.locator('input[data-key="merchant"]')).toHaveCount(3);
   await expect(merchantFacet).toContainText('Casa Moro');
   await expect(merchantFacet).toContainText('Ahipos Horses DE');
+  await expect(merchantFacet).toContainText('ANTHBOT');
 
   await merchantFacet.locator('input[value="Ahipos Horses DE"]').check();
   await expect(page.locator('#summary')).toContainText('31');
@@ -29,6 +30,7 @@ test('Ahipos merchant, brand and product-type facets follow the remaining result
   await expect(brandFacet).not.toContainText('ahipos-horses');
   await expect(brandFacet).not.toContainText('Fast Bundle');
   await expect(brandFacet).not.toContainText('Casa Moro');
+  await expect(brandFacet).not.toContainText('ANTHBOT');
 
   const typeFacet=facet(page,'Produkttyp');
   await expect(typeFacet).toBeVisible();

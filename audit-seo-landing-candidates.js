@@ -1,8 +1,7 @@
 'use strict';
-const fs=require('node:fs');
+const {readProductionSources}=require('./production-source-reader.js');
 
-const sources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
-const products=sources.flatMap(file=>JSON.parse(fs.readFileSync(file,'utf8')));
+const products=readProductionSources();
 
 const real=products.filter(p=>p&&p.active!==false&&p.testData===false&&Number(p.price)>0&&String(p.name||'').trim());
 const groupKey=p=>String(p.productGroupId||p.id||'').trim();

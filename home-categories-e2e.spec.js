@@ -9,19 +9,25 @@ test('homepage categories follow the production taxonomy manifest',async({page})
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
   const categoryNav=page.getByRole('navigation',{name:'Produktkategorien'});
   const links=categoryNav.locator('a[data-live-category="true"]');
-  await expect(links).toHaveCount(7);
+  await expect(links).toHaveCount(9);
   await expect(categoryNav).toContainText('Pferd & Reitsport');
   await expect(categoryNav).toContainText('Hund');
   await expect(categoryNav).toContainText('Gesundheit & Nahrungsergänzung');
+  await expect(categoryNav).toContainText('Mähroboter');
+  await expect(categoryNav).toContainText('Mähroboter-Zubehör');
   await expect(categoryNav.locator('a[data-catalog-category="pet.equestrian"]')).toHaveAttribute('title','29 Produkte');
   await expect(categoryNav.locator('a[data-catalog-category="pet.dog"]')).toHaveAttribute('title','1 Produkt');
   await expect(categoryNav.locator('a[data-catalog-category="health.supplements"]')).toHaveAttribute('title','1 Produkt');
+  await expect(categoryNav.locator('a[data-catalog-category="home.garden.robot-mowers"]')).toHaveAttribute('title','33 Produkte');
+  await expect(categoryNav.locator('a[data-catalog-category="home.garden.robot-mower-accessories"]')).toHaveAttribute('title','23 Produkte');
 
   await page.locator('#language').selectOption('ru');
   const categoryNavRu=page.getByRole('navigation',{name:'Категории товаров'});
   await expect(categoryNavRu).toContainText('Лошади и конный спорт');
   await expect(categoryNavRu).toContainText('Собаки');
   await expect(categoryNavRu).toContainText('Здоровье и пищевые добавки');
+  await expect(categoryNavRu).toContainText('Роботы-газонокосилки');
+  await expect(categoryNavRu).toContainText('Аксессуары для роботов-газонокосилок');
 
   await page.locator('#language').selectOption('de');
   const categoryNavDe=page.getByRole('navigation',{name:'Produktkategorien'});

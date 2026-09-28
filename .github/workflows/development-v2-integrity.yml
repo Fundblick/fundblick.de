@@ -27,3 +27,7 @@ jobs:
       - run: node verify-public-catalog-boundary.js
       - run: node verify-affiliate-consent.js
       - run: node verify-merchant-offers.js
+      - run: node verify-merchant-feed-registry.js
+      - run: node verify-anthbot-feed.js
+      - run: node verify-anthbot-search-facets.js
+      - run: node verify-robot-mower-classifier.js

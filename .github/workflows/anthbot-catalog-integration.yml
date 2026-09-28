@@ -1,0 +1,51 @@
+name: ANTHBOT catalog integration gate
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'anthbot-feed-normalizer.js'
+      - 'merchant-feed-registry.js'
+      - 'build-merchant-feed-catalog.js'
+      - 'build-anthbot-development-catalog.js'
+      - 'verify-anthbot-feed.js'
+      - 'verify-anthbot-search-facets.js'
+      - 'verify-anthbot-catalog-integration.js'
+      - 'facet-schemas.js'
+      - 'search-facet-engine-v2.js'
+      - '.github/workflows/anthbot-catalog-integration.yml'
+  workflow_dispatch:
+    inputs:
+      feed_path:
+        description: 'Path to ANTHBOT 125144 retail CSV/CSV.GZ already available in workspace'
+        required: true
+        default: '125144-retail-de_DE.csv.gz'
+
+jobs:
+  verify-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check anthbot-feed-normalizer.js
+      - run: node --check merchant-feed-registry.js
+      - run: node --check build-merchant-feed-catalog.js
+      - run: node --check build-anthbot-development-catalog.js
+      - run: node --check verify-anthbot-catalog-integration.js
+      - run: node verify-anthbot-feed.js
+      - run: node verify-anthbot-search-facets.js
+
+  build-with-feed:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require explicitly supplied feed file
+        run: test -f "${{ inputs.feed_path }}" || { echo 'ANTHBOT feed is intentionally not committed; supply it to the workflow workspace before this gate.'; exit 1; }
+      - run: node build-merchant-feed-catalog.js anthbot "${{ inputs.feed_path }}" build/anthbot-catalog
+      - run: node verify-anthbot-catalog-integration.js build/anthbot-catalog
