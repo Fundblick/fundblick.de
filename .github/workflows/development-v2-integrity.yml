@@ -25,3 +25,4 @@ jobs:
       - run: node development/verify-substring-browser-shadow.js
       - run: node development/verify-search-shadow.js
       - run: node verify-public-catalog-boundary.js
+      - run: node verify-affiliate-consent.js
