@@ -1,10 +1,9 @@
 'use strict';
-const fs=require('node:fs');
 const Relevance=require('./search-relevance.js');
 const Intent=require('./search-intent.js');
+const {readProductionSources}=require('./production-source-reader.js');
 
-const sources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
-const products=sources.flatMap(file=>JSON.parse(fs.readFileSync(file,'utf8'))).filter(p=>p&&p.active!==false&&p.name&&Number.isFinite(Number(p.price)));
+const products=readProductionSources().filter(p=>p&&p.active!==false&&p.name&&Number.isFinite(Number(p.price)));
 
 function ranked(query){
   const corrected=Intent.correctSpelling(query);
