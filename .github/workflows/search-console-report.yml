@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: development
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -23,7 +25,9 @@ jobs:
           node search-console-collector.spec.js
       - name: Collect Search Console data
         env:
-          SEARCH_CONSOLE_ACCESS_TOKEN: ${{ secrets.SEARCH_CONSOLE_ACCESS_TOKEN }}
+          SEARCH_CONSOLE_CLIENT_ID: ${{ secrets.SEARCH_CONSOLE_CLIENT_ID }}
+          SEARCH_CONSOLE_CLIENT_SECRET: ${{ secrets.SEARCH_CONSOLE_CLIENT_SECRET }}
+          SEARCH_CONSOLE_REFRESH_TOKEN: ${{ secrets.SEARCH_CONSOLE_REFRESH_TOKEN }}
           SEARCH_CONSOLE_SITE_URL: ${{ vars.SEARCH_CONSOLE_SITE_URL || 'sc-domain:fundblick.de' }}
         run: node search-console-collector.js build/analytics/search-console.json
       - name: Upload private workflow artifact
