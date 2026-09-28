@@ -20,6 +20,18 @@ const money=value=>Math.round(Number(value)*100)/100;
 const numeric=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value))?Number(value):null;
 const isRealProduct=raw=>raw?.testData===false||String(raw?.source?.network||'').toLowerCase()==='awin';
 
+const PUBLIC_SOURCE_FIELDS=[
+  'id','name','description','brand','category','image','currency','active','testData',
+  'price','shippingCost','deliveryDays','inStock','availability','merchant','merchantId',
+  'directUrl','affiliateUrl','updatedAt','network','originalPrice','referencePrice','rrpPrice',
+  'family','taxonomy','rawAttributes','attributes'
+];
+function publicSource(raw){
+  const out={};
+  for(const key of PUBLIC_SOURCE_FIELDS){if(Object.prototype.hasOwnProperty.call(raw,key))out[key]=raw[key];}
+  return out;
+}
+
 function simulatedPromotions(raw,index,price,shippingCost){
   const base={active:true,verification:'verified',validFrom:'2026-01-01T00:00:00Z',validUntil:'2099-12-31T23:59:59Z',source:{type:'simulator',name:'FundBlick Simulator'},simulated:true};
   const promotions=[];
@@ -74,7 +86,7 @@ function enrichProduct(raw){
   const knownTotals=offers.map(offer=>numeric(offer.totalPrice)).filter(value=>value!==null);
   const knownEffective=offers.map(offer=>numeric(offer.effectiveTotal)).filter(value=>value!==null);
   return {
-    ...raw,
+    ...publicSource(raw),
     sourcePrice:Number(raw.price),price:best.price,shippingCost:best.shippingCost,
     totalPrice:best.totalPrice,effectiveTotalPrice:best.effectiveTotal,promotionSavings:best.promotionSavings||0,
     inStock:best.inStock,deliveryDays:best.deliveryDays,merchantCount:offers.length,offers,bestOffer:best,bestEffectiveOffer:best,
