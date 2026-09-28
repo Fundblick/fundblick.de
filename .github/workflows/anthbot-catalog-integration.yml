@@ -5,6 +5,8 @@ on:
     branches: [development]
     paths:
       - 'anthbot-feed-normalizer.js'
+      - 'merchant-feed-registry.js'
+      - 'build-merchant-feed-catalog.js'
       - 'build-anthbot-development-catalog.js'
       - 'verify-anthbot-feed.js'
       - 'verify-anthbot-search-facets.js'
@@ -28,6 +30,8 @@ jobs:
         with:
           node-version: '22'
       - run: node --check anthbot-feed-normalizer.js
+      - run: node --check merchant-feed-registry.js
+      - run: node --check build-merchant-feed-catalog.js
       - run: node --check build-anthbot-development-catalog.js
       - run: node --check verify-anthbot-catalog-integration.js
       - run: node verify-anthbot-feed.js
@@ -43,5 +47,5 @@ jobs:
           node-version: '22'
       - name: Require explicitly supplied feed file
         run: test -f "${{ inputs.feed_path }}" || { echo 'ANTHBOT feed is intentionally not committed; supply it to the workflow workspace before this gate.'; exit 1; }
-      - run: node build-anthbot-development-catalog.js "${{ inputs.feed_path }}" build/anthbot-catalog
+      - run: node build-merchant-feed-catalog.js anthbot "${{ inputs.feed_path }}" build/anthbot-catalog
       - run: node verify-anthbot-catalog-integration.js build/anthbot-catalog
