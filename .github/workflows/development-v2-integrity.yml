@@ -29,3 +29,4 @@ jobs:
       - run: node verify-merchant-offers.js
       - run: node verify-anthbot-feed.js
       - run: node verify-anthbot-search-facets.js
+      - run: node verify-robot-mower-classifier.js
