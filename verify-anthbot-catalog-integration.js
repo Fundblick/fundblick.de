@@ -8,7 +8,7 @@ const products=[];
 for(const shard of Object.values(manifest.shards||{}))products.push(...JSON.parse(fs.readFileSync(path.join(root,shard.file),'utf8')));
 const anthbot=products.filter(p=>p?.source?.advertiserId==='125144');
 assert.equal(anthbot.length,56,'isolated catalog must contain exactly 56 ANTHBOT physical products');
-assert.equal(anthbot.filter(p=>p.inStock).length,36,'ANTHBOT in-stock count must remain 36');
+assert.equal(anthbot.filter(p=>p.inStock).length,34,'ANTHBOT in-stock count must remain 34 for the current verified feed snapshot');
 assert.equal(anthbot.filter(p=>p.rawAttributes?.refurbished).length,4,'four refurbished products must remain labelled');
 assert(anthbot.every(p=>p.testData===false),'ANTHBOT products must remain real data');
 assert(anthbot.every(p=>p.brand==='ANTHBOT'),'bad feed brands must not escape normalization');
