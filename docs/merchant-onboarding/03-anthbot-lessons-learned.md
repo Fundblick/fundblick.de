@@ -24,6 +24,22 @@ Grundsatz: **Ein einmal verstandenes Onboarding-Problem soll bei Händler Nr. 4+
 
 Diese Zahlen sind bewusst als Drift-Gate hinterlegt. Ändert der Händler die Feedstruktur oder das Sortiment erheblich, soll der Build stoppen und eine Prüfung erzwingen, statt unbemerkt falsche Daten zu veröffentlichen.
 
+## Programmregeln – dokumentierter Stand
+
+Die vorliegenden ANTHBOT-DE-Programmbedingungen sind mit „Last updated at: 13 Mar 2026“ gekennzeichnet. Für das Onboarding relevante Punkte:
+
+- mindestens 10 % Provision auf gültige Verkäufe laut Zusatzbedingungen,
+- 30 Tage Cookie-Dauer laut Zusatzbedingungen,
+- keine Produkt-/Produktkategorien pauschal von der Provisionsberechnung ausgeschlossen,
+- Content-Websites, Blogs, Produktreviews, Coupon-/Discount-Seiten und Preisvergleich/CSS werden ausdrücklich als mögliche Promotion-Typen genannt,
+- direkte Verlinkung und Comparison Engine sind in den erlaubten Partnertypen aufgeführt,
+- Brand-PPC ist eingeschränkt: ANTHBOT-Markenbegriffe und Varianten dürfen nicht einfach als normale bezahlte Suchbegriffe behandelt werden,
+- nicht erlaubte Gutscheincodes können zur Ablehnung einer Provision führen,
+- ANTHBOT verlangt faire und korrekte Darstellung; bevorzugt sollen freigegebene Marken-/Marketingmaterialien verwendet werden,
+- Bedingungen, Provisionen und Promotions können vom Händler geändert werden.
+
+Konsequenz für FundBlick: Programmbedingungen sind **versionierte Händlerdaten** und müssen vor einer späteren Änderung des Traffic-/Werbemodells erneut geprüft werden. Insbesondere darf ein Gutschein nicht allein deshalb veröffentlicht werden, weil ein Code technisch bekannt ist; seine Nutzung muss für das Partnerprogramm zulässig sein.
+
 ## Erkenntnis 1 – Feed niemals blind importieren
 
 ### Beobachtung
@@ -163,6 +179,25 @@ Während des Onboardings haben neue Gates mehrere reale Probleme sichtbar gemach
 
 Arbeitsregel: Bei rotem CI zuerst Ursache und Datenvertrag prüfen. Assertions oder erwartete Werte werden nur geändert, wenn der zugrunde liegende Geschäfts-/Datenvertrag nachweislich geändert wurde.
 
+## Erkenntnis 12 – Development-Freigabe ist keine Production-Freigabe
+
+### Festgestellter Produktionsstand
+Der aktuelle Produktionskatalog wird aus einer expliziten Quellenliste gebaut. ANTHBOT ist in dieser Liste noch nicht enthalten. Damit kann ein grünes ANTHBOT-Development-Gate allein keine ANTHBOT-Produkte live schalten.
+
+### Dauerhafte Verbesserung
+Für neue Händler werden künftig zwei getrennte Freigaben dokumentiert:
+
+1. **Integration ready:** Normalizer, Taxonomie, Suche, Provenienz und Development-Gates sind grün.
+2. **Production approved:** realer End-to-End-Feed-Build wurde geprüft und die konkrete, geprüfte Produktquelle wurde ausdrücklich in den Produktionskatalog aufgenommen.
+
+Die zweite Stufe darf nicht automatisch aus der ersten folgen. Das verhindert, dass ein technisch vorbereiteter Händler versehentlich veröffentlicht wird.
+
+## Erkenntnis 13 – Fehlender Originalfeed ist ein harter Nachweis-Stopp
+
+Am 28.09.2026 wurde zusätzlich in den verfügbaren Gesprächs-/Library-Dateien nach dem ANTHBOT-Originalfeed `125144-retail-de_DE.csv(.gz)` gesucht. Verfügbar waren die ANTHBOT-DE-Programmbedingungen, aber kein eindeutig auffindbarer Originalfeed unter diesem Namen.
+
+Konsequenz: Der echte generische Feed→Katalog-End-to-End-Lauf wird **nicht simuliert und nicht behauptet**. Ohne den tatsächlichen Feed bleibt dieser Produktionsnachweis offen. Ein Testfixture oder aus früheren Ergebnissen rekonstruierter Datensatz ist kein Ersatz für diesen Freigabenachweis.
+
 ## Gutschein- und Sprach-Lesson
 
 Im dritten Händler-Onboarding wurde zusätzlich deutlich, dass Händlerangebote/Gutscheine Bestandteil der professionellen Produktdarstellung sein können und nicht als improvisierter Zusatz behandelt werden dürfen.
@@ -188,8 +223,10 @@ Diese UI-Erkenntnis ist von der Feed-Pipeline getrennt, gehört aber zum vollst�
 13. Feed-, Klassifizierungs-, Such- und Integrations-Gates grün bekommen.
 14. DE/RU bzw. alle bereits unterstützten UI-Sprachen bei neuen Händlerkomponenten prüfen.
 15. Affiliate-Links, `target`, `rel`, `sponsored`, Gutscheinlogik und Fallbacks prüfen.
-16. Erst nach vollständigem Gate über Main/Live-Freigabe entscheiden.
-17. Neue Fehlerklasse sofort in diese Lessons Learned und – wenn automatisierbar – in ein dauerhaftes Gate übernehmen.
+16. Status `integration ready` dokumentieren.
+17. Echten Feed end-to-end bauen und resultierenden Katalog prüfen.
+18. Erst danach konkrete Quelle ausdrücklich für Production zulassen (`production approved`).
+19. Neue Fehlerklasse sofort in diese Lessons Learned und – wenn automatisierbar – in ein dauerhaftes Gate übernehmen.
 
 ## Aktueller technischer Nachweis
 
@@ -197,9 +234,11 @@ Am 28.09.2026 ist Development V2 Integrity Run #229 für Commit `abdb5ed18fe236e
 
 ## Offene Punkte vor endgültiger Händlerfreigabe
 
-- Generische Feed-Pipeline mit einem tatsächlich im Workflow-Workspace bereitgestellten Originalfeed end-to-end ausführen.
+- Tatsächlichen ANTHBOT-Originalfeed `125144-retail-de_DE.csv(.gz)` für den kontrollierten Build bereitstellen bzw. eindeutig wiederfinden.
+- Generische Feed-Pipeline mit diesem Originalfeed end-to-end ausführen.
 - Resultierenden Katalog erneut auf Produktzahl, Provenienz, Affiliate-Ziele und Suchbarkeit prüfen.
 - UI-/Sprachprüfung der final eingebundenen ANTHBOT-Produkte und Angebote durchführen.
+- Programmbedingungen/Gutscheingültigkeit unmittelbar vor Production-Freigabe nochmals prüfen.
 - Erst danach den kontrollierten Promotion-/Live-Pfad verwenden.
 
 ## Pflegepflicht
