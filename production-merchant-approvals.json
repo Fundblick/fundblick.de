@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "merchants": {
+    "ahipos": {
+      "approved": true,
+      "network": "awin",
+      "advertiserId": "120341",
+      "sources": [
+        "development/ahipos-products-1.json",
+        "development/ahipos-products-2.json"
+      ],
+      "note": "Existing production merchant sources. Approval record added to make the production boundary explicit."
+    },
+    "anthbot": {
+      "approved": false,
+      "network": "awin",
+      "advertiserId": "125144",
+      "sources": [],
+      "requiredEvidence": [
+        "real-feed-end-to-end-build",
+        "catalog-integration-gate",
+        "affiliate-url-and-direct-url-validation",
+        "de-ru-ui-review"
+      ],
+      "note": "Integration-ready on development, but intentionally blocked from production until the real feed E2E evidence exists."
+    }
+  }
+}
