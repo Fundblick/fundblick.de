@@ -12,5 +12,5 @@ window.FB_CATEGORY_SCHEMAS={
 };
 /* Only expose attributes that can be supported by real feed text/data. */
 window.FB_COMMON_FACETS=[{key:'price',label:L('price','Produktpreis'),type:'price'},{key:'brand',label:L('brand','Hersteller / Marke'),type:'brand'},{key:'merchant',label:L('merchant','Händler'),type:'multi'}];
-window.FB_detectCategory=function(query){const q=String(query||'').toLocaleLowerCase('de');let best=null,bestLen=0;for(const [key,s] of Object.entries(window.FB_CATEGORY_SCHEMAS)){for(const term of s.terms){if(q.includes(term)&&term.length>bestLen){best={key,...s};bestLen=term.length}}}return best;};
+window.FB_detectCategory=function(query){const q=String(query||'').toLocaleLowerCase('de');let best=null,bestLen=0;for(const [key,s] of Object.entries(window.FB_CATEGORY_SCHEMAS)){for(const term of s.terms){if(q.includes(term)&&term.length>bestLen){best={id:key,key,...s};bestLen=term.length}}}return best;};
 window.FB_facetVisible=function(facet,state,query){if(!facet.when)return true;const w=facet.when;if(w.queryIncludes&&!w.queryIncludes.some(x=>String(query).toLowerCase().includes(x)))return false;const vals=state?.[w.facet]||[];if(w.equals&&!vals.includes(w.equals))return false;const vals2=state?.[w.facet]||[];if(w.not&&vals2.includes(w.not))return false;return true;};
