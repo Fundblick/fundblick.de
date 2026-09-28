@@ -11,13 +11,17 @@ const counts=new Map(payload.categories.map(item=>[String(item?.id||''),Number(i
 const expected=new Map([
   ['pet.equestrian',29],
   ['pet.dog',1],
-  ['health.supplements',1]
+  ['health.supplements',1],
+  ['home.garden.robot-mowers',33],
+  ['home.garden.robot-mower-accessories',23]
 ]);
 for(const [id,count] of expected){
   if(counts.get(id)!==count)throw new Error(`Expected ${id}=${count}, got ${counts.get(id)??'missing'}`);
 }
 const homeTotal=['home.living','home.furniture','home.lighting','home.decor'].reduce((sum,id)=>sum+(counts.get(id)||0),0);
 if(homeTotal!==1428)throw new Error(`Expected Casa Moro home category total 1428, got ${homeTotal}`);
+const anthbotTotal=['home.garden.robot-mowers','home.garden.robot-mower-accessories'].reduce((sum,id)=>sum+(counts.get(id)||0),0);
+if(anthbotTotal!==56)throw new Error(`Expected ANTHBOT category total 56, got ${anthbotTotal}`);
 const total=[...counts.values()].reduce((sum,count)=>sum+count,0);
-if(total!==1459)throw new Error(`Expected category total 1459, got ${total}`);
+if(total!==1515)throw new Error(`Expected category total 1515, got ${total}`);
 console.log(`Production category gate OK: ${payload.categories.length} categories, total ${total}`);
