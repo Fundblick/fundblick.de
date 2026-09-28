@@ -2,7 +2,16 @@ name: Result card safety
 
 on:
   push:
-    branches: [dev/result-cards-v1]
+    branches: [development]
+    paths:
+      - 'live-catalog-ui.js'
+      - 'merchant-offers.js'
+      - 'verify-merchant-offers.js'
+      - 'result-card.css'
+      - 'result-card-e2e.spec.js'
+      - 'search.html'
+      - '.github/workflows/result-card-safety.yml'
+      - '.github/workflows/production-pages.yml'
   pull_request:
     branches: [main]
 
@@ -17,10 +26,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-      - name: Syntax checks
+      - name: Syntax and voucher contract checks
         run: |
           node --check live-catalog-ui.js
+          node --check merchant-offers.js
+          node --check verify-merchant-offers.js
           node --check result-card-e2e.spec.js
+          node verify-merchant-offers.js
       - name: Build real production catalog
         run: |
           node build-production-catalog.js build/catalog
@@ -31,7 +43,9 @@ jobs:
         run: |
           test -s result-card.css
           grep -q 'result-card.css' search.html
+          grep -q 'merchant-offers.js' search.html
           grep -q 'live-catalog-ui.js' search.html
+          grep -q 'merchant-offers.js' .github/workflows/production-pages.yml
           grep -q 'result-card.css' .github/workflows/production-pages.yml
       - name: Install Playwright
         run: |
@@ -46,5 +60,5 @@ jobs:
           done
           cat /tmp/fundblick-http.log
           exit 1
-      - name: Browser result card regression
+      - name: Browser result card and voucher regression
         run: npx playwright test result-card-e2e.spec.js --reporter=line --workers=1
