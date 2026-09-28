@@ -11,6 +11,9 @@
     merchantMatch:/ahipos/i,
     title:'10 % Rabatt auf AHIPOS SULFO IMMUN',
     description:'Sulforaphan und Spirulina (3 Varianten)',
+    i18n:{
+      ru:{title:'Скидка 10 % на AHIPOS SULFO IMMUN',description:'Сульфорафан и спирулина (3 варианта)'}
+    },
     code:'Immun10',
     discount:{type:'percent',value:10},
     startsAt:null,
@@ -35,6 +38,11 @@
     return (!offer.merchantMatch||offer.merchantMatch.test(merchant))&&(!offer.productMatch||offer.productMatch.test(text));
   }
   function forProduct(product,now=Date.now()){return OFFERS.filter(offer=>matches(offer,product,now));}
-  function publicOffer(offer){if(!offer)return null;return {id:offer.id,title:offer.title,description:offer.description,code:offer.code,discount:offer.discount,endsAt:offer.endsAt,conditions:offer.conditions,offerUrl:offer.offerUrl};}
-  return {OFFERS,isActive,matches,forProduct,publicOffer};
+  function localized(offer,lang){
+    if(!offer)return null;
+    const copy=offer.i18n?.[lang]||{};
+    return Object.assign({},offer,{title:copy.title||offer.title,description:copy.description||offer.description});
+  }
+  function publicOffer(offer,lang){if(!offer)return null;const value=localized(offer,lang);return {id:value.id,title:value.title,description:value.description,code:value.code,discount:value.discount,endsAt:value.endsAt,conditions:value.conditions,offerUrl:value.offerUrl};}
+  return {OFFERS,isActive,matches,forProduct,localized,publicOffer};
 });
