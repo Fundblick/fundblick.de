@@ -40,7 +40,7 @@ jobs:
           grep -q '394 Produkte aus 394 Produktgruppen' build/seo/themen/moebel/index.html
           ! grep -q 'pet.dog' build/seo/landing-manifest.json
           ! grep -q 'health.supplements' build/seo/landing-manifest.json
-          test "$(grep -o 'href="/themen/' index.html | wc -l)" -eq 6
+          ! grep -q 'href="/themen/' index.html
           grep -q 'href="search.html?category=home.furniture"' index.html
           grep -q 'href="search.html?category=pet.equestrian"' index.html
       - name: Install Playwright

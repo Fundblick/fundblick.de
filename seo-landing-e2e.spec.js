@@ -12,11 +12,10 @@ const pages=[
   ['pferde-ergaenzungsfutter','https://fundblick.de/themen/pferde-ergaenzungsfutter/','category=pet.equestrian']
 ];
 
-test('homepage exposes all SEO topics without replacing product category search links',async({page})=>{
+test('homepage keeps product category search links without duplicate SEO topic block',async({page})=>{
   await page.goto(home,{waitUntil:'networkidle'});
-  const topics=page.locator('#topics a[href^="/themen/"]');
-  await expect(topics).toHaveCount(6);
-  for(const [slug] of pages)await expect(page.locator(`#topics a[href="/themen/${slug}/"]`)).toHaveCount(1);
+  await expect(page.locator('#topics')).toHaveCount(0);
+  await expect(page.locator('a[href^="/themen/"]')).toHaveCount(0);
   await expect(page.locator('#categories a[href="search.html?category=home.furniture"]')).toHaveCount(1);
   await expect(page.locator('#categories a[href="search.html?category=pet.equestrian"]')).toHaveCount(1);
 });
@@ -36,10 +35,7 @@ test('SEO landing canonicals and search CTAs preserve stable filters',async({pag
   }
 });
 
-test('thin categories are absent from homepage topic links and generated sitemap',async({page})=>{
-  await page.goto(home,{waitUntil:'domcontentloaded'});
-  await expect(page.locator('#topics a[href*="hund"]')).toHaveCount(0);
-  await expect(page.locator('#topics a[href*="nahrung"]')).toHaveCount(0);
+test('thin categories stay absent from generated sitemap',async({page})=>{
   const response=await page.request.get(seo+'sitemap.xml');
   expect(response.ok()).toBeTruthy();
   const xml=await response.text();
@@ -49,9 +45,9 @@ test('thin categories are absent from homepage topic links and generated sitemap
   expect(xml).not.toContain('/themen/nahrungsergaenzung/');
 });
 
-test('Russian homepage localizes the new topic section without changing its URLs',async({page})=>{
+test('Russian homepage also omits duplicate SEO topic block',async({page})=>{
   await page.goto(home+'?lang=ru',{waitUntil:'networkidle'});
-  await expect(page.locator('#fundblickTopics')).toHaveText('Откройте темы');
-  await expect(page.locator('#topics a[href="/themen/pferd-reitsport/"]')).toHaveText('Лошади и конный спорт');
-  await expect(page.locator('#topics a[href="/themen/pferde-ergaenzungsfutter/"]')).toHaveText('Добавки к корму для лошадей');
+  await expect(page.locator('#fundblickTopics')).toHaveCount(0);
+  await expect(page.locator('#topics')).toHaveCount(0);
+  await expect(page.locator('a[href^="/themen/"]')).toHaveCount(0);
 });
