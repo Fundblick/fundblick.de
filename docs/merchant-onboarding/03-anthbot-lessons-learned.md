@@ -1,133 +1,69 @@
 # Händler-Onboarding Nr. 3 – ANTHBOT (Lessons Learned)
 
 Stand: 28.09.2026  
-Branch: `development`  
-Status: technische Vorbereitung und Gates; keine automatische Live-Freigabe durch dieses Dokument.
+Status: **Production approved und erfolgreich live veröffentlicht**  
+Live-Merge: PR #31, Merge-Commit `b895c1a20945860c7c50571bfb421d1107736494`
 
 ## Zweck
 
-ANTHBOT ist der dritte Händler und zugleich der Referenzfall für die Standardisierung künftiger Händler-Onboardings. Ziel ist nicht nur, diesen Händler zu integrieren, sondern jede gefundene Fehlerklasse dauerhaft in wiederverwendbare Regeln, Tests und CI-Gates zu überführen.
+ANTHBOT ist der dritte Händler und der Referenzfall für die Standardisierung künftiger Händler-Onboardings. Ziel war nicht nur, diesen Händler zu integrieren, sondern jede gefundene Fehlerklasse dauerhaft in wiederverwendbare Regeln, Tests und CI-Gates zu überführen.
 
 Grundsatz: **Ein einmal verstandenes Onboarding-Problem soll bei Händler Nr. 4+ möglichst automatisch erkannt werden, bevor Produkte veröffentlicht werden.**
 
-## Händler- und Feed-Vertrag
+## Finaler Produktionsstand
 
 - Händler: ANTHBOT DE
 - Affiliate-Netzwerk: Awin
 - Advertiser-ID: `125144`
-- Feed-Eingang: `125144-retail-de_DE.csv` bzw. `.csv.gz`
-- Der Originalfeed wird nicht als öffentlicher Repository-Inhalt benötigt.
-- Erwarteter aktueller Feedvertrag: 161 Advertiser-Zeilen, daraus 56 freigegebene Warenpositionen, davon 36 als lieferbar erkannt.
-- Zulässige FundBlick-Kategorien:
-  - `home.garden.robot-mowers`
-  - `home.garden.robot-mower-accessories`
-
-Diese Zahlen sind bewusst als Drift-Gate hinterlegt. Ändert der Händler die Feedstruktur oder das Sortiment erheblich, soll der Build stoppen und eine Prüfung erzwingen, statt unbemerkt falsche Daten zu veröffentlichen.
+- 56 ANTHBOT-Produkte im Produktionskatalog
+- 33 Produkte in `home.garden.robot-mowers`
+- 23 Produkte in `home.garden.robot-mower-accessories`
+- Gesamtbestand FundBlick nach Release: 1.515 Produktionsprodukte
+- 9 produktive Homepage-Kategorien
+- Production-Publish nach Merge erfolgreich
+- Nutzerseitige Live-Sichtprüfung: System, Kategorien, Kartengrößen und Darstellung ohne erkennbare Abweichung; Größen identisch zum bisherigen Layout.
 
 ## Programmregeln – dokumentierter Stand
 
-Die vorliegenden ANTHBOT-DE-Programmbedingungen sind mit „Last updated at: 13 Mar 2026“ gekennzeichnet. Für das Onboarding relevante Punkte:
+Die vorliegenden ANTHBOT-DE-Programmbedingungen waren mit „Last updated at: 13 Mar 2026“ gekennzeichnet. Für das Onboarding relevant:
 
 - mindestens 10 % Provision auf gültige Verkäufe laut Zusatzbedingungen,
 - 30 Tage Cookie-Dauer laut Zusatzbedingungen,
 - keine Produkt-/Produktkategorien pauschal von der Provisionsberechnung ausgeschlossen,
-- Content-Websites, Blogs, Produktreviews, Coupon-/Discount-Seiten und Preisvergleich/CSS werden ausdrücklich als mögliche Promotion-Typen genannt,
-- direkte Verlinkung und Comparison Engine sind in den erlaubten Partnertypen aufgeführt,
-- Brand-PPC ist eingeschränkt: ANTHBOT-Markenbegriffe und Varianten dürfen nicht einfach als normale bezahlte Suchbegriffe behandelt werden,
+- Content-Websites, Blogs, Produktreviews, Coupon-/Discount-Seiten und Preisvergleich/CSS als mögliche Promotion-Typen,
+- direkte Verlinkung und Comparison Engine in den erlaubten Partnertypen,
+- Brand-PPC eingeschränkt,
 - nicht erlaubte Gutscheincodes können zur Ablehnung einer Provision führen,
-- ANTHBOT verlangt faire und korrekte Darstellung; bevorzugt sollen freigegebene Marken-/Marketingmaterialien verwendet werden,
-- Bedingungen, Provisionen und Promotions können vom Händler geändert werden.
+- faire und korrekte Darstellung; bevorzugt freigegebene Marken-/Marketingmaterialien,
+- Bedingungen, Provisionen und Promotions können geändert werden.
 
-Konsequenz für FundBlick: Programmbedingungen sind **versionierte Händlerdaten** und müssen vor einer späteren Änderung des Traffic-/Werbemodells erneut geprüft werden. Insbesondere darf ein Gutschein nicht allein deshalb veröffentlicht werden, weil ein Code technisch bekannt ist; seine Nutzung muss für das Partnerprogramm zulässig sein.
+Konsequenz: Programmbedingungen sind versionierte Händlerdaten. Gutscheine dürfen nicht allein deshalb veröffentlicht werden, weil ein Code technisch bekannt ist; seine Affiliate-Nutzung muss zulässig sein.
 
-## Erkenntnis 1 – Feed niemals blind importieren
+## Lessons Learned
 
-### Beobachtung
-Der Händlerfeed enthält nicht ausschließlich normale verkäufliche Hauptprodukte. Nicht jede Feedzeile darf automatisch als FundBlick-Produkt interpretiert werden.
+### 1. Feed niemals blind importieren
+Händlerfeeds enthalten nicht zwingend ausschließlich verkäufliche Hauptprodukte. Gebühren, Services, Shipping Protection, Geschenkkarten oder vergleichbare Nicht-Warenpositionen müssen vor dem Katalogbau selektiert werden. Der Händler-Normalizer ist die erste fachliche Qualitätsgrenze.
 
-### Konsequenz
-Vor dem Katalogbau erfolgt eine Händler-spezifische Selektion und Normalisierung. Gebühren, Services, Shipping Protection, Geschenkkarten oder vergleichbare Nicht-Warenpositionen dürfen nicht versehentlich als reguläre Suchprodukte erscheinen.
+### 2. Provenienz maschinenprüfbar machen
+Die Merchant Registry bindet Händler an Netzwerk, Advertiser-ID, Dateimuster, Normalizer und erlaubte Kategorien. Ein technisch ähnlicher Feed eines anderen Advertisers muss abgewiesen werden.
 
-### Dauerhafte Verbesserung
-Der Normalizer besitzt eine eigene Validierung. Der generische Feed-Builder akzeptiert nur normalisierte Produkte, die die Provenienz- und Kategorieverträge erfüllen.
+### 3. Neue Händler dürfen die zentrale Taxonomie erweitern – nicht umgehen
+Für ANTHBOT wurde die kanonische Familie `robot-mowers` mit den Typen `Mähroboter` und `Mähroboter-Zubehör` eingeführt. Händler-Sonderkategorien außerhalb der zentralen Logik sind zu vermeiden.
 
-## Erkenntnis 2 – Provenienz muss maschinenprüfbar sein
+### 4. Kanonische Kategorie vor unsicherem Text-Raten
+Wenn ein Produkt bereits sauber normalisiert ist, darf unsicheres Titel-/Beschreibungsmatching die bekannte Produktfamilie nicht wieder überschreiben.
 
-### Risiko
-Ein Feed des falschen Awin-Advertisers könnte technisch ähnlich aussehen und versehentlich dem falschen Händler zugeordnet werden.
+### 5. Produkttypen exklusiv klassifizieren
+Bei Robotermähern muss Zubehör vor Hauptprodukt geprüft werden. Ein Zubehörartikel mit Modellnamen darf nicht gleichzeitig als Mähroboter klassifiziert werden.
 
-### Verbesserung
-Die Merchant Registry bindet ANTHBOT fest an:
+### 6. Parser gegen reale Feed-Schreibweisen bauen
+`1500m²` und `1500 m²` sind semantisch gleich. Parser müssen reale Formatvarianten tolerieren. Tests werden nicht abgeschwächt, um einen Feed künstlich grün zu bekommen.
 
-- Netzwerk `awin`
-- Advertiser-ID `125144`
-- erwartetes Dateinamensmuster
-- ANTHBOT-Normalizer
-- erlaubte Katalogkategorien
+### 7. Suchfacetten sind Bestandteil des Händler-Onboardings
+Ein formal gültiger Feed ist noch kein guter FundBlick-Katalog. Neue Produktdomänen benötigen passende strukturierte Merkmale und eigene Facet-/Suchprüfungen.
 
-Ein Feed eines anderen Advertisers, z. B. `120341-retail-de_DE.csv.gz`, muss vom Registry-Gate abgewiesen werden.
-
-## Erkenntnis 3 – Händlerkategorien reichen nicht als gesamte Taxonomie
-
-### Beobachtung
-Vor ANTHBOT kannte die zentrale FundBlick-Taxonomie noch keine eigenständige Mähroboter-Familie.
-
-### Verbesserung
-Neue kanonische Familie:
-
-- `robot-mowers`
-- Typ `Mähroboter`
-- Typ `Mähroboter-Zubehör`
-
-Damit wird ANTHBOT nicht als Sonderfall außerhalb der zentralen Produktlogik geführt.
-
-## Erkenntnis 4 – Kanonische Kategorie hat Vorrang vor unsicherem Text-Raten
-
-### Fehlerklasse
-Titel, Beschreibung und Produktattribute können Begriffe enthalten, die mehrere Familien treffen. Ein bereits sauber normalisiertes Produkt darf dadurch nicht wieder in eine falsche Familie geraten.
-
-### Verbesserung
-Für die kanonischen Kategorien `home.garden.robot-mowers` und `home.garden.robot-mower-accessories` wird die bekannte Familie `robot-mowers` priorisiert.
-
-## Erkenntnis 5 – Produkttypen müssen exklusiv sein
-
-### Gefundener Fehler
-Ein Zubehörprodukt wie „Garage Zubehör für Genie“ enthält sowohl ein Zubehörsignal als auch den Modellnamen eines Mähroboters. Die erste Klassifizierungsfassung konnte deshalb gleichzeitig `Mähroboter-Zubehör` und `Mähroboter` liefern.
-
-### Verbesserung
-Für die Familie `robot-mowers` gilt eine exklusive Reihenfolge:
-
-1. Zubehörsignale prüfen.
-2. Bei Treffer ausschließlich `Mähroboter-Zubehör` zurückgeben.
-3. Erst danach auf den Haupttyp `Mähroboter` prüfen.
-
-Diese Regel verhindert Mehrfachtypen bei Zubehör, das im Titel einen kompatiblen Roboternamen trägt.
-
-## Erkenntnis 6 – Feed-Schreibweisen sind nicht zuverlässig formatiert
-
-### Gefundener Fehler
-Eine Flächenangabe wie `1500m²` ohne Leerzeichen wurde zunächst nicht erkannt, obwohl `1500 m²` verarbeitet werden konnte.
-
-### Verbesserung
-Der Normalizer muss reale Schreibvarianten tolerieren, ohne die Semantik aufzuweichen. Das Flächen-Parsing akzeptiert deshalb relevante Varianten wie `m²`/`m2` mit oder ohne Leerzeichen.
-
-### Allgemeine Regel
-Parser werden gegen echte Feedvarianten getestet; Tests werden nicht abgeschwächt, nur damit ein Händlerfeed „grün“ wird.
-
-## Erkenntnis 7 – Suchfacetten gehören zum Onboarding, nicht in eine spätere Nacharbeit
-
-ANTHBOT hat gezeigt, dass neue Produkttypen unmittelbar neue Suchmerkmale benötigen. Für Mähroboter müssen technische Merkmale wie Flächenleistung und relevante Konnektivitäts-/Modellinformationen bereits beim Onboarding strukturiert erhalten bleiben.
-
-Die Feedprüfung und die Suchfacettenprüfung sind deshalb getrennte Gates: Ein formal gültiger Feed ist noch kein ausreichend gut durchsuchbarer FundBlick-Katalog.
-
-## Erkenntnis 8 – Merchant-Onboarding-Audit und Taxonomie müssen synchron erweitert werden
-
-### Gefundene Lücke
-Nach Einführung der Mähroboter-Taxonomie kannte der allgemeine Merchant-Onboarding-Audit die neuen Kategorien zunächst noch nicht.
-
-### Verbesserung
-Beide Mähroboter-Kategorien werden im zentralen Audit auf `robot-mowers` gemappt. Neue Familien gelten künftig erst dann als vollständig integriert, wenn mindestens folgende Schichten zusammenpassen:
-
+### 8. Alle Integrationsschichten synchron erweitern
+Bei einer neuen Produktfamilie müssen mindestens zusammenpassen:
 1. Feed-Normalisierung
 2. kanonische Kategorien
 3. Taxonomie-Registry
@@ -135,112 +71,132 @@ Beide Mähroboter-Kategorien werden im zentralen Audit auf `robot-mowers` gemapp
 5. Merchant-Onboarding-Audit
 6. Suche/Facetten
 7. CI-Gates
+8. Homepage-/UI-Kategorien und Übersetzungen
 
-## Erkenntnis 9 – Sondercode pro Händler skaliert nicht
-
-### Ausgangslage
-Der erste ANTHBOT-Katalogbau war Händler-spezifisch verdrahtet.
-
-### Verbesserung
-Einführung einer generischen Pipeline:
-
+### 9. Sondercode pro Händler skaliert nicht
+Wiederverwendbarer Unterbau:
 - `merchant-feed-registry.js`
 - `build-merchant-feed-catalog.js`
 - Händler-spezifischer Normalizer
 - Händler-spezifische Vertragswerte
 
-`build-anthbot-development-catalog.js` ist nur noch ein dünner Einstieg in die allgemeine Pipeline.
+Händler Nr. 4+ soll überwiegend Konfiguration + Normalizer + Datenqualitätsregeln benötigen. Gemeinsame Logik wird nicht kopiert.
 
-### Ziel für Händler Nr. 4+
-Ein neuer Händler soll überwiegend aus Konfiguration + Normalizer + Datenqualitätsregeln bestehen. Gemeinsame Katalog-, Provenienz- und CI-Logik darf nicht erneut kopiert werden.
+### 10. Ein echtes Fehler-Gate bleibt dauerhaft
+Während ANTHBOT wurden Feed-, Search-Facet-, Catalog-Integration-, Robot-Mower-Classifier-, Merchant-Registry- und allgemeine Integrity-Prüfungen erweitert. Ein Gate, das eine echte Fehlerklasse gefunden hat, wird nach der Reparatur nicht entfernt.
 
-## Erkenntnis 10 – CI muss neue Fehlerklassen dauerhaft behalten
+### 11. Ursache reparieren, nicht Tests weichmachen
+Gefundene reale Fehlerklassen waren u. a.:
+- `1500m²` zunächst nicht erkannt,
+- Mähroboter-Familie fehlte zentral,
+- Mapping im Merchant-Onboarding-Audit fehlte,
+- konkurrierende Hauptprodukt-/Zubehör-Treffer,
+- veraltete feste Händler-/Kategorie-/Produktanzahlen in bestehenden Tests,
+- UI-Touch-Höhe unter dem vereinbarten Mindestmaß.
 
-Im Verlauf des ANTHBOT-Onboardings wurden zusätzliche Gates eingeführt bzw. erweitert:
+Assertions werden nur geändert, wenn sich der zugrunde liegende Geschäfts-/Datenvertrag nachweislich geändert hat.
 
-- ANTHBOT Feed Gate
-- ANTHBOT Search Facet Gate
-- ANTHBOT Catalog Integration Gate
-- Robot Mower Classifier Gate
-- Merchant Feed Registry Gate
-- allgemeines Development V2 Integrity Gate
+### 12. Integration ready ist nicht Production approved
+Zweistufige Freigabe:
+1. **Integration ready:** Normalizer, Taxonomie, Suche, Provenienz und Development-Gates grün.
+2. **Production approved:** konkrete Produktionsquelle eingebunden, realer Production-Build geprüft, Production-Gates grün und kontrollierter Merge nach `main`.
 
-Wichtig: Ein Gate, das einen echten Fehler gefunden hat, bleibt Teil des Systems. Es wird nicht nach erfolgreicher Fehlerbehebung wieder entfernt.
+ANTHBOT hat beide Stufen erfolgreich durchlaufen.
 
-## Erkenntnis 11 – Fehlerbehebung: Ursache statt Test abschwächen
+### 13. Komprimierte Produktionsquellen brauchen einen gemeinsamen Reader
+ANTHBOT wurde als komprimierte Produktionsquelle geführt. Ältere Search-/SEO-/Ranking-Audits versuchten diese Quelle direkt mit `JSON.parse()` zu lesen und scheiterten am gzip/Base64-Inhalt (`H4sI...`).
 
-Während des Onboardings haben neue Gates mehrere reale Probleme sichtbar gemacht, unter anderem:
+Dauerhafte Verbesserung: `production-source-reader.js` ist die gemeinsame Quellenleselogik und unterstützt JSON sowie `.b64`, `.gz` und `.gz.b64`. Neue Audits dürfen Produktionsquellen nicht wieder individuell parsen.
 
-- nicht erkannte `1500m²`-Schreibweise,
-- fehlende Mähroboter-Familie in der zentralen Taxonomie,
-- fehlendes Mapping im Merchant-Onboarding-Audit,
-- Syntaxfehler beim Erweitern des Klassifizierers,
-- konkurrierende Hauptprodukt-/Zubehör-Treffer.
+### 14. Produktanzahlen sind Verträge – Händlerwachstum muss bewusst eingepflegt werden
+Der Production-Category-Test erwartete zunächst noch 1.459 Produkte. Nach ANTHBOT sind es korrekt 1.515. Statt nur die Gesamtsumme zu erhöhen, wurden Händler- und Kategorienverträge getrennt geprüft:
+- Casa Moro: 1.428
+- AHIPOS: 31
+- ANTHBOT: 56
+- Gesamt: 1.515
 
-Arbeitsregel: Bei rotem CI zuerst Ursache und Datenvertrag prüfen. Assertions oder erwartete Werte werden nur geändert, wenn der zugrunde liegende Geschäfts-/Datenvertrag nachweislich geändert wurde.
+So kann eine zufällig richtige Gesamtsumme keine falsche Händlerverteilung verdecken.
 
-## Erkenntnis 12 – Development-Freigabe ist keine Production-Freigabe
+### 15. Neue Händler verändern bestehende UI-/E2E-Verträge
+Mehrere Tests waren noch auf zwei Händler bzw. sieben Homepage-Kategorien fest verdrahtet. Nach ANTHBOT sind drei Händler und neun Kategorien korrekt. Solche Erwartungen müssen bewusst als Teil des Händlervertrags aktualisiert werden.
 
-### Festgestellter Produktionsstand
-Der aktuelle Produktionskatalog wird aus einer expliziten Quellenliste gebaut. ANTHBOT ist in dieser Liste noch nicht enthalten. Damit kann ein grünes ANTHBOT-Development-Gate allein keine ANTHBOT-Produkte live schalten.
+### 16. Mehrsprachigkeit gehört zur Definition of Done
+Neue Kategorien wurden in allen bereits vorhandenen 12 Oberflächensprachen ergänzt. Besonders DE/RU wurde im E2E-Pfad geprüft. Technische Kategorie-IDs dürfen dem Nutzer nicht als Fallback erscheinen, wenn eine unterstützte UI-Sprache aktiv ist.
 
-### Dauerhafte Verbesserung
-Für neue Händler werden künftig zwei getrennte Freigaben dokumentiert:
+### 17. Mobile Kartengröße darf durch neue Händlerfunktionen nicht wachsen
+Die Gutschein-/Code-Darstellung wurde so angepasst, dass die bestehende Produktkartengröße erhalten bleibt. Gleichzeitig muss der Copy-Bereich auf dem Kartenhintergrund lesbar sein. Der mobile Copy-Button wurde auf mindestens 44 px Touch-Höhe abgesichert, ohne das Desktop-Layout unnötig zu verändern.
 
-1. **Integration ready:** Normalizer, Taxonomie, Suche, Provenienz und Development-Gates sind grün.
-2. **Production approved:** realer End-to-End-Feed-Build wurde geprüft und die konkrete, geprüfte Produktquelle wurde ausdrücklich in den Produktionskatalog aufgenommen.
+### 18. Affiliate-/Gutscheinlogik ist Teil des Release-Gates
+Neue Händler müssen nicht nur Produkte liefern. Zu prüfen sind auch CTA, Affiliate-Fallbacks, `target`, `rel`, `sponsored`, Gutscheingültigkeit und Copy-Verhalten. Ein Händler gilt erst als vollständig integriert, wenn auch diese Oberfläche sicher ist.
 
-Die zweite Stufe darf nicht automatisch aus der ersten folgen. Das verhindert, dass ein technisch vorbereiteter Händler versehentlich veröffentlicht wird.
+### 19. Homepage-Kategorien müssen aus dem Produktionsmanifest folgen
+Die Startseite folgt dem produktiven Kategorienmanifest. Nach ANTHBOT sind neun Live-Kategorien korrekt. E2E prüft die beiden neuen Kategorien einschließlich Produktzahlen und Übersetzungen.
 
-## Erkenntnis 13 – Fehlender Originalfeed ist ein harter Nachweis-Stopp
+### 20. Release erst nach kompletter Gate-Runde
+Vor PR #31 nach `main` waren die relevanten Gates grün:
+- Development V2 Integrity
+- Production Merchant Catalog Gate
+- Google Indexability Safety
+- Facet Orchestration Safety
+- Result Card Safety
+- Search Relevance Audit
+- Daily Offer Safety
+- SEO Landing Candidate Audit
 
-Am 28.09.2026 wurde zusätzlich in den verfügbaren Gesprächs-/Library-Dateien nach dem ANTHBOT-Originalfeed `125144-retail-de_DE.csv(.gz)` gesucht. Verfügbar waren die ANTHBOT-DE-Programmbedingungen, aber kein eindeutig auffindbarer Originalfeed unter diesem Namen.
+Erst danach wurde `development` nach `main` gemerged. Der anschließende Workflow `Publish FundBlick production` #202 lief erfolgreich durch.
 
-Konsequenz: Der echte generische Feed→Katalog-End-to-End-Lauf wird **nicht simuliert und nicht behauptet**. Ohne den tatsächlichen Feed bleibt dieser Produktionsnachweis offen. Ein Testfixture oder aus früheren Ergebnissen rekonstruierter Datensatz ist kein Ersatz für diesen Freigabenachweis.
+## Verbindlicher Standardablauf für Händler Nr. 4+
 
-## Gutschein- und Sprach-Lesson
-
-Im dritten Händler-Onboarding wurde zusätzlich deutlich, dass Händlerangebote/Gutscheine Bestandteil der professionellen Produktdarstellung sein können und nicht als improvisierter Zusatz behandelt werden dürfen.
-
-Für bereits unterstützte Oberflächensprachen gilt: Neue UI-Komponenten dürfen nicht nur auf Deutsch ergänzt werden. Die Gutschein-Darstellung muss insbesondere im bestehenden DE/RU-Kontext konsistent bleiben. Layoutänderungen dürfen die Produktkarten nicht unkontrolliert vergrößern; Code-/Copy-Flächen müssen auch visuell auf dem Kartenhintergrund lesbar bleiben.
-
-Diese UI-Erkenntnis ist von der Feed-Pipeline getrennt, gehört aber zum vollständigen Händler-Onboarding.
-
-## Standardablauf für Händler Nr. 4+
-
-1. Händler/Domain/Impressum/Seriosität vor technischer Aufnahme prüfen.
-2. Affiliate-Netzwerk, Advertiser-ID und erlaubte Traffic-/Linkregeln dokumentieren.
-3. Originalfeed zunächst nur analysieren; keine automatische Veröffentlichung.
-4. Nicht-Warenpositionen und problematische Datensätze identifizieren.
-5. Händler-Normalizer bauen.
-6. Provenienz und Feedvertrag definieren.
-7. Produkte auf kanonische FundBlick-Kategorien mappen.
-8. Fehlende Taxonomie-Familien/Produkttypen zuerst zentral ergänzen.
-9. Suchfacetten aus der Produktdomäne ableiten und testen.
+1. Händler/Domain/Impressum/Seriosität prüfen.
+2. Affiliate-Netzwerk, Advertiser-ID und Programmbedingungen dokumentieren.
+3. Originalfeed analysieren; noch keine Veröffentlichung.
+4. Nicht-Warenpositionen/problematische Datensätze identifizieren.
+5. Händler-Normalizer erstellen.
+6. Provenienz- und Feedvertrag definieren.
+7. Kanonische Kategorien zuweisen.
+8. Fehlende Taxonomie-Familien zentral ergänzen.
+9. Produkttypen und Suchfacetten definieren und testen.
 10. Merchant Registry ergänzen.
-11. Merchant-Onboarding-Audit erweitern, falls eine neue Familie entsteht.
-12. Generischen Feed-Katalogbuilder verwenden; keine unnötige Händler-Sonderpipeline.
-13. Feed-, Klassifizierungs-, Such- und Integrations-Gates grün bekommen.
-14. DE/RU bzw. alle bereits unterstützten UI-Sprachen bei neuen Händlerkomponenten prüfen.
-15. Affiliate-Links, `target`, `rel`, `sponsored`, Gutscheinlogik und Fallbacks prüfen.
-16. Status `integration ready` dokumentieren.
-17. Echten Feed end-to-end bauen und resultierenden Katalog prüfen.
-18. Erst danach konkrete Quelle ausdrücklich für Production zulassen (`production approved`).
-19. Neue Fehlerklasse sofort in diese Lessons Learned und – wenn automatisierbar – in ein dauerhaftes Gate übernehmen.
+11. Merchant-Onboarding-Audit erweitern.
+12. Generischen Feed-Katalogbuilder verwenden.
+13. Produktionsquellen ausschließlich über die gemeinsame Reader-Logik konsumieren.
+14. Feed-, Klassifizierungs-, Such-, Facet- und Integrations-Gates grün bekommen.
+15. Händler-/Produkt-/Kategorie-Erwartungen in bestehenden E2E-Verträgen prüfen.
+16. Alle unterstützten UI-Sprachen für neue sichtbare Kategorien/Komponenten ergänzen.
+17. Mobile Produktkartengröße, Touch-Ziele und Lesbarkeit kontrollieren.
+18. Affiliate-Links, CTA, `target`, `rel`, `sponsored`, Gutscheine und Fallbacks prüfen.
+19. Status `integration ready` dokumentieren.
+20. Echten Production-Build mit konkreter Quelle durchführen.
+21. Händlerzahlen, Kategorienzahlen, Gesamtbestand und Provenienz separat prüfen.
+22. Production-/Indexability-/UI-/Search-Gates vollständig grün bekommen.
+23. Erst dann kontrollierter PR von `development` nach `main`.
+24. Production-Publish prüfen.
+25. Live-Sichtprüfung auf Desktop und Mobil durchführen.
+26. Neue Erkenntnisse ergänzen und automatisierbare Fehlerklassen als dauerhaftes Gate absichern.
 
-## Aktueller technischer Nachweis
+## Referenzwerte nach Händler Nr. 3
 
-Am 28.09.2026 ist Development V2 Integrity Run #229 für Commit `abdb5ed18fe236ead725bb6dede515cce4824eb7` erfolgreich abgeschlossen. Dieser Stand enthält das Merchant-Feed-Registry-Gate.
+Diese Werte beschreiben den Release-Stand vom 28.09.2026 und sind keine ewigen Konstanten. Bei Händler Nr. 4+ müssen Änderungen bewusst und nachvollziehbar erfolgen.
 
-## Offene Punkte vor endgültiger Händlerfreigabe
+| Kennzahl | Stand nach ANTHBOT |
+|---|---:|
+| Händler | 3 |
+| Produktionsprodukte | 1.515 |
+| Casa Moro | 1.428 |
+| AHIPOS | 31 |
+| ANTHBOT | 56 |
+| ANTHBOT Mähroboter | 33 |
+| ANTHBOT Zubehör | 23 |
+| Homepage-Kategorien | 9 |
 
-- Tatsächlichen ANTHBOT-Originalfeed `125144-retail-de_DE.csv(.gz)` für den kontrollierten Build bereitstellen bzw. eindeutig wiederfinden.
-- Generische Feed-Pipeline mit diesem Originalfeed end-to-end ausführen.
-- Resultierenden Katalog erneut auf Produktzahl, Provenienz, Affiliate-Ziele und Suchbarkeit prüfen.
-- UI-/Sprachprüfung der final eingebundenen ANTHBOT-Produkte und Angebote durchführen.
-- Programmbedingungen/Gutscheingültigkeit unmittelbar vor Production-Freigabe nochmals prüfen.
-- Erst danach den kontrollierten Promotion-/Live-Pfad verwenden.
+## Release-Nachweis
+
+- final geprüfter Development-Stand: `7c5b08166640620502fe1247d880c38dda6ef184`
+- PR #31: `development` → `main`
+- Merge-Commit: `b895c1a20945860c7c50571bfb421d1107736494`
+- Production-Publish Workflow #202: erfolgreich
+- Live-Sichtprüfung durch Nutzer: erfolgreich; Kategorien vorhanden, Darstellung sauber, Produktkartengröße identisch.
 
 ## Pflegepflicht
 
-Dieses Dokument ist fortlaufend. Jede neue ANTHBOT-Erkenntnis wird ergänzt. Wenn eine Erkenntnis technisch prüfbar ist, soll zusätzlich ein automatisierter Test oder ein CI-Gate entstehen. Dokumentation allein ersetzt keine technische Absicherung.
+Dieses Dokument ist fortlaufend. Jede neue Händler-Erkenntnis wird hier bzw. im Dokument des jeweiligen Händlers ergänzt. **Neue Fehlerklasse = dokumentieren + soweit sinnvoll technisch als Test/Gate absichern.**
