@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs');
 const path=require('node:path');
+const zlib=require('node:zlib');
 
 const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceManifest=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
@@ -22,7 +23,6 @@ for(const [key,merchant] of Object.entries(approvals.merchants)){
     target.set(normalized,key);
   }
 }
-
 const coreFile=normalize('development/core-products.json');
 const normalizedManifest=sourceManifest.map(normalize);
 if(!normalizedManifest.includes(coreFile))throw new Error('Production source manifest must include development/core-products.json');
@@ -30,44 +30,13 @@ for(const source of normalizedManifest){
   if(blockedMerchantSources.has(source))throw new Error(`Production source ${source} belongs to blocked merchant ${blockedMerchantSources.get(source)}`);
   if(source!==coreFile&&!approvedMerchantSources.has(source))throw new Error(`Production merchant source ${source} has no explicit approval`);
 }
-for(const [source,key] of approvedMerchantSources){
-  if(!normalizedManifest.includes(source))throw new Error(`Approved merchant source ${source} for ${key} is missing from production-catalog-sources.json`);
-}
-
+for(const [source,key] of approvedMerchantSources){if(!normalizedManifest.includes(source))throw new Error(`Approved merchant source ${source} for ${key} is missing from production-catalog-sources.json`);}
 const originalRead=fs.readFileSync.bind(fs);
-const combined=[];
-const seenIds=new Map();
-for(const file of sourceManifest){
-  const normalizedFile=normalize(file);
-  const data=JSON.parse(originalRead(normalizedFile,'utf8'));
-  if(!Array.isArray(data))throw new Error(`${file} must contain an array`);
-  for(const product of data){
-    const id=String(product?.id||'').trim();
-    if(!id)throw new Error(`${file} contains product without id`);
-    if(seenIds.has(id))throw new Error(`Duplicate production product id ${id} in ${seenIds.get(id)} and ${file}`);
-    seenIds.set(id,file);
-    combined.push(product);
-  }
-}
-
-fs.readFileSync=function(file,...args){
-  if(normalize(file)===coreFile)return JSON.stringify(combined);
-  return originalRead(file,...args);
-};
-
-process.argv[2]=outputRoot;
-require('./build-live-catalog.js');
-
-const preferred=['home.living','home.furniture','home.lighting','home.decor','pet.equestrian','pet.dog','health.supplements'];
-const counts=new Map();
-for(const product of combined){
-  if(!product||product.active===false)continue;
-  const category=String(product.category||'').trim();
-  const price=Number(product.price);
-  if(!category||!product.id||!product.name||!Number.isFinite(price)||price<=0)continue;
-  counts.set(category,(counts.get(category)||0)+1);
-}
-const rank=id=>{const index=preferred.indexOf(id);return index>=0?index:preferred.length;};
-const categories=[...counts.entries()].map(([id,count])=>({id,count})).sort((a,b)=>rank(a.id)-rank(b.id)||b.count-a.count||a.id.localeCompare(b.id,'de'));
-fs.writeFileSync(path.join(outputRoot,'categories.json'),JSON.stringify({version:1,categories})+'\n');
-console.log(`production categories built: ${categories.length} categories`);
+function readSource(file){const raw=originalRead(file);return JSON.parse(String(file).endsWith('.gz')?zlib.gunzipSync(raw).toString('utf8'):raw.toString('utf8'));}
+const combined=[];const seenIds=new Map();
+for(const file of sourceManifest){const normalizedFile=normalize(file);const data=readSource(normalizedFile);if(!Array.isArray(data))throw new Error(`${file} must contain an array`);for(const product of data){const id=String(product?.id||'').trim();if(!id)throw new Error(`${file} contains product without id`);if(seenIds.has(id))throw new Error(`Duplicate production product id ${id} in ${seenIds.get(id)} and ${file}`);seenIds.set(id,file);combined.push(product);}}
+fs.readFileSync=function(file,...args){if(normalize(file)===coreFile)return JSON.stringify(combined);return originalRead(file,...args);};
+process.argv[2]=outputRoot;require('./build-live-catalog.js');
+const preferred=['home.living','home.furniture','home.lighting','home.decor','pet.equestrian','pet.dog','health.supplements','home.garden.robot-mowers','home.garden.robot-mower-accessories'];const counts=new Map();
+for(const product of combined){if(!product||product.active===false)continue;const category=String(product.category||'').trim();const price=Number(product.price);if(!category||!product.id||!product.name||!Number.isFinite(price)||price<=0)continue;counts.set(category,(counts.get(category)||0)+1);}
+const rank=id=>{const index=preferred.indexOf(id);return index>=0?index:preferred.length;};const categories=[...counts.entries()].map(([id,count])=>({id,count})).sort((a,b)=>rank(a.id)-rank(b.id)||b.count-a.count||a.id.localeCompare(b.id,'de'));fs.writeFileSync(path.join(outputRoot,'categories.json'),JSON.stringify({version:1,categories})+'\n');console.log(`production categories built: ${categories.length} categories`);
