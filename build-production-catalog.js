@@ -6,14 +6,39 @@ const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceManifest=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 if(!Array.isArray(sourceManifest)||!sourceManifest.length)throw new Error('production-catalog-sources.json must contain at least one source file');
 
-const coreFile=path.normalize('development/core-products.json');
-if(!sourceManifest.map(file=>path.normalize(String(file))).includes(coreFile))throw new Error('Production source manifest must include development/core-products.json');
+const approvals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
+if(approvals?.version!==1||!approvals?.merchants||typeof approvals.merchants!=='object')throw new Error('production-merchant-approvals.json must contain version 1 merchant approvals');
+const normalize=file=>path.normalize(String(file));
+const approvedMerchantSources=new Map();
+const blockedMerchantSources=new Map();
+for(const [key,merchant] of Object.entries(approvals.merchants)){
+  if(!merchant||typeof merchant!=='object')throw new Error(`Invalid production merchant approval: ${key}`);
+  if(!merchant.network||!merchant.advertiserId)throw new Error(`Production merchant approval ${key} needs network and advertiserId`);
+  if(!Array.isArray(merchant.sources))throw new Error(`Production merchant approval ${key} needs a sources array`);
+  for(const source of merchant.sources){
+    const target=merchant.approved===true?approvedMerchantSources:blockedMerchantSources;
+    const normalized=normalize(source);
+    if(approvedMerchantSources.has(normalized)||blockedMerchantSources.has(normalized))throw new Error(`Merchant source ${source} is assigned more than once`);
+    target.set(normalized,key);
+  }
+}
+
+const coreFile=normalize('development/core-products.json');
+const normalizedManifest=sourceManifest.map(normalize);
+if(!normalizedManifest.includes(coreFile))throw new Error('Production source manifest must include development/core-products.json');
+for(const source of normalizedManifest){
+  if(blockedMerchantSources.has(source))throw new Error(`Production source ${source} belongs to blocked merchant ${blockedMerchantSources.get(source)}`);
+  if(source!==coreFile&&!approvedMerchantSources.has(source))throw new Error(`Production merchant source ${source} has no explicit approval`);
+}
+for(const [source,key] of approvedMerchantSources){
+  if(!normalizedManifest.includes(source))throw new Error(`Approved merchant source ${source} for ${key} is missing from production-catalog-sources.json`);
+}
 
 const originalRead=fs.readFileSync.bind(fs);
 const combined=[];
 const seenIds=new Map();
 for(const file of sourceManifest){
-  const normalizedFile=path.normalize(String(file));
+  const normalizedFile=normalize(file);
   const data=JSON.parse(originalRead(normalizedFile,'utf8'));
   if(!Array.isArray(data))throw new Error(`${file} must contain an array`);
   for(const product of data){
@@ -26,7 +51,7 @@ for(const file of sourceManifest){
 }
 
 fs.readFileSync=function(file,...args){
-  if(path.normalize(String(file))===coreFile)return JSON.stringify(combined);
+  if(normalize(file)===coreFile)return JSON.stringify(combined);
   return originalRead(file,...args);
 };
 
