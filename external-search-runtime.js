@@ -17,6 +17,7 @@
   const enabled = document.documentElement.dataset.externalSearchEnabled === 'true';
   const PAGE_SIZE = 20;
   const MAX_OFFSET = 9;
+  const MIN_INITIAL_PRICED_PRODUCTS = 10;
   let sequence = 0;
   let localSearchSettled = false;
   let timer = null;
@@ -77,6 +78,15 @@
     return results;
   }
 
+  function trustedPricedProductCount(items, intent) {
+    const prepared = prepareResults(items, intent);
+    return prepared.filter(item => {
+      const type = String(item?.resultType || '');
+      const trusted = intentEngine?.hasTrustedPrice?.(item) === true;
+      return type === 'product' && trusted;
+    }).length;
+  }
+
   function disconnectScrollObserver() {
     if (scrollObserver) scrollObserver.disconnect();
     scrollObserver = null;
@@ -101,20 +111,24 @@
     armInfiniteScroll();
   }
 
+  async function requestPage(offset) {
+    return client.search({
+      endpoint,
+      query:activeQuery,
+      language:activeIntent?.searchLanguage || language(),
+      country:'DE',
+      count:PAGE_SIZE,
+      offset
+    });
+  }
+
   async function loadMore() {
     if (loadingMore || !moreResultsAvailable || nextOffset > MAX_OFFSET || !activeQuery) return;
     loadingMore = true;
     disconnectScrollObserver();
     const current = sequence;
     const offset = nextOffset;
-    const result = await client.search({
-      endpoint,
-      query: activeQuery,
-      language: activeIntent?.searchLanguage || language(),
-      country: 'DE',
-      count: PAGE_SIZE,
-      offset
-    });
+    const result = await requestPage(offset);
     loadingMore = false;
     if (current !== sequence || query() !== activeQuery) return;
     if (!result.ok) {
@@ -126,6 +140,27 @@
     nextOffset = offset + 1;
     moreResultsAvailable = result.moreResultsAvailable === true && nextOffset <= MAX_OFFSET;
     renderAccumulated();
+  }
+
+  async function prefetchPricedProducts(current) {
+    while (
+      current === sequence &&
+      moreResultsAvailable &&
+      nextOffset <= MAX_OFFSET &&
+      trustedPricedProductCount(accumulatedResults, activeIntent) < MIN_INITIAL_PRICED_PRODUCTS
+    ) {
+      const offset = nextOffset;
+      const result = await requestPage(offset);
+      if (current !== sequence || query() !== activeQuery) return false;
+      if (!result.ok) {
+        moreResultsAvailable = false;
+        break;
+      }
+      accumulatedResults = mergeUnique(accumulatedResults, result.results);
+      nextOffset = offset + 1;
+      moreResultsAvailable = result.moreResultsAvailable === true && nextOffset <= MAX_OFFSET;
+    }
+    return true;
   }
 
   function resetExternalState() {
@@ -162,14 +197,7 @@
     activeQuery = q;
     activeIntent = intent;
     ui.render(container, { loading:true, intent });
-    const result = await client.search({
-      endpoint,
-      query:q,
-      language:intent?.searchLanguage || language(),
-      country:'DE',
-      count:PAGE_SIZE,
-      offset:0
-    });
+    const result = await requestPage(0);
     if (current !== sequence) return;
 
     if (query() !== q || !shouldSupplement(q, visibleLocalCount(), intent)) {
@@ -186,6 +214,9 @@
     accumulatedResults = mergeUnique([], result.results);
     moreResultsAvailable = result.moreResultsAvailable === true;
     nextOffset = 1;
+
+    const stillCurrent = await prefetchPricedProducts(current);
+    if (!stillCurrent || current !== sequence) return;
     renderAccumulated();
   }
 
