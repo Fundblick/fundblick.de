@@ -2,9 +2,13 @@
 
 ## Status
 
-Stabiler Development-Zwischenstand erreicht. Fokus heute: External Search, Preis-/Währungsrobustheit und erster universeller Intent-Router.
+Stabiler Development-Zwischenstand erreicht. Fokus heute: External Search, Preis-/Währungsrobustheit, erster universeller Intent-Router und Absicherung des realen Händlerkatalogs in der Development-Preview.
 
-Aktueller geprüfter Development-Stand vor dieser Dokumentation: `cce528e70690509fd0631bac8a9ec207bb37ce23`.
+Wichtige Development-Stände heute:
+- Universal-/Intent-Zwischenstand: `cce528e70690509fd0631bac8a9ec207bb37ce23`
+- Tagesdokumentation: `dc6280c2b3a048f7fce7981c3c5bfd871f877342`
+- Fix der Development-Katalogpipeline: `612e5f660922c40393e2487fb44b47cb5764ffbe`
+- verbindlicher Pre-Flight-/Catalog-Integrity-Vertrag: `f04ee979f5f544242ded772dbe99016bfc63c561`
 
 `main` wurde heute nicht verändert.
 
@@ -18,8 +22,9 @@ Aktueller geprüfter Development-Stand vor dieser Dokumentation: `cce528e7069050
 
 ### 2. Mehrsprachigkeit
 - Suchoberfläche unterstützt mehrere Sprachen, u. a. Deutsch, Russisch und Rumänisch.
-- Sprache der Suchanfrage wird künftig getrennt von der UI-Sprache betrachtet.
+- Sprache der Suchanfrage wird getrennt von der UI-Sprache betrachtet.
 - Russische, rumänische und andere nicht-deutsche Eingaben können dadurch gezielter in ihrer Sprache an die Websuche übergeben werden.
+- Query-Sprache bleibt getrennt von Markt und Währung.
 
 ### 3. Preis- und Währungslogik
 - Preisformatierung wurde sprachunabhängig vereinheitlicht.
@@ -63,17 +68,94 @@ Externe Ergebnisse werden erstmals typisiert und nach Suchabsicht priorisiert:
 
 Für breite oder erklärende Suchanfragen kann External Search auch dann zugeschaltet werden, wenn interne Produkte vorhanden sind.
 
-## Verifizierter Gate-Status
-Für Commit `cce528e70690509fd0631bac8a9ec207bb37ce23` waren am Tagesende grün:
+## Kritischer Incident heute: Development-Preview verlor den realen Händlerkatalog
+
+### Symptom
+Der Nutzer stellte fest:
+- Mähroboter-/Zubehör-Kategorien waren von der Startseite verschwunden.
+- Kategorien wie Haushalt und Möbel lieferten keine passenden Händlerprodukte mehr.
+- Der Eindruck war, dass die Universal-/Websuche die Händlerangebote abgeschnitten hätte.
+
+### Tatsächliche Ursache
+Die Händlerquellen waren weiterhin vorhanden. Der Fehler lag in der Development-Preview-Pipeline:
+
+- Der Root-Katalog `catalog/manifest.json` enthielt nur 4 Produkte.
+- Die Production-Pipeline baut den vollständigen realen Händlerkatalog vor dem Deploy neu.
+- Die Development-Preview kopierte dagegen den Repository-Inhalt direkt nach `_site`.
+- Dadurch wurde der veraltete 4-Produkte-Katalog ausgeliefert.
+
+Die Search-/Intent-Arbeit hat die Händlerdaten nicht gelöscht. Sie hat jedoch durch häufige Development-Deploys einen bereits vorhandenen Pipeline-Unterschied sichtbar gemacht.
+
+### Fix
+Commit: `612e5f660922c40393e2487fb44b47cb5764ffbe`
+
+Development Preview baut jetzt vor jedem Deploy den vollständigen realen Händlerkatalog.
+Zusätzliche Schutzbedingungen:
+- realer Händlerkatalog wird vor Packaging erzeugt,
+- Mindestbestand wird geprüft,
+- `catalog/categories.json` muss vorhanden sein,
+- der alte 4-Produkte-Root-Katalog darf nicht mehr still als Preview-Wahrheit ausgeliefert werden.
+
+Der zugehörige Development-Deploy lief erfolgreich durch. Der Schritt `Build full real merchant catalog` sowie das eigentliche Pages-Deployment waren grün.
+
+## Neue verbindliche Arbeitsregel
+
+Neue Dokumentation:
+`docs/FUNDBLICK-PREFLIGHT-CATALOG-INTEGRITY.md`
+
+Diese Datei ist künftig vor größerer Feature-/Search-/Deployment-Arbeit zusammen mit dem Handoff zu lesen.
+
+Verbindliche Reihenfolge:
+
+`Handoff lesen → Pre-Flight lesen → Branch/Head prüfen → realen Katalogbestand prüfen → erst dann ändern.`
+
+Wenn dokumentierter Händler-/Produktbestand und ausgeliefertes Artefakt stark voneinander abweichen, gilt STOP. Erst Ursache klären, dann Feature-Arbeit fortsetzen.
+
+Beispiel:
+- dokumentiert ca. 1.459 reale Produkte
+- ausgeliefert 4 Produkte
+→ kein weiterer Feature-Bau, bis die Diskrepanz geklärt ist.
+
+## Architektur-Grundsatz nach dem Incident
+
+FundBlick wird in zwei klar getrennte Verantwortungsbereiche gedacht:
+
+### FundBlick Search Engine
+- Intent-Erkennung
+- Mehrsprachigkeit
+- External Search
+- Guides / Videos / Vergleiche
+- Local Intent
+- Ranking / Result-Mixer
+
+### FundBlick Commerce Catalog
+- reale Händler
+- Affiliate-Produkte
+- Preise
+- Kategorien
+- Feeds
+- Händler-Metadaten
+- Monetarisierungsrouting
+
+Die Search Engine darf den Commerce Catalog lesen und priorisieren, aber ein Search-Deployment darf niemals implizit bestimmen, welcher Händlerkatalog veröffentlicht wird.
+
+## Verifizierter Gate-/Deploy-Status
+
+Für Commit `cce528e70690509fd0631bac8a9ec207bb37ce23` waren grün:
 - external-search
 - verify
 - deploy
 - browser-e2e
 
-Damit besteht ein belastbarer Development-Zwischenstand.
+Für Commit `612e5f660922c40393e2487fb44b47cb5764ffbe` war der Development Preview Deploy erfolgreich; insbesondere:
+- Build full real merchant catalog → success
+- Build current development preview → success
+- Upload preview artifact → success
+- Deploy preview → success
+
+Damit besteht ein belastbarer Development-Zwischenstand mit wiederhergestelltem Händlerkatalog.
 
 ## Bewusste Restpunkte
-Nicht alles ist heute fertig. Folgende Punkte bleiben absichtlich offen:
 
 1. Local Search ist noch keine echte strukturierte Händler-/Werkstatt-/POI-Suche.
 2. Intent-Erkennung ist derzeit primär regelbasiert und muss weiter ausgebaut werden.
@@ -81,43 +163,48 @@ Nicht alles ist heute fertig. Folgende Punkte bleiben absichtlich offen:
 4. Der Cloudflare Worker besitzt weiterhin keinen automatischen Deploy aus GitHub; Worker-Änderungen müssen manuell in Cloudflare veröffentlicht werden.
 5. Währungserkennung per Domain ist nur Fallback und muss bei widersprüchlichen Quellen vorsichtig behandelt werden.
 6. Mehrsprachige Suchlogik braucht weitere reale E2E-Tests mit gemischten Sprachen und Märkten.
+7. Das aktuelle globale Mindestbestands-Gate ist nur ein kurzfristiger Schutz; bei vielen Händlern reicht es nicht.
 
-## Architektur-Grundsatz
-FundBlick wird nicht als reine Produktsuchmaschine weitergebaut, sondern als universelle Bedarfs- und Produktsuche.
+## Anknüpfpunkte für morgen
 
-Die Suchleiste ist der zentrale Intent-Eingang. Je nach Anfrage soll FundBlick passende Ergebnisarten kombinieren:
-- Affiliate-/Händlerprodukte
-- externe Web-Ergebnisse
-- Ratgeber / Erklärseiten
-- Tests / Vergleiche
-- Videos
-- lokale Händler / Werkstätten / Angebote
+### Priorität A – Catalog Integrity skalierbar machen
+Nicht bei `>= 1000 Produkte` stehen bleiben.
 
-Die Monetarisierungsschicht bleibt technisch und visuell getrennt von nicht vergüteten Wrapper-/Web-Ergebnissen.
+Nächste Härtungen:
+- Gesamtprodukt-Delta gegen letzten guten Build.
+- Produktzahl pro Händler prüfen.
+- unerwartet verschwundene Händler blockieren.
+- Kategorie-Deltas prüfen.
+- Feed-/Source-Vollständigkeit prüfen.
+- eindeutige Catalog-Build-ID / Hash einführen.
+- Katalog-Builds unveränderlich behandeln.
+- atomaren Catalog-Pointer vorbereiten.
+- Rollback auf letzten guten Build statt manueller Rekonstruktion.
 
-## Nächster sinnvoller Aufbau
-Priorität für die nächste Session:
+### Priorität B – Development und Production Pipeline angleichen
+Ziel: möglichst dieselbe reale Katalog-Build- und Integrity-Logik für Preview und Production verwenden, damit Preview und Production nicht wieder unterschiedliche Wahrheiten ausliefern.
 
-1. Local Intent ausbauen
-   - Ort robuster extrahieren
-   - lokale Händler-/Werkstattquellen gezielter priorisieren
-   - noch keine automatische Nutzung präziser Standortdaten ohne klare Nutzerabsicht
+### Priorität C – Post-Deploy Smoke Tests
+Automatisch prüfen:
+- Startseiten-Kategorien vorhanden,
+- Möbel/Haushalt liefern reale Händlerprodukte,
+- mindestens eine konkrete Produktsuche liefert Händlerergebnis,
+- Affiliate-/Händlerpfad funktioniert,
+- External Search bleibt Ergänzung und ersetzt den Commerce Catalog nicht.
 
-2. Search Language Detection härten
-   - gemischte Spracheingaben
-   - lateinische Sprachen besser unterscheiden
-   - Query-Sprache weiterhin getrennt von Markt/Währung halten
+### Priorität D – Universal Search weiterbauen
+Danach weiter mit:
+- Local Intent / Ortsextraktion,
+- lokale Händler-/Werkstattquellen,
+- gemischte Spracheingaben,
+- Result-Mixer für Produkt/Guide/Video/Vergleich/Local,
+- Affiliate-first ohne Informationsverlust.
 
-3. Result-Mixer ausbauen
-   - Produkt, Guide, Video, Vergleich und Local nicht nur sortieren, sondern sinnvoll mischen
-   - konkrete Modellanfragen weiter produktzentriert halten
-
-4. Affiliate-first ohne Informationsverlust
-   - passende Affiliate-Angebote priorisieren
-   - externe Treffer weiterhin als nützliche Ergänzung behalten
-
-5. Worker-Deploy-Prozess verbessern
-   - möglichst reproduzierbaren Cloudflare-Deploy vorbereiten
+### Priorität E – Worker-Deploy-Prozess
+Reproduzierbaren Cloudflare-Deploy vorbereiten.
 
 ## Tagesfazit
-Heute wurde aus dem bisherigen Produkt-Fallback eine deutlich allgemeinere Sucharchitektur. FundBlick kann jetzt als Basis für eine universelle, mehrsprachige Such- und Bedarfsschicht weiterentwickelt werden, ohne die Affiliate-Monetarisierung mit nicht vergüteten Webtreffern zu vermischen.
+
+Heute wurde aus dem bisherigen Produkt-Fallback eine deutlich allgemeinere Sucharchitektur. Gleichzeitig wurde ein wichtiger Skalierungs- und Deploymentfehler gefunden: Search-/Frontend-Fortschritt darf niemals unbemerkt den realen Händlerkatalog ersetzen oder verkleinern.
+
+Der Fehler ist für den heutigen Maßstab behoben und als dauerhafte Arbeitsregel dokumentiert. Für die nächste Session ist der wichtigste Architekturpunkt: Catalog Integrity so ausbauen, dass ein solcher Verlust bei 10, 100, 1.000 oder 10.000 Händlern automatisch erkannt, blockiert und über einen bekannten guten Katalog-Build schnell zurückgerollt werden kann.
