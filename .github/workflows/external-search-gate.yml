@@ -13,6 +13,7 @@ on:
       - 'external-search-client.js'
       - 'external-search-i18n.js'
       - 'external-search-ui.js'
+      - 'external-price-confidence.js'
       - 'external-search-runtime.js'
       - 'external-search.css'
       - 'verify-search-demand-analytics.js'
@@ -36,6 +37,7 @@ on:
       - 'external-search-client.js'
       - 'external-search-i18n.js'
       - 'external-search-ui.js'
+      - 'external-price-confidence.js'
       - 'external-search-runtime.js'
       - 'external-search.css'
       - 'verify-search-demand-analytics.js'
@@ -72,6 +74,7 @@ jobs:
           node --check external-search-client.js
           node --check external-search-i18n.js
           node --check external-search-ui.js
+          node --check external-price-confidence.js
           node --check external-search-runtime.js
           node --check cloudflare/brave-search-worker.js
           node --check verify-search-demand-analytics.js
@@ -108,8 +111,9 @@ jobs:
           grep -q 'data-external-search-enabled="true"' search.html
           grep -q 'data-external-search-endpoint="https://fundblick-search.frosty-moon-518b.workers.dev"' search.html
           grep -q 'universal-search-intent.js' search.html
+          grep -q 'external-price-confidence.js' search.html
           ! grep -q 'search-demand-analytics.js' search.html
-          echo 'External fallback and universal intent routing are explicitly enabled; demand analytics remain dormant.'
+          echo 'External fallback, universal intent routing and price confidence are explicitly enabled; demand analytics remain dormant.'
       - name: Reject committed Brave secrets
         shell: bash
         run: |
