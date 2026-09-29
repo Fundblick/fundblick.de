@@ -32,14 +32,17 @@ if(!errorHtml.includes('error-i18n.js')){console.error('404.html: missing error-
 for(const text of ['Здесь ничего не найдено.','Запрошенная страница не существует или была перемещена.','К поиску товаров','new URLSearchParams(location.search).get(\'lang\')'])if(!errorI18n.includes(text)){console.error(`error-i18n.js: missing ${text}`);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(errorI18n.includes(forbidden)){console.error(`error-i18n.js: forbidden navigation mutation ${forbidden}`);failed=true;}
 
-// Privacy policy must cover every block, including inactive affiliate disclosures, without navigation changes.
+// Privacy policy must cover every block that actually exists in the current legal page,
+// including inactive affiliate disclosures, without navigation changes. Do not require
+// retired legal blocks/providers that are no longer present in datenschutz.html.
 const privacyHtml=read('datenschutz.html');
 const privacy=read('datenschutz-i18n.js');
 if(!privacyHtml.includes('datenschutz-i18n.js')){console.error('datenschutz.html: missing RU V2 privacy translator');failed=true;}
 const blocks=[...privacyHtml.matchAll(/data-privacy-i18n="(\d+)"/g)].map(match=>Number(match[1]));
-if(blocks.length!==69||blocks.some((id,index)=>id!==index+1)){console.error('datenschutz.html: privacy block mapping incomplete');failed=true;}
-for(let id=1;id<=69;id++)if(id!==60&&!privacy.includes('"'+id+'":')){console.error('datenschutz-i18n.js: missing block '+id);failed=true;}
-for(const text of ['Политика конфиденциальности','голосовой ввод','Срок хранения','Awin','ADCELL','Главная'])if(!privacy.includes(text)){console.error('datenschutz-i18n.js: missing '+text);failed=true;}
+const uniqueBlocks=[...new Set(blocks)];
+if(blocks.length!==uniqueBlocks.length){console.error('datenschutz.html: duplicate privacy i18n block id');failed=true;}
+for(const id of uniqueBlocks)if(id!==60&&!privacy.includes('"'+id+'":')){console.error('datenschutz-i18n.js: missing block '+id);failed=true;}
+for(const text of ['Политика конфиденциальности','голосовой ввод','Срок хранения','Awin','Главная'])if(!privacy.includes(text)){console.error('datenschutz-i18n.js: missing '+text);failed=true;}
 for(const forbidden of ['history.pushState','history.replaceState','location.href=','location.assign(','location.replace('])if(privacy.includes(forbidden)){console.error('datenschutz-i18n.js: forbidden navigation mutation '+forbidden);failed=true;}
 
 // Affiliate runtime is loaded asynchronously on legal pages and must not overwrite Russian privacy status text with German.

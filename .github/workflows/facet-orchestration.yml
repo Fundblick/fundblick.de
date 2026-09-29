@@ -2,9 +2,12 @@ name: Facet orchestration safety
 
 on:
   push:
-    branches: [dev/facet-orchestration-v1]
+    branches: [development]
     paths:
       - 'search.js'
+      - 'search-sort-runtime.js'
+      - 'search-polish.css'
+      - 'search.html'
       - 'facet-schemas.js'
       - 'common-facet-defs.js'
       - 'common-filter-i18n.js'
@@ -22,6 +25,9 @@ on:
     branches: [main]
     paths:
       - 'search.js'
+      - 'search-sort-runtime.js'
+      - 'search-polish.css'
+      - 'search.html'
       - 'facet-schemas.js'
       - 'common-facet-defs.js'
       - 'common-filter-i18n.js'
@@ -52,6 +58,7 @@ jobs:
       - name: Syntax checks
         run: |
           node --check search.js
+          node --check search-sort-runtime.js
           node --check facet-schemas.js
           node --check common-facet-defs.js
           node --check common-filter-i18n.js

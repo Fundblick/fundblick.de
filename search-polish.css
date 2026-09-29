@@ -1,0 +1,13 @@
+/* Development search polish: one shared surface for every category/search view. */
+.filter-panel{
+  background:linear-gradient(155deg,rgba(237,247,235,.98),rgba(225,242,226,.96));
+  border-color:rgba(133,177,143,.72);
+  box-shadow:0 12px 30px rgba(20,85,48,.10);
+}
+.filter-panel summary{color:var(--ink)}
+.filter-panel .facet{border-top-color:rgba(111,158,122,.28)}
+.filter-panel .facet label{border-radius:8px;padding:2px 4px}
+.filter-panel .facet label:hover{background:rgba(255,255,255,.55)}
+.filter-panel .number-input,.filter-panel .apply-price{background:rgba(255,255,255,.92)}
+.filter-panel .reset{background:rgba(255,255,255,.66);border-color:rgba(111,158,122,.36)}
+@media(max-width:760px){.filter-panel{background:linear-gradient(155deg,#edf7eb,#e3f2e4)}}
