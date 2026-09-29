@@ -20,16 +20,56 @@
   function safeHttpUrl(value){try{const url=new URL(String(value||''));return /^https?:$/.test(url.protocol)?url.href:null}catch{return null}}
   function usableResults(items){return (Array.isArray(items)?items:[]).map(item=>({item,href:safeHttpUrl(item?.url)})).filter(entry=>entry.href)}
 
+  function currencyCode(raw,currency){
+    const explicit=String(currency||'').trim().toUpperCase();
+    if(/^[A-Z]{3}$/.test(explicit))return explicit;
+    const text=String(raw||'').toUpperCase();
+    const code=text.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+    if(code)return code[1];
+    if(text.includes('€'))return 'EUR';
+    if(text.includes('£'))return 'GBP';
+    if(text.includes('$'))return 'USD';
+    return '';
+  }
+
+  function numericAmount(raw){
+    let text=String(raw??'').trim();
+    if(!text)return NaN;
+    text=text.replace(/\b(?:EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/gi,'').replace(/[€$£]/g,'').replace(/\s|\u00a0|\u202f/g,'').replace(/[^0-9,.-]/g,'');
+    if(!text)return NaN;
+    const comma=text.lastIndexOf(',');
+    const dot=text.lastIndexOf('.');
+    if(comma>=0&&dot>=0){
+      const decimal=comma>dot?',':'.';
+      const thousands=decimal===','?'.':',';
+      text=text.split(thousands).join('').replace(decimal,'.');
+    }else if(comma>=0){
+      const decimals=text.length-comma-1;
+      text=decimals===2?text.replace(/\./g,'').replace(',','.') : text.replace(/,/g,'');
+    }else if(dot>=0){
+      const decimals=text.length-dot-1;
+      text=decimals===2?text.replace(/,/g,'') : text.replace(/\./g,'');
+    }
+    const amount=Number(text);
+    return Number.isFinite(amount)?amount:NaN;
+  }
+
   function formatPrice(value,currency){
     const raw=String(value??'').trim();
     if(!raw)return '';
-    if(/[€$£]|\b(?:EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/i.test(raw))return raw;
-    const normalized=raw.replace(/\s/g,'').replace(',','.');
-    const amount=Number(normalized);
+    const amount=numericAmount(raw);
     if(!Number.isFinite(amount))return raw;
-    const code=String(currency||'').trim().toUpperCase();
-    if(!/^[A-Z]{3}$/.test(code))return new Intl.NumberFormat(language()).format(amount);
-    try{return new Intl.NumberFormat(language(),{style:'currency',currency:code,minimumFractionDigits:2,maximumFractionDigits:2}).format(amount)}catch{return `${new Intl.NumberFormat(language(),{minimumFractionDigits:2,maximumFractionDigits:2}).format(amount)} ${code}`}
+    const code=currencyCode(raw,currency);
+    const locale=language();
+    try{
+      if(code)return new Intl.NumberFormat(locale,{style:'currency',currency:code,minimumFractionDigits:2,maximumFractionDigits:2}).format(amount);
+      return new Intl.NumberFormat(locale,{minimumFractionDigits:2,maximumFractionDigits:2}).format(amount);
+    }catch{
+      try{
+        if(code)return new Intl.NumberFormat('en',{style:'currency',currency:code,minimumFractionDigits:2,maximumFractionDigits:2}).format(amount);
+      }catch{}
+      return code?`${amount.toFixed(2)} ${code}`:amount.toFixed(2);
+    }
   }
 
   function merchantLabel(item){
