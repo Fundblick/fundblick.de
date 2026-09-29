@@ -13,6 +13,9 @@ const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.string
     'cache-control': 'no-store',
     'x-content-type-options': 'nosniff',
     'referrer-policy': 'no-referrer',
+    'content-security-policy': "default-src 'none'; frame-ancestors 'none'",
+    'x-frame-options': 'DENY',
+    'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
     ...extraHeaders
   }
 });
@@ -26,6 +29,7 @@ function corsHeaders(request, env) {
     ...(matched ? { 'access-control-allow-origin': origin } : {}),
     'access-control-allow-methods': 'GET, OPTIONS',
     'access-control-allow-headers': 'content-type',
+    'access-control-max-age': '600',
     'vary': 'Origin'
   };
 }
@@ -63,6 +67,7 @@ export default {
 
     const url = new URL(request.url);
     if (url.pathname === '/health') {
+      if (!originAllowed(request, env)) return json({ error: 'origin_not_allowed' }, 403, cors);
       return json({ ok: true, service: 'fundblick-brave-search', keyConfigured: Boolean(env.BRAVE_SEARCH_API_KEY) }, 200, cors);
     }
     if (url.pathname !== '/search') return json({ error: 'not_found' }, 404, cors);
