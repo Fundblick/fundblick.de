@@ -8,8 +8,8 @@
   const QUESTION_PATTERNS = [
     /\b(?:was|wie|welche|welcher|welches|warum|wieso|wofür|wann|wo)\b/iu,
     /\b(?:what|how|which|why|when|where)\b/iu,
-    /\b(?:что|как|какой|какая|какие|какое|почему|зачем|где|когда)\b/iu,
-    /\b(?:ce|cum|care|de ce|unde|când)\b/iu,
+    /(?:^|[\s,;!?])(?:что|как|какой|какая|какие|какое|почему|зачем|где|когда)(?=$|[\s,;!?])/iu,
+    /(?:^|[\s,;!?])(?:ce|cum|care|de ce|unde|când)(?=$|[\s,;!?])/iu,
     /\b(?:quoi|comment|quel|quelle|quels|quelles|pourquoi|où|quand)\b/iu,
     /\b(?:qué|como|cómo|cuál|cuales|cuáles|por qué|dónde|cuando|cuándo)\b/iu,
     /\b(?:cosa|come|quale|quali|perché|dove|quando)\b/iu,
@@ -23,7 +23,7 @@
   const VIDEO = /(?:youtube|youtu\.be|\bvideo\b|\bvideos\b|видео|ролик|videoclip|filmuleț|film|tutorial video|видеоролик|فيديو|视频)/iu;
   const TRANSACTIONAL = /(?:kaufen|bestellen|angebot|angebote|preis|preise|shop|händler|gebraucht kaufen|buy|order|price|prices|deal|store|купить|заказать|цена|магазин|cumpăr|cumpără|comand|preț|magazin|acheter|prix|tienda|comprar|precio|comprare|prezzo|kup|cena|satın al|fiyat|شراء|سعر|购买|价格)/iu;
   const LOCAL_EXPLICIT = /(?:in der nähe|in meiner nähe|bei mir|nahe bei|umkreis|vor ort|near me|nearby|close to me|around me|рядом со мной|рядом|поблизости|около меня|în apropiere|lângă mine|aproape de mine|près de moi|cerca de mí|vicino a me|w pobliżu|yakınımda|بالقرب مني|附近)/iu;
-  const PLACE_PREPOSITION = /(?:\b(?:in|bei|near|around|в|во|около|în|lângă|près de|cerca de|vicino a|w|we|yakın|في)\s+)([\p{L}\p{M}][\p{L}\p{M}.'’-]{2,}(?:[ -][\p{L}\p{M}][\p{L}\p{M}.'’-]{2,}){0,2})/iu;
+  const PLACE_PREPOSITION = /(?:^|[\s,;])(?:in|bei|near|around|в|во|около|în|lângă|près de|cerca de|vicino a|w|we|yakın|في)\s+([\p{L}\p{M}][\p{L}\p{M}.'’-]{2,}(?:[ -][\p{L}\p{M}][\p{L}\p{M}.'’-]{2,}){0,2})/iu;
   const NON_PLACE = new Set(['stock','lager','angebot','sale','shop','internet','web','vergleich','test','review','online','stoc','наличии','наличие']);
 
   function clean(value) {
