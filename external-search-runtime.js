@@ -4,6 +4,7 @@
   const policy = window.FundBlickExternalSearchPolicy;
   const client = window.FundBlickExternalSearchClient;
   const ui = window.FundBlickExternalSearchUI;
+  const intentEngine = window.FundBlickUniversalSearchIntent;
   if (!policy || !client || !ui) return;
 
   const container = document.getElementById('external-results');
@@ -19,7 +20,17 @@
   let lastLocalSignature = '';
 
   function query() {
-    return policy.normalizeQuery(new URLSearchParams(location.search).get('q'));
+    const params = new URLSearchParams(location.search);
+    return policy.normalizeQuery(params.get('rawq') || params.get('q'));
+  }
+
+  function language() {
+    return document.documentElement.lang || 'de';
+  }
+
+  function intentFor(q) {
+    try { return intentEngine?.analyze?.(q, language()) || null; }
+    catch { return null; }
   }
 
   function visibleLocalCount() {
@@ -31,11 +42,13 @@
     return items.map((card, index) => `${index}:${String(card.textContent || '').replace(/\s+/g, ' ').trim()}`).join('\u0001');
   }
 
-  function shouldSupplement(q, localResults = visibleLocalCount()) {
+  function shouldSupplement(q, localResults = visibleLocalCount(), intent = intentFor(q)) {
+    if (!enabled || !endpoint || !policy.validQuery(q)) return false;
+    if (intent?.enrichWeb) return true;
     return policy.shouldUseExternalSearch({
       query: q,
       localResults,
-      externalEnabled: enabled && Boolean(endpoint)
+      externalEnabled: true
     });
   }
 
@@ -48,30 +61,40 @@
   async function evaluate() {
     const current = ++sequence;
     const q = query();
+    const intent = intentFor(q);
     if (!localSearchSettled || !q) {
       ui.hide(container);
       return;
     }
 
-    if (!shouldSupplement(q)) {
+    if (!shouldSupplement(q, visibleLocalCount(), intent)) {
       ui.hide(container);
       return;
     }
 
-    ui.render(container, { loading: true });
+    ui.render(container, { loading: true, intent });
     const result = await client.search({
       endpoint,
       query: q,
-      language: document.documentElement.lang || 'de',
+      language: language(),
       country: 'DE'
     });
     if (current !== sequence) return;
 
-    if (query() !== q || !shouldSupplement(q)) {
+    if (query() !== q || !shouldSupplement(q, visibleLocalCount(), intent)) {
       ui.hide(container);
       return;
     }
-    ui.render(container, result.ok ? { results: result.results } : { error: true });
+
+    if (!result.ok) {
+      ui.render(container, { error: true, intent });
+      return;
+    }
+
+    let results = result.results;
+    try { results = intentEngine?.rankResults?.(results, intent) || results; }
+    catch {}
+    ui.render(container, { results, intent });
   }
 
   function schedule(delay = 150) {
