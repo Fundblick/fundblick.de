@@ -22,7 +22,12 @@
   let applying=false;
   const collator=new Intl.Collator(doc.documentElement.lang||'de',{numeric:true,sensitivity:'base'});
   function visiblePrice(article){return numberFromMoney(article.querySelector('.price strong')?.textContent);}
-  function brand(article){return String(article.querySelector('.product-brand bdi, p bdi')?.textContent||'').trim();}
+  function brand(article){
+    const explicit=article.querySelector('.product-brand bdi,[data-brand]');
+    if(explicit)return String(explicit.getAttribute('data-brand')||explicit.textContent||'').trim();
+    const meta=[...article.querySelectorAll('p')].find(p=>/^\s*(Hersteller|Marke|Manufacturer|Brand)\s*:/i.test(p.textContent||''));
+    return String(meta?.querySelector('bdi')?.textContent||meta?.textContent?.replace(/^\s*[^:]+:\s*/,'')||'').trim();
+  }
   function name(article){return String(article.querySelector('h2')?.textContent||'').trim();}
 
   function compare(a,b,mode){
@@ -60,5 +65,5 @@
     if(records.some(record=>record.type==='childList'||record.type==='characterData'))schedule();
   }).observe(cards,{childList:true,subtree:true,characterData:true});
   schedule();
-  root.FundBlickVisibleSort={apply,numberFromMoney};
+  root.FundBlickVisibleSort={apply,numberFromMoney,brand};
 })(typeof window!=='undefined'?window:null);
