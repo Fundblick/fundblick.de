@@ -1,0 +1,55 @@
+name: Amazon foundation safety gate
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'amazon-product-normalizer.js'
+      - 'verify-amazon-adapter.js'
+      - 'docs/amazon-integration-roadmap.md'
+      - '.github/workflows/amazon-foundation-gate.yml'
+  pull_request:
+    paths:
+      - 'amazon-product-normalizer.js'
+      - 'verify-amazon-adapter.js'
+      - 'docs/amazon-integration-roadmap.md'
+      - '.github/workflows/amazon-foundation-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  amazon-foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run Amazon adapter regression gate
+        run: node verify-amazon-adapter.js
+
+      - name: Enforce inactive Amazon foundation
+        shell: bash
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const amazon = require('./amazon-product-normalizer.js');
+          const row = amazon.normalizeItem({
+            asin: 'B0ABC12345',
+            title: 'CI safety probe',
+            price: { amount: 1, currency: 'EUR' },
+            availability: 'IN_STOCK'
+          });
+          assert.ok(row, 'probe row must normalize');
+          assert.equal(row.active, false, 'Amazon foundation must remain inactive');
+          assert.equal(row.affiliateUrl, null, 'Amazon affiliate URL must not be synthesized');
+          assert.match(row.directUrl, /^https:\/\/www\.amazon\.de\/dp\/B0ABC12345$/);
+          console.log('Amazon inactive/no-synthetic-affiliate invariant passed');
+          NODE
