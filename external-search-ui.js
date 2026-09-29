@@ -12,7 +12,11 @@
     error:'Web search is currently unavailable.',
     source:'Web result',
     note:'Additional results from external sources.',
-    productSource:'Web product'
+    productSource:'Web product',
+    videoSource:'Video',
+    guideSource:'Guide',
+    comparisonSource:'Comparison',
+    localSource:'Local result'
   };
 
   const currencySymbols={EUR:'€',USD:'$',GBP:'£',CHF:'CHF',PLN:'PLN',CZK:'CZK',RON:'RON',MDL:'MDL',RUB:'₽'};
@@ -117,6 +121,16 @@
     return String(item?.host||'').trim();
   }
 
+  function sourceLabel(item,t){
+    const type=String(item?.resultType||'').trim();
+    if(type==='video')return t.videoSource||fallback.videoSource;
+    if(type==='guide')return t.guideSource||fallback.guideSource;
+    if(type==='comparison')return t.comparisonSource||fallback.comparisonSource;
+    if(type==='local')return t.localSource||fallback.localSource;
+    if(type==='product'||item?.productCandidate)return t.productSource||fallback.productSource;
+    return t.source||fallback.source;
+  }
+
   function render(container,state={}){
     if(!container)return;
     const t=text();
@@ -159,6 +173,7 @@
       const article=document.createElement('article');
       article.className='external-result-card';
       if(item.productCandidate)article.classList.add('external-product-candidate');
+      if(item.resultType)article.dataset.resultType=String(item.resultType);
 
       const imageHref=safeHttpUrl(item.image);
       if(imageHref){
@@ -211,7 +226,7 @@
 
       const source=document.createElement('small');
       source.className='external-result-source';
-      source.textContent=item.productCandidate?(t.productSource||fallback.productSource):(t.source||fallback.source);
+      source.textContent=sourceLabel(item,t);
       body.appendChild(source);
 
       article.appendChild(body);
@@ -222,5 +237,5 @@
   }
 
   function hide(container){if(!container)return;container.replaceChildren();container.hidden=true}
-  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,merchantLabel,currencyCode,currencyFromUrl,visiblePriceFromText,visiblePrice});
+  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,merchantLabel,currencyCode,currencyFromUrl,visiblePriceFromText,visiblePrice,sourceLabel});
 });
