@@ -2,7 +2,13 @@
 (function(root){
   if(!root||!root.location)return;
   const params=new URLSearchParams(root.location.search);
-  if(params.get('category'))return;
+  const existingCategory=String(params.get('category')||'').trim();
+  const preserved=String(params.get('rawq')||'').trim();
+  if(existingCategory){
+    if(preserved)root.addEventListener('load',()=>{const input=root.document?.querySelector?.('#query');if(input)input.value=preserved;},{once:true});
+    return;
+  }
+
   const raw=String(params.get('q')||'').trim();
   if(!raw)return;
 
