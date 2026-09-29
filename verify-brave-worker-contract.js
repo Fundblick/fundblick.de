@@ -47,7 +47,7 @@ assert.ok(worker && typeof worker.fetch === 'function');
   sandbox.fetch = async (url, options) => {
     upstreamUrl = new URL(url);
     upstreamOptions = options;
-    return new Response(JSON.stringify({ web:{ results:[
+    return new Response(JSON.stringify({ query:{ more_results_available:true }, web:{ results:[
       {
         title:'Bosch GSR',
         url:'https://search.example/result/gsr',
@@ -83,16 +83,19 @@ assert.ok(worker && typeof worker.fetch === 'function');
     ] } }), { status:200, headers:{ 'content-type':'application/json' } });
   };
   const longQuery = 'A'.repeat(200);
-  response = await worker.fetch(new Request(`https://worker.example/search?q=${longQuery}&count=99&country=DE123&lang=de!!!`, { headers:{ Origin:'https://fundblick.de' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
+  response = await worker.fetch(new Request(`https://worker.example/search?q=${longQuery}&count=99&offset=3&country=DE123&lang=de!!!`, { headers:{ Origin:'https://fundblick.de' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
   body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.query.length, 120);
   assert.equal(body.count, 4);
+  assert.equal(body.offset, 3);
+  assert.equal(body.moreResultsAvailable, true);
 
   assert.equal(body.results[0].url, 'https://shop.example/produkt/gsr');
   assert.equal(body.results[0].productUrl, 'https://shop.example/produkt/gsr');
   assert.equal(body.results[0].image, 'https://img.example/gsr.jpg');
   assert.equal(body.results[0].price, '149,99');
+  assert.equal(body.results[0].priceConfidence, 'structured');
   assert.equal(body.results[0].currency, 'EUR');
   assert.equal(body.results[0].merchant, 'Werkzeug Shop');
   assert.equal(body.results[0].productStatus, 'in_stock');
@@ -100,21 +103,25 @@ assert.ok(worker && typeof worker.fetch === 'function');
 
   assert.equal(body.results[1].image, 'https://img.example/cluster.jpg');
   assert.equal(body.results[1].price, '79.50');
+  assert.equal(body.results[1].priceConfidence, 'structured');
   assert.equal(body.results[1].currency, 'USD');
   assert.equal(body.results[1].merchant, 'ClusterBrand');
   assert.equal(body.results[1].productStatus, 'out_of_stock');
   assert.equal(body.results[1].productCandidate, true);
 
   assert.equal(body.results[2].price, '89,90 EUR');
+  assert.equal(body.results[2].priceConfidence, 'visible');
   assert.equal(body.results[2].currency, 'EUR');
   assert.equal(body.results[2].productStatus, 'unknown');
 
   assert.equal(body.results[3].price, '11.205 €');
+  assert.equal(body.results[3].priceConfidence, 'visible');
   assert.equal(body.results[3].currency, 'EUR');
   assert.notEqual(body.results[3].price, '112050');
 
   assert.equal(upstreamUrl.hostname, 'api.search.brave.com');
   assert.equal(upstreamUrl.searchParams.get('count'), '20');
+  assert.equal(upstreamUrl.searchParams.get('offset'), '3');
   assert.equal(upstreamUrl.searchParams.get('country'), 'DE');
   assert.equal(upstreamUrl.searchParams.get('search_lang'), 'de');
   assert.equal(upstreamUrl.searchParams.get('safesearch'), 'moderate');
@@ -140,5 +147,5 @@ assert.ok(worker && typeof worker.fetch === 'function');
   response = await worker.fetch(new Request('https://worker.example/search?q=test'), { BRAVE_SEARCH_API_KEY:'test-only' });
   assert.equal(response.status, 502);
 
-  console.log('Brave Worker contract: normalized product offer fields + visible-price precedence + safety boundaries OK');
+  console.log('Brave Worker contract: pagination + price provenance + normalization + safety OK');
 })().catch(error => { console.error(error); process.exitCode = 1; });
