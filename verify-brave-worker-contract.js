@@ -48,7 +48,29 @@ assert.ok(worker && typeof worker.fetch === 'function');
     upstreamUrl = new URL(url);
     upstreamOptions = options;
     return new Response(JSON.stringify({ web:{ results:[
-      { title:'Bosch GSR', url:'https://shop.example/produkt/gsr', description:'Akkuschrauber', thumbnail:{src:'https://img.example/gsr.jpg'}, deep_results:{schemas:[{offers:[{price:'149,99 €'}], brand:'Bosch'}]}, family_friendly:true },
+      {
+        title:'Bosch GSR',
+        url:'https://search.example/result/gsr',
+        description:'Akkuschrauber',
+        thumbnail:{src:'https://img.example/gsr.jpg'},
+        product:{
+          url:'https://shop.example/produkt/gsr',
+          offers:{ price:'149,99', priceCurrency:'EUR', availability:'https://schema.org/InStock' },
+          seller:{ name:'Werkzeug Shop' }
+        },
+        family_friendly:true
+      },
+      {
+        title:'Cluster Produkt',
+        url:'https://shop.example/p/cluster',
+        description:'Produktvergleich',
+        product_cluster:[{
+          image:'https://img.example/cluster.jpg',
+          offers:[{ price:'79.50', priceCurrency:'USD', availability:'OutOfStock' }],
+          brand:{ name:'ClusterBrand' }
+        }],
+        family_friendly:true
+      },
       { title:'Snippet Preis', url:'https://shop.example/p/2', description:'Jetzt kaufen', extra_snippets:['Angebot 89,90 EUR sofort lieferbar'], family_friendly:true },
       { title:'Nicht anzeigen', url:'https://example.com/x', family_friendly:false }
     ] } }), { status:200, headers:{ 'content-type':'application/json' } });
@@ -58,11 +80,27 @@ assert.ok(worker && typeof worker.fetch === 'function');
   body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.query.length, 120);
-  assert.equal(body.count, 2);
+  assert.equal(body.count, 3);
+
+  assert.equal(body.results[0].url, 'https://shop.example/produkt/gsr');
+  assert.equal(body.results[0].productUrl, 'https://shop.example/produkt/gsr');
   assert.equal(body.results[0].image, 'https://img.example/gsr.jpg');
-  assert.equal(body.results[0].price, '149,99 €');
-  assert.equal(body.results[0].merchant, 'Bosch');
-  assert.equal(body.results[1].price, '89,90 EUR');
+  assert.equal(body.results[0].price, '149,99');
+  assert.equal(body.results[0].currency, 'EUR');
+  assert.equal(body.results[0].merchant, 'Werkzeug Shop');
+  assert.equal(body.results[0].productStatus, 'in_stock');
+  assert.equal(body.results[0].productCandidate, true);
+
+  assert.equal(body.results[1].image, 'https://img.example/cluster.jpg');
+  assert.equal(body.results[1].price, '79.50');
+  assert.equal(body.results[1].currency, 'USD');
+  assert.equal(body.results[1].merchant, 'ClusterBrand');
+  assert.equal(body.results[1].productStatus, 'out_of_stock');
+  assert.equal(body.results[1].productCandidate, true);
+
+  assert.equal(body.results[2].price, '89,90 EUR');
+  assert.equal(body.results[2].currency, 'EUR');
+  assert.equal(body.results[2].productStatus, 'unknown');
   assert.equal(upstreamUrl.hostname, 'api.search.brave.com');
   assert.equal(upstreamUrl.searchParams.get('count'), '20');
   assert.equal(upstreamUrl.searchParams.get('country'), 'DE');
@@ -90,5 +128,5 @@ assert.ok(worker && typeof worker.fetch === 'function');
   response = await worker.fetch(new Request('https://worker.example/search?q=test'), { BRAVE_SEARCH_API_KEY:'test-only' });
   assert.equal(response.status, 502);
 
-  console.log('Brave Worker contract: structured product enrichment + safety boundaries OK');
+  console.log('Brave Worker contract: normalized product offer fields + safety boundaries OK');
 })().catch(error => { console.error(error); process.exitCode = 1; });
