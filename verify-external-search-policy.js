@@ -50,9 +50,20 @@ assert.deepEqual(result, {
   image: 'https://img.example.com/akku.jpg',
   price: '12,99',
   currency: 'EUR',
+  priceConfidence: '',
   productStatus: 'in_stock',
   productCandidate: true
 });
+
+const confidenceResult = policy.normalizeExternalResult({
+  title:'Visible price',
+  url:'https://example.net/product/x',
+  price:'24,90 EUR',
+  currency:'EUR',
+  priceConfidence:'visible',
+  productCandidate:true
+});
+assert.equal(confidenceResult.priceConfidence, 'visible');
 
 const legacyResult = policy.normalizeExternalResult({
   title: 'Legacy',
@@ -75,4 +86,4 @@ const deduped = policy.normalizeExternalResults([
 ]);
 assert.equal(deduped.length, 2);
 
-console.log('External search fallback policy: normalized offer metadata and safety OK');
+console.log('External search fallback policy: normalized offer metadata, price confidence and safety OK');
