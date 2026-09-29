@@ -64,13 +64,15 @@
     if (raw === '€' || raw.includes('EUR')) return 'EUR';
     if (raw === '$' || raw.includes('USD')) return 'USD';
     if (raw === '£' || raw.includes('GBP')) return 'GBP';
-    const code = raw.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+    if (raw === '₽' || raw.includes('RUB')) return 'RUB';
+    const code = raw.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB)\b/);
     if (code) return code[1];
     const priceText = cleanText(price, 80).toUpperCase();
     if (priceText.includes('€') || priceText.includes('EUR')) return 'EUR';
     if (priceText.includes('$') || priceText.includes('USD')) return 'USD';
     if (priceText.includes('£') || priceText.includes('GBP')) return 'GBP';
-    const fromPrice = priceText.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+    if (priceText.includes('₽') || priceText.includes('RUB')) return 'RUB';
+    const fromPrice = priceText.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB)\b/);
     return fromPrice ? fromPrice[1] : '';
   }
   function normalizedProductStatus(item) {
@@ -97,7 +99,9 @@
     const merchant = cleanText(firstValue(item, ['merchant','shop','store','seller']), 120) || host;
     const productStatus = normalizedProductStatus(item);
     const productCandidate = item.productCandidate === true || likelyProductPage(url, title, description);
-    return Object.freeze({ kind:'external-web', title, url, productUrl:url, description, source:'web', host, merchant, image, price, currency, productStatus, productCandidate });
+    const confidenceRaw = cleanText(item.priceConfidence, 20).toLowerCase();
+    const priceConfidence = ['verified','visible','structured','unknown'].includes(confidenceRaw) ? confidenceRaw : '';
+    return Object.freeze({ kind:'external-web', title, url, productUrl:url, description, source:'web', host, merchant, image, price, currency, priceConfidence, productStatus, productCandidate });
   }
   function normalizeExternalResults(items) {
     const seen = new Set();
