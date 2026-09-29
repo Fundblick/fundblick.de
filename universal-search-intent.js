@@ -100,17 +100,7 @@
     if (broad) modes.push('discovery');
 
     const enrichWeb = Boolean(normalized) && (location.local || informational || comparison || video || broad);
-    const desiredTypes = primary === 'local'
-      ? ['local','product','guide','video','comparison']
-      : primary === 'video'
-        ? ['video','guide','product','comparison']
-        : primary === 'comparison'
-          ? ['comparison','video','guide','product']
-          : primary === 'informational'
-            ? ['guide','video','comparison','product']
-            : broad
-              ? ['product','guide','video','comparison']
-              : ['product','comparison','guide','video'];
+    const desiredTypes = ['product','video','local','comparison','guide'];
 
     return Object.freeze({
       raw:String(query || ''),
@@ -139,36 +129,49 @@
     try { host = new URL(url).hostname.toLowerCase().replace(/^www\./, ''); } catch {}
     const text = `${clean(item?.title)} ${clean(item?.description)} ${host}`;
     if (/(^|\.)(youtube\.com|youtu\.be|vimeo\.com)$/.test(host) || VIDEO.test(text)) return 'video';
-    if (COMPARISON.test(text)) return 'comparison';
     if (item?.productCandidate === true || clean(item?.price)) return 'product';
     if (/(maps\.|branchenbuch|gelbeseiten|11880|yelp\.|tripadvisor\.|google\.[^/]+\/maps|standort|filiale|händler|dealer|werkstatt|магазин|magazin)/iu.test(text)) return 'local';
+    if (COMPARISON.test(text)) return 'comparison';
     return 'guide';
+  }
+
+  function hasTrustedPrice(item) {
+    if (!clean(item?.price)) return false;
+    const confidence = clean(item?.priceConfidence).toLowerCase();
+    return confidence === 'verified' || confidence === 'visible';
+  }
+
+  function resultTier(item, type) {
+    if (type === 'product' && hasTrustedPrice(item)) return 0;
+    if (type === 'product') return 1;
+    if (type === 'video') return 2;
+    if (type === 'local') return 3;
+    if (type === 'comparison') return 4;
+    return 5;
   }
 
   function scoreResult(item, intent, index) {
     const type = classifyResult(item);
-    const desired = Array.isArray(intent?.desiredTypes) ? intent.desiredTypes : ['product','guide','video','comparison'];
-    const typeIndex = desired.indexOf(type);
-    let score = typeIndex < 0 ? 0 : (desired.length - typeIndex) * 20;
+    let score = 0;
     const text = `${clean(item?.title)} ${clean(item?.description)}`.toLocaleLowerCase();
     const queryTerms = tokens(intent?.query || '').map(x => x.toLocaleLowerCase()).filter(x => x.length > 2);
     for (const term of queryTerms) if (text.includes(term)) score += 3;
     if (intent?.place && text.includes(String(intent.place).toLocaleLowerCase())) score += 16;
     if (intent?.local && type === 'local') score += 25;
-    if (intent?.video && type === 'video') score += 30;
-    if (intent?.comparison && type === 'comparison') score += 25;
-    if (intent?.informational && type === 'guide') score += 18;
+    if (intent?.video && type === 'video') score += 20;
+    if (intent?.comparison && type === 'comparison') score += 18;
+    if (intent?.informational && type === 'guide') score += 14;
     if (intent?.exactModel && type === 'product') score += 20;
     score -= Math.min(Number(index) || 0, 20) * 0.2;
-    return { type, score };
+    return { type, tier:resultTier(item, type), score };
   }
 
   function rankResults(items, intent) {
     return (Array.isArray(items) ? items : []).map((item, index) => {
       const ranked = scoreResult(item, intent, index);
-      return { item:Object.freeze({ ...item, resultType:ranked.type }), index, score:ranked.score };
-    }).sort((a,b) => b.score-a.score || a.index-b.index).map(entry => entry.item);
+      return { item:Object.freeze({ ...item, resultType:ranked.type }), index, tier:ranked.tier, score:ranked.score };
+    }).sort((a,b) => a.tier-b.tier || b.score-a.score || a.index-b.index).map(entry => entry.item);
   }
 
-  return Object.freeze({ analyze, classifyResult, rankResults, clean, tokens, inferQueryLanguage, locationSignal, exactModelSignal });
+  return Object.freeze({ analyze, classifyResult, rankResults, clean, tokens, inferQueryLanguage, locationSignal, exactModelSignal, hasTrustedPrice, resultTier });
 });
