@@ -1,8 +1,9 @@
 'use strict';
 
 const BRAVE_ENDPOINT = 'https://api.search.brave.com/res/v1/web/search';
-const DEFAULT_COUNT = 10;
+const DEFAULT_COUNT = 20;
 const MAX_COUNT = 20;
+const MAX_OFFSET = 9;
 const MIN_QUERY_LENGTH = 2;
 const MAX_QUERY_LENGTH = 120;
 
@@ -129,8 +130,6 @@ function visiblePrice(item) {
 }
 
 function explicitPrice(item) {
-  // A price that is visibly attached to the result is stronger evidence than a
-  // nested schema price, which may describe a different offer on an overview page.
   const visible = visiblePrice(item);
   if (visible) return visible;
 
@@ -142,6 +141,13 @@ function explicitPrice(item) {
   const structuredText = cleanText(structured, 80);
   if (/\d/.test(structuredText)) return structuredText;
   return '';
+}
+
+function priceConfidence(item, price) {
+  if (!price) return 'unknown';
+  const visible = visiblePrice(item);
+  if (visible && cleanText(visible, 80) === cleanText(price, 80)) return 'visible';
+  return 'structured';
 }
 
 function normalizeCurrency(value) {
@@ -218,6 +224,7 @@ function normalizeResult(item) {
     image: explicitImage(item),
     price,
     currency: explicitCurrency(item, price),
+    priceConfidence: priceConfidence(item, price),
     merchant: explicitMerchant(item),
     productStatus: explicitProductStatus(item),
     productCandidate: hasStructuredProduct || Boolean(price),
@@ -249,13 +256,16 @@ export default {
     if (!env.BRAVE_SEARCH_API_KEY) return json({ error: 'server_not_configured' }, 503, cors);
 
     const requestedCount = Number(url.searchParams.get('count') || DEFAULT_COUNT);
-    const count = Math.max(1, Math.min(MAX_COUNT, Number.isFinite(requestedCount) ? requestedCount : DEFAULT_COUNT));
+    const count = Math.max(1, Math.min(MAX_COUNT, Number.isFinite(requestedCount) ? Math.floor(requestedCount) : DEFAULT_COUNT));
+    const requestedOffset = Number(url.searchParams.get('offset') || 0);
+    const offset = Math.max(0, Math.min(MAX_OFFSET, Number.isFinite(requestedOffset) ? Math.floor(requestedOffset) : 0));
     const country = String(url.searchParams.get('country') || 'DE').toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2) || 'DE';
     const searchLang = String(url.searchParams.get('lang') || 'de').toLowerCase().replace(/[^a-z-]/g, '').slice(0, 8) || 'de';
 
     const braveUrl = new URL(BRAVE_ENDPOINT);
     braveUrl.searchParams.set('q', query);
     braveUrl.searchParams.set('count', String(count));
+    braveUrl.searchParams.set('offset', String(offset));
     braveUrl.searchParams.set('country', country);
     braveUrl.searchParams.set('search_lang', searchLang);
     braveUrl.searchParams.set('safesearch', 'moderate');
@@ -283,6 +293,7 @@ export default {
     const results = Array.isArray(payload?.web?.results)
       ? payload.web.results.filter(item => item?.family_friendly !== false).map(normalizeResult).filter(item => item.title && item.url)
       : [];
-    return json({ query, count: results.length, results }, 200, cors);
+    const moreResultsAvailable = payload?.query?.more_results_available === true && offset < MAX_OFFSET;
+    return json({ query, count: results.length, offset, moreResultsAvailable, results }, 200, cors);
   }
 };
