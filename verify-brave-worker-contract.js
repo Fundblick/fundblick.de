@@ -7,14 +7,7 @@ const vm = require('node:vm');
 let code = fs.readFileSync('cloudflare/brave-search-worker.js', 'utf8');
 code = code.replace('export default {', 'globalThis.__worker = {');
 
-const sandbox = {
-  URL,
-  Response,
-  Request,
-  console,
-  globalThis: null,
-  fetch: async () => { throw new Error('unexpected upstream call'); }
-};
+const sandbox = { URL, Response, Request, console, globalThis:null, fetch:async()=>{ throw new Error('unexpected upstream call'); } };
 sandbox.globalThis = sandbox;
 vm.runInNewContext(code, sandbox);
 const worker = sandbox.__worker;
@@ -28,6 +21,14 @@ assert.ok(worker && typeof worker.fetch === 'function');
   assert.equal(body.keyConfigured, false);
   assert.equal(response.headers.get('access-control-allow-origin'), 'https://fundblick.de');
   assert.equal(response.headers.get('cache-control'), 'no-store');
+  assert.equal(response.headers.get('x-content-type-options'), 'nosniff');
+  assert.equal(response.headers.get('x-frame-options'), 'DENY');
+  assert.match(response.headers.get('content-security-policy') || '', /default-src 'none'/);
+  assert.match(response.headers.get('permissions-policy') || '', /geolocation=\(\)/);
+
+  response = await worker.fetch(new Request('https://worker.example/health', { headers:{ Origin:'https://evil.example' } }), {});
+  assert.equal(response.status, 403);
+  assert.equal(response.headers.get('access-control-allow-origin'), null);
 
   response = await worker.fetch(new Request('https://worker.example/search?q=', { headers:{ Origin:'https://fundblick.de' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
   assert.equal(response.status, 400);
@@ -41,6 +42,9 @@ assert.ok(worker && typeof worker.fetch === 'function');
   assert.equal(response.headers.get('access-control-allow-origin'), null);
   response = await worker.fetch(new Request('https://worker.example/search?q=akku', { method:'OPTIONS', headers:{ Origin:'https://evil.example' } }), {});
   assert.equal(response.status, 403);
+  response = await worker.fetch(new Request('https://worker.example/search?q=akku', { method:'OPTIONS', headers:{ Origin:'https://fundblick.de' } }), {});
+  assert.equal(response.status, 204);
+  assert.equal(response.headers.get('access-control-max-age'), '600');
 
   let upstreamUrl;
   let upstreamOptions;
@@ -87,5 +91,5 @@ assert.ok(worker && typeof worker.fetch === 'function');
   response = await worker.fetch(new Request('https://worker.example/search?q=test'), { BRAVE_SEARCH_API_KEY:'test-only' });
   assert.equal(response.status, 502);
 
-  console.log('Brave Worker contract: abuse/failure boundaries OK');
+  console.log('Brave Worker contract: hardened headers/origin/abuse/failure boundaries OK');
 })().catch(error => { console.error(error); process.exitCode = 1; });
