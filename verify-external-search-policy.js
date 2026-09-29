@@ -5,9 +5,12 @@ const policy = require('./external-search-policy.js');
 
 assert.equal(policy.normalizeQuery('  akkuschrauber   18V  '), 'akkuschrauber 18V');
 assert.equal(policy.normalizeQuery('\u0000  test\nquery '), 'test query');
-assert.equal(policy.normalizeQuery('x'.repeat(250)).length, 200);
+assert.equal(policy.normalizeQuery('x'.repeat(250)).length, 120);
+assert.equal(policy.validQuery('a'), false);
+assert.equal(policy.validQuery('ab'), true);
 
 assert.equal(policy.shouldUseExternalSearch({ query: '' , localResults: [] }), false);
+assert.equal(policy.shouldUseExternalSearch({ query: 'a', localResults: [] }), false);
 assert.equal(policy.shouldUseExternalSearch({ query: 'Akkuschrauber', localResults: [] }), true);
 assert.equal(policy.shouldUseExternalSearch({ query: 'Akkuschrauber', localResults: [{}] }), false);
 assert.equal(policy.shouldUseExternalSearch({ query: 'Akkuschrauber', localResults: 0 }), true);
