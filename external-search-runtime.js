@@ -6,6 +6,7 @@
   const ui = window.FundBlickExternalSearchUI;
   const intentEngine = window.FundBlickUniversalSearchIntent;
   const priceConfidence = window.FundBlickExternalPriceConfidence;
+  const intentQuery = window.FundBlickIntentQuery;
   if (!policy || !client || !ui) return;
 
   const container = document.getElementById('external-results');
@@ -49,6 +50,16 @@
       const base=intentEngine?.analyze?.(q, language()) || null;
       return base ? Object.freeze({ ...base, explicitView:explicitView() }) : null;
     } catch { return null; }
+  }
+
+  function externalQuery() {
+    try {
+      return intentQuery?.refine?.(
+        activeQuery,
+        activeIntent?.explicitView || 'offers',
+        activeIntent?.searchLanguage || language()
+      ) || activeQuery;
+    } catch { return activeQuery; }
   }
 
   function visibleLocalCount() {
@@ -122,7 +133,7 @@
   async function requestPage(offset) {
     return client.search({
       endpoint,
-      query:activeQuery,
+      query:externalQuery(),
       language:activeIntent?.searchLanguage || language(),
       country:'DE',
       count:PAGE_SIZE,
