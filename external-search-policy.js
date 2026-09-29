@@ -7,7 +7,8 @@
 })(typeof window !== 'undefined' ? window : globalThis, function () {
   const DEFAULTS = Object.freeze({
     minLocalResults: 1,
-    maxQueryLength: 200
+    minQueryLength: 2,
+    maxQueryLength: 120
   });
 
   function normalizeQuery(value, maxLength = DEFAULTS.maxQueryLength) {
@@ -19,6 +20,13 @@
       .slice(0, limit);
   }
 
+  function validQuery(value, options = {}) {
+    const query = normalizeQuery(value, options.maxQueryLength);
+    const minRaw = Number(options.minQueryLength ?? DEFAULTS.minQueryLength);
+    const min = Number.isFinite(minRaw) ? Math.max(1, Math.floor(minRaw)) : DEFAULTS.minQueryLength;
+    return query.length >= min;
+  }
+
   function localResultCount(value) {
     if (Array.isArray(value)) return value.length;
     const n = Number(value);
@@ -27,7 +35,7 @@
 
   function shouldUseExternalSearch(input = {}) {
     const query = normalizeQuery(input.query, input.maxQueryLength);
-    if (!query) return false;
+    if (!validQuery(query, input)) return false;
     if (input.externalEnabled === false) return false;
     if (input.pending === true) return false;
     if (input.alreadyRequested === true) return false;
@@ -66,6 +74,7 @@
   return Object.freeze({
     DEFAULTS,
     normalizeQuery,
+    validQuery,
     localResultCount,
     shouldUseExternalSearch,
     requestKey,
