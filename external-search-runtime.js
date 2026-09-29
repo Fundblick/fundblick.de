@@ -5,6 +5,7 @@
   const client = window.FundBlickExternalSearchClient;
   const ui = window.FundBlickExternalSearchUI;
   const intentEngine = window.FundBlickUniversalSearchIntent;
+  const priceConfidence = window.FundBlickExternalPriceConfidence;
   if (!policy || !client || !ui) return;
 
   const container = document.getElementById('external-results');
@@ -92,6 +93,8 @@
     }
 
     let results = result.results;
+    try { results = priceConfidence?.annotate?.(results) || results; }
+    catch {}
     try { results = intentEngine?.rankResults?.(results, intent) || results; }
     catch {}
     ui.render(container, { results, intent });
