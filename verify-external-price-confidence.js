@@ -41,6 +41,18 @@ assert.equal(item.priceConfidence, 'verified', 'specific retail product with ima
 assert.equal(ui.trustedPrice(item, item.url), '17,24 €');
 
 item = confidence.annotate([{
+  title:'Der Bleistift (Dinge des Lebens)',
+  description:'Gebundene Ausgabe',
+  url:'https://www.amazon.de/dp/3701736464',
+  image:'https://img.example/book.jpg',
+  productCandidate:true,
+  price:'15.0',
+  currency:'EUR'
+}])[0];
+assert.equal(item.priceConfidence, 'verified', 'specific Amazon product with image may retain structured price');
+assert.equal(ui.trustedPrice(item, item.url), '15,00 €', 'single decimal must remain decimal and never become 150 EUR');
+
+item = confidence.annotate([{
   title:'Faber-Castell Bleistift basic mit Radierer drucken bei FLYERALARM',
   description:'Hochwertige Marken-Bleistifte – jetzt bestellen',
   url:'https://www.flyeralarm.com/de/shop/bleistift',
@@ -76,4 +88,4 @@ item = confidence.annotate([{
 }])[0];
 assert.equal(ui.trustedPrice(item, item.url), '24,90 €', 'worker-verified price remains renderable');
 
-console.log('External price confidence: visible precedence + graded structured-price recovery OK');
+console.log('External price confidence: visible precedence + decimal parser + graded structured-price recovery OK');
