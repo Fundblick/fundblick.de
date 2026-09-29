@@ -27,6 +27,16 @@ jobs:
         with:
           ref: development
 
+      - name: Build full real merchant catalog
+        run: |
+          set -euo pipefail
+          node build-production-catalog.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          node verify-production-merchants.js build/catalog
+          node verify-production-categories.js build/catalog
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Development merchant catalog OK',m.realCount)"
+          test -s build/catalog/categories.json
+
       - name: Build current development preview
         run: |
           set -euo pipefail
@@ -35,12 +45,18 @@ jobs:
             --exclude '.git/' \
             --exclude '.github/' \
             --exclude '_site/' \
+            --exclude 'build/' \
+            --exclude 'catalog/' \
             --exclude 'CNAME'
+          rm -rf _site/catalog
+          cp -R build/catalog _site/catalog
           touch _site/.nojekyll
           test -f _site/index.html
           grep -Fq 'Suchen. Angebote vergleichen. Fertig.' _site/index.html
           grep -Fq 'action="search.html"' _site/index.html
           grep -Fq 'external-search-runtime.js' _site/search.html
+          test -s _site/catalog/categories.json
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/catalog/manifest.json'));if(Number(m.itemCount)<1000)process.exit(1);console.log('Packaged preview catalog OK',m.itemCount)"
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
