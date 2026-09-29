@@ -15,29 +15,46 @@
     productSource:'Web product'
   };
 
-  const currencySymbols={EUR:'€',USD:'$',GBP:'£',CHF:'CHF',PLN:'PLN',CZK:'CZK',RON:'RON',MDL:'MDL'};
+  const currencySymbols={EUR:'€',USD:'$',GBP:'£',CHF:'CHF',PLN:'PLN',CZK:'CZK',RON:'RON',MDL:'MDL',RUB:'₽'};
+  const domainCurrency={
+    ru:'RUB',ro:'RON',md:'MDL',pl:'PLN',cz:'CZK',ch:'CHF',uk:'GBP',gb:'GBP',
+    de:'EUR',at:'EUR',fr:'EUR',it:'EUR',es:'EUR',pt:'EUR',nl:'EUR',be:'EUR',fi:'EUR',ie:'EUR',gr:'EUR'
+  };
 
   function text(){try{return root?.FundBlickExternalSearchI18n?.get?.()||fallback}catch{return fallback}}
   function language(){try{return root?.FundBlickExternalSearchI18n?.language?.()||document.documentElement.lang||'de'}catch{return 'de'}}
   function safeHttpUrl(value){try{const url=new URL(String(value||''));return /^https?:$/.test(url.protocol)?url.href:null}catch{return null}}
   function usableResults(items){return (Array.isArray(items)?items:[]).map(item=>({item,href:safeHttpUrl(item?.url)})).filter(entry=>entry.href)}
 
-  function currencyCode(raw,currency){
+  function currencyFromUrl(value){
+    try{
+      const host=new URL(String(value||'')).hostname.toLowerCase().replace(/^www\./,'');
+      const tld=host.split('.').pop();
+      return domainCurrency[tld]||'';
+    }catch{return ''}
+  }
+
+  function currencyCode(raw,currency,url){
     const explicit=String(currency||'').trim().toUpperCase();
-    if(/^[A-Z]{3}$/.test(explicit))return explicit;
+    if(/^(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB)$/.test(explicit))return explicit;
     const text=String(raw||'').toUpperCase();
-    const code=text.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+    const code=text.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB)\b/);
     if(code)return code[1];
     if(text.includes('€'))return 'EUR';
     if(text.includes('£'))return 'GBP';
     if(text.includes('$'))return 'USD';
-    return 'EUR';
+    if(text.includes('₽')||/\bРУБ(?:\.|Л(?:Ь|Я|ЕЙ)?)?\b/i.test(text)||/(?:^|\s)Р\.(?:\s|$)/i.test(text))return 'RUB';
+    return currencyFromUrl(url);
   }
 
   function numericAmount(raw){
     let text=String(raw??'').trim();
     if(!text)return NaN;
-    text=text.replace(/\b(?:EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/gi,'').replace(/[€$£]/g,'').replace(/\s|\u00a0|\u202f/g,'').replace(/[^0-9,.-]/g,'');
+    text=text.replace(/\b(?:EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB)\b/gi,'')
+      .replace(/(?:руб(?:\.|ль|ля|лей)?|₽)/gi,'')
+      .replace(/[€$£]/g,'')
+      .replace(/\s|\u00a0|\u202f/g,'')
+      .replace(/[^0-9,.-]/g,'');
     if(!text)return NaN;
     const comma=text.lastIndexOf(',');
     const dot=text.lastIndexOf('.');
@@ -56,12 +73,12 @@
     return Number.isFinite(amount)?amount:NaN;
   }
 
-  function formatPrice(value,currency){
+  function formatPrice(value,currency,url){
     const raw=String(value??'').trim();
     if(!raw)return '';
     const amount=numericAmount(raw);
     if(!Number.isFinite(amount))return raw;
-    const code=currencyCode(raw,currency);
+    const code=currencyCode(raw,currency,url);
     const locale=language();
     let number;
     try{
@@ -69,6 +86,7 @@
     }catch{
       number=amount.toFixed(2);
     }
+    if(!code)return number;
     const unit=currencySymbols[code]||code;
     return `${number} ${unit}`;
   }
@@ -154,7 +172,7 @@
         body.appendChild(merchant);
       }
 
-      const displayPrice=formatPrice(item.price,item.currency);
+      const displayPrice=formatPrice(item.price,item.currency,href);
       if(displayPrice){
         const price=document.createElement('strong');
         price.className='external-result-price';
@@ -182,5 +200,5 @@
   }
 
   function hide(container){if(!container)return;container.replaceChildren();container.hidden=true}
-  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,merchantLabel});
+  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,merchantLabel,currencyCode,currencyFromUrl});
 });
