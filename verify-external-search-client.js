@@ -29,7 +29,10 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
       ok: true,
       status: 200,
       async json() {
-        return { results: [{ title: 'Treffer', url: 'https://shop.example/item', description: 'Web' }] };
+        return { results: [
+          { title: 'Treffer', url: 'https://shop.example/item', description: 'Web', price: 999, affiliateUrl: 'fake' },
+          { title: 'Unsicher', url: 'javascript:alert(1)' }
+        ] };
       }
     };
   };
@@ -39,8 +42,16 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   const second = await client.search({ endpoint: 'https://search.example.com', query: 'Akkuschrauber' });
   assert.equal(first.ok, true);
   assert.equal(first.results.length, 1);
+  assert.deepEqual(first.results[0], { kind:'external-web', title:'Treffer', url:'https://shop.example/item', description:'Web', source:'web' });
   assert.equal(second.cached, true);
   assert.equal(calls, 1);
+
+  client.clearSessionCache();
+  global.fetch = async () => ({ ok:false, status:429, async json(){ return {}; } });
+  const limited = await client.search({ endpoint:'https://search.example.com', query:'Bohrmaschine' });
+  assert.equal(limited.ok, false);
+  assert.equal(limited.status, 429);
+  assert.deepEqual(limited.results, []);
 
   console.log('External search client: OK');
 })().catch(error => {
