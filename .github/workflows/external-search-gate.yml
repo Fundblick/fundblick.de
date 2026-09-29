@@ -4,6 +4,8 @@ on:
   push:
     branches: [development]
     paths:
+      - 'search.html'
+      - 'search-render-signal.js'
       - 'external-search-policy.js'
       - 'external-search-client.js'
       - 'external-search-i18n.js'
@@ -19,6 +21,8 @@ on:
       - '.github/workflows/external-search-gate.yml'
   pull_request:
     paths:
+      - 'search.html'
+      - 'search-render-signal.js'
       - 'external-search-policy.js'
       - 'external-search-client.js'
       - 'external-search-i18n.js'
@@ -48,6 +52,7 @@ jobs:
           node-version: '22'
       - name: Verify JavaScript syntax
         run: |
+          node --check search-render-signal.js
           node --check external-search-policy.js
           node --check external-search-client.js
           node --check external-search-i18n.js
@@ -55,6 +60,16 @@ jobs:
           node --check external-search-runtime.js
           node --check cloudflare/brave-search-worker.js
           node --check verify-brave-worker-contract.js
+      - name: Verify local completion signal wiring
+        shell: bash
+        run: |
+          grep -q 'search-render-signal.js' search.html
+          grep -q "fundblick:search-rendered" search-render-signal.js
+          grep -q "fundblick:search-rendered" external-search-runtime.js
+          signal_line=$(grep -n 'search-render-signal.js' search.html | head -1 | cut -d: -f1)
+          runtime_line=$(grep -n 'external-search-runtime.js' search.html | head -1 | cut -d: -f1)
+          test "$signal_line" -le "$runtime_line"
+          echo 'Local completion signal is wired before external runtime.'
       - name: Verify fallback policy
         run: node verify-external-search-policy.js
       - name: Verify external client
