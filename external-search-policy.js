@@ -5,80 +5,68 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.FundBlickExternalSearchPolicy = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
-  const DEFAULTS = Object.freeze({
-    minLocalResults: 10,
-    minQueryLength: 2,
-    maxQueryLength: 120
-  });
+  const DEFAULTS = Object.freeze({ minLocalResults: 10, minQueryLength: 2, maxQueryLength: 120 });
 
   function normalizeQuery(value, maxLength = DEFAULTS.maxQueryLength) {
     const limit = Number.isFinite(Number(maxLength)) ? Math.max(1, Number(maxLength)) : DEFAULTS.maxQueryLength;
-    return String(value || '')
-      .replace(/[\u0000-\u001f\u007f]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, limit);
+    return String(value || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, limit);
   }
-
   function validQuery(value, options = {}) {
     const query = normalizeQuery(value, options.maxQueryLength);
     const minRaw = Number(options.minQueryLength ?? DEFAULTS.minQueryLength);
     const min = Number.isFinite(minRaw) ? Math.max(1, Math.floor(minRaw)) : DEFAULTS.minQueryLength;
     return query.length >= min;
   }
-
   function localResultCount(value) {
     if (Array.isArray(value)) return value.length;
     const n = Number(value);
     return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
   }
-
   function shouldUseExternalSearch(input = {}) {
     const query = normalizeQuery(input.query, input.maxQueryLength);
-    if (!validQuery(query, input)) return false;
-    if (input.externalEnabled === false) return false;
-    if (input.pending === true) return false;
-    if (input.alreadyRequested === true) return false;
-
+    if (!validQuery(query, input) || input.externalEnabled === false || input.pending === true || input.alreadyRequested === true) return false;
     const thresholdRaw = Number(input.minLocalResults ?? DEFAULTS.minLocalResults);
     const threshold = Number.isFinite(thresholdRaw) ? Math.max(0, Math.floor(thresholdRaw)) : DEFAULTS.minLocalResults;
     return localResultCount(input.localResults) < threshold;
   }
-
   function requestKey(query, language = 'de', country = 'DE') {
-    const q = normalizeQuery(query).toLocaleLowerCase();
-    const lang = String(language || 'de').trim().toLocaleLowerCase();
-    const region = String(country || 'DE').trim().toLocaleUpperCase();
-    return `${region}:${lang}:${q}`;
+    return `${String(country || 'DE').trim().toLocaleUpperCase()}:${String(language || 'de').trim().toLocaleLowerCase()}:${normalizeQuery(query).toLocaleLowerCase()}`;
   }
-
+  function cleanText(value, max = 1000) {
+    return String(value || '')
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/&nbsp;|&#160;/gi, ' ')
+      .replace(/&amp;/gi, '&').replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'")
+      .replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
+      .replace(/\s+/g, ' ').trim().slice(0, max);
+  }
+  function hostOf(value) {
+    try { return new URL(String(value || '')).hostname.replace(/^www\./i, ''); } catch { return ''; }
+  }
+  function likelyProductPage(url, title, description) {
+    const u = String(url || '').toLowerCase();
+    const text = `${title} ${description}`.toLowerCase();
+    if (/\/(product|produkt|p|dp|item|artikel)\//.test(u) || /[?&](sku|product|article|item|pid)=/.test(u)) return true;
+    if (/\b(€|eur|kaufen|bestellen|angebot|preis|shop)\b/.test(text)) return true;
+    return false;
+  }
   function normalizeExternalResult(item) {
     if (!item || typeof item !== 'object') return null;
-    const title = String(item.title || '').trim();
+    const title = cleanText(item.title, 300);
     const url = String(item.url || '').trim();
-    const description = String(item.description || '').trim();
+    const description = cleanText(item.description, 1000);
     if (!title || !/^https?:\/\//i.test(url)) return null;
-    return Object.freeze({
-      kind: 'external-web',
-      title,
-      url,
-      description,
-      source: 'web'
+    const host = hostOf(url);
+    return Object.freeze({ kind:'external-web', title, url, description, source:'web', host, productCandidate: likelyProductPage(url, title, description) });
+  }
+  function normalizeExternalResults(items) {
+    const seen = new Set();
+    return (Array.isArray(items) ? items : []).map(normalizeExternalResult).filter(item => {
+      if (!item) return false;
+      const key = item.url.replace(/#.*$/, '').replace(/\/$/, '');
+      if (seen.has(key)) return false;
+      seen.add(key); return true;
     });
   }
-
-  function normalizeExternalResults(items) {
-    return (Array.isArray(items) ? items : []).map(normalizeExternalResult).filter(Boolean);
-  }
-
-  return Object.freeze({
-    DEFAULTS,
-    normalizeQuery,
-    validQuery,
-    localResultCount,
-    shouldUseExternalSearch,
-    requestKey,
-    normalizeExternalResult,
-    normalizeExternalResults
-  });
+  return Object.freeze({ DEFAULTS, normalizeQuery, validQuery, localResultCount, shouldUseExternalSearch, requestKey, cleanText, normalizeExternalResult, normalizeExternalResults });
 });
