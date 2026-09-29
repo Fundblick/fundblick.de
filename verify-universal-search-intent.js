@@ -1,0 +1,55 @@
+'use strict';
+
+const assert = require('node:assert/strict');
+const intent = require('./universal-search-intent.js');
+
+const winter = intent.analyze('Winterreifen', 'de');
+assert.equal(winter.breadth, 'broad');
+assert.equal(winter.enrichWeb, true);
+assert.equal(winter.primary, 'product');
+assert.ok(winter.modes.includes('discovery'));
+
+const exact = intent.analyze('Bosch GSR 18V-55', 'de');
+assert.equal(exact.exactModel, true);
+assert.equal(exact.breadth, 'focused');
+assert.equal(exact.enrichWeb, false);
+assert.equal(exact.primary, 'product');
+
+const localDe = intent.analyze('Ich brauche Zündkerzen in Rottweil', 'de');
+assert.equal(localDe.local, true);
+assert.equal(localDe.primary, 'local');
+assert.equal(localDe.place.toLocaleLowerCase(), 'rottweil');
+assert.equal(localDe.enrichWeb, true);
+
+const infoRu = intent.analyze('какие зимние шины лучше', 'ru');
+assert.equal(infoRu.informational, true);
+assert.equal(infoRu.primary, 'informational');
+assert.equal(infoRu.enrichWeb, true);
+
+const videoRu = intent.analyze('видео шуруповёрт', 'ru');
+assert.equal(videoRu.video, true);
+assert.equal(videoRu.primary, 'video');
+
+const localRo = intent.analyze('bujii în Brașov', 'ro');
+assert.equal(localRo.local, true);
+assert.equal(localRo.primary, 'local');
+assert.equal(localRo.place.toLocaleLowerCase(), 'brașov');
+
+assert.equal(intent.classifyResult({url:'https://www.youtube.com/watch?v=1',title:'Winterreifen erklärt'}), 'video');
+assert.equal(intent.classifyResult({url:'https://shop.example/p/1',title:'Bosch GSR',price:'99,99 EUR',productCandidate:true}), 'product');
+assert.equal(intent.classifyResult({url:'https://example.com/ratgeber',title:'Welche Winterreifen sind sinnvoll?',description:'Ratgeber'}), 'guide');
+
+const rankedVideo = intent.rankResults([
+  {url:'https://shop.example/p/1',title:'Winterreifen kaufen',price:'99 EUR',productCandidate:true},
+  {url:'https://youtube.com/watch?v=1',title:'Winterreifen erklärt'},
+  {url:'https://example.com/test',title:'Winterreifen Test Vergleich'}
+], intent.analyze('Winterreifen Video', 'de'));
+assert.equal(rankedVideo[0].resultType, 'video');
+
+const rankedInfo = intent.rankResults([
+  {url:'https://shop.example/p/1',title:'Winterreifen kaufen',price:'99 EUR',productCandidate:true},
+  {url:'https://example.com/guide',title:'Wie funktionieren Winterreifen?',description:'Grundlagen und Erklärung'}
+], intent.analyze('Wie funktionieren Winterreifen?', 'de'));
+assert.equal(rankedInfo[0].resultType, 'guide');
+
+console.log('Universal search intent: multilingual routing + result ranking OK');
