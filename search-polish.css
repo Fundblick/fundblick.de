@@ -16,9 +16,16 @@
 .intent-choice-chip{display:inline-flex;align-items:center;min-height:36px;padding:.42rem .72rem;border:1px solid rgba(111,158,122,.5);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font-weight:650}
 .intent-choice-chip:hover{background:#f5fbf2}
 .intent-choice-chip.is-active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.external-search-gate{padding:1rem 1.1rem;border:1px solid rgba(111,158,122,.42);border-radius:14px;background:rgba(255,255,255,.78)}
-.external-search-gate .external-results-title{margin:0 0 .35rem}
-.external-search-gate .external-results-status{margin:0 0 .8rem}
-.external-search-gate-button{min-height:42px;padding:.58rem .95rem;border:1px solid var(--ink);border-radius:10px;background:var(--ink);color:#fff;font:inherit;font-weight:700;cursor:pointer}
-.external-search-gate-button:hover{filter:brightness(1.08)}
-@media(max-width:760px){.filter-panel{background:linear-gradient(155deg,#edf7eb,#e3f2e4)}.intent-choice{margin-top:.5rem}.intent-choice-chip{min-height:40px}.external-search-gate-button{width:100%}}
+.local-search-panel{margin-top:.85rem;padding:.85rem;border-top:1px solid rgba(111,158,122,.28);display:grid;gap:.7rem}
+.local-search-title{font-size:1rem}
+.local-search-place-row{display:grid;grid-template-columns:minmax(180px,1fr) auto;gap:.55rem}
+.local-search-place-row input,.local-search-radius select{min-height:42px;border:1px solid rgba(111,158,122,.55);border-radius:10px;background:#fff;padding:.55rem .7rem;color:var(--ink)}
+.local-location-button,.local-search-submit{min-height:42px;border:1px solid var(--ink);border-radius:10px;padding:.55rem .8rem;font-weight:700;cursor:pointer}
+.local-location-button{background:#fff;color:var(--ink)}
+.local-search-submit{background:var(--ink);color:#fff;justify-self:start}
+.local-search-radius{display:flex;align-items:center;gap:.45rem;font-weight:650}
+.local-search-flags{display:flex;flex-wrap:wrap;gap:.6rem 1rem}
+.local-search-flags label{display:flex;align-items:center;gap:.25rem}
+.local-search-status{min-height:1.1em;color:#45634d}
+.external-search-gate-button{min-height:42px;border:1px solid var(--ink);border-radius:10px;background:var(--ink);color:#fff;padding:.55rem .85rem;font-weight:700;cursor:pointer}
+@media(max-width:760px){.filter-panel{background:linear-gradient(155deg,#edf7eb,#e3f2e4)}.intent-choice{margin-top:.5rem}.intent-choice-chip{min-height:40px}.local-search-place-row{grid-template-columns:1fr}.local-search-flags{display:grid}.local-location-button,.local-search-submit{width:100%}}
