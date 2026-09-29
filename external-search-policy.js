@@ -59,6 +59,24 @@
     const text = cleanText(raw, 80);
     return /\d/.test(text) ? text : '';
   }
+  function normalizedCurrency(item, price) {
+    const raw = cleanText(firstValue(item, ['currency','priceCurrency','price_currency']), 20).toUpperCase();
+    if (raw === '€' || raw.includes('EUR')) return 'EUR';
+    if (raw === '$' || raw.includes('USD')) return 'USD';
+    if (raw === '£' || raw.includes('GBP')) return 'GBP';
+    const code = raw.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+    if (code) return code[1];
+    const priceText = cleanText(price, 80).toUpperCase();
+    if (priceText.includes('€') || priceText.includes('EUR')) return 'EUR';
+    if (priceText.includes('$') || priceText.includes('USD')) return 'USD';
+    if (priceText.includes('£') || priceText.includes('GBP')) return 'GBP';
+    const fromPrice = priceText.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+    return fromPrice ? fromPrice[1] : '';
+  }
+  function normalizedProductStatus(item) {
+    const raw = cleanText(firstValue(item, ['productStatus','product_status','availability']), 40).toLowerCase();
+    return ['in_stock','out_of_stock','preorder','backorder','unknown'].includes(raw) ? raw : 'unknown';
+  }
   function likelyProductPage(url, title, description) {
     const u = String(url || '').toLowerCase();
     const text = `${title} ${description}`.toLowerCase();
@@ -69,14 +87,17 @@
   function normalizeExternalResult(item) {
     if (!item || typeof item !== 'object') return null;
     const title = cleanText(item.title, 300);
-    const url = safeHttpUrl(item.url);
+    const url = safeHttpUrl(firstValue(item, ['productUrl','product_url','url']));
     const description = cleanText(item.description, 1000);
     if (!title || !url) return null;
     const host = hostOf(url);
     const image = safeHttpUrl(firstValue(item, ['image','imageUrl','image_url','thumbnail','thumbnailUrl','thumbnail_url']));
     const price = normalizedPrice(item);
+    const currency = normalizedCurrency(item, price);
     const merchant = cleanText(firstValue(item, ['merchant','shop','store','seller']), 120) || host;
-    return Object.freeze({ kind:'external-web', title, url, description, source:'web', host, merchant, image, price, productCandidate: likelyProductPage(url, title, description) });
+    const productStatus = normalizedProductStatus(item);
+    const productCandidate = item.productCandidate === true || likelyProductPage(url, title, description);
+    return Object.freeze({ kind:'external-web', title, url, productUrl:url, description, source:'web', host, merchant, image, price, currency, productStatus, productCandidate });
   }
   function normalizeExternalResults(items) {
     const seen = new Set();
