@@ -39,9 +39,16 @@
     return document.documentElement.lang || 'de';
   }
 
+  function explicitView() {
+    const value = new URLSearchParams(location.search).get('intentView') || 'offers';
+    return ['offers','info','video','local'].includes(value) ? value : 'offers';
+  }
+
   function intentFor(q) {
-    try { return intentEngine?.analyze?.(q, language()) || null; }
-    catch { return null; }
+    try {
+      const base=intentEngine?.analyze?.(q, language()) || null;
+      return base ? Object.freeze({ ...base, explicitView:explicitView() }) : null;
+    } catch { return null; }
   }
 
   function visibleLocalCount() {
@@ -55,6 +62,7 @@
 
   function shouldSupplement(q, localResults = visibleLocalCount(), intent = intentFor(q)) {
     if (!enabled || !endpoint || !policy.validQuery(q)) return false;
+    if (intent?.explicitView && intent.explicitView !== 'offers') return true;
     if (intent?.enrichWeb) return true;
     return policy.shouldUseExternalSearch({ query:q, localResults, externalEnabled:true });
   }
@@ -143,6 +151,7 @@
   }
 
   async function prefetchPricedProducts(current) {
+    if (activeIntent?.explicitView && activeIntent.explicitView !== 'offers') return true;
     while (
       current === sequence &&
       moreResultsAvailable &&
