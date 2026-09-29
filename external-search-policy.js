@@ -43,6 +43,22 @@
   function hostOf(value) {
     try { return new URL(String(value || '')).hostname.replace(/^www\./i, ''); } catch { return ''; }
   }
+  function safeHttpUrl(value) {
+    try { const url = new URL(String(value || '')); return /^https?:$/.test(url.protocol) ? url.href : ''; } catch { return ''; }
+  }
+  function firstValue(item, keys) {
+    for (const key of keys) {
+      const value = item?.[key];
+      if (value !== undefined && value !== null && String(value).trim() !== '') return value;
+    }
+    return '';
+  }
+  function normalizedPrice(item) {
+    const raw = firstValue(item, ['price','priceText','price_text','formattedPrice','formatted_price']);
+    if (typeof raw === 'number' && Number.isFinite(raw)) return `${raw.toFixed(2).replace('.', ',')} €`;
+    const text = cleanText(raw, 80);
+    return /\d/.test(text) ? text : '';
+  }
   function likelyProductPage(url, title, description) {
     const u = String(url || '').toLowerCase();
     const text = `${title} ${description}`.toLowerCase();
@@ -53,11 +69,14 @@
   function normalizeExternalResult(item) {
     if (!item || typeof item !== 'object') return null;
     const title = cleanText(item.title, 300);
-    const url = String(item.url || '').trim();
+    const url = safeHttpUrl(item.url);
     const description = cleanText(item.description, 1000);
-    if (!title || !/^https?:\/\//i.test(url)) return null;
+    if (!title || !url) return null;
     const host = hostOf(url);
-    return Object.freeze({ kind:'external-web', title, url, description, source:'web', host, productCandidate: likelyProductPage(url, title, description) });
+    const image = safeHttpUrl(firstValue(item, ['image','imageUrl','image_url','thumbnail','thumbnailUrl','thumbnail_url']));
+    const price = normalizedPrice(item);
+    const merchant = cleanText(firstValue(item, ['merchant','shop','store','seller']), 120) || host;
+    return Object.freeze({ kind:'external-web', title, url, description, source:'web', host, merchant, image, price, productCandidate: likelyProductPage(url, title, description) });
   }
   function normalizeExternalResults(items) {
     const seen = new Set();
