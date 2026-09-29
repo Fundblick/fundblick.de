@@ -20,6 +20,7 @@ on:
       - 'verify-external-search-policy.js'
       - 'verify-external-search-client.js'
       - 'verify-external-search-i18n.js'
+      - 'verify-external-price-confidence.js'
       - 'verify-brave-worker-contract.js'
       - 'cloudflare/brave-search-worker.js'
       - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
@@ -42,6 +43,7 @@ on:
       - 'verify-external-search-policy.js'
       - 'verify-external-search-client.js'
       - 'verify-external-search-i18n.js'
+      - 'verify-external-price-confidence.js'
       - 'verify-brave-worker-contract.js'
       - 'cloudflare/brave-search-worker.js'
       - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
@@ -74,6 +76,7 @@ jobs:
           node --check cloudflare/brave-search-worker.js
           node --check verify-search-demand-analytics.js
           node --check verify-universal-search-intent.js
+          node --check verify-external-price-confidence.js
           node --check verify-brave-worker-contract.js
       - name: Verify local completion signal wiring
         shell: bash
@@ -93,6 +96,8 @@ jobs:
         run: node verify-external-search-client.js
       - name: Verify fallback translations
         run: node verify-external-search-i18n.js
+      - name: Verify external price confidence
+        run: node verify-external-price-confidence.js
       - name: Verify demand analytics privacy contract
         run: node verify-search-demand-analytics.js
       - name: Verify Brave Worker contract
