@@ -103,23 +103,11 @@
     const desiredTypes = ['product','video','local','comparison','guide'];
 
     return Object.freeze({
-      raw:String(query || ''),
-      query:normalized,
-      language:uiLanguage,
-      searchLanguage,
-      tokenCount:tokenList.length,
-      primary,
-      modes:Object.freeze([...new Set(modes)]),
-      desiredTypes:Object.freeze(desiredTypes),
-      place:location.place,
-      local:location.local,
-      informational,
-      comparison,
-      video,
-      transactional,
-      exactModel,
-      breadth:broad ? 'broad' : 'focused',
-      enrichWeb
+      raw:String(query || ''), query:normalized, language:uiLanguage, searchLanguage,
+      tokenCount:tokenList.length, primary, modes:Object.freeze([...new Set(modes)]),
+      desiredTypes:Object.freeze(desiredTypes), place:location.place, local:location.local,
+      informational, comparison, video, transactional, exactModel,
+      breadth:broad ? 'broad' : 'focused', enrichWeb
     });
   }
 
@@ -143,7 +131,29 @@
     return confidence === 'verified' || confidence === 'visible';
   }
 
-  function resultTier(item, type) {
+  function resultTier(item, type, intent) {
+    const view=clean(intent?.explicitView).toLowerCase();
+    if(view==='video'){
+      if(type==='video')return 0;
+      if(type==='product'&&hasTrustedPrice(item))return 1;
+      if(type==='product')return 2;
+      if(type==='guide'||type==='comparison')return 3;
+      return 4;
+    }
+    if(view==='info'){
+      if(type==='guide'||type==='comparison')return 0;
+      if(type==='product'&&hasTrustedPrice(item))return 1;
+      if(type==='product')return 2;
+      if(type==='video')return 3;
+      return 4;
+    }
+    if(view==='local'){
+      if(type==='local')return 0;
+      if(type==='product'&&hasTrustedPrice(item))return 1;
+      if(type==='product')return 2;
+      if(type==='video')return 3;
+      return 4;
+    }
     if (type === 'product' && hasTrustedPrice(item)) return 0;
     if (type === 'product') return 1;
     if (type === 'video') return 2;
@@ -165,7 +175,7 @@
     if (intent?.informational && type === 'guide') score += 14;
     if (intent?.exactModel && type === 'product') score += 20;
     score -= Math.min(Number(index) || 0, 20) * 0.2;
-    return { type, tier:resultTier(item, type), score };
+    return { type, tier:resultTier(item, type, intent), score };
   }
 
   function rankResults(items, intent) {
