@@ -15,6 +15,8 @@
     productSource:'Web product'
   };
 
+  const currencySymbols={EUR:'€',USD:'$',GBP:'£',CHF:'CHF',PLN:'PLN',CZK:'CZK',RON:'RON',MDL:'MDL'};
+
   function text(){try{return root?.FundBlickExternalSearchI18n?.get?.()||fallback}catch{return fallback}}
   function language(){try{return root?.FundBlickExternalSearchI18n?.language?.()||document.documentElement.lang||'de'}catch{return 'de'}}
   function safeHttpUrl(value){try{const url=new URL(String(value||''));return /^https?:$/.test(url.protocol)?url.href:null}catch{return null}}
@@ -29,7 +31,7 @@
     if(text.includes('€'))return 'EUR';
     if(text.includes('£'))return 'GBP';
     if(text.includes('$'))return 'USD';
-    return '';
+    return 'EUR';
   }
 
   function numericAmount(raw){
@@ -61,15 +63,14 @@
     if(!Number.isFinite(amount))return raw;
     const code=currencyCode(raw,currency);
     const locale=language();
+    let number;
     try{
-      if(code)return new Intl.NumberFormat(locale,{style:'currency',currency:code,minimumFractionDigits:2,maximumFractionDigits:2}).format(amount);
-      return new Intl.NumberFormat(locale,{minimumFractionDigits:2,maximumFractionDigits:2}).format(amount);
+      number=new Intl.NumberFormat(locale,{minimumFractionDigits:2,maximumFractionDigits:2}).format(amount);
     }catch{
-      try{
-        if(code)return new Intl.NumberFormat('en',{style:'currency',currency:code,minimumFractionDigits:2,maximumFractionDigits:2}).format(amount);
-      }catch{}
-      return code?`${amount.toFixed(2)} ${code}`:amount.toFixed(2);
+      number=amount.toFixed(2);
     }
+    const unit=currencySymbols[code]||code;
+    return `${number} ${unit}`;
   }
 
   function merchantLabel(item){
