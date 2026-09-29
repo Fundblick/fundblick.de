@@ -39,6 +39,9 @@ assert.deepEqual(result, {
   description: 'Jetzt kaufen & bestellen',
   source: 'web',
   host: 'example.com',
+  merchant: 'example.com',
+  image: '',
+  price: '12,99 €',
   productCandidate: true
 });
 assert.equal(policy.normalizeExternalResult({ title: 'Bad', url: 'javascript:alert(1)' }), null);
@@ -51,4 +54,4 @@ const deduped = policy.normalizeExternalResults([
 ]);
 assert.equal(deduped.length, 2);
 
-console.log('External search fallback policy: OK');
+console.log('External search fallback policy: enriched metadata and safety OK');
