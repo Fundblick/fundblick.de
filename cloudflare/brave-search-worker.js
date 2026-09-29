@@ -67,28 +67,65 @@ function firstValue(item, paths) {
   return '';
 }
 
+function schemaCandidates(item) {
+  const schemas = Array.isArray(item?.deep_results?.schemas) ? item.deep_results.schemas : [];
+  return schemas.filter(value => value && typeof value === 'object').slice(0, 30);
+}
+
+function schemaValue(item, keys) {
+  for (const schema of schemaCandidates(item)) {
+    const candidates = [schema, schema.product, schema.offer, ...(Array.isArray(schema.offers) ? schema.offers : [])].filter(Boolean);
+    for (const candidate of candidates) {
+      for (const key of keys) {
+        const value = candidate?.[key];
+        if (value !== undefined && value !== null && String(value).trim() !== '') return value;
+      }
+    }
+  }
+  return '';
+}
+
+function priceFromText(value) {
+  const text = cleanText(value, 4000);
+  const match = text.match(/(?:€\s*\d{1,6}(?:[.,]\d{2})?|\b\d{1,6}(?:[.,]\d{2})?\s*(?:€|EUR)\b)/i);
+  return match ? cleanText(match[0], 80) : '';
+}
+
 function explicitPriceText(item) {
-  const structured = firstValue(item, ['price','product.price','offer.price']);
+  const structured = firstValue(item, [
+    'price','product.price','product.offers.price','offer.price',
+    'product.price_string','product.priceString'
+  ]) || schemaValue(item, ['price','lowPrice','highPrice','priceText','price_string']);
   if (typeof structured === 'number' && Number.isFinite(structured)) return structured;
   const structuredText = cleanText(structured, 80);
   if (/\d/.test(structuredText)) return structuredText;
 
-  // Accept only a price explicitly present in Brave's source text. Never infer one.
-  const sourceText = cleanText(`${item?.title || ''} ${item?.description || ''}`, 1400);
-  const match = sourceText.match(/(?:€\s*\d{1,6}(?:[.,]\d{2})?|\b\d{1,6}(?:[.,]\d{2})?\s*(?:€|EUR)\b)/i);
-  return match ? cleanText(match[0], 80) : '';
+  // Only accept prices explicitly supplied by Brave/source metadata. Never infer a price.
+  const sourceText = [item?.title, item?.description, ...(Array.isArray(item?.extra_snippets) ? item.extra_snippets : [])].join(' ');
+  return priceFromText(sourceText);
+}
+
+function explicitImage(item) {
+  const direct = firstValue(item, [
+    'thumbnail.src','thumbnail.original','thumbnail.url','image.src','image.url',
+    'product.image','product.image_url','product.thumbnail.src','offer.image'
+  ]);
+  const schema = schemaValue(item, ['image','imageUrl','image_url','thumbnailUrl','thumbnail_url']);
+  const value = direct || schema;
+  if (Array.isArray(value)) return safeUrl(value[0]?.url || value[0]);
+  if (value && typeof value === 'object') return safeUrl(value.url || value.src || value.contentUrl);
+  return safeUrl(value);
 }
 
 function normalizeResult(item) {
-  const thumbnail = firstValue(item, ['thumbnail.src','thumbnail.url','image.src','image.url','product.image','product.image_url','offer.image']);
-  const merchant = firstValue(item, ['profile.long_name','profile.name','merchant','seller','store','product.merchant','offer.merchant']);
+  const merchant = firstValue(item, ['profile.long_name','profile.name','merchant','seller','store','product.merchant','offer.merchant']) || schemaValue(item, ['brand','merchant','seller']);
   return {
     title: cleanText(item?.title, 300),
     url: safeUrl(item?.url),
     description: cleanText(item?.description, 1000),
-    image: safeUrl(thumbnail),
+    image: explicitImage(item),
     price: explicitPriceText(item),
-    merchant: cleanText(merchant, 120),
+    merchant: cleanText(typeof merchant === 'object' ? (merchant.name || '') : merchant, 120),
     age: item?.age || null,
     language: item?.language || null,
     familyFriendly: item?.family_friendly !== false
@@ -127,6 +164,7 @@ export default {
     braveUrl.searchParams.set('country', country);
     braveUrl.searchParams.set('search_lang', searchLang);
     braveUrl.searchParams.set('safesearch', 'moderate');
+    braveUrl.searchParams.set('extra_snippets', 'true');
 
     let upstream;
     try {
