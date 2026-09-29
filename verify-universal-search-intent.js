@@ -7,6 +7,7 @@ const winter = intent.analyze('Winterreifen', 'de');
 assert.equal(winter.breadth, 'broad');
 assert.equal(winter.enrichWeb, true);
 assert.equal(winter.primary, 'product');
+assert.equal(winter.searchLanguage, 'de');
 assert.ok(winter.modes.includes('discovery'));
 
 const exact = intent.analyze('Bosch GSR 18V-55', 'de');
@@ -21,19 +22,25 @@ assert.equal(localDe.primary, 'local');
 assert.equal(localDe.place.toLocaleLowerCase(), 'rottweil');
 assert.equal(localDe.enrichWeb, true);
 
-const infoRu = intent.analyze('какие зимние шины лучше', 'ru');
+const infoRu = intent.analyze('какие зимние шины лучше', 'de');
+assert.equal(infoRu.searchLanguage, 'ru');
 assert.equal(infoRu.informational, true);
 assert.equal(infoRu.primary, 'informational');
 assert.equal(infoRu.enrichWeb, true);
 
-const videoRu = intent.analyze('видео шуруповёрт', 'ru');
+const videoRu = intent.analyze('видео шуруповёрт', 'de');
+assert.equal(videoRu.searchLanguage, 'ru');
 assert.equal(videoRu.video, true);
 assert.equal(videoRu.primary, 'video');
 
-const localRo = intent.analyze('bujii în Brașov', 'ro');
+const localRo = intent.analyze('bujii în Brașov', 'de');
+assert.equal(localRo.searchLanguage, 'ro');
 assert.equal(localRo.local, true);
 assert.equal(localRo.primary, 'local');
 assert.equal(localRo.place.toLocaleLowerCase(), 'brașov');
+
+const uk = intent.analyze('які зимові шини краще', 'de');
+assert.equal(uk.searchLanguage, 'uk');
 
 assert.equal(intent.classifyResult({url:'https://www.youtube.com/watch?v=1',title:'Winterreifen erklärt'}), 'video');
 assert.equal(intent.classifyResult({url:'https://shop.example/p/1',title:'Bosch GSR',price:'99,99 EUR',productCandidate:true}), 'product');
@@ -52,4 +59,4 @@ const rankedInfo = intent.rankResults([
 ], intent.analyze('Wie funktionieren Winterreifen?', 'de'));
 assert.equal(rankedInfo[0].resultType, 'guide');
 
-console.log('Universal search intent: multilingual routing + result ranking OK');
+console.log('Universal search intent: multilingual routing + query-language inference + result ranking OK');
