@@ -27,23 +27,44 @@ assert.equal(policy.cleanText('<strong>Bosch</strong> &amp; Akku'), 'Bosch & Akk
 
 const result = policy.normalizeExternalResult({
   title: '<strong>Beispiel</strong>',
-  url: 'https://www.example.com/product/akku-18v',
+  productUrl: 'https://www.example.com/product/akku-18v',
+  url: 'https://search.example/result/akku-18v',
   description: 'Jetzt kaufen &amp; bestellen',
-  price: 12.99,
+  price: '12,99',
+  currency: 'EUR',
+  merchant: 'Beispiel Shop',
+  image: 'https://img.example.com/akku.jpg',
+  productStatus: 'in_stock',
+  productCandidate: true,
   affiliateUrl: 'https://example.com/fake-affiliate'
 });
 assert.deepEqual(result, {
   kind: 'external-web',
   title: 'Beispiel',
   url: 'https://www.example.com/product/akku-18v',
+  productUrl: 'https://www.example.com/product/akku-18v',
   description: 'Jetzt kaufen & bestellen',
   source: 'web',
   host: 'example.com',
-  merchant: 'example.com',
-  image: '',
-  price: '12,99 €',
+  merchant: 'Beispiel Shop',
+  image: 'https://img.example.com/akku.jpg',
+  price: '12,99',
+  currency: 'EUR',
+  productStatus: 'in_stock',
   productCandidate: true
 });
+
+const legacyResult = policy.normalizeExternalResult({
+  title: 'Legacy',
+  url: 'https://www.example.org/product/legacy',
+  description: 'Preis 12,99 €',
+  price: 12.99
+});
+assert.equal(legacyResult.price, '12,99 €');
+assert.equal(legacyResult.currency, 'EUR');
+assert.equal(legacyResult.productStatus, 'unknown');
+assert.equal(legacyResult.productCandidate, true);
+
 assert.equal(policy.normalizeExternalResult({ title: 'Bad', url: 'javascript:alert(1)' }), null);
 assert.equal(policy.normalizeExternalResult({ title: '', url: 'https://example.com' }), null);
 
@@ -54,4 +75,4 @@ const deduped = policy.normalizeExternalResults([
 ]);
 assert.equal(deduped.length, 2);
 
-console.log('External search fallback policy: enriched metadata and safety OK');
+console.log('External search fallback policy: normalized offer metadata and safety OK');
