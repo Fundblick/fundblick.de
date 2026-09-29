@@ -45,11 +45,39 @@ function cleanQuery(value) {
   return String(value || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, MAX_QUERY_LENGTH);
 }
 
+function safeUrl(value) {
+  try {
+    const url = new URL(String(value || ''));
+    return /^https?:$/.test(url.protocol) ? url.href.slice(0, 2048) : '';
+  } catch {
+    return '';
+  }
+}
+
+function cleanText(value, max) {
+  return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+function firstValue(item, paths) {
+  for (const path of paths) {
+    let value = item;
+    for (const part of path.split('.')) value = value?.[part];
+    if (value !== undefined && value !== null && String(value).trim() !== '') return value;
+  }
+  return '';
+}
+
 function normalizeResult(item) {
+  const thumbnail = firstValue(item, ['thumbnail.src','thumbnail.url','image.src','image.url']);
+  const price = firstValue(item, ['price','product.price','offer.price']);
+  const merchant = firstValue(item, ['profile.long_name','profile.name','merchant','seller','store']);
   return {
-    title: String(item?.title || '').slice(0, 300),
-    url: String(item?.url || '').slice(0, 2048),
-    description: String(item?.description || '').slice(0, 1000),
+    title: cleanText(item?.title, 300),
+    url: safeUrl(item?.url),
+    description: cleanText(item?.description, 1000),
+    image: safeUrl(thumbnail),
+    price: typeof price === 'number' && Number.isFinite(price) ? price : cleanText(price, 80),
+    merchant: cleanText(merchant, 120),
     age: item?.age || null,
     language: item?.language || null,
     familyFriendly: item?.family_friendly !== false
@@ -102,18 +130,14 @@ export default {
       return json({ error: 'upstream_unreachable' }, 502, cors);
     }
 
-    if (!upstream.ok) {
-      return json({ error: 'upstream_error', status: upstream.status }, upstream.status === 429 ? 429 : 502, cors);
-    }
+    if (!upstream.ok) return json({ error: 'upstream_error', status: upstream.status }, upstream.status === 429 ? 429 : 502, cors);
 
     let payload;
-    try {
-      payload = await upstream.json();
-    } catch (_) {
-      return json({ error: 'upstream_invalid_response' }, 502, cors);
-    }
+    try { payload = await upstream.json(); }
+    catch (_) { return json({ error: 'upstream_invalid_response' }, 502, cors); }
+
     const results = Array.isArray(payload?.web?.results)
-      ? payload.web.results.filter(item => item?.family_friendly !== false).map(normalizeResult)
+      ? payload.web.results.filter(item => item?.family_friendly !== false).map(normalizeResult).filter(item => item.title && item.url)
       : [];
     return json({ query, count: results.length, results }, 200, cors);
   }
