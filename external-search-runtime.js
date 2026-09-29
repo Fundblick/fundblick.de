@@ -19,6 +19,7 @@
   const PAGE_SIZE = 20;
   const MAX_OFFSET = 9;
   const MIN_INITIAL_PRICED_PRODUCTS = 10;
+  const LOCAL_CARD_SELECTOR = '.product:not([hidden]), .product-card:not([hidden])';
   let sequence = 0;
   let localSearchSettled = false;
   let timer = null;
@@ -70,13 +71,20 @@
     } catch { return activeQuery; }
   }
 
+  function visibleLocalCards() {
+    return Array.from(cards.querySelectorAll(LOCAL_CARD_SELECTOR)).filter(card => {
+      if (card.hidden) return false;
+      const style = window.getComputedStyle ? window.getComputedStyle(card) : null;
+      return !style || (style.display !== 'none' && style.visibility !== 'hidden');
+    });
+  }
+
   function visibleLocalCount() {
-    return cards.querySelectorAll('.product-card:not([hidden])').length;
+    return visibleLocalCards().length;
   }
 
   function localSignature() {
-    const items = Array.from(cards.querySelectorAll('.product-card:not([hidden])'));
-    return items.map((card, index) => `${index}:${String(card.textContent || '').replace(/\s+/g, ' ').trim()}`).join('\u0001');
+    return visibleLocalCards().map((card, index) => `${index}:${String(card.textContent || '').replace(/\s+/g, ' ').trim()}`).join('\u0001');
   }
 
   function canUseExternalSearch(q, localResults = visibleLocalCount()) {
@@ -316,7 +324,7 @@
     ui.hide(container);
     schedule();
   });
-  observer.observe(cards, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class'] });
+  observer.observe(cards, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class','style'] });
 
   window.addEventListener('fundblick:search-rendered', markSettled);
 
