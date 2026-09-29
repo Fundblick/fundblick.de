@@ -6,10 +6,13 @@ on:
     paths:
       - 'external-search-policy.js'
       - 'external-search-client.js'
+      - 'external-search-i18n.js'
       - 'external-search-ui.js'
+      - 'external-search-runtime.js'
       - 'external-search.css'
       - 'verify-external-search-policy.js'
       - 'verify-external-search-client.js'
+      - 'verify-external-search-i18n.js'
       - 'cloudflare/brave-search-worker.js'
       - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
       - '.github/workflows/external-search-gate.yml'
@@ -17,10 +20,13 @@ on:
     paths:
       - 'external-search-policy.js'
       - 'external-search-client.js'
+      - 'external-search-i18n.js'
       - 'external-search-ui.js'
+      - 'external-search-runtime.js'
       - 'external-search.css'
       - 'verify-external-search-policy.js'
       - 'verify-external-search-client.js'
+      - 'verify-external-search-i18n.js'
       - 'cloudflare/brave-search-worker.js'
       - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
       - '.github/workflows/external-search-gate.yml'
@@ -38,10 +44,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Verify JavaScript syntax
+        run: |
+          node --check external-search-policy.js
+          node --check external-search-client.js
+          node --check external-search-i18n.js
+          node --check external-search-ui.js
+          node --check external-search-runtime.js
+          node --check cloudflare/brave-search-worker.js
       - name: Verify fallback policy
         run: node verify-external-search-policy.js
       - name: Verify external client
         run: node verify-external-search-client.js
+      - name: Verify fallback translations
+        run: node verify-external-search-i18n.js
+      - name: Keep production activation gated
+        shell: bash
+        run: |
+          grep -q 'data-external-search-enabled="false"' search.html
+          grep -q 'data-external-search-endpoint=""' search.html
+          echo 'External search remains dormant pending desktop Worker verification.'
       - name: Reject committed Brave secrets
         shell: bash
         run: |
