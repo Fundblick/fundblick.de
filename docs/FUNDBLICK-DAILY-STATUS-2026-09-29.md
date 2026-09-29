@@ -1,210 +1,621 @@
 # FundBlick – Tagesstatus 2026-09-29
 
-## Status
+## Gesamtstatus am Tagesende
 
-Stabiler Development-Zwischenstand erreicht. Fokus heute: External Search, Preis-/Währungsrobustheit, erster universeller Intent-Router und Absicherung des realen Händlerkatalogs in der Development-Preview.
+FundBlick wurde heute technisch und konzeptionell deutlich weiterentwickelt. Der wichtigste Fortschritt ist die klare Trennung zwischen dem eigenen Commerce-Katalog und externen Web-Ergebnissen. Gleichzeitig wurden mehrere echte Such- und Preisfehler gefunden und behoben bzw. abgesichert.
 
-Wichtige Development-Stände heute:
-- Universal-/Intent-Zwischenstand: `cce528e70690509fd0631bac8a9ec207bb37ce23`
-- Tagesdokumentation: `dc6280c2b3a048f7fce7981c3c5bfd871f877342`
-- Fix der Development-Katalogpipeline: `612e5f660922c40393e2487fb44b47cb5764ffbe`
-- verbindlicher Pre-Flight-/Catalog-Integrity-Vertrag: `f04ee979f5f544242ded772dbe99016bfc63c561`
+Branch-Regel bleibt verbindlich:
+- Entwicklung ausschließlich auf `development`.
+- `main` wurde nicht angefasst.
 
-`main` wurde heute nicht verändert.
+Letzter dokumentierter Development-Stand am Tagesende:
+- aktueller UX-/WWW-Gate-Stand: `3013fd32e5eda0449a226c34b076f585f96817c8`
+- vorheriger Fix der korrekten Erkennung sichtbarer FundBlick-Produkte: `8444dd6db1953c1fcf67504bc77c29d11b7f76f9`
+- Category-Intent-Routing für Mähroboter: `4829f762dac39acdcc5a3ae7c18393d613afb0a6`
+- Local-Search-Ausbau: bis `f7c6e3ee8527bb6204b042b9a97625954e8a629d`
+- Preis-/Listen-Seiten-Schutz: `6681f2395e647966c63eaeb011457d55384049fe`
+- Catalog-Preview-Fix: `612e5f660922c40393e2487fb44b47cb5764ffbe`
+- Pre-Flight-/Catalog-Integrity-Vertrag: `f04ee979f5f544242ded772dbe99016bfc63c561`
 
-## Heute erreicht
+Hinweis: GitHub-Actions für die allerletzten Commits waren beim jeweiligen letzten Abruf teilweise noch queued/in progress bzw. noch nicht gestartet. Deshalb ist der dokumentierte Code-Stand aktuell, aber nicht jede letzte Änderung als vollständig deployed bestätigt.
 
-### 1. External Search / Wrapper-Suche stabilisiert
-- Brave Search Worker als externer Fallback aktiv.
-- Bilder, Händler, Produkt-URL, Preis, Währung und Produktstatus werden normalisiert.
-- Web-/Wrapper-Ergebnisse bleiben klar von Affiliate-/Händlerergebnissen getrennt.
-- Externe Treffer dienen als Ergänzung, wenn eigene Händlerdaten fehlen oder wenn die Suchabsicht breiter ist.
+---
 
-### 2. Mehrsprachigkeit
-- Suchoberfläche unterstützt mehrere Sprachen, u. a. Deutsch, Russisch und Rumänisch.
-- Sprache der Suchanfrage wird getrennt von der UI-Sprache betrachtet.
-- Russische, rumänische und andere nicht-deutsche Eingaben können dadurch gezielter in ihrer Sprache an die Websuche übergeben werden.
-- Query-Sprache bleibt getrennt von Markt und Währung.
+## 1. Grundarchitektur: eigener Katalog zuerst, Web nur bewusst
 
-### 3. Preis- und Währungslogik
-- Preisformatierung wurde sprachunabhängig vereinheitlicht.
-- Währung wird nicht mehr pauschal aus der UI-Sprache abgeleitet.
-- Erkennung berücksichtigt explizite Währung, Preistext und als Fallback die Domain/TLD der Quelle.
-- RUB/₽ wurde ergänzt; weitere Währungen wie EUR, USD, GBP, CHF, PLN, CZK, RON und MDL werden unterstützt.
-- Wenn keine belastbare Währung ableitbar ist, soll keine erfundene Währung angezeigt werden.
+Die zentrale Architekturentscheidung des Tages wurde präzisiert:
 
-### 4. Schutz gegen falsche Preiszuordnung
-- Sichtbar belegbarer Preis aus Titel/Beschreibung erhält Vorrang vor widersprüchlichen verschachtelten Strukturwerten.
-- Beispiel: Ein Titel `Ab 11.205 €` darf nicht durch einen unpassenden Strukturwert wie `112050` überschrieben werden.
-- Regressionstest für solche Konflikte ergänzt.
+### Eigene FundBlick-Produkte
+- FundBlick-eigene Händler-/Affiliate-Produkte bleiben der primäre Produktbestand.
+- Facetten, Filter, Kategorien und Sortierungen beziehen sich auf diesen Commerce-Katalog.
+- Externe Webtreffer dürfen diesen Bestand nicht automatisch vermischen oder verwässern.
 
-### 5. Universal Search Intent – erste Stufe
-Neue Datei: `universal-search-intent.js`.
+### World Wide Web
+- Web-Ergebnisse bleiben als bewusste Erweiterung verfügbar.
+- Sie werden nicht mehr automatisch unter oder zwischen FundBlick-Produkten eingemischt.
+- Der Nutzer entscheidet aktiv über einen Button, ob er zusätzlich im Web suchen möchte.
 
-Erkennt erste Suchabsichten:
-- konkretes Produkt / Modell
-- breite Produktsuche / Discovery
-- Information / Ratgeber / Frage
-- Vergleich / Test / Review
-- Video
-- lokale Suche
+Damit bleibt die Seite auch bei künftig 100, 1.000 oder 100.000 eigenen Produkten sauber skalierbar.
 
-Beispiele:
-- `Bosch GSR 18V-55` → fokussierte Produktsuche
-- `Winterreifen` → breite Suche mit möglichen Produkten, Guides, Videos und Vergleichen
-- `Wie funktionieren Winterreifen?` → Informations-/Guide-Intent
-- `Winterreifen Video` → Video-Intent
-- `Ich brauche Zündkerzen in Rottweil` → Local-Intent
-- `bujii în Brașov` → rumänische Local-Suche
-- `какие зимние шины лучше` → russische Informationssuche
+### Aktuelle UX-Regel
+Wenn eigene Produkte vorhanden sind:
 
-### 6. Ergebnis-Ranking nach Intent
-Externe Ergebnisse werden erstmals typisiert und nach Suchabsicht priorisiert:
-- product
-- guide
-- video
-- comparison
-- local
+**Noch mehr finden?**
 
-Für breite oder erklärende Suchanfragen kann External Search auch dann zugeschaltet werden, wenn interne Produkte vorhanden sind.
+`Du kannst deine Suche auch auf das World Wide Web erweitern.`
 
-## Kritischer Incident heute: Development-Preview verlor den realen Händlerkatalog
+Button:
+
+**Im Web weitersuchen**
+
+Wenn keine eigenen Produkte vorhanden sind:
+
+**Aktuell keine Produkte vorhanden.**
+
+`Du kannst deine Suche stattdessen auf das World Wide Web erweitern.`
+
+Button:
+
+**Im Web weitersuchen**
+
+Wichtig:
+- Die Websuche startet erst nach bewusstem Klick.
+- Externe Ergebnisse bleiben separat von FundBlick-Produkten.
+- Die frühere Formulierung „keine Produkte vorhanden“ darf niemals erscheinen, wenn eigene Produkte sichtbar sind.
+
+---
+
+## 2. Fehler: WWW-Fallback erkannte sichtbare Produkte zunächst nicht
 
 ### Symptom
-Der Nutzer stellte fest:
-- Mähroboter-/Zubehör-Kategorien waren von der Startseite verschwunden.
-- Kategorien wie Haushalt und Möbel lieferten keine passenden Händlerprodukte mehr.
-- Der Eindruck war, dass die Universal-/Websuche die Händlerangebote abgeschnitten hätte.
+Bei Mähroboter-Suchergebnissen wurden mehrere FundBlick-Produkte sichtbar angezeigt. Darunter erschien trotzdem:
 
-### Tatsächliche Ursache
-Die Händlerquellen waren weiterhin vorhanden. Der Fehler lag in der Development-Preview-Pipeline:
+`Aktuell keine Produkte vorhanden.`
 
-- Der Root-Katalog `catalog/manifest.json` enthielt nur 4 Produkte.
-- Die Production-Pipeline baut den vollständigen realen Händlerkatalog vor dem Deploy neu.
-- Die Development-Preview kopierte dagegen den Repository-Inhalt direkt nach `_site`.
-- Dadurch wurde der veraltete 4-Produkte-Katalog ausgeliefert.
+Das war logisch widersprüchlich.
 
-Die Search-/Intent-Arbeit hat die Händlerdaten nicht gelöscht. Sie hat jedoch durch häufige Development-Deploys einen bereits vorhandenen Pipeline-Unterschied sichtbar gemacht.
+### Ursache
+Die neue WWW-Fallback-Logik zählte:
+
+`.product-card`
+
+Die tatsächlichen Produktkarten auf der Seite verwenden jedoch:
+
+`.product`
+
+Damit sah die Fallback-Logik intern 0 Treffer, obwohl Produkte gerendert waren.
 
 ### Fix
-Commit: `612e5f660922c40393e2487fb44b47cb5764ffbe`
+Commit:
+`8444dd6db1953c1fcf67504bc77c29d11b7f76f9`
 
-Development Preview baut jetzt vor jedem Deploy den vollständigen realen Händlerkatalog.
-Zusätzliche Schutzbedingungen:
-- realer Händlerkatalog wird vor Packaging erzeugt,
-- Mindestbestand wird geprüft,
-- `catalog/categories.json` muss vorhanden sein,
-- der alte 4-Produkte-Root-Katalog darf nicht mehr still als Preview-Wahrheit ausgeliefert werden.
+Aktuelle Erkennung berücksichtigt:
+- `.product:not([hidden])`
+- `.product-card:not([hidden])` als Kompatibilitäts-Fallback
+- ausgeblendete Karten werden nicht gezählt
+- `display:none` und `visibility:hidden` werden berücksichtigt
 
-Der zugehörige Development-Deploy lief erfolgreich durch. Der Schritt `Build full real merchant catalog` sowie das eigentliche Pages-Deployment waren grün.
+Damit wird der WWW-Gate-Text jetzt auf Grundlage der tatsächlich sichtbaren eigenen Produkte gewählt.
 
-## Neue verbindliche Arbeitsregel
+---
 
-Neue Dokumentation:
-`docs/FUNDBLICK-PREFLIGHT-CATALOG-INTEGRITY.md`
+## 3. Kategorie-Klick vs. Freitextsuche: Mähroboter
 
-Diese Datei ist künftig vor größerer Feature-/Search-/Deployment-Arbeit zusammen mit dem Handoff zu lesen.
+### Beobachtung
+Beim Klick auf die Kategorie **Mähroboter** erschienen viele passende Mähroboter.
 
-Verbindliche Reihenfolge:
+Bei Eingabe von `Mähroboter` im Suchfeld erschienen dagegen:
+- weniger Geräte,
+- teilweise Zubehör,
+- teilweise weniger relevante Treffer.
 
-`Handoff lesen → Pre-Flight lesen → Branch/Head prüfen → realen Katalogbestand prüfen → erst dann ändern.`
+### Ursache
+Kategorie-Klick und Freitextsuche verwendeten unterschiedliche Pfade:
 
-Wenn dokumentierter Händler-/Produktbestand und ausgeliefertes Artefakt stark voneinander abweichen, gilt STOP. Erst Ursache klären, dann Feature-Arbeit fortsetzen.
+Kategorie-Klick:
+- exakte Kategorie-ID,
+- vollständiger Kategorienbestand.
+
+Freitextsuche:
+- Titel-/Beschreibung-/Keyword-Ranking,
+- dadurch können Geräte verloren gehen,
+- Zubehör mit dem Wort „Mähroboter“ kann hineingeraten.
+
+### Neue Category-Intent-Regel
+Wenn ein Suchbegriff exakt oder eindeutig einer bekannten Kategorie entspricht, wird er intern auf den Kategoriepfad geroutet.
+
+Beispiele:
+- `Mähroboter` → `home.garden.robot-mowers`
+- `Maehroboter` → `home.garden.robot-mowers`
+- `Rasenroboter` → `home.garden.robot-mowers`
+- `Mähroboter Zubehör` → `home.garden.robot-mower-accessories`
+- `Mähroboter Ersatzteile` → Zubehör-Kategorie
+
+Commit:
+`4829f762dac39acdcc5a3ae7c18393d613afb0a6`
+
+Neue Datei:
+`category-query-router.js`
+
+### Wichtige Begrenzung
+Nur exakte/eindeutige Kategoriebegriffe werden geroutet.
 
 Beispiel:
-- dokumentiert ca. 1.459 reale Produkte
+- `Mähroboter` → Category Search
+- `Mähroboter 1000 m²` → weiterhin spezifische Freitext-/Facettensuche
+
+Der ursprünglich eingegebene Suchbegriff bleibt über `rawq` erhalten und sichtbar.
+
+---
+
+## 4. External Search: Intent-Auswahl und bewusste Suchmodi
+
+Die Universal Search wurde heute um eine nicht-blockierende Intent-Auswahl erweitert.
+
+Unter dem Suchfeld stehen Modi wie:
+- Angebote
+- Erklärung
+- Videos
+- In meiner Nähe
+
+Ziel:
+- FundBlick soll verstehen, was der Nutzer eigentlich möchte.
+- Die Auswahl darf nicht zum nervigen Pflichtdialog werden.
+- Standard bleibt eine sinnvolle Annahme, aber der Nutzer kann direkt umschalten.
+
+### Mode-spezifische externe Queries
+Ein früher Fehler war, dass die Buttons nur das Ranking änderten, aber immer dieselbe externe Anfrage sendeten.
+
+Das wurde geändert.
+
+Beispiele:
+- Angebote → `Bleistift kaufen Preis Angebot`
+- Erklärung → `Bleistift Erklärung Ratgeber`
+- Videos → `Bleistift Video`
+- In meiner Nähe → lokale Sucherweiterung
+
+Der sichtbare ursprüngliche Suchbegriff bleibt unverändert.
+
+Wichtige Dateien:
+- `search-intent-ui.js`
+- `search-intent-query.js`
+- `universal-search-intent.js`
+- `external-search-runtime.js`
+
+---
+
+## 5. Local Search / „In meiner Nähe“
+
+„In meiner Nähe“ wird künftig nicht einfach als normaler Webtreffer behandelt.
+
+### Neue Local-Eingabemaske
+Beim Local-Modus wurden folgende Eingaben vorgesehen bzw. implementiert:
+- Ort oder PLZ
+- Standort verwenden
+- Umkreis: 5 / 10 / 25 / 50 / 100 km
+- Jetzt geöffnet
+- Produkt vor Ort verfügbar
+- Abholung möglich
+- Button: `Lokale Angebote finden`
+
+### Grundprinzip
+Local Search ist ein bewusst ausgelöster eigener Suchpfad.
+
+Er soll langfristig strukturierte lokale Daten berücksichtigen:
+- Händlername
+- Adresse
+- Distanz
+- Öffnungszeiten
+- Telefonnummer
+- Website
+- Verfügbarkeit vor Ort
+- Abholung / Click & Collect
+- ggf. Werkstatt statt nur Händler
+
+### Wichtige Einschränkung
+Die aktuelle Local-Suche ist noch keine vollwertige strukturierte POI-/Maps-/Händlerdatenbank.
+
+Der derzeitige Stand ist eine kontrollierte lokale Sucherweiterung. Später sollte dafür ein eigener Local-Provider bzw. strukturierter Datenpfad verwendet werden.
+
+---
+
+## 6. Externe Preise: mehrere reale Fehlerfälle gefunden
+
+### 6.1 Mercedes-Fehler
+Sichtbarer Titel:
+`Ab 11.205 €`
+
+Versteckte Strukturmetadaten enthielten dagegen einen unpassenden Wert wie:
+`112050`
+
+FundBlick zeigte dadurch ursprünglich:
+`112.050,00 €`
+
+Regel danach:
+- sichtbarer Preis aus Titel/Beschreibung schlägt widersprüchliche versteckte Metadaten.
+
+---
+
+### 6.2 Dezimalfehler: 15 € wurden 150 €, 50 € wurden 500 €
+
+Beispiele:
+- Amazon-Buch: tatsächlicher Preis 15,00 €, FundBlick zeigte 150,00 €
+- Stilform Aeon Nano: tatsächlicher Preis 50,00 €, FundBlick zeigte 500,00 €
+
+Ursache:
+Ein einzelner Dezimaltrenner mit einer Nachkommastelle wurde fälschlich als Tausendertrennzeichen interpretiert.
+
+Die Zahlenparser-Logik wurde korrigiert.
+
+Regression:
+- `15.0` → `15,00 €`
+- `50.0` → `50,00 €`
+
+---
+
+### 6.3 Falsche Video-Klassifizierung
+Ein Produkt wurde als „Video“ klassifiziert, weil im Beschreibungstext zufällig das Wort Video vorkam.
+
+Neue Klassifizierungsreihenfolge:
+1. echter Video-Host wie YouTube/Vimeo
+2. Produkt-/Preis-Signal
+3. erst danach Textsignal „Video“
+
+Damit schlägt ein starkes Produktsignal zufällige Video-Wörter im Text.
+
+---
+
+## 7. Böttcher-Preis: kein Fehler, sondern MwSt.-Kontext
+
+Ein vermeintlicher Preisfehler wurde durch manuelle Prüfung aufgeklärt.
+
+Böttcher zeigte im Geschäftskundenmodus:
+- 14,49 € netto für 1 Packung
+
+FundBlick zeigte:
+- 17,24 € brutto
+
+Rechnung:
+`14,49 × 1,19 = 17,24 €`
+
+Damit war der FundBlick-Preis korrekt.
+
+### Erkenntnis für die Preis-UX
+FundBlick sollte externe Preise künftig möglichst mit Kontext anzeigen:
+- brutto / netto
+- Einzelpreis / Staffelpreis
+- `ab`-Preis
+- Mengenbezug
+
+Damit werden korrekte Preise nicht fälschlich als Widerspruch wahrgenommen.
+
+---
+
+## 8. ATU-Fall: echter Preis-Zuordnungsfehler
+
+### Beobachtung
+ATU-Kategorieseite `10W40 Öl` zeigte mehrere Produkte:
+- Norauto 1 Liter: 5,00 €
+- Castrol Magnatec 5 Liter: 49,99 €
+
+FundBlick zeigte aber einen Treffer für Castrol 5 Liter mit 5,00 €.
+
+### Ursache
+Ein Mindestpreis der Kategorie-/Listen-Seite wurde einem konkreten Einzelprodukt zugeordnet.
+
+### Neue harte Regel
+Kategorie-, Such-, Listen- und Sammelseiten dürfen keinen generischen Mindestpreis als Preis eines konkreten Produkts vererben.
+
+Wenn nur ein Seiten-Mindestpreis bekannt ist, gilt:
+- bei generischem Kategorien-Treffer ggf. später `ab 5,00 €`
+- bei konkretem Produkt ohne eindeutige Preiszuordnung: Preis ausblenden
+
+### Schutzsignale
+Listen-/Kategorie-Kontext wird stärker erkannt, u. a. über Begriffe wie:
+- `zum besten Preis kaufen`
+- `große Auswahl`
+- `Treffer gefunden`
+- Preisvergleich
+- Suchergebnisse
+- Staffel-/Großhandelskontext
+- bekannte Aggregator-/Listing-Hosts
+
+Commit:
+`6681f2395e647966c63eaeb011457d55384049fe`
+
+---
+
+## 9. Preisvertrauen: aktueller Stand und offene Lücke
+
+Das heutige Preisvertrauensmodell unterscheidet bereits zwischen:
+- sichtbar belegbaren Preisen
+- strukturierten Preisen
+- blockierten Aggregator-/Listing-Kontexten
+- verifizierten bzw. als plausibel eingestuften Produktpreisen
+
+Wichtige Dateien:
+- `external-price-confidence.js`
+- `external-search-ui.js`
+- `verify-external-price-confidence.js`
+
+### Offene Lücke: Aktualität
+Ein Preis kann korrekt dem richtigen Produkt zugeordnet sein und trotzdem veraltet sein.
+
+Deshalb braucht Preisvertrauen langfristig eine Freshness-Dimension:
+- `verified-live`
+- `visible-snippet`
+- `structured`
+- `unknown`
+
+Ein Brave-/Suchmaschinen-Snippet sollte nicht automatisch als live aktueller Händlerpreis gelten.
+
+### Sicherheits-/Architekturhinweis
+Eine echte Live-Verifikation fremder Zielseiten darf nicht naiv als beliebiger Server-Fetch implementiert werden.
+
+Zu berücksichtigen:
+- SSRF-Schutz
+- Timeouts
+- Anti-Bot / JS-Rendering
+- Kosten / Latenz
+- Provider-/Shopbedingungen
+- erlaubte Hosts / Allowlisting
+
+Skalierbarer bleiben Händlerfeeds/APIs für monetarisierte Produktpreise. Webtreffer können ergänzend informativ bleiben.
+
+---
+
+## 10. External Search Pagination / Scroll
+
+Die Websuche wurde von einem kleinen statischen Ergebnisblock auf Pagination/Weiterladen erweitert.
+
+Worker-/Frontend-Prinzip:
+- `count=20`
+- `offset` 0 bis 9
+- Deduplizierung per URL
+- IntersectionObserver für weiteres Laden
+- theoretisch bis ca. 200 Webtreffer, sofern Provider Ergebnisse liefert
+
+Zusätzlich wurde versucht, im Angebotsmodus zunächst mehrere vertrauenswürdige Produktpreise zu sammeln.
+
+Wichtiger Architekturwechsel heute:
+Dieser automatische Web-Block ist jetzt nicht mehr Standardbestandteil der normalen Ergebnisse, sondern liegt hinter der bewussten WWW-Erweiterung.
+
+---
+
+## 11. Cloudflare Brave Worker
+
+Worker:
+`https://fundblick-search.frosty-moon-518b.workers.dev`
+
+Aktuelle bekannte Funktionen:
+- `/health`
+- `/search`
+- CORS
+- Brave Web Search
+- Pagination über count/offset
+- Ergebnisnormalisierung
+
+Bekannte Parameter:
+- q
+- count
+- offset
+- country
+- search_lang
+- safesearch
+- extra_snippets
+
+Der Worker wurde heute manuell in Cloudflare aktualisiert.
+
+### Offener Prozesspunkt
+Es gibt weiterhin keinen reproduzierbaren automatischen GitHub→Cloudflare-Deploy.
+
+Repo-Änderung am Worker bedeutet daher nicht automatisch, dass der Worker live aktualisiert wurde.
+
+---
+
+## 12. Sprachen, Markt und Währung bleiben getrennt
+
+Grundprinzipien:
+- UI-Sprache != Suchsprache
+- Suchsprache != Markt
+- Markt != Währung
+- Währung gehört zur Quelle / zum Angebot
+
+Unterstützte UI-/Suchsprachen umfassen aktuell u. a.:
+- DE
+- EN
+- RU
+- RO
+- TR
+- PL
+- UK
+- IT
+- FR
+- ES
+- PT
+- AR
+- weitere
+
+Währungsableitung:
+1. explizite Metadaten
+2. sichtbares Symbol/Code
+3. TLD als Fallback
+4. sonst unbekannt
+
+Beispiele:
+- `.ru` → RUB
+- `.ro` → RON
+- `.md` → MDL
+- `.pl` → PLN
+- `.cz` → CZK
+- `.ch` → CHF
+- `.de/.at` → EUR
+- `.uk/.gb` → GBP
+
+`.com` impliziert ausdrücklich nicht automatisch USD.
+
+---
+
+## 13. Kritischer Catalog-Preview-Incident
+
+### Symptom
+Zwischenzeitlich waren in Development plötzlich nur noch wenige Produkte/Kategorien sichtbar.
+
+### Ursache
+Die Development-Preview kopierte einen alten Root-Katalog mit nur 4 Produkten, statt vor dem Preview-Deploy den vollständigen Händlerkatalog neu zu bauen.
+
+### Fix
+Commit:
+`612e5f660922c40393e2487fb44b47cb5764ffbe`
+
+Preview baut jetzt den realen Händlerkatalog vor Packaging neu.
+
+Schutzbedingungen:
+- realer Katalog muss gebaut werden
+- `dataMode=real`
+- mindestens ca. 1000 reale Produkte
+- `simulatedCount=0`
+- Kategorienmanifest muss vorhanden sein
+- alter Root-Katalog darf nicht unbemerkt veröffentlicht werden
+
+Der entsprechende Preview-Run war erfolgreich.
+
+---
+
+## 14. Verbindlicher Catalog-Integrity-Preflight
+
+Dokument:
+`docs/FUNDBLICK-PREFLIGHT-CATALOG-INTEGRITY.md`
+
+Verbindliche Reihenfolge vor größerer Arbeit:
+
+`Handoff/Doku lesen → Preflight lesen → Branch/Head prüfen → realen Katalog prüfen → erst dann ändern.`
+
+STOP-Regel bei ungeklärter Diskrepanz.
+
+Beispiel:
+- erwartet ~1.500 Produkte
 - ausgeliefert 4 Produkte
-→ kein weiterer Feature-Bau, bis die Diskrepanz geklärt ist.
 
-## Architektur-Grundsatz nach dem Incident
+→ keine Feature-Arbeit fortsetzen, bevor die Ursache geklärt ist.
 
-FundBlick wird in zwei klar getrennte Verantwortungsbereiche gedacht:
+Langfristige Zielarchitektur:
+- Produktzahl pro Händler prüfen
+- Kategorie-Deltas prüfen
+- Feed-Vollständigkeit prüfen
+- Catalog Build IDs / Hashes
+- immutable Katalogbuilds
+- atomischer Pointer
+- Rollback auf last-known-good
+
+---
+
+## 15. Architekturtrennung: Search Engine vs. Commerce Catalog
 
 ### FundBlick Search Engine
-- Intent-Erkennung
+Verantwortlich für:
+- Intent
 - Mehrsprachigkeit
-- External Search
-- Guides / Videos / Vergleiche
-- Local Intent
-- Ranking / Result-Mixer
+- Websuche
+- Info/Guide/Video
+- Local Search
+- Query Routing
+- externe Ergebnisdarstellung
 
 ### FundBlick Commerce Catalog
-- reale Händler
+Verantwortlich für:
+- Händler
 - Affiliate-Produkte
 - Preise
 - Kategorien
 - Feeds
-- Händler-Metadaten
+- Merchant-Metadaten
+- Facetten
 - Monetarisierungsrouting
 
-Die Search Engine darf den Commerce Catalog lesen und priorisieren, aber ein Search-Deployment darf niemals implizit bestimmen, welcher Händlerkatalog veröffentlicht wird.
+Regel:
+Die Search Engine darf den Commerce Catalog lesen und priorisieren, aber niemals stillschweigend dessen Bestand ersetzen oder verkleinern.
 
-## Verifizierter Gate-/Deploy-Status
+---
 
-Für Commit `cce528e70690509fd0631bac8a9ec207bb37ce23` waren grün:
-- external-search
-- verify
-- deploy
-- browser-e2e
+## 16. Aktuelle UX-Philosophie für Suche
 
-Für Commit `612e5f660922c40393e2487fb44b47cb5764ffbe` war der Development Preview Deploy erfolgreich; insbesondere:
-- Build full real merchant catalog → success
-- Build current development preview → success
-- Upload preview artifact → success
-- Deploy preview → success
+FundBlick soll langfristig nicht nur eine klassische Produktsuche sein, sondern eine universelle Bedürfnis-/Produktsuche.
 
-Damit besteht ein belastbarer Development-Zwischenstand mit wiederhergestelltem Händlerkatalog.
+Leitidee:
 
-## Bewusste Restpunkte
+**„Sag FundBlick, was du brauchst.“**
 
-1. Local Search ist noch keine echte strukturierte Händler-/Werkstatt-/POI-Suche.
-2. Intent-Erkennung ist derzeit primär regelbasiert und muss weiter ausgebaut werden.
-3. Ergebnis-Mischung zwischen Affiliate, Web, Guide, Video und Local kann später feiner gewichtet werden.
-4. Der Cloudflare Worker besitzt weiterhin keinen automatischen Deploy aus GitHub; Worker-Änderungen müssen manuell in Cloudflare veröffentlicht werden.
-5. Währungserkennung per Domain ist nur Fallback und muss bei widersprüchlichen Quellen vorsichtig behandelt werden.
-6. Mehrsprachige Suchlogik braucht weitere reale E2E-Tests mit gemischten Sprachen und Märkten.
-7. Das aktuelle globale Mindestbestands-Gate ist nur ein kurzfristiger Schutz; bei vielen Händlern reicht es nicht.
+Beispiele:
+- Modellname → Produkt
+- breite Kategorie → Produkte + Facetten
+- Frage → Erklärung
+- „Video“ → Videos
+- „in meiner Nähe“ → Local Search
+- keine eigenen Treffer → optional WWW
+- eigene Treffer vorhanden → optional WWW-Erweiterung
 
-## Anknüpfpunkte für morgen
+Wichtig:
+Die externen Ergebnisse sind eine Erweiterung, nicht der Kernbestand.
 
-### Priorität A – Catalog Integrity skalierbar machen
-Nicht bei `>= 1000 Produkte` stehen bleiben.
+---
 
-Nächste Härtungen:
-- Gesamtprodukt-Delta gegen letzten guten Build.
-- Produktzahl pro Händler prüfen.
-- unerwartet verschwundene Händler blockieren.
-- Kategorie-Deltas prüfen.
-- Feed-/Source-Vollständigkeit prüfen.
-- eindeutige Catalog-Build-ID / Hash einführen.
-- Katalog-Builds unveränderlich behandeln.
-- atomaren Catalog-Pointer vorbereiten.
-- Rollback auf letzten guten Build statt manueller Rekonstruktion.
+## 17. Bekannte offene Punkte
 
-### Priorität B – Development und Production Pipeline angleichen
-Ziel: möglichst dieselbe reale Katalog-Build- und Integrity-Logik für Preview und Production verwenden, damit Preview und Production nicht wieder unterschiedliche Wahrheiten ausliefern.
+### Hohe Priorität
+1. Preis-Freshness: externe Snippetpreise können veraltet sein.
+2. Local Search braucht langfristig echte strukturierte Local-Daten.
+3. Category-Intent-Routing muss später auf weitere Kategorien und Sprachen ausgeweitet werden.
+4. Externe Web-Ergebnisse benötigen weiterhin strikte Preis-/Produktzuordnung.
+5. Cloudflare Worker braucht reproduzierbaren automatisierten Deploy.
+6. Letzte Commits des Abends müssen nach vollständig grünen Gates noch einmal kontrolliert werden.
 
-### Priorität C – Post-Deploy Smoke Tests
-Automatisch prüfen:
-- Startseiten-Kategorien vorhanden,
-- Möbel/Haushalt liefern reale Händlerprodukte,
-- mindestens eine konkrete Produktsuche liefert Händlerergebnis,
-- Affiliate-/Händlerpfad funktioniert,
-- External Search bleibt Ergänzung und ersetzt den Commerce Catalog nicht.
+### Mittlere Priorität
+7. Category Search und Freitextsuche systematisch gegentesten.
+8. Zubehör-Abgrenzung pro Kategorie stärken.
+9. Brutto/netto, Staffelpreis und `ab`-Preis als UI-Kontext ausbauen.
+10. Externe Ergebnisse stärker nach Quelle/Typ kennzeichnen.
+11. Weitere Sprachen E2E testen.
+12. Local-Filter später mit echten strukturierten Daten verknüpfen.
 
-### Priorität D – Universal Search weiterbauen
-Danach weiter mit:
-- Local Intent / Ortsextraktion,
-- lokale Händler-/Werkstattquellen,
-- gemischte Spracheingaben,
-- Result-Mixer für Produkt/Guide/Video/Vergleich/Local,
-- Affiliate-first ohne Informationsverlust.
+---
 
-### Priorität E – Worker-Deploy-Prozess
-Reproduzierbaren Cloudflare-Deploy vorbereiten.
+## 18. Empfohlener Start für die nächste Session
+
+1. `development` Head lesen und bestätigen.
+2. `docs/FUNDBLICK-PREFLIGHT-CATALOG-INTEGRITY.md` lesen.
+3. Diese Tagesdoku lesen.
+4. Prüfen, ob alle letzten Actions/Deployments grün sind.
+5. Smoke-Test:
+   - Mähroboter per Kategorie-Klick
+   - Mähroboter per Suchfeld
+   - Zubehör-Suche
+   - Suche mit eigenen Treffern → `Noch mehr finden?`
+   - Suche ohne eigene Treffer → `Aktuell keine Produkte vorhanden.`
+   - Klick `Im Web weitersuchen`
+   - Local-Modus
+6. Erst danach neue Features bauen.
+
+---
 
 ## Tagesfazit
 
-Heute wurde aus dem bisherigen Produkt-Fallback eine deutlich allgemeinere Sucharchitektur. Gleichzeitig wurde ein wichtiger Skalierungs- und Deploymentfehler gefunden: Search-/Frontend-Fortschritt darf niemals unbemerkt den realen Händlerkatalog ersetzen oder verkleinern.
+Der 29.09.2026 war ein wichtiger Architektur- und Fehlerbereinigungstag.
 
-Der Fehler ist für den heutigen Maßstab behoben und als dauerhafte Arbeitsregel dokumentiert. Für die nächste Session ist der wichtigste Architekturpunkt: Catalog Integrity so ausbauen, dass ein solcher Verlust bei 10, 100, 1.000 oder 10.000 Händlern automatisch erkannt, blockiert und über einen bekannten guten Katalog-Build schnell zurückgerollt werden kann.
+FundBlick hat jetzt ein klareres Suchmodell:
+- eigene Commerce-Produkte zuerst,
+- Kategorien werden bei eindeutiger Suchabsicht direkt erkannt,
+- Web-Ergebnisse sind bewusst optional,
+- Local Search bekommt einen eigenen Pfad,
+- Preiszuordnung wird deutlich strenger,
+- Commerce-Katalog und Search Engine sind organisatorisch getrennt,
+- Catalog Integrity ist verbindlich abgesichert.
+
+Die wichtigsten Erkenntnisse aus den realen Tests waren:
+- sichtbarer Preis ist nicht automatisch falscher Preis: Böttcher war ein MwSt.-Fall,
+- Kategorienpreis ist kein Produktpreis: ATU war ein echter Zuordnungsfehler,
+- Freitextsuche darf bekannte Kategorien nicht schlechter behandeln als Kategorie-Klicks,
+- WWW-Fallback darf nie behaupten, es gäbe keine Produkte, wenn Produkte sichtbar sind,
+- externe Suche soll nützlich bleiben, aber den eigenen Katalog nicht dominieren.
+
+Damit ist der aktuelle Entwicklungsstand fachlich deutlich sauberer und für die nächste Ausbaustufe besser vorbereitet.
