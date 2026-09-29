@@ -114,6 +114,14 @@
     return `${number} ${unit}`;
   }
 
+  function trustedPrice(item,href){
+    const sourcePrice=visiblePrice(item);
+    if(sourcePrice)return formatPrice(sourcePrice,'',href);
+    const confidence=String(item?.priceConfidence||'').trim().toLowerCase();
+    if(confidence!=='verified')return '';
+    return formatPrice(item?.price,item?.currency,href);
+  }
+
   function merchantLabel(item){
     const merchant=String(item?.merchant||'').trim();
     const title=String(item?.title||'').trim();
@@ -206,10 +214,7 @@
         body.appendChild(merchant);
       }
 
-      const sourcePrice=visiblePrice(item);
-      const displayPrice=sourcePrice
-        ? formatPrice(sourcePrice,'',href)
-        : formatPrice(item.price,item.currency,href);
+      const displayPrice=trustedPrice(item,href);
       if(displayPrice){
         const price=document.createElement('strong');
         price.className='external-result-price';
@@ -237,5 +242,5 @@
   }
 
   function hide(container){if(!container)return;container.replaceChildren();container.hidden=true}
-  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,merchantLabel,currencyCode,currencyFromUrl,visiblePriceFromText,visiblePrice,sourceLabel});
+  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,trustedPrice,merchantLabel,currencyCode,currencyFromUrl,visiblePriceFromText,visiblePrice,sourceLabel});
 });
