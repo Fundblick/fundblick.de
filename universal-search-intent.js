@@ -34,6 +34,23 @@
     return clean(value).match(/[\p{L}\p{M}\p{N}][\p{L}\p{M}\p{N}+._/-]*/gu) || [];
   }
 
+  function inferQueryLanguage(query, fallback = 'de') {
+    const text = clean(query);
+    const base = String(fallback || 'de').trim().toLowerCase().split('-')[0] || 'de';
+    if (!text) return base;
+    if (/[一-龯㐀-䶿]/u.test(text)) return 'zh-hans';
+    if (/[؀-ۿ]/u.test(text)) return 'ar';
+    if (/[іїєґ]/iu.test(text)) return 'uk';
+    if (/[љњђћџј]/iu.test(text)) return 'sr';
+    if (/[ъ]/iu.test(text) && !/[ыэё]/iu.test(text)) return 'bg';
+    if (/[Ѐ-ӿ]/u.test(text)) return 'ru';
+    if (/[ăâîșşțţ]/iu.test(text)) return 'ro';
+    if (/[ğışçöü]/iu.test(text)) return 'tr';
+    if (/[ąćęłńóśźż]/iu.test(text)) return 'pl';
+    if (/[ëç]/iu.test(text) && /\b(?:dhe|është|për|me|nga|një)\b/iu.test(text)) return 'sq';
+    return base;
+  }
+
   function hasQuestionIntent(query) {
     return QUESTION_PATTERNS.some(re => re.test(query)) || /\?$/.test(clean(query));
   }
@@ -58,6 +75,8 @@
 
   function analyze(query, language = 'de') {
     const normalized = clean(query);
+    const uiLanguage = String(language || 'de').toLowerCase();
+    const searchLanguage = inferQueryLanguage(normalized, uiLanguage);
     const tokenList = tokens(normalized);
     const location = locationSignal(normalized);
     const informational = hasQuestionIntent(normalized);
@@ -96,7 +115,8 @@
     return Object.freeze({
       raw:String(query || ''),
       query:normalized,
-      language:String(language || 'de').toLowerCase(),
+      language:uiLanguage,
+      searchLanguage,
       tokenCount:tokenList.length,
       primary,
       modes:Object.freeze([...new Set(modes)]),
@@ -150,5 +170,5 @@
     }).sort((a,b) => b.score-a.score || a.index-b.index).map(entry => entry.item);
   }
 
-  return Object.freeze({ analyze, classifyResult, rankResults, clean, tokens, locationSignal, exactModelSignal });
+  return Object.freeze({ analyze, classifyResult, rankResults, clean, tokens, inferQueryLanguage, locationSignal, exactModelSignal });
 });
