@@ -6,7 +6,7 @@
   if (root) root.FundBlickExternalSearchPolicy = api;
 })(typeof window !== 'undefined' ? window : globalThis, function () {
   const DEFAULTS = Object.freeze({
-    minLocalResults: 1,
+    minLocalResults: 10,
     minQueryLength: 2,
     maxQueryLength: 120
   });
