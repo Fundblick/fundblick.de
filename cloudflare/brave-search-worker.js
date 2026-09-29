@@ -77,6 +77,10 @@ function flattenObjects(value, max = 40) {
   const queue = Array.isArray(value) ? [...value] : [value];
   while (queue.length && out.length < max) {
     const current = queue.shift();
+    if (Array.isArray(current)) {
+      queue.unshift(...current);
+      continue;
+    }
     if (!current || typeof current !== 'object') continue;
     out.push(current);
     for (const key of ['product','offer','offers','seller','merchant','brand']) {
