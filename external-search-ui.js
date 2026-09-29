@@ -20,6 +20,10 @@
     }
   }
 
+  function usableResults(items) {
+    return (Array.isArray(items) ? items : []).map(item => ({ item, href: safeHttpUrl(item?.url) })).filter(entry => entry.href);
+  }
+
   function render(container, state = {}) {
     if (!container) return;
     const t = text();
@@ -40,7 +44,7 @@
       return;
     }
 
-    const results = Array.isArray(state.results) ? state.results : [];
+    const results = usableResults(state.results);
     if (state.error || !results.length) {
       const status = document.createElement('p');
       status.className = 'external-results-status';
@@ -52,9 +56,7 @@
 
     const list = document.createElement('div');
     list.className = 'external-results-list';
-    for (const item of results) {
-      const href = safeHttpUrl(item?.url);
-      if (!href) continue;
+    for (const { item, href } of results) {
       const article = document.createElement('article');
       article.className = 'external-result-card';
       const title = document.createElement('h3');
@@ -84,5 +86,5 @@
     container.hidden = true;
   }
 
-  return Object.freeze({ render, hide, safeHttpUrl });
+  return Object.freeze({ render, hide, safeHttpUrl, usableResults });
 });
