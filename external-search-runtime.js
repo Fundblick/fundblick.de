@@ -45,6 +45,10 @@
     return ['offers','info','video','local'].includes(value) ? value : 'offers';
   }
 
+  function webRequested() {
+    return new URLSearchParams(location.search).get('web') === '1';
+  }
+
   function intentFor(q) {
     try {
       const base=intentEngine?.analyze?.(q, language()) || null;
@@ -71,11 +75,51 @@
     return items.map((card, index) => `${index}:${String(card.textContent || '').replace(/\s+/g, ' ').trim()}`).join('\u0001');
   }
 
-  function shouldSupplement(q, localResults = visibleLocalCount(), intent = intentFor(q)) {
+  function canUseExternalSearch(q, localResults = visibleLocalCount()) {
     if (!enabled || !endpoint || !policy.validQuery(q)) return false;
-    if (intent?.explicitView && intent.explicitView !== 'offers') return true;
-    if (intent?.enrichWeb) return true;
-    return policy.shouldUseExternalSearch({ query:q, localResults, externalEnabled:true });
+    if (localResults > 0) return false;
+    return webRequested();
+  }
+
+  function gateCopy() {
+    const lang=String(language()).toLowerCase().split('-')[0];
+    const copies={
+      de:{title:'Aktuell keine Produkte vorhanden.',body:'Möchtest du stattdessen Ergebnisse aus dem World Wide Web sehen?',button:'Im World Wide Web suchen'},
+      en:{title:'No products currently available.',body:'Would you like to see results from the World Wide Web instead?',button:'Search the World Wide Web'},
+      ru:{title:'Сейчас товаров нет.',body:'Показать вместо этого результаты из интернета?',button:'Искать в интернете'},
+      ro:{title:'Momentan nu sunt produse disponibile.',body:'Vrei să vezi în schimb rezultate de pe internet?',button:'Caută pe internet'},
+      tr:{title:'Şu anda ürün bulunmuyor.',body:'Bunun yerine internet sonuçlarını görmek ister misin?',button:'İnternette ara'}
+    };
+    return copies[lang]||copies.en;
+  }
+
+  function renderWebGate() {
+    disconnectScrollObserver();
+    container.replaceChildren();
+    container.hidden=false;
+    const t=gateCopy();
+    const box=document.createElement('div');
+    box.className='external-search-gate';
+    const title=document.createElement('h2');
+    title.className='external-results-title';
+    title.textContent=t.title;
+    box.appendChild(title);
+    const body=document.createElement('p');
+    body.className='external-results-status';
+    body.textContent=t.body;
+    box.appendChild(body);
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='external-search-gate-button';
+    button.textContent=t.button;
+    button.addEventListener('click',()=>{
+      const params=new URLSearchParams(location.search);
+      params.set('web','1');
+      history.replaceState(null,'',`${location.pathname}?${params.toString()}`);
+      schedule(0);
+    });
+    box.appendChild(button);
+    container.appendChild(box);
   }
 
   function mergeUnique(existing, incoming) {
@@ -149,7 +193,7 @@
     const offset = nextOffset;
     const result = await requestPage(offset);
     loadingMore = false;
-    if (current !== sequence || query() !== activeQuery) return;
+    if (current !== sequence || query() !== activeQuery || visibleLocalCount() > 0 || !webRequested()) return;
     if (!result.ok) {
       moreResultsAvailable = false;
       renderAccumulated();
@@ -171,7 +215,7 @@
     ) {
       const offset = nextOffset;
       const result = await requestPage(offset);
-      if (current !== sequence || query() !== activeQuery) return false;
+      if (current !== sequence || query() !== activeQuery || visibleLocalCount() > 0 || !webRequested()) return false;
       if (!result.ok) {
         moreResultsAvailable = false;
         break;
@@ -209,7 +253,18 @@
       return;
     }
 
-    if (!shouldSupplement(q, visibleLocalCount(), intent)) {
+    const localResults=visibleLocalCount();
+    if (localResults > 0) {
+      ui.hide(container);
+      return;
+    }
+
+    if (!webRequested()) {
+      renderWebGate();
+      return;
+    }
+
+    if (!canUseExternalSearch(q, localResults)) {
       ui.hide(container);
       return;
     }
@@ -220,7 +275,7 @@
     const result = await requestPage(0);
     if (current !== sequence) return;
 
-    if (query() !== q || !shouldSupplement(q, visibleLocalCount(), intent)) {
+    if (query() !== q || visibleLocalCount() > 0 || !webRequested()) {
       resetExternalState();
       ui.hide(container);
       return;
