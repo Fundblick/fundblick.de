@@ -77,6 +77,31 @@ assert.notEqual(item.priceConfidence, 'verified', 'aggregator/listing price must
 assert.equal(ui.trustedPrice(item, item.url), '');
 
 item = confidence.annotate([{
+  title:'10w40 Motoröl zum besten Preis kaufen - ATU',
+  description:'Wählen Sie aus einem großen Sortiment an verschiedenen Modellen von einem 10w40 motoröl.',
+  url:'https://www.atu.de/10w40-oel-fr.html?filters&sort=price|asc',
+  image:'https://img.example/atu-logo.jpg',
+  productCandidate:true,
+  price:'5.00',
+  currency:'EUR'
+}])[0];
+assert.equal(confidence.looksLikeListingPage(item), true, 'ATU category page must be recognized as a listing page');
+assert.notEqual(item.priceConfidence, 'verified', 'listing minimum price must not become an individual product price');
+assert.equal(ui.trustedPrice(item, item.url), '');
+
+item = confidence.annotate([{
+  title:'10w40 Öl zum besten Preis kaufen - ATU',
+  description:'Castrol Magnatec Diesel 10W-40 B4 Motoröl, 5 Liter',
+  url:'https://www.atu.de/10w40-oel-fr.html?filters&sort=price|asc',
+  image:'https://img.example/atu-logo.jpg',
+  productCandidate:true,
+  price:'5.00',
+  currency:'EUR'
+}])[0];
+assert.notEqual(item.priceConfidence, 'verified', 'category-page minimum price must never be attached to the named Castrol 5L item');
+assert.equal(ui.trustedPrice(item, item.url), '');
+
+item = confidence.annotate([{
   title:'Specific product',
   description:'No visible price here',
   url:'https://shop.example/product',
@@ -88,4 +113,4 @@ item = confidence.annotate([{
 }])[0];
 assert.equal(ui.trustedPrice(item, item.url), '24,90 €', 'worker-verified price remains renderable');
 
-console.log('External price confidence: visible precedence + decimal parser + graded structured-price recovery OK');
+console.log('External price confidence: visible precedence + decimal parser + listing-price isolation OK');
