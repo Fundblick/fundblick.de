@@ -36,7 +36,7 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
       status: 200,
       async json() {
         return { results: [
-          { title: 'Treffer', url: 'https://shop.example/item', description: 'Web', price: 999, affiliateUrl: 'fake' },
+          { title: '<strong>Treffer</strong>', url: 'https://shop.example/product/akku', description: 'Web &amp; Shop', image: 'https://cdn.example/akku.jpg', price: '99,99 €', merchant: 'Beispiel Shop', affiliateUrl: 'fake' },
           { title: 'Unsicher', url: 'javascript:alert(1)' }
         ] };
       }
@@ -49,7 +49,9 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   const second = await client.search({ endpoint: 'https://search.example.com', query: 'Akkuschrauber' });
   assert.equal(first.ok, true);
   assert.equal(first.results.length, 1);
-  assert.deepEqual(first.results[0], { kind:'external-web', title:'Treffer', url:'https://shop.example/item', description:'Web', source:'web' });
+  assert.deepEqual(first.results[0], {
+    kind:'external-web', title:'Treffer', url:'https://shop.example/product/akku', description:'Web & Shop', source:'web', host:'shop.example', merchant:'Beispiel Shop', image:'https://cdn.example/akku.jpg', price:'99,99 €', productCandidate:true
+  });
   assert.equal(second.cached, true);
   assert.equal(calls - beforeValid, 1);
   assert.equal(requestedUrl.searchParams.get('q'), 'Akkuschrauber');
@@ -61,7 +63,7 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   assert.equal(limited.status, 429);
   assert.deepEqual(limited.results, []);
 
-  console.log('External search client: invalid queries blocked before network; cache and 429 OK');
+  console.log('External search client: sanitized enriched results, cache and 429 OK');
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
