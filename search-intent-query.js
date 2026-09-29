@@ -18,13 +18,26 @@
   };
 
   function clean(value){return String(value||'').replace(/\s+/g,' ').trim()}
-  function refine(query,view='offers',language='de'){
+  function refine(query,view='offers',language='de',options={}){
     const q=clean(query);
     if(!q)return '';
     const lang=String(language||'de').toLowerCase().split('-')[0];
     const table=terms[lang]||terms.en;
     const key=['offers','info','video','local'].includes(view)?view:'offers';
-    return `${q} ${table[key]}`.trim();
+    const parts=[q,table[key]];
+    if(key==='local'){
+      const place=clean(options.place);
+      const lat=clean(options.lat);
+      const lon=clean(options.lon);
+      const radius=Number(options.radius)||25;
+      if(place)parts.push(place);
+      else if(lat&&lon)parts.push(`${lat},${lon}`);
+      parts.push(`${Math.max(1,Math.min(200,radius))} km`);
+      if(options.openNow)parts.push(lang==='de'?'jetzt geöffnet':'open now');
+      if(options.inStock)parts.push(lang==='de'?'vor Ort verfügbar':'in stock locally');
+      if(options.pickup)parts.push(lang==='de'?'Abholung Click & Collect':'pickup click and collect');
+    }
+    return parts.join(' ').replace(/\s+/g,' ').trim();
   }
   return Object.freeze({refine,terms});
 });
