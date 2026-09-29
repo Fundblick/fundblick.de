@@ -49,6 +49,10 @@
     return new URLSearchParams(location.search).get('web') === '1';
   }
 
+  function explicitLocalRequested() {
+    return explicitView() === 'local' && webRequested();
+  }
+
   function intentFor(q) {
     try {
       const base=intentEngine?.analyze?.(q, language()) || null;
@@ -77,6 +81,7 @@
 
   function canUseExternalSearch(q, localResults = visibleLocalCount()) {
     if (!enabled || !endpoint || !policy.validQuery(q)) return false;
+    if (explicitLocalRequested()) return true;
     if (localResults > 0) return false;
     return webRequested();
   }
@@ -193,7 +198,7 @@
     const offset = nextOffset;
     const result = await requestPage(offset);
     loadingMore = false;
-    if (current !== sequence || query() !== activeQuery || visibleLocalCount() > 0 || !webRequested()) return;
+    if (current !== sequence || query() !== activeQuery || (!explicitLocalRequested() && visibleLocalCount() > 0) || !webRequested()) return;
     if (!result.ok) {
       moreResultsAvailable = false;
       renderAccumulated();
@@ -215,7 +220,7 @@
     ) {
       const offset = nextOffset;
       const result = await requestPage(offset);
-      if (current !== sequence || query() !== activeQuery || visibleLocalCount() > 0 || !webRequested()) return false;
+      if (current !== sequence || query() !== activeQuery || (!explicitLocalRequested() && visibleLocalCount() > 0) || !webRequested()) return false;
       if (!result.ok) {
         moreResultsAvailable = false;
         break;
@@ -254,13 +259,14 @@
     }
 
     const localResults=visibleLocalCount();
-    if (localResults > 0) {
+    const localMode=explicitLocalRequested();
+    if (localResults > 0 && !localMode) {
       ui.hide(container);
       return;
     }
 
     if (!webRequested()) {
-      renderWebGate();
+      if(localResults===0)renderWebGate();else ui.hide(container);
       return;
     }
 
@@ -275,7 +281,7 @@
     const result = await requestPage(0);
     if (current !== sequence) return;
 
-    if (query() !== q || visibleLocalCount() > 0 || !webRequested()) {
+    if (query() !== q || (!explicitLocalRequested() && visibleLocalCount() > 0) || !webRequested()) {
       resetExternalState();
       ui.hide(container);
       return;
