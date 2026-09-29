@@ -24,3 +24,30 @@ The endpoint deliberately returns only a reduced result shape (`title`, `url`, `
 ## Deployment safety
 
 Keep the Worker URL out of production UI until the endpoint has been deployed and tested. Development integration should use a configurable endpoint rather than embedding the Brave API key. Never put `BRAVE_SEARCH_API_KEY` in GitHub Pages, HTML, client-side JavaScript, query parameters, logs, screenshots, or repository secrets intended for frontend builds.
+
+## Setup status — 2026-09-29
+
+Completed manually in the provider dashboards:
+
+- Brave Search API account/plan activated with the monthly free credits selected.
+- A monthly usage cap was enabled by the account owner to prevent uncontrolled API spend.
+- Cloudflare Worker `fundblick-search` was created.
+- Production runtime secret `BRAVE_SEARCH_API_KEY` was added as a Cloudflare Secret. The secret value is intentionally not stored in this repository.
+
+Current blocker:
+
+- Editing `worker.js` in the Cloudflare mobile browser editor proved unreliable. Clipboard access failed and pasted JavaScript became malformed, producing syntax errors.
+- No malformed mobile-editor version should be treated as the canonical FundBlick Worker implementation.
+- Do not connect the Worker to FundBlick production and do not expose its endpoint in the live UI until the clean repository version has been deployed and verified.
+
+Desktop continuation checklist:
+
+1. Open the Cloudflare Worker `fundblick-search` on desktop.
+2. Replace the editor contents with the canonical repository file `cloudflare/brave-search-worker.js` rather than reconstructing code manually.
+3. Confirm that `BRAVE_SEARCH_API_KEY` remains configured as a production Secret.
+4. Deploy the clean Worker.
+5. Test `/health` first; it must confirm configuration without revealing the secret.
+6. Test `/search` with representative German queries and verify status handling and the reduced response schema.
+7. Verify CORS/origin restrictions for `https://fundblick.de` before frontend integration.
+8. Only after those gates pass, integrate the endpoint in the development branch and add regression tests for local-results-first/external-fallback behavior.
+9. Keep `main`/Live untouched until the complete integration has passed its release gate.
