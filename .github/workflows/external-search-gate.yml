@@ -1,0 +1,52 @@
+name: External search safety gate
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'external-search-policy.js'
+      - 'external-search-client.js'
+      - 'external-search-ui.js'
+      - 'external-search.css'
+      - 'verify-external-search-policy.js'
+      - 'verify-external-search-client.js'
+      - 'cloudflare/brave-search-worker.js'
+      - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
+      - '.github/workflows/external-search-gate.yml'
+  pull_request:
+    paths:
+      - 'external-search-policy.js'
+      - 'external-search-client.js'
+      - 'external-search-ui.js'
+      - 'external-search.css'
+      - 'verify-external-search-policy.js'
+      - 'verify-external-search-client.js'
+      - 'cloudflare/brave-search-worker.js'
+      - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
+      - '.github/workflows/external-search-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  external-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify fallback policy
+        run: node verify-external-search-policy.js
+      - name: Verify external client
+        run: node verify-external-search-client.js
+      - name: Reject committed Brave secrets
+        shell: bash
+        run: |
+          if grep -RInE --exclude-dir=.git --exclude='*.md' '(X-Subscription-Token[[:space:]]*:[[:space:]]*["'"'][A-Za-z0-9_-]{20,}|BRAVE_SEARCH_API_KEY[[:space:]]*=[[:space:]]*["'"'][^"'"']+)' .; then
+            echo 'Potential Brave secret committed to repository.' >&2
+            exit 1
+          fi
+          echo 'No committed Brave secret pattern found.'
