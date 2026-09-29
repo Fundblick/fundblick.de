@@ -67,16 +67,27 @@ function firstValue(item, paths) {
   return '';
 }
 
+function explicitPriceText(item) {
+  const structured = firstValue(item, ['price','product.price','offer.price']);
+  if (typeof structured === 'number' && Number.isFinite(structured)) return structured;
+  const structuredText = cleanText(structured, 80);
+  if (/\d/.test(structuredText)) return structuredText;
+
+  // Accept only a price explicitly present in Brave's source text. Never infer one.
+  const sourceText = cleanText(`${item?.title || ''} ${item?.description || ''}`, 1400);
+  const match = sourceText.match(/(?:€\s*\d{1,6}(?:[.,]\d{2})?|\b\d{1,6}(?:[.,]\d{2})?\s*(?:€|EUR)\b)/i);
+  return match ? cleanText(match[0], 80) : '';
+}
+
 function normalizeResult(item) {
-  const thumbnail = firstValue(item, ['thumbnail.src','thumbnail.url','image.src','image.url']);
-  const price = firstValue(item, ['price','product.price','offer.price']);
-  const merchant = firstValue(item, ['profile.long_name','profile.name','merchant','seller','store']);
+  const thumbnail = firstValue(item, ['thumbnail.src','thumbnail.url','image.src','image.url','product.image','product.image_url','offer.image']);
+  const merchant = firstValue(item, ['profile.long_name','profile.name','merchant','seller','store','product.merchant','offer.merchant']);
   return {
     title: cleanText(item?.title, 300),
     url: safeUrl(item?.url),
     description: cleanText(item?.description, 1000),
     image: safeUrl(thumbnail),
-    price: typeof price === 'number' && Number.isFinite(price) ? price : cleanText(price, 80),
+    price: explicitPriceText(item),
     merchant: cleanText(merchant, 120),
     age: item?.age || null,
     language: item?.language || null,
