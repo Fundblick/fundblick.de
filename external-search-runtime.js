@@ -50,10 +50,6 @@
     return new URLSearchParams(location.search).get('web') === '1';
   }
 
-  function explicitLocalRequested() {
-    return explicitView() === 'local' && webRequested();
-  }
-
   function intentFor(q) {
     try {
       const base=intentEngine?.analyze?.(q, language()) || null;
@@ -87,30 +83,45 @@
     return visibleLocalCards().map((card, index) => `${index}:${String(card.textContent || '').replace(/\s+/g, ' ').trim()}`).join('\u0001');
   }
 
-  function canUseExternalSearch(q, localResults = visibleLocalCount()) {
+  function canUseExternalSearch(q) {
     if (!enabled || !endpoint || !policy.validQuery(q)) return false;
-    if (explicitLocalRequested()) return true;
-    if (localResults > 0) return false;
     return webRequested();
   }
 
-  function gateCopy() {
+  function gateCopy(localResults) {
     const lang=String(language()).toLowerCase().split('-')[0];
+    const hasLocal=Number(localResults)>0;
     const copies={
-      de:{title:'Aktuell keine Produkte vorhanden.',body:'Möchtest du stattdessen Ergebnisse aus dem World Wide Web sehen?',button:'Im World Wide Web suchen'},
-      en:{title:'No products currently available.',body:'Would you like to see results from the World Wide Web instead?',button:'Search the World Wide Web'},
-      ru:{title:'Сейчас товаров нет.',body:'Показать вместо этого результаты из интернета?',button:'Искать в интернете'},
-      ro:{title:'Momentan nu sunt produse disponibile.',body:'Vrei să vezi în schimb rezultate de pe internet?',button:'Caută pe internet'},
-      tr:{title:'Şu anda ürün bulunmuyor.',body:'Bunun yerine internet sonuçlarını görmek ister misin?',button:'İnternette ara'}
+      de:{
+        with:{title:'Noch mehr finden?',body:'Du kannst deine Suche auch auf das World Wide Web erweitern.',button:'Im Web weitersuchen'},
+        empty:{title:'Aktuell keine Produkte vorhanden.',body:'Du kannst deine Suche stattdessen auf das World Wide Web erweitern.',button:'Im Web weitersuchen'}
+      },
+      en:{
+        with:{title:'Want to explore further?',body:'You can also extend your search to the World Wide Web.',button:'Continue on the web'},
+        empty:{title:'No products currently available.',body:'You can extend your search to the World Wide Web instead.',button:'Continue on the web'}
+      },
+      ru:{
+        with:{title:'Найти больше?',body:'Можно расширить поиск на весь интернет.',button:'Продолжить поиск в интернете'},
+        empty:{title:'Сейчас товаров нет.',body:'Можно продолжить поиск во всём интернете.',button:'Продолжить поиск в интернете'}
+      },
+      ro:{
+        with:{title:'Vrei să găsești mai multe?',body:'Poți extinde căutarea și pe internet.',button:'Continuă căutarea pe internet'},
+        empty:{title:'Momentan nu sunt produse disponibile.',body:'Poți continua căutarea pe internet.',button:'Continuă căutarea pe internet'}
+      },
+      tr:{
+        with:{title:'Daha fazlasını bulmak ister misin?',body:'Aramanı World Wide Web’e de genişletebilirsin.',button:'Web’de aramaya devam et'},
+        empty:{title:'Şu anda ürün bulunmuyor.',body:'Aramana World Wide Web’de devam edebilirsin.',button:'Web’de aramaya devam et'}
+      }
     };
-    return copies[lang]||copies.en;
+    const t=copies[lang]||copies.en;
+    return hasLocal?t.with:t.empty;
   }
 
-  function renderWebGate() {
+  function renderWebGate(localResults=visibleLocalCount()) {
     disconnectScrollObserver();
     container.replaceChildren();
     container.hidden=false;
-    const t=gateCopy();
+    const t=gateCopy(localResults);
     const box=document.createElement('div');
     box.className='external-search-gate';
     const title=document.createElement('h2');
@@ -206,7 +217,7 @@
     const offset = nextOffset;
     const result = await requestPage(offset);
     loadingMore = false;
-    if (current !== sequence || query() !== activeQuery || (!explicitLocalRequested() && visibleLocalCount() > 0) || !webRequested()) return;
+    if (current !== sequence || query() !== activeQuery || !webRequested()) return;
     if (!result.ok) {
       moreResultsAvailable = false;
       renderAccumulated();
@@ -228,7 +239,7 @@
     ) {
       const offset = nextOffset;
       const result = await requestPage(offset);
-      if (current !== sequence || query() !== activeQuery || (!explicitLocalRequested() && visibleLocalCount() > 0) || !webRequested()) return false;
+      if (current !== sequence || query() !== activeQuery || !webRequested()) return false;
       if (!result.ok) {
         moreResultsAvailable = false;
         break;
@@ -267,18 +278,12 @@
     }
 
     const localResults=visibleLocalCount();
-    const localMode=explicitLocalRequested();
-    if (localResults > 0 && !localMode) {
-      ui.hide(container);
-      return;
-    }
-
     if (!webRequested()) {
-      if(localResults===0)renderWebGate();else ui.hide(container);
+      renderWebGate(localResults);
       return;
     }
 
-    if (!canUseExternalSearch(q, localResults)) {
+    if (!canUseExternalSearch(q)) {
       ui.hide(container);
       return;
     }
@@ -289,7 +294,7 @@
     const result = await requestPage(0);
     if (current !== sequence) return;
 
-    if (query() !== q || (!explicitLocalRequested() && visibleLocalCount() > 0) || !webRequested()) {
+    if (query() !== q || !webRequested()) {
       resetExternalState();
       ui.hide(container);
       return;
