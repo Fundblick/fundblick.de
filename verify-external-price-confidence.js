@@ -2,6 +2,7 @@
 
 const assert = require('node:assert/strict');
 const ui = require('./external-search-ui.js');
+const confidence = require('./external-price-confidence.js');
 
 const DE = 'https://shop.example/product';
 
@@ -13,18 +14,7 @@ assert.equal(
     currency:'EUR'
   }, DE),
   '',
-  'unverified structured-only price must be hidden'
-);
-
-assert.equal(
-  ui.trustedPrice({
-    title:'Faber-Castell Bleistift basic mit Radierer drucken',
-    description:'Hochwertige Marken-Bleistifte – jetzt bestellen',
-    price:'1620.82',
-    currency:'EUR'
-  }, DE),
-  '',
-  'bulk/custom structured-only price must be hidden without visible evidence'
+  'unverified structured-only price must be hidden by default'
 );
 
 assert.equal(
@@ -38,27 +28,52 @@ assert.equal(
   'visible price must override conflicting hidden metadata'
 );
 
-assert.equal(
-  ui.trustedPrice({
-    title:'Bleistift 4B günstig kaufen',
-    description:'12 Qualitäts-Bleistifte – 17,24 € inkl. MwSt.',
-    price:'9999',
-    currency:'EUR'
-  }, DE),
-  '17,24 €',
-  'visible snippet price must win over structured metadata'
-);
+let item = confidence.annotate([{
+  title:'Bleistift 4B – günstig kaufen – Böttcher AG',
+  description:'Bleistift Faber-Castell 9000 Art Set',
+  url:'https://www.bueromarkt-boettcher.de/produkt/bleistift-4b',
+  image:'https://img.example/bleistift.jpg',
+  productCandidate:true,
+  price:'17.24',
+  currency:'EUR'
+}])[0];
+assert.equal(item.priceConfidence, 'verified', 'specific retail product with image may retain structured price');
+assert.equal(ui.trustedPrice(item, item.url), '17,24 €');
 
-assert.equal(
-  ui.trustedPrice({
-    title:'Specific product',
-    description:'No visible price here',
-    price:'24.90',
-    currency:'EUR',
-    priceConfidence:'verified'
-  }, DE),
-  '24,90 €',
-  'worker-verified price may be rendered'
-);
+item = confidence.annotate([{
+  title:'Faber-Castell Bleistift basic mit Radierer drucken bei FLYERALARM',
+  description:'Hochwertige Marken-Bleistifte – jetzt bestellen',
+  url:'https://www.flyeralarm.com/de/shop/bleistift',
+  image:'https://img.example/bleistift.jpg',
+  productCandidate:true,
+  price:'1620.82',
+  currency:'EUR'
+}])[0];
+assert.notEqual(item.priceConfidence, 'verified', 'bulk/custom configurator price must remain unverified');
+assert.equal(ui.trustedPrice(item, item.url), '');
 
-console.log('External price confidence: fail-closed rendering + visible-price precedence OK');
+item = confidence.annotate([{
+  title:'Perfekte Bleistift online kaufen | eBay.de',
+  description:'Große Auswahl neuer und gebrauchter Bleistifte online entdecken',
+  url:'https://www.ebay.de/sch/i.html?_nkw=bleistift',
+  image:'https://img.example/bleistift.jpg',
+  productCandidate:true,
+  price:'1500',
+  currency:'EUR'
+}])[0];
+assert.notEqual(item.priceConfidence, 'verified', 'aggregator/listing price must remain unverified');
+assert.equal(ui.trustedPrice(item, item.url), '');
+
+item = confidence.annotate([{
+  title:'Specific product',
+  description:'No visible price here',
+  url:'https://shop.example/product',
+  image:'https://img.example/product.jpg',
+  productCandidate:true,
+  price:'24.90',
+  currency:'EUR',
+  priceConfidence:'verified'
+}])[0];
+assert.equal(ui.trustedPrice(item, item.url), '24,90 €', 'worker-verified price remains renderable');
+
+console.log('External price confidence: visible precedence + graded structured-price recovery OK');
