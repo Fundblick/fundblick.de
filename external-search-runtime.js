@@ -76,7 +76,7 @@
     const result = await client.search({
       endpoint,
       query: q,
-      language: language(),
+      language: intent?.searchLanguage || language(),
       country: 'DE'
     });
     if (current !== sequence) return;
