@@ -36,7 +36,19 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
       status: 200,
       async json() {
         return { results: [
-          { title: '<strong>Treffer</strong>', url: 'https://shop.example/product/akku', description: 'Web &amp; Shop', image: 'https://cdn.example/akku.jpg', price: '99,99 €', merchant: 'Beispiel Shop', affiliateUrl: 'fake' },
+          {
+            title: '<strong>Treffer</strong>',
+            productUrl: 'https://shop.example/product/akku',
+            url: 'https://search.example/result/akku',
+            description: 'Web &amp; Shop',
+            image: 'https://cdn.example/akku.jpg',
+            price: '99,99 €',
+            currency: 'EUR',
+            merchant: 'Beispiel Shop',
+            productStatus: 'in_stock',
+            productCandidate: true,
+            affiliateUrl: 'fake'
+          },
           { title: 'Unsicher', url: 'javascript:alert(1)' }
         ] };
       }
@@ -50,7 +62,19 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   assert.equal(first.ok, true);
   assert.equal(first.results.length, 1);
   assert.deepEqual(first.results[0], {
-    kind:'external-web', title:'Treffer', url:'https://shop.example/product/akku', description:'Web & Shop', source:'web', host:'shop.example', merchant:'Beispiel Shop', image:'https://cdn.example/akku.jpg', price:'99,99 €', productCandidate:true
+    kind:'external-web',
+    title:'Treffer',
+    url:'https://shop.example/product/akku',
+    productUrl:'https://shop.example/product/akku',
+    description:'Web & Shop',
+    source:'web',
+    host:'shop.example',
+    merchant:'Beispiel Shop',
+    image:'https://cdn.example/akku.jpg',
+    price:'99,99 €',
+    currency:'EUR',
+    productStatus:'in_stock',
+    productCandidate:true
   });
   assert.equal(second.cached, true);
   assert.equal(calls - beforeValid, 1);
@@ -63,7 +87,7 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   assert.equal(limited.status, 429);
   assert.deepEqual(limited.results, []);
 
-  console.log('External search client: sanitized enriched results, cache and 429 OK');
+  console.log('External search client: sanitized normalized offer fields, cache and 429 OK');
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
