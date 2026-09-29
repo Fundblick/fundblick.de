@@ -21,7 +21,11 @@
   }
 
   function normalizeQuery(value) {
-    return policy?.normalizeQuery ? policy.normalizeQuery(value) : String(value || '').trim().slice(0, 200);
+    return policy?.normalizeQuery ? policy.normalizeQuery(value) : String(value || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+  }
+
+  function validQuery(value) {
+    return policy?.validQuery ? policy.validQuery(value) : normalizeQuery(value).length >= 2;
   }
 
   function requestKey(query, language, country) {
@@ -36,7 +40,7 @@
   async function search(options = {}) {
     const query = normalizeQuery(options.query);
     const base = endpoint(options.endpoint);
-    if (!query) return { ok: false, skipped: 'invalid-query', results: [] };
+    if (!validQuery(query)) return { ok: false, skipped: 'invalid-query', results: [] };
     if (!base) return { ok: false, skipped: 'endpoint-disabled', results: [] };
 
     const language = String(options.language || 'de').trim().toLowerCase();
