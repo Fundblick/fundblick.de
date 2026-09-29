@@ -86,13 +86,13 @@ jobs:
         run: node verify-search-demand-analytics.js
       - name: Verify Brave Worker contract
         run: node verify-brave-worker-contract.js
-      - name: Keep production activation gated
+      - name: Verify explicit development activation
         shell: bash
         run: |
-          grep -q 'data-external-search-enabled="false"' search.html
-          grep -q 'data-external-search-endpoint=""' search.html
+          grep -q 'data-external-search-enabled="true"' search.html
+          grep -q 'data-external-search-endpoint="https://fundblick-search.frosty-moon-518b.workers.dev"' search.html
           ! grep -q 'search-demand-analytics.js' search.html
-          echo 'External search and demand collection remain dormant pending explicit activation.'
+          echo 'External fallback is explicitly enabled; demand analytics remain dormant.'
       - name: Reject committed Brave secrets
         shell: bash
         run: |
