@@ -29,13 +29,15 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
     assert.equal(url.origin, 'https://search.example.com');
     assert.equal(url.pathname, '/search');
     assert.equal(url.searchParams.get('q'), 'Akkuschrauber');
+    assert.equal(url.searchParams.get('count'), '20');
+    assert.equal(url.searchParams.get('offset'), '0');
     assert.equal(options.credentials, 'omit');
     assert.equal(options.referrerPolicy, 'no-referrer');
     return {
       ok: true,
       status: 200,
       async json() {
-        return { results: [
+        return { moreResultsAvailable:true, results: [
           {
             title: '<strong>Treffer</strong>',
             productUrl: 'https://shop.example/product/akku',
@@ -44,6 +46,7 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
             image: 'https://cdn.example/akku.jpg',
             price: '99,99 €',
             currency: 'EUR',
+            priceConfidence:'visible',
             merchant: 'Beispiel Shop',
             productStatus: 'in_stock',
             productCandidate: true,
@@ -60,6 +63,7 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   const first = await client.search({ endpoint: 'https://search.example.com', query: ' Akkuschrauber ' });
   const second = await client.search({ endpoint: 'https://search.example.com', query: 'Akkuschrauber' });
   assert.equal(first.ok, true);
+  assert.equal(first.moreResultsAvailable, true);
   assert.equal(first.results.length, 1);
   assert.deepEqual(first.results[0], {
     kind:'external-web',
@@ -73,12 +77,22 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
     image:'https://cdn.example/akku.jpg',
     price:'99,99 €',
     currency:'EUR',
+    priceConfidence:'visible',
     productStatus:'in_stock',
     productCandidate:true
   });
   assert.equal(second.cached, true);
   assert.equal(calls - beforeValid, 1);
-  assert.equal(requestedUrl.searchParams.get('q'), 'Akkuschrauber');
+
+  client.clearSessionCache();
+  global.fetch = async (url) => {
+    requestedUrl = url;
+    return { ok:true, status:200, async json(){ return { moreResultsAvailable:false, results:[] }; } };
+  };
+  const pageTwo = await client.search({ endpoint:'https://search.example.com', query:'Akkuschrauber', count:20, offset:1 });
+  assert.equal(requestedUrl.searchParams.get('offset'), '1');
+  assert.equal(pageTwo.offset, 1);
+  assert.equal(pageTwo.moreResultsAvailable, false);
 
   client.clearSessionCache();
   global.fetch = async () => ({ ok:false, status:429, async json(){ return {}; } });
@@ -87,7 +101,7 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   assert.equal(limited.status, 429);
   assert.deepEqual(limited.results, []);
 
-  console.log('External search client: sanitized normalized offer fields, cache and 429 OK');
+  console.log('External search client: pagination, sanitized fields, cache and 429 OK');
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
