@@ -18,26 +18,38 @@
   };
 
   function clean(value){return String(value||'').replace(/\s+/g,' ').trim()}
-  function refine(query,view='offers',language='de',options={}){
+  function activeLocalOptions(){
+    if(typeof location==='undefined')return {};
+    try{
+      const p=new URLSearchParams(location.search);
+      return {
+        place:p.get('localPlace')||'',radius:p.get('localRadius')||'25',
+        openNow:p.get('localOpen')==='1',inStock:p.get('localStock')==='1',pickup:p.get('localPickup')==='1',
+        lat:p.get('localLat')||'',lon:p.get('localLon')||''
+      };
+    }catch{return {}}
+  }
+  function refine(query,view='offers',language='de',options){
     const q=clean(query);
     if(!q)return '';
     const lang=String(language||'de').toLowerCase().split('-')[0];
     const table=terms[lang]||terms.en;
     const key=['offers','info','video','local'].includes(view)?view:'offers';
+    const opts=options&&typeof options==='object'?options:activeLocalOptions();
     const parts=[q,table[key]];
     if(key==='local'){
-      const place=clean(options.place);
-      const lat=clean(options.lat);
-      const lon=clean(options.lon);
-      const radius=Number(options.radius)||25;
+      const place=clean(opts.place);
+      const lat=clean(opts.lat);
+      const lon=clean(opts.lon);
+      const radius=Number(opts.radius)||25;
       if(place)parts.push(place);
       else if(lat&&lon)parts.push(`${lat},${lon}`);
       parts.push(`${Math.max(1,Math.min(200,radius))} km`);
-      if(options.openNow)parts.push(lang==='de'?'jetzt geöffnet':'open now');
-      if(options.inStock)parts.push(lang==='de'?'vor Ort verfügbar':'in stock locally');
-      if(options.pickup)parts.push(lang==='de'?'Abholung Click & Collect':'pickup click and collect');
+      if(opts.openNow)parts.push(lang==='de'?'jetzt geöffnet':'open now');
+      if(opts.inStock)parts.push(lang==='de'?'vor Ort verfügbar':'in stock locally');
+      if(opts.pickup)parts.push(lang==='de'?'Abholung Click & Collect':'pickup click and collect');
     }
     return parts.join(' ').replace(/\s+/g,' ').trim();
   }
-  return Object.freeze({refine,terms});
+  return Object.freeze({refine,terms,activeLocalOptions});
 });
