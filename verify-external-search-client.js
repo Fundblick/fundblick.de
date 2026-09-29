@@ -13,13 +13,19 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   assert.equal(disabled.ok, false);
   assert.equal(disabled.skipped, 'endpoint-disabled');
 
-  const invalid = await client.search({ endpoint: 'https://example.com', query: '   ' });
-  assert.equal(invalid.ok, false);
-  assert.equal(invalid.skipped, 'invalid-query');
-
   let calls = 0;
+  global.fetch = async () => { calls += 1; throw new Error('invalid query must not reach network'); };
+  for (const query of ['   ', 'a', '\u0000a\n']) {
+    const invalid = await client.search({ endpoint: 'https://example.com', query });
+    assert.equal(invalid.ok, false);
+    assert.equal(invalid.skipped, 'invalid-query');
+  }
+  assert.equal(calls, 0);
+
+  let requestedUrl;
   global.fetch = async (url, options) => {
     calls += 1;
+    requestedUrl = url;
     assert.equal(url.origin, 'https://search.example.com');
     assert.equal(url.pathname, '/search');
     assert.equal(url.searchParams.get('q'), 'Akkuschrauber');
@@ -38,13 +44,15 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   };
 
   client.clearSessionCache();
+  const beforeValid = calls;
   const first = await client.search({ endpoint: 'https://search.example.com', query: ' Akkuschrauber ' });
   const second = await client.search({ endpoint: 'https://search.example.com', query: 'Akkuschrauber' });
   assert.equal(first.ok, true);
   assert.equal(first.results.length, 1);
   assert.deepEqual(first.results[0], { kind:'external-web', title:'Treffer', url:'https://shop.example/item', description:'Web', source:'web' });
   assert.equal(second.cached, true);
-  assert.equal(calls, 1);
+  assert.equal(calls - beforeValid, 1);
+  assert.equal(requestedUrl.searchParams.get('q'), 'Akkuschrauber');
 
   client.clearSessionCache();
   global.fetch = async () => ({ ok:false, status:429, async json(){ return {}; } });
@@ -53,7 +61,7 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   assert.equal(limited.status, 429);
   assert.deepEqual(limited.results, []);
 
-  console.log('External search client: OK');
+  console.log('External search client: invalid queries blocked before network; cache and 429 OK');
 })().catch(error => {
   console.error(error);
   process.exitCode = 1;
