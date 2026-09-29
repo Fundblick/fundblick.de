@@ -16,6 +16,7 @@
   let sequence = 0;
   let localSearchSettled = false;
   let timer = null;
+  let lastLocalSignature = '';
 
   function query() {
     return policy.normalizeQuery(new URLSearchParams(location.search).get('q'));
@@ -23,6 +24,11 @@
 
   function visibleLocalCount() {
     return cards.querySelectorAll('.product-card:not([hidden])').length;
+  }
+
+  function localSignature() {
+    const items = Array.from(cards.querySelectorAll('.product-card:not([hidden])'));
+    return items.map((card, index) => `${index}:${String(card.textContent || '').replace(/\s+/g, ' ').trim()}`).join('\u0001');
   }
 
   function shouldSupplement(q, localResults = visibleLocalCount()) {
@@ -35,6 +41,7 @@
 
   function markSettled() {
     localSearchSettled = true;
+    lastLocalSignature = localSignature();
     schedule(0);
   }
 
@@ -60,8 +67,6 @@
     });
     if (current !== sequence) return;
 
-    // The local catalogue/filter state may change while the request is in flight.
-    // Keep web results only while the same query still has too few local results.
     if (query() !== q || !shouldSupplement(q)) {
       ui.hide(container);
       return;
@@ -75,11 +80,13 @@
   }
 
   const observer = new MutationObserver(() => {
-    if (localSearchSettled) {
-      sequence += 1;
-      ui.hide(container);
-      schedule();
-    }
+    if (!localSearchSettled) return;
+    const nextSignature = localSignature();
+    if (nextSignature === lastLocalSignature) return;
+    lastLocalSignature = nextSignature;
+    sequence += 1;
+    ui.hide(container);
+    schedule();
   });
   observer.observe(cards, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
 
@@ -99,6 +106,11 @@
   window.addEventListener('pageshow', () => {
     sequence += 1;
     localSearchSettled = false;
+    lastLocalSignature = '';
     ui.hide(container);
+    setTimeout(() => {
+      const value = String(summary?.textContent || '').trim();
+      if (value && !/werden geladen|loading/i.test(value)) markSettled();
+    }, 0);
   }, { once: true });
 })();
