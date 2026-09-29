@@ -128,8 +128,10 @@
     let host = '';
     try { host = new URL(url).hostname.toLowerCase().replace(/^www\./, ''); } catch {}
     const text = `${clean(item?.title)} ${clean(item?.description)} ${host}`;
-    if (/(^|\.)(youtube\.com|youtu\.be|vimeo\.com)$/.test(host) || VIDEO.test(text)) return 'video';
+    const dedicatedVideoHost = /(^|\.)(youtube\.com|youtu\.be|vimeo\.com)$/.test(host);
+    if (dedicatedVideoHost) return 'video';
     if (item?.productCandidate === true || clean(item?.price)) return 'product';
+    if (VIDEO.test(text)) return 'video';
     if (/(maps\.|branchenbuch|gelbeseiten|11880|yelp\.|tripadvisor\.|google\.[^/]+\/maps|standort|filiale|händler|dealer|werkstatt|магазин|magazin)/iu.test(text)) return 'local';
     if (COMPARISON.test(text)) return 'comparison';
     return 'guide';
