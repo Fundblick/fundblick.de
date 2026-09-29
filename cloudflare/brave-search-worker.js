@@ -58,28 +58,49 @@ function cleanText(value, max) {
   return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
+function valueAtPath(item, path) {
+  let value = item;
+  for (const part of path.split('.')) value = value?.[part];
+  return value;
+}
+
 function firstValue(item, paths) {
   for (const path of paths) {
-    let value = item;
-    for (const part of path.split('.')) value = value?.[part];
+    const value = valueAtPath(item, path);
     if (value !== undefined && value !== null && String(value).trim() !== '') return value;
   }
   return '';
 }
 
-function schemaCandidates(item) {
-  const schemas = Array.isArray(item?.deep_results?.schemas) ? item.deep_results.schemas : [];
-  return schemas.filter(value => value && typeof value === 'object').slice(0, 30);
+function flattenObjects(value, max = 40) {
+  const out = [];
+  const queue = Array.isArray(value) ? [...value] : [value];
+  while (queue.length && out.length < max) {
+    const current = queue.shift();
+    if (!current || typeof current !== 'object') continue;
+    out.push(current);
+    for (const key of ['product','offer','offers','seller','merchant','brand']) {
+      const nested = current[key];
+      if (Array.isArray(nested)) queue.push(...nested);
+      else if (nested && typeof nested === 'object') queue.push(nested);
+    }
+  }
+  return out;
 }
 
-function schemaValue(item, keys) {
-  for (const schema of schemaCandidates(item)) {
-    const candidates = [schema, schema.product, schema.offer, ...(Array.isArray(schema.offers) ? schema.offers : [])].filter(Boolean);
-    for (const candidate of candidates) {
-      for (const key of keys) {
-        const value = candidate?.[key];
-        if (value !== undefined && value !== null && String(value).trim() !== '') return value;
-      }
+function structuredCandidates(item) {
+  const roots = [];
+  if (item?.product) roots.push(item.product);
+  if (item?.product_cluster) roots.push(item.product_cluster);
+  if (item?.deep_results?.schemas) roots.push(item.deep_results.schemas);
+  return flattenObjects(roots, 60);
+}
+
+function structuredValue(item, keys) {
+  for (const candidate of structuredCandidates(item)) {
+    for (const key of keys) {
+      const value = candidate?.[key];
+      if (value !== undefined && value !== null && String(value).trim() !== '') return value;
     }
   }
   return '';
@@ -87,22 +108,40 @@ function schemaValue(item, keys) {
 
 function priceFromText(value) {
   const text = cleanText(value, 4000);
-  const match = text.match(/(?:€\s*\d{1,6}(?:[.,]\d{2})?|\b\d{1,6}(?:[.,]\d{2})?\s*(?:€|EUR)\b)/i);
+  const match = text.match(/(?:€\s*\d{1,6}(?:[.,]\d{2})?|\b\d{1,6}(?:[.,]\d{2})?\s*(?:€|EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b|\b(?:EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\s*\d{1,6}(?:[.,]\d{2})?)/i);
   return match ? cleanText(match[0], 80) : '';
 }
 
-function explicitPriceText(item) {
+function explicitPrice(item) {
   const structured = firstValue(item, [
     'price','product.price','product.offers.price','offer.price',
     'product.price_string','product.priceString'
-  ]) || schemaValue(item, ['price','lowPrice','highPrice','priceText','price_string']);
-  if (typeof structured === 'number' && Number.isFinite(structured)) return structured;
+  ]) || structuredValue(item, ['price','lowPrice','highPrice','priceText','price_string','priceString']);
+  if (typeof structured === 'number' && Number.isFinite(structured)) return String(structured);
   const structuredText = cleanText(structured, 80);
   if (/\d/.test(structuredText)) return structuredText;
 
-  // Only accept prices explicitly supplied by Brave/source metadata. Never infer a price.
+  // Only accept prices explicitly supplied by Brave/source metadata. Never invent a price.
   const sourceText = [item?.title, item?.description, ...(Array.isArray(item?.extra_snippets) ? item.extra_snippets : [])].join(' ');
   return priceFromText(sourceText);
+}
+
+function normalizeCurrency(value) {
+  const raw = cleanText(value, 20).toUpperCase();
+  if (!raw) return '';
+  if (raw === '€' || raw.includes('EUR')) return 'EUR';
+  if (raw === '$' || raw.includes('USD')) return 'USD';
+  if (raw === '£' || raw.includes('GBP')) return 'GBP';
+  const code = raw.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+  return code ? code[1] : '';
+}
+
+function explicitCurrency(item, price) {
+  const value = firstValue(item, [
+    'currency','priceCurrency','product.currency','product.priceCurrency',
+    'product.offers.priceCurrency','offer.priceCurrency'
+  ]) || structuredValue(item, ['currency','priceCurrency','price_currency']);
+  return normalizeCurrency(value) || normalizeCurrency(price);
 }
 
 function explicitImage(item) {
@@ -110,22 +149,59 @@ function explicitImage(item) {
     'thumbnail.src','thumbnail.original','thumbnail.url','image.src','image.url',
     'product.image','product.image_url','product.thumbnail.src','offer.image'
   ]);
-  const schema = schemaValue(item, ['image','imageUrl','image_url','thumbnailUrl','thumbnail_url']);
-  const value = direct || schema;
-  if (Array.isArray(value)) return safeUrl(value[0]?.url || value[0]);
+  const structured = structuredValue(item, ['image','imageUrl','image_url','thumbnailUrl','thumbnail_url','contentUrl']);
+  const value = direct || structured;
+  if (Array.isArray(value)) return safeUrl(value[0]?.url || value[0]?.src || value[0]?.contentUrl || value[0]);
   if (value && typeof value === 'object') return safeUrl(value.url || value.src || value.contentUrl);
   return safeUrl(value);
 }
 
+function explicitProductUrl(item) {
+  const value = firstValue(item, ['product.url','product.product_url','offer.url']) || structuredValue(item, ['url','productUrl','product_url','offerUrl']);
+  return safeUrl(value) || safeUrl(item?.url);
+}
+
+function explicitMerchant(item) {
+  const value = firstValue(item, ['product.merchant','product.seller','offer.merchant','offer.seller','merchant','seller','store']) ||
+    structuredValue(item, ['merchant','seller','store','brand','name']) ||
+    firstValue(item, ['profile.long_name','profile.name']);
+  if (value && typeof value === 'object') return cleanText(value.name || value.long_name || '', 120);
+  return cleanText(value, 120);
+}
+
+function normalizeAvailability(value) {
+  const raw = cleanText(value, 120).toLowerCase().replace(/[\s_-]+/g, '');
+  if (!raw) return 'unknown';
+  if (/(instock|available|lieferbar|verfügbar|disponibil)/.test(raw) && !/(notavailable|unavailable|nichtlieferbar|nichtverfügbar)/.test(raw)) return 'in_stock';
+  if (/(outofstock|soldout|unavailable|notavailable|nichtlieferbar|nichtverfügbar|ausverkauft)/.test(raw)) return 'out_of_stock';
+  if (/(preorder|pre-order|vorbestell)/.test(raw)) return 'preorder';
+  if (/(backorder|back-order|nachbestell)/.test(raw)) return 'backorder';
+  return 'unknown';
+}
+
+function explicitProductStatus(item) {
+  const value = firstValue(item, [
+    'availability','product.availability','product.offers.availability','offer.availability',
+    'product.status','offer.status'
+  ]) || structuredValue(item, ['availability','itemAvailability','status']);
+  return normalizeAvailability(value);
+}
+
 function normalizeResult(item) {
-  const merchant = firstValue(item, ['profile.long_name','profile.name','merchant','seller','store','product.merchant','offer.merchant']) || schemaValue(item, ['brand','merchant','seller']);
+  const price = explicitPrice(item);
+  const productUrl = explicitProductUrl(item);
+  const hasStructuredProduct = Boolean(item?.product || item?.product_cluster || structuredCandidates(item).length);
   return {
     title: cleanText(item?.title, 300),
-    url: safeUrl(item?.url),
+    url: productUrl,
+    productUrl,
     description: cleanText(item?.description, 1000),
     image: explicitImage(item),
-    price: explicitPriceText(item),
-    merchant: cleanText(typeof merchant === 'object' ? (merchant.name || '') : merchant, 120),
+    price,
+    currency: explicitCurrency(item, price),
+    merchant: explicitMerchant(item),
+    productStatus: explicitProductStatus(item),
+    productCandidate: hasStructuredProduct || Boolean(price),
     age: item?.age || null,
     language: item?.language || null,
     familyFriendly: item?.family_friendly !== false
