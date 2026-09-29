@@ -47,6 +47,25 @@
     return currencyFromUrl(url);
   }
 
+  function visiblePriceFromText(value){
+    const text=String(value||'').replace(/\s+/g,' ').trim();
+    if(!text)return '';
+    const amount='(?:\\d{1,3}(?:[.\\s\\u00a0\\u202f]\\d{3})+(?:[,\\.]\\d{2})?|\\d{1,7}(?:[,\\.]\\d{2})?)';
+    const unit='(?:€|EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB|₽|руб(?:\\.|ль|ля|лей)?)';
+    const re=new RegExp(`(?:${unit}\\s*${amount}|${amount}\\s*${unit})`,'i');
+    const match=text.match(re);
+    return match?match[0].trim():'';
+  }
+
+  function visiblePrice(item){
+    const sources=[item?.title,item?.description];
+    for(const source of sources){
+      const found=visiblePriceFromText(source);
+      if(found)return found;
+    }
+    return '';
+  }
+
   function numericAmount(raw){
     let text=String(raw??'').trim();
     if(!text)return NaN;
@@ -172,7 +191,10 @@
         body.appendChild(merchant);
       }
 
-      const displayPrice=formatPrice(item.price,item.currency,href);
+      const sourcePrice=visiblePrice(item);
+      const displayPrice=sourcePrice
+        ? formatPrice(sourcePrice,'',href)
+        : formatPrice(item.price,item.currency,href);
       if(displayPrice){
         const price=document.createElement('strong');
         price.className='external-result-price';
@@ -200,5 +222,5 @@
   }
 
   function hide(container){if(!container)return;container.replaceChildren();container.hidden=true}
-  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,merchantLabel,currencyCode,currencyFromUrl});
+  return Object.freeze({render,hide,safeHttpUrl,usableResults,formatPrice,merchantLabel,currencyCode,currencyFromUrl,visiblePriceFromText,visiblePrice});
 });
