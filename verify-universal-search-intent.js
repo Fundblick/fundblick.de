@@ -46,22 +46,29 @@ assert.equal(intent.classifyResult({url:'https://www.youtube.com/watch?v=1',titl
 assert.equal(intent.classifyResult({url:'https://shop.example/p/1',title:'Bosch GSR',price:'99,99 EUR',productCandidate:true}), 'product');
 assert.equal(intent.classifyResult({url:'https://example.com/ratgeber',title:'Welche Winterreifen sind sinnvoll?',description:'Ratgeber'}), 'guide');
 
-const ranked = intent.rankResults([
+const items=[
   {url:'https://youtube.com/watch?v=1',title:'Winterreifen erklärt'},
   {url:'https://shop.example/p/2',title:'Winterreifen ohne Preis',productCandidate:true},
   {url:'https://shop.example/p/1',title:'Winterreifen kaufen',price:'99 EUR',priceConfidence:'verified',productCandidate:true},
   {url:'https://example.com/test',title:'Winterreifen Test Vergleich'}
-], intent.analyze('Winterreifen Video', 'de'));
-assert.equal(ranked[0].resultType, 'product');
-assert.equal(ranked[0].title, 'Winterreifen kaufen');
-assert.equal(ranked[1].resultType, 'product');
-assert.equal(ranked[2].resultType, 'video');
+];
 
-const rankedInfo = intent.rankResults([
-  {url:'https://example.com/guide',title:'Wie funktionieren Winterreifen?',description:'Grundlagen und Erklärung'},
-  {url:'https://shop.example/p/1',title:'Winterreifen kaufen',productCandidate:true}
-], intent.analyze('Wie funktionieren Winterreifen?', 'de'));
-assert.equal(rankedInfo[0].resultType, 'product');
-assert.equal(rankedInfo[1].resultType, 'guide');
+let ranked=intent.rankResults(items,{...intent.analyze('Winterreifen','de'),explicitView:'offers'});
+assert.equal(ranked[0].title,'Winterreifen kaufen');
+assert.equal(ranked[1].resultType,'product');
+assert.equal(ranked[2].resultType,'video');
 
-console.log('Universal search intent: multilingual routing + product-first result hierarchy OK');
+ranked=intent.rankResults(items,{...intent.analyze('Winterreifen','de'),explicitView:'video'});
+assert.equal(ranked[0].resultType,'video');
+
+ranked=intent.rankResults(items,{...intent.analyze('Winterreifen','de'),explicitView:'info'});
+assert.equal(ranked[0].resultType,'comparison');
+
+const localItems=[
+  {url:'https://maps.example/store',title:'Winterreifen Händler Filiale',description:'Standort vor Ort'},
+  {url:'https://shop.example/p/1',title:'Winterreifen kaufen',price:'99 EUR',priceConfidence:'verified',productCandidate:true}
+];
+ranked=intent.rankResults(localItems,{...intent.analyze('Winterreifen','de'),explicitView:'local'});
+assert.equal(ranked[0].resultType,'local');
+
+console.log('Universal search intent: multilingual routing + explicit user intent views OK');
