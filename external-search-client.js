@@ -28,8 +28,9 @@
     return policy?.validQuery ? policy.validQuery(value) : normalizeQuery(value).length >= 2;
   }
 
-  function requestKey(query, language, country) {
-    return policy?.requestKey ? policy.requestKey(query, language, country) : `${country}:${language}:${normalizeQuery(query).toLowerCase()}`;
+  function requestKey(query, language, country, count, offset) {
+    const base = policy?.requestKey ? policy.requestKey(query, language, country) : `${country}:${language}:${normalizeQuery(query).toLowerCase()}`;
+    return `${base}:count=${count}:offset=${offset}`;
   }
 
   function normalizeResults(items) {
@@ -45,7 +46,9 @@
 
     const language = String(options.language || 'de').trim().toLowerCase();
     const country = String(options.country || 'DE').trim().toUpperCase();
-    const key = requestKey(query, language, country);
+    const count = Math.max(1, Math.min(20, Math.floor(Number(options.count) || 20)));
+    const offset = Math.max(0, Math.min(9, Math.floor(Number(options.offset) || 0)));
+    const key = requestKey(query, language, country, count, offset);
     if (sessionCache.has(key)) return { ...sessionCache.get(key), cached: true };
     if (pending.has(key)) return pending.get(key);
 
@@ -56,6 +59,8 @@
     url.searchParams.set('q', query);
     url.searchParams.set('lang', language);
     url.searchParams.set('country', country);
+    url.searchParams.set('count', String(count));
+    url.searchParams.set('offset', String(offset));
 
     const task = (async () => {
       try {
@@ -68,7 +73,14 @@
         });
         if (!response.ok) return { ok: false, status: response.status, results: [] };
         const body = await response.json();
-        const result = { ok: true, status: response.status, query, results: normalizeResults(body?.results) };
+        const result = {
+          ok: true,
+          status: response.status,
+          query,
+          offset,
+          results: normalizeResults(body?.results),
+          moreResultsAvailable: body?.moreResultsAvailable === true && offset < 9
+        };
         sessionCache.set(key, result);
         return result;
       } catch (error) {
