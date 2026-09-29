@@ -27,33 +27,65 @@ assert.ok(worker && typeof worker.fetch === 'function');
   assert.equal(body.ok, true);
   assert.equal(body.keyConfigured, false);
   assert.equal(response.headers.get('access-control-allow-origin'), 'https://fundblick.de');
+  assert.equal(response.headers.get('cache-control'), 'no-store');
 
-  response = await worker.fetch(new Request('https://worker.example/search?q='), { BRAVE_SEARCH_API_KEY:'test-only' });
+  response = await worker.fetch(new Request('https://worker.example/search?q=', { headers:{ Origin:'https://fundblick.de' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
   assert.equal(response.status, 400);
-
-  response = await worker.fetch(new Request('https://worker.example/search?q=akku'), {});
+  response = await worker.fetch(new Request('https://worker.example/search?q=a', { headers:{ Origin:'https://fundblick.de' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
+  assert.equal(response.status, 400);
+  response = await worker.fetch(new Request('https://worker.example/search?q=akku', { headers:{ Origin:'https://fundblick.de' } }), {});
   assert.equal(response.status, 503);
+
+  response = await worker.fetch(new Request('https://worker.example/search?q=akku', { headers:{ Origin:'https://evil.example' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
+  assert.equal(response.status, 403);
+  assert.equal(response.headers.get('access-control-allow-origin'), null);
+  response = await worker.fetch(new Request('https://worker.example/search?q=akku', { method:'OPTIONS', headers:{ Origin:'https://evil.example' } }), {});
+  assert.equal(response.status, 403);
 
   let upstreamUrl;
   let upstreamOptions;
   sandbox.fetch = async (url, options) => {
     upstreamUrl = new URL(url);
     upstreamOptions = options;
-    return new Response(JSON.stringify({ web:{ results:[{ title:'Treffer', url:'https://example.com/p', description:'Text', family_friendly:true }] } }), { status:200, headers:{ 'content-type':'application/json' } });
+    return new Response(JSON.stringify({ web:{ results:[
+      { title:'Treffer', url:'https://example.com/p', description:'Text', family_friendly:true },
+      { title:'Nicht anzeigen', url:'https://example.com/x', family_friendly:false }
+    ] } }), { status:200, headers:{ 'content-type':'application/json' } });
   };
-  response = await worker.fetch(new Request('https://worker.example/search?q=Akkuschrauber&count=99&country=DE&lang=de', { headers:{ Origin:'https://fundblick.de' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
+  const longQuery = 'A'.repeat(200);
+  response = await worker.fetch(new Request(`https://worker.example/search?q=${longQuery}&count=99&country=DE123&lang=de!!!`, { headers:{ Origin:'https://fundblick.de' } }), { BRAVE_SEARCH_API_KEY:'test-only' });
   body = await response.json();
   assert.equal(response.status, 200);
+  assert.equal(body.query.length, 120);
   assert.equal(body.count, 1);
   assert.equal(body.results[0].url, 'https://example.com/p');
   assert.equal(upstreamUrl.hostname, 'api.search.brave.com');
   assert.equal(upstreamUrl.searchParams.get('count'), '20');
+  assert.equal(upstreamUrl.searchParams.get('country'), 'DE');
+  assert.equal(upstreamUrl.searchParams.get('search_lang'), 'de');
+  assert.equal(upstreamUrl.searchParams.get('safesearch'), 'moderate');
   assert.equal(upstreamOptions.headers['X-Subscription-Token'], 'test-only');
   assert.equal(JSON.stringify(body).includes('test-only'), false, 'secret must never be returned');
+
+  sandbox.fetch = async () => { throw new Error('network down'); };
+  response = await worker.fetch(new Request('https://worker.example/search?q=test'), { BRAVE_SEARCH_API_KEY:'test-only' });
+  assert.equal(response.status, 502);
+  body = await response.json();
+  assert.equal(body.error, 'upstream_unreachable');
+
+  sandbox.fetch = async () => new Response('not-json', { status:200 });
+  response = await worker.fetch(new Request('https://worker.example/search?q=test'), { BRAVE_SEARCH_API_KEY:'test-only' });
+  assert.equal(response.status, 502);
+  body = await response.json();
+  assert.equal(body.error, 'upstream_invalid_response');
 
   sandbox.fetch = async () => new Response('{}', { status:429 });
   response = await worker.fetch(new Request('https://worker.example/search?q=test'), { BRAVE_SEARCH_API_KEY:'test-only' });
   assert.equal(response.status, 429);
 
-  console.log('Brave Worker contract: OK');
+  sandbox.fetch = async () => new Response('{}', { status:500 });
+  response = await worker.fetch(new Request('https://worker.example/search?q=test'), { BRAVE_SEARCH_API_KEY:'test-only' });
+  assert.equal(response.status, 502);
+
+  console.log('Brave Worker contract: abuse/failure boundaries OK');
 })().catch(error => { console.error(error); process.exitCode = 1; });
