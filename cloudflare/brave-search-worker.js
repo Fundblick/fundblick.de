@@ -112,11 +112,28 @@ function structuredValue(item, keys) {
 
 function priceFromText(value) {
   const text = cleanText(value, 4000);
-  const match = text.match(/(?:€\s*\d{1,6}(?:[.,]\d{2})?|\b\d{1,6}(?:[.,]\d{2})?\s*(?:€|EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b|\b(?:EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\s*\d{1,6}(?:[.,]\d{2})?)/i);
+  if (!text) return '';
+  const amount = '(?:\\d{1,3}(?:[.\\s\\u00a0\\u202f]\\d{3})+(?:[,\\.]\\d{2})?|\\d{1,7}(?:[,\\.]\\d{2})?)';
+  const unit = '(?:€|EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB|₽|руб(?:\\.|ль|ля|лей)?)';
+  const match = text.match(new RegExp(`(?:${unit}\\s*${amount}|${amount}\\s*${unit})`, 'i'));
   return match ? cleanText(match[0], 80) : '';
 }
 
+function visiblePrice(item) {
+  const sources = [item?.title, item?.description, ...(Array.isArray(item?.extra_snippets) ? item.extra_snippets : [])];
+  for (const source of sources) {
+    const price = priceFromText(source);
+    if (price) return price;
+  }
+  return '';
+}
+
 function explicitPrice(item) {
+  // A price that is visibly attached to the result is stronger evidence than a
+  // nested schema price, which may describe a different offer on an overview page.
+  const visible = visiblePrice(item);
+  if (visible) return visible;
+
   const structured = firstValue(item, [
     'price','product.price','product.offers.price','offer.price',
     'product.price_string','product.priceString'
@@ -124,19 +141,17 @@ function explicitPrice(item) {
   if (typeof structured === 'number' && Number.isFinite(structured)) return String(structured);
   const structuredText = cleanText(structured, 80);
   if (/\d/.test(structuredText)) return structuredText;
-
-  // Only accept prices explicitly supplied by Brave/source metadata. Never invent a price.
-  const sourceText = [item?.title, item?.description, ...(Array.isArray(item?.extra_snippets) ? item.extra_snippets : [])].join(' ');
-  return priceFromText(sourceText);
+  return '';
 }
 
 function normalizeCurrency(value) {
-  const raw = cleanText(value, 20).toUpperCase();
+  const raw = cleanText(value, 30).toUpperCase();
   if (!raw) return '';
   if (raw === '€' || raw.includes('EUR')) return 'EUR';
   if (raw === '$' || raw.includes('USD')) return 'USD';
   if (raw === '£' || raw.includes('GBP')) return 'GBP';
-  const code = raw.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL)\b/);
+  if (raw === '₽' || raw.includes('RUB') || /РУБ(?:\.|ЛЬ|ЛЯ|ЛЕЙ)?/.test(raw)) return 'RUB';
+  const code = raw.match(/\b(EUR|USD|GBP|CHF|PLN|CZK|RON|MDL|RUB)\b/);
   return code ? code[1] : '';
 }
 
@@ -145,7 +160,7 @@ function explicitCurrency(item, price) {
     'currency','priceCurrency','product.currency','product.priceCurrency',
     'product.offers.priceCurrency','offer.priceCurrency'
   ]) || structuredValue(item, ['currency','priceCurrency','price_currency']);
-  return normalizeCurrency(value) || normalizeCurrency(price);
+  return normalizeCurrency(price) || normalizeCurrency(value);
 }
 
 function explicitImage(item) {
