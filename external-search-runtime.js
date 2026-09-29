@@ -25,6 +25,14 @@
     return cards.querySelectorAll('.product-card:not([hidden])').length;
   }
 
+  function shouldSupplement(q, localResults = visibleLocalCount()) {
+    return policy.shouldUseExternalSearch({
+      query: q,
+      localResults,
+      externalEnabled: enabled && Boolean(endpoint)
+    });
+  }
+
   function markSettled() {
     localSearchSettled = true;
     schedule(0);
@@ -38,14 +46,7 @@
       return;
     }
 
-    const localResults = visibleLocalCount();
-    const useExternal = policy.shouldUseExternalSearch({
-      query: q,
-      localResults,
-      externalEnabled: enabled && Boolean(endpoint)
-    });
-
-    if (!useExternal) {
+    if (!shouldSupplement(q)) {
       ui.hide(container);
       return;
     }
@@ -59,9 +60,9 @@
     });
     if (current !== sequence) return;
 
-    // Local catalogue/filter state may have changed while the network request was
-    // in flight. Never paint external results over newly available FundBlick hits.
-    if (query() !== q || visibleLocalCount() > 0) {
+    // The local catalogue/filter state may change while the request is in flight.
+    // Keep web results only while the same query still has too few local results.
+    if (query() !== q || !shouldSupplement(q)) {
       ui.hide(container);
       return;
     }
