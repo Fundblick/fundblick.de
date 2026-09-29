@@ -87,10 +87,12 @@
       text=text.split(thousands).join('').replace(decimal,'.');
     }else if(comma>=0){
       const decimals=text.length-comma-1;
-      text=decimals===2?text.replace(/\./g,'').replace(',','.') : text.replace(/,/g,'');
+      if(decimals===1||decimals===2) text=text.replace(/\./g,'').replace(',','.');
+      else text=text.replace(/,/g,'');
     }else if(dot>=0){
       const decimals=text.length-dot-1;
-      text=decimals===2?text.replace(/,/g,'') : text.replace(/\./g,'');
+      if(decimals===1||decimals===2) text=text.replace(/,/g,'');
+      else text=text.replace(/\./g,'');
     }
     const amount=Number(text);
     return Number.isFinite(amount)?amount:NaN;
