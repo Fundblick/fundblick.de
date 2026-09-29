@@ -1,10 +1,16 @@
 'use strict';
 
 (function (root, factory) {
-  const api = factory();
+  const api = factory(root);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.FundBlickExternalSearchUI = api;
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
+  const fallback = {title:'Weitere Ergebnisse aus dem Web',loading:'Weitere Ergebnisse werden gesucht …',empty:'Keine weiteren Web-Ergebnisse gefunden.',error:'Die Websuche ist momentan nicht verfügbar.',source:'Web-Ergebnis'};
+
+  function text() {
+    try { return root?.FundBlickExternalSearchI18n?.get?.() || fallback; } catch { return fallback; }
+  }
+
   function safeHttpUrl(value) {
     try {
       const url = new URL(String(value || ''));
@@ -16,19 +22,20 @@
 
   function render(container, state = {}) {
     if (!container) return;
+    const t = text();
     container.replaceChildren();
     container.hidden = false;
 
     const heading = document.createElement('h2');
     heading.className = 'external-results-title';
-    heading.textContent = 'Weitere Ergebnisse aus dem Web';
+    heading.textContent = t.title;
     container.appendChild(heading);
 
     if (state.loading) {
       const status = document.createElement('p');
       status.className = 'external-results-status';
       status.setAttribute('role', 'status');
-      status.textContent = 'Weitere Ergebnisse werden gesucht …';
+      status.textContent = t.loading;
       container.appendChild(status);
       return;
     }
@@ -38,7 +45,7 @@
       const status = document.createElement('p');
       status.className = 'external-results-status';
       status.setAttribute('role', 'status');
-      status.textContent = state.error ? 'Die Websuche ist momentan nicht verfügbar.' : 'Keine weiteren Web-Ergebnisse gefunden.';
+      status.textContent = state.error ? t.error : t.empty;
       container.appendChild(status);
       return;
     }
@@ -64,7 +71,7 @@
         article.appendChild(description);
       }
       const source = document.createElement('small');
-      source.textContent = 'Web-Ergebnis';
+      source.textContent = t.source;
       article.appendChild(source);
       list.appendChild(article);
     }
