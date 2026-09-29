@@ -58,6 +58,13 @@
       country: 'DE'
     });
     if (current !== sequence) return;
+
+    // Local catalogue/filter state may have changed while the network request was
+    // in flight. Never paint external results over newly available FundBlick hits.
+    if (query() !== q || visibleLocalCount() > 0) {
+      ui.hide(container);
+      return;
+    }
     ui.render(container, result.ok ? { results: result.results } : { error: true });
   }
 
@@ -67,14 +74,16 @@
   }
 
   const observer = new MutationObserver(() => {
-    if (localSearchSettled) schedule();
+    if (localSearchSettled) {
+      sequence += 1;
+      ui.hide(container);
+      schedule();
+    }
   });
   observer.observe(cards, { childList: true, subtree: true, attributes: true, attributeFilter: ['hidden', 'class'] });
 
   window.addEventListener('fundblick:search-rendered', markSettled);
 
-  // Compatibility fallback for the existing search implementation if it does not
-  // emit the explicit event yet: wait until its loading summary changes.
   if (summary) {
     const summaryObserver = new MutationObserver(() => {
       const value = String(summary.textContent || '').trim();
@@ -86,9 +95,8 @@
     summaryObserver.observe(summary, { childList: true, subtree: true, characterData: true });
   }
 
-  // Never evaluate immediately on pageshow: doing so could spend a Brave request
-  // before the local catalogue has finished rendering.
   window.addEventListener('pageshow', () => {
+    sequence += 1;
     localSearchSettled = false;
     ui.hide(container);
   }, { once: true });
