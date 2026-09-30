@@ -26,7 +26,7 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  vm.runInContext(fs.readFileSync('external-search-runtime.js','utf8'),context);
  events['fundblick:search-rendered']();
  for(const [id,fn]of scheduled){scheduled.delete(id);await fn()}
- return{calls,state:renders.at(-1),facets:facets.at(-1),container,renders,requests};
+ return{get calls(){return calls},async settleAgain(){events['fundblick:search-rendered']();for(const [id,fn]of scheduled){scheduled.delete(id);await fn()}},state:renders.at(-1),facets:facets.at(-1),container,renders,requests};
 }
 (async()=>{
  let result=await run([[...Array.from({length:20},()=>listing),...Array.from({length:21},(_,i)=>offer(i))]]);
@@ -59,5 +59,6 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  await retry.onclick();assert.equal(result.renders.at(-1).results.length,1,'failed next-page request preserves existing offers');
  assert.equal(result.container.children.at(-1).children.at(-1).children[1].textContent,'Seite 1','failed request cannot advance page');
  await retry.onclick();assert.equal(result.requests.length,3,'temporary failure permits retry');assert.equal(result.requests[1].offset,result.requests[2].offset);
+ result=await run([{ok:false,status:429}]);assert.equal(result.calls,1);await result.settleAgain();await result.settleAgain();assert.equal(result.calls,1,'repeated local completion events cannot automatically retry failed web requests');assert.equal(result.renders.at(-1).error,true);
  console.log('External runtime: opt-in + one initial request + explicit pagination + retry + eligible offers OK');
 })().catch(error=>{console.error(error);process.exitCode=1});
