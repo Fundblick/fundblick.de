@@ -11,3 +11,7 @@ const equivalent=[{attributes:{storage:{value:1,unit:'TB'},memory:{value:16,unit
 const storageFacet=facets.derive({category:'computing.laptop',facets:['storage','memory']},equivalent).primary.find(x=>x.id==='storage');assert.deepEqual(storageFacet.values,[1000,512]);
 const facetUI=require('./external-intelligence-ui.js');assert.equal(facetUI.apply(equivalent,{storage:'1000'}).length,2,'one storage selection matches equivalent GB/TB values');assert.equal(facetUI.apply(equivalent,{storage:'1'}).length,0,'1 TB never becomes 1 GB');
 const volumes=[{attributes:{volume:{value:5,unit:'l'}}},{attributes:{volume:{value:5000,unit:'ml'}}},{attributes:{volume:{value:1,unit:'l'}}}];assert.equal(facetUI.apply(volumes,{volume:'5'}).length,2);
+
+const confidenceMix=[{attributes:{size:{value:39,confidence:'HIGH'}}},{attributes:{size:{value:40,confidence:'LOW'}}},{attributes:{size:{value:41,confidence:'MEDIUM'}}}];
+const visibleSize=facets.derive({category:'fashion.shoes',facets:['size']},confidenceMix).primary[0];assert.deepEqual(visibleSize.values,[39,41],'low-confidence guesses cannot enter a visible facet via higher average confidence');assert.equal(visibleSize.count,2);assert.equal(visibleSize.coverage,.667);
+assert.deepEqual(facets.derive({category:'fashion.shoes',facets:['size']},[{attributes:{size:{value:40,confidence:'LOW'}}}]).primary,[]);
