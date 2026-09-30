@@ -44,3 +44,4 @@ jobs:
       - run: node verify-product-result-attribute-extractor.js
       - run: node verify-product-intelligence-pipeline.js
       - run: node verify-external-result-page.js
+      - run: node verify-product-intelligence-10w40.js
