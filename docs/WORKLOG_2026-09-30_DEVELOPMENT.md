@@ -28,3 +28,9 @@ Gegenprüfung und Alternativen: keine pauschale Ablehnung aller Lenovo-Seiten, k
 - Blöcke 4/5 bleiben offen: isolierte Taxonomie-Evaluation, Mehrsprachigkeit, Browser-/Mobile-Abnahme, Ausfälle, Datenschutz, vollständige SEO-/Katalogregression und Development-vs-Live-Abgleich.
 
 Keine Live-Freigabe, kein Main-Merge, keine neuen Dienste oder laufenden Kosten aus diesem Stand ableiten.
+
+## Nachweis nach Commit und nächster Schritt
+
+Speicher-/Referenzkorrekturen: Commit `e8405dcd1210fbadda1872c01333d8dd824a48bc`. Alle fünf zugehörigen GitHub-Läufe erfolgreich kontrolliert: Integrity 36750558921, Preview 36750558799, External Search 36750559266, Karten 36750558802, Facetten 36750558881.
+
+Automatisches Nachladen entfernt: erste externe Suchaktion erzeugt genau einen Seitenabruf, auch bei null geeigneten Angeboten oder vielen Dubletten. Weitere Seiten ausschließlich über den vorhandenen Button; Sortierung/Facetten arbeiten mit bereits geladenen Daten. Fehlgeschlagener Folgeabruf bewahrt vorhandene Angebote und Seitenzahl, derselbe Offset bleibt erneut abrufbar. Nach dünnen Seiten wird die angezeigte Seite auf die tatsächlich vorhandene Seite begrenzt. Runtime-Gegenproben bestanden für explizites Opt-in, null Treffer, Dubletten, Informationsergebnisse, Folgeabruf, Fehler und Wiederholung. CI für diesen Folgecommit noch zu kontrollieren.

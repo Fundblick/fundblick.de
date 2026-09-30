@@ -7,3 +7,5 @@ Nachweisbare Arbeit: Dokumenten-/Repository-/CI-Abgleich, Katalog-Neubau und Pr�
 Direkte Providerkosten: mangels Abrechnungs-/Cachebelegen unbekannt; keine Behauptung kostenlos oder Betrag null. Keine neuen kostenpflichtigen Dienste, Server oder Abonnements eingerichtet. Laufzeit, CI-Kosten und monetärer Arbeitsaufwand sind hier nicht belastbar beziffert.
 
 Nächste Kostenmaßnahme: automatisches Nachladen der ersten Suchansicht entfernen, um Abrufe von expliziter Nutzeraktion abhängig zu machen. Umgesetzt/validiert erst nach entsprechendem Code- und CI-Nachweis.
+
+Fortschreibung: automatisches Nachladen im Code entfernt und mit Runtime-Gegenproben lokal geprüft. Eine erste externe Suche benötigt nun einen Abruf statt bis zu zehn automatisch gestarteter Abrufe; zusätzliche Seiten bleiben explizite Nutzeraktionen. Diese Gegenproben verwenden gespeicherte/injizierte Antworten und verursachen keine Suchprovider-Aufrufe. CI-Nachweis für den Folgecommit steht noch aus.
