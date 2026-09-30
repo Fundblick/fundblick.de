@@ -40,3 +40,4 @@ jobs:
       - run: node verify-external-offer-quality.js
       - run: node verify-product-intelligence-core.js
       - run: node verify-product-facet-engine.js
+      - run: node verify-product-unit-normalizer.js
