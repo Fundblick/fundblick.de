@@ -8,7 +8,7 @@ const offers=Array.from({length:27},(_,i)=>{
   const brand=['Castrol','Liqui Moly','Shell'][i%3];
   const litres=i%4===0?1:5;
   const price=litres===1?(9.49+i*.03):(31.99+i*.17);
-  return {title:`${brand} 10W-40 Motoröl ${litres} Liter`,description:'Motoröl Angebot',price:price.toFixed(2).replace('.',','),resultType:'product',gtin:`oil-${i%3}-${litres}`,url:`https://shop-${i}.example/oil-${i}`};
+  return {title:`${brand} 10W-40 Motoröl ${litres} Liter`,description:'Motoröl Angebot',currency:'EUR',price:price.toFixed(2).replace('.',','),resultType:'product',gtin:`oil-${i%3}-${litres}`,url:`https://shop-${i}.example/oil-${i}`};
 });
 const sameMerchant=pipeline.run('10W40 Motoröl',offers.map((offer,i)=>({...offer,url:`https://shop.example/oil-${i}`})));
 assert.equal(sameMerchant.results.length,6,'same-merchant duplicates collapse to six brand/volume products');

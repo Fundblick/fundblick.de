@@ -9,3 +9,5 @@ Direkte Providerkosten: mangels Abrechnungs-/Cachebelegen unbekannt; keine Behau
 Nächste Kostenmaßnahme: automatisches Nachladen der ersten Suchansicht entfernen, um Abrufe von expliziter Nutzeraktion abhängig zu machen. Umgesetzt/validiert erst nach entsprechendem Code- und CI-Nachweis.
 
 Fortschreibung: automatisches Nachladen im Code entfernt und mit Runtime-Gegenproben lokal geprüft. Eine erste externe Suche benötigt nun einen Abruf statt bis zu zehn automatisch gestarteter Abrufe; zusätzliche Seiten bleiben explizite Nutzeraktionen. Diese Gegenproben verwenden gespeicherte/injizierte Antworten und verursachen keine Suchprovider-Aufrufe. CI-Nachweis für den Folgecommit steht noch aus.
+
+Commit `4bfb969`: Abrufbegrenzung auch in allen fünf GitHub-Prüfungen erfolgreich. Weitere Arbeit: drei Händlerseiten read-only geprüft, gespeicherte Suchdaten für Preis-/Facettenprüfung wiederverwendet, Preisbelege und Einheitenbasis abgesichert. Kein zusätzlicher Suchworker-Aufruf und keine Einrichtung eines Scraping-Backends. Direkte Kosten und Arbeitszeit weiterhin nicht belastbar beziffert.

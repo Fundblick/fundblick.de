@@ -14,6 +14,7 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  vm.createContext(context);
  vm.runInContext(fs.readFileSync('product-storage-parser.js','utf8'),context);
  vm.runInContext(fs.readFileSync('product-intelligence-core.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('product-unit-normalizer.js','utf8'),context);
  vm.runInContext(fs.readFileSync('product-result-attribute-extractor.js','utf8'),context);
  const browserStorage=context.FundBlickProductResultAttributeExtractor.extract({title:'Samsung Smartphone 8 GB RAM 256 GB'},{category:'electronics.smartphone'});
  assert.equal(browserStorage.attributes.storage.value,256,'browser dependency wiring preserves storage separately from RAM');
