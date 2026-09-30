@@ -1,0 +1,14 @@
+'use strict';
+const assert=require('node:assert/strict');
+const u=require('./product-unit-normalizer.js');
+assert.deepEqual(u.quantity(5000,'ml'),{value:5,unit:'l'});
+assert.deepEqual(u.quantity(750,'g'),{value:.75,unit:'kg'});
+assert.deepEqual(u.fromText('Castrol 10W-40 5 Liter'),{value:5,unit:'l'});
+assert.deepEqual(u.fromText('Öl 500 ml'),{value:.5,unit:'l'});
+assert.deepEqual(u.unitPrice('34,99',{value:5,unit:'l'}),{value:6.998,unit:'EUR/l'});
+const x=u.enrich({title:'Motoröl 5 L',price:'34,99',attributes:{}});
+assert.equal(x.attributes.normalized_quantity.value,5);
+assert.equal(x.attributes.unit_price.value,6.998);
+assert.equal(x.attributes.unit_price.unit,'EUR/l');
+assert.equal(u.fromText('Samsung TV 65 Zoll'),null,'screen size must not be treated as sell quantity');
+console.log('Unit normalizer: volume/weight/count + unit price OK');
