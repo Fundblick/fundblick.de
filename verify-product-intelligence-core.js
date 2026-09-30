@@ -9,6 +9,11 @@ x=intel.analyze('Continental Winterreifen 205/55 R16');assert.equal(x.attributes
 for(const query of ['Winterreifen Modell 205/55 R16','Hochpreisiges Motoröl','Shellac Lack','Mobilität Zubehör','Trekking Ausrüstung'])assert.equal(intel.analyze(query).attributes.brand,undefined,`no substring brand in ${query}`);
 assert.equal(intel.analyze('LIQUI-MOLY Motoröl').attributes.brand.value,'liqui moly');
 assert.equal(intel.analyze('HP Laptop').attributes.brand.value,'hp');
+for(const [query,category]of [['моторное масло','automotive.motor_oil'],['шины 205/55 R16','automotive.tires'],['Samsung телевизор','electronics.television'],['Lenovo ноутбук','computing.laptop'],['кроссовки Adidas','fashion.shoes'],['Miele стиральная машина','appliance.washing_machine'],['Siemens холодильник','appliance.refrigerator']])assert.equal(intel.analyze(query).category,category,`Unicode category: ${query}`);
+assert.equal(intel.analyze('супертелевизорная игрушка').category,null,'exact category terms must not match inside Cyrillic words');assert.equal(intel.analyze('TVРус аксессуар').category,null,'Latin abbreviations attached to Cyrillic letters are not whole words');
+for(const query of ['Adidas Jordan 40 Schuhe','Adidas Schuhe US 39','Adidas Schuhe Modell39','Adidas Schuhe EU 39,7'])assert.equal(intel.analyze(query).attributes.size,undefined,`no guessed EU size: ${query}`);
+const explicitFashion=intel.analyze('Adidas Damen Schuhe grün Gr. 39,5');assert.equal(explicitFashion.attributes.audience.value,'women');assert.equal(explicitFashion.attributes.color.value,'green');assert.equal(explicitFashion.attributes.size.value,39.5);assert.equal(explicitFashion.attributes.size.confidence,'HIGH');
+assert.equal(intel.analyze('Adidas Schuhe Damen Herren EU 39 EU 40').attributes.size,undefined);assert.equal(intel.analyze('Adidas Schuhe Damen Herren').attributes.audience,undefined,'multiple target audiences are ambiguous');
 x=intel.analyze('Lenovo Laptop 16 GB RAM 512 GB SSD');assert.equal(x.attributes.memory.value,16);assert.equal(x.attributes.storage.value,512,'RAM must not become the storage constraint');
 x=intel.analyze('Samsung Smartphone 8 GB RAM 256 GB');assert.equal(x.attributes.storage.value,256);assert.equal(x.attributes.memory.value,8);
 assert.equal(intel.compatible(intel.analyze('Lenovo Laptop'),{title:'Lenovo ThinkCentre Mini-PC'}),false);

@@ -1,4 +1,6 @@
 'use strict';
+
+const fashionQueryAssert=require('node:assert/strict'),fashionStrategy=require('./product-query-strategy.js');fashionQueryAssert.ok(!fashionStrategy.build('Nike Jordan 40 Schuhe').query.includes('EU 40'),'model number must not become a shoe-size search constraint');
 const assert=require('node:assert/strict');const q=require('./product-query-strategy.js');
 let x=q.build('10W40 5 Liter','de');assert.equal(x.analysis.category,'automotive.motor_oil');assert.match(x.query,/Motoröl/i);assert.match(x.query,/10W-40/i);assert.equal(x.added.filter(v=>/liter/i.test(v)).length,0,'existing volume must not be duplicated');
 x=q.build('Winterreifen 205/55 R16','de');assert.equal(x.analysis.category,'automotive.tires');assert.match(x.query,/205\/55 R16/i);assert.equal((x.query.match(/205\/55 R16/gi)||[]).length,1);

@@ -55,3 +55,8 @@ test('external network failure preserves the real catalog',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(String(e)));let requests=0;await page.route(worker,async route=>{requests++;await route.abort('failed')});
  await page.goto(base+'?q=Ahipos%20Flexen&lang=de&web=1');await expect(page.locator('#external-results')).toContainText('Websuche ist momentan nicht verfügbar');await expect(page.locator('#cards article.product').first()).toHaveAttribute('data-real-merchant','true');expect(requests).toBe(1);expect(errors).toEqual([]);
 });
+
+test('browser dependencies support Unicode classes and explicit fashion constraints',async({page})=>{
+ const state=await mockSearch(page,()=>({results:[],moreResultsAvailable:false}));await page.goto(base+'?q=Ahipos%20Flexen&lang=de');await settled(page);
+ const analysis=await page.evaluate(()=>({tv:window.FundBlickProductIntelligence.analyze('Samsung телевизор'),fashion:window.FundBlickProductIntelligence.analyze('Adidas Damen Schuhe grün EU 39,5'),model:window.FundBlickProductIntelligence.analyze('Nike Jordan 40 Schuhe')}));expect(analysis.tv.category).toBe('electronics.television');expect(analysis.fashion.attributes.audience.value).toBe('women');expect(analysis.fashion.attributes.color.value).toBe('green');expect(analysis.fashion.attributes.size.value).toBe(39.5);expect(analysis.model.attributes.size).toBeUndefined();expect(state.requests).toHaveLength(0);expect(state.errors).toEqual([]);
+});
