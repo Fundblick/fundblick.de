@@ -39,3 +39,4 @@ jobs:
       - run: node verify-universal-search-intent.js
       - run: node verify-external-offer-quality.js
       - run: node verify-product-intelligence-core.js
+      - run: node verify-product-facet-engine.js
