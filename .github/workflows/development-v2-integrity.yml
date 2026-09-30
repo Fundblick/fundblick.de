@@ -39,6 +39,7 @@ jobs:
       - run: node verify-universal-search-intent.js
       - run: node verify-external-offer-quality.js
       - run: node verify-product-intelligence-core.js
+      - run: node verify-product-query-strategy.js
       - run: node verify-product-facet-engine.js
       - run: node verify-product-unit-normalizer.js
       - run: node verify-product-result-attribute-extractor.js
