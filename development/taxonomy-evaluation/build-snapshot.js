@@ -1,0 +1,14 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib'),crypto=require('node:crypto');
+const manifest=require('./source-manifest.json'),mappings=require('./mappings.json'),prefix='gid://shopify/TaxonomyCategory/';
+function build(sourceDir){const data={};for(const asset of manifest.assets){const bytes=fs.readFileSync(path.join(sourceDir,asset.name));const digest='sha256:'+crypto.createHash('sha256').update(bytes).digest('hex');if(digest!==asset.digest)throw Error('Asset digest mismatch: '+asset.name);const json=JSON.parse(zlib.gunzipSync(bytes).toString('utf8'));if(json.version!==manifest.release.slice(1))throw Error('Asset version mismatch');data[asset.name]=json}
+ const all=data['categories.en.json.gz'].verticals.flatMap(x=>x.categories),localized=data['categories.de.json.gz'].verticals.flatMap(x=>x.categories),attributes=data['attributes.en.json.gz'].attributes;
+ const byId=new Map(all.map(x=>[x.id,x])),deById=new Map(localized.map(x=>[x.id,x]));if(byId.size!==all.length||deById.size!==localized.length||byId.size!==deById.size)throw Error('Duplicate or mismatched category IDs');
+ for(const node of all){if(!deById.has(node.id))throw Error('Missing German category');if(node.parent_id){const parent=byId.get(node.parent_id);if(!parent||parent.level>=node.level)throw Error('Invalid parent hierarchy: '+node.id)}}
+ const selected=new Map();for(const mapping of mappings){let node=byId.get(prefix+mapping.shopify);if(!node)throw Error('Missing mapped category: '+mapping.fundblick);while(node){selected.set(node.id,node);node=node.parent_id?byId.get(node.parent_id):null}}
+ const selectedAttributeIds=new Set([...selected.values()].flatMap(x=>x.attributes.map(x=>x.id))),defs=attributes.filter(x=>selectedAttributeIds.has(x.id)).map(x=>({id:x.id,name:x.name,handle:x.handle}));if(defs.length!==selectedAttributeIds.size)throw Error('Missing attribute definitions');
+ const nodes=[...selected.values()].map(x=>({id:x.id,parentId:x.parent_id,level:x.level,labels:{en:x.name,de:deById.get(x.id).name},attributeIds:x.attributes.map(x=>x.id)})).sort((a,b)=>a.level-b.level||a.id.localeCompare(b.id));
+ return{version:1,release:manifest.release,runtimeEnabled:false,sourceCounts:{verticals:data['categories.en.json.gz'].verticals.length,categories:all.length,attributes:attributes.length},locales:['en','de'],mappings:mappings.map(x=>({...x,shopify:prefix+x.shopify})),nodes,attributes:defs};
+}
+if(require.main===module){if(!process.argv[2])throw Error('Pass the directory containing the three verified pinned gzip assets');const snapshot=build(process.argv[2]);fs.writeFileSync(path.join(__dirname,'snapshot.json'),JSON.stringify(snapshot,null,2)+'\n');console.log(JSON.stringify({source:snapshot.sourceCounts,mappings:snapshot.mappings.length,nodes:snapshot.nodes.length,attributes:snapshot.attributes.length}))}
+module.exports={build};

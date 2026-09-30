@@ -1,0 +1,22 @@
+[
+ {"fundblick":"automotive.motor_oil","shopify":"vp-1-5-5-8","relation":"equivalent"},
+ {"fundblick":"automotive.tires","shopify":"vp-1-4-20-3-1","relation":"equivalent"},
+ {"fundblick":"fashion.shoes","shopify":"aa-8","relation":"equivalent"},
+ {"fundblick":"fashion.clothing","shopify":"aa-1","relation":"equivalent"},
+ {"fundblick":"electronics.television","shopify":"el-17-4","relation":"equivalent"},
+ {"fundblick":"electronics.smartphone","shopify":"el-4-8-5","relation":"broader","requiredExtension":"smartphone versus other mobile phones"},
+ {"fundblick":"electronics.headphones","shopify":"el-2-2-7-1","relation":"equivalent"},
+ {"fundblick":"computing.laptop","shopify":"el-6-6","relation":"equivalent"},
+ {"fundblick":"computing.monitor","shopify":"el-17-1","relation":"equivalent"},
+ {"fundblick":"tools.cordless_drill","shopify":"ha-15-14-3","relation":"broader","requiredExtension":"cordless power source"},
+ {"fundblick":"tools.angle_grinder","shopify":"ha-15-18-1","relation":"equivalent"},
+ {"fundblick":"home.vacuum","shopify":"hg-9-10","relation":"equivalent"},
+ {"fundblick":"home.coffee_machine","shopify":"hg-11-7-4","relation":"equivalent"},
+ {"fundblick":"garden.robot_mower","shopify":"hg-12-3-5-2","relation":"equivalent"},
+ {"fundblick":"garden.lawn_mower","shopify":"hg-12-3-5","relation":"equivalent"},
+ {"fundblick":"baby.stroller","shopify":"bt-6-3","relation":"equivalent"},
+ {"fundblick":"sports.ebike","shopify":"sg-4-4-3-5","relation":"equivalent"},
+ {"fundblick":"sports.bicycle","shopify":"sg-4-4-3","relation":"equivalent"},
+ {"fundblick":"appliance.washing_machine","shopify":"hg-9-8-6","relation":"equivalent"},
+ {"fundblick":"appliance.refrigerator","shopify":"hg-11-7-41","relation":"equivalent"}
+]

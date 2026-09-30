@@ -1,0 +1,1732 @@
+{
+  "version": 1,
+  "release": "v2026-08",
+  "runtimeEnabled": false,
+  "sourceCounts": {
+    "verticals": 26,
+    "categories": 14606,
+    "attributes": 8240
+  },
+  "locales": [
+    "en",
+    "de"
+  ],
+  "mappings": [
+    {
+      "fundblick": "automotive.motor_oil",
+      "shopify": "gid://shopify/TaxonomyCategory/vp-1-5-5-8",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "automotive.tires",
+      "shopify": "gid://shopify/TaxonomyCategory/vp-1-4-20-3-1",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "fashion.shoes",
+      "shopify": "gid://shopify/TaxonomyCategory/aa-8",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "fashion.clothing",
+      "shopify": "gid://shopify/TaxonomyCategory/aa-1",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "electronics.television",
+      "shopify": "gid://shopify/TaxonomyCategory/el-17-4",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "electronics.smartphone",
+      "shopify": "gid://shopify/TaxonomyCategory/el-4-8-5",
+      "relation": "broader",
+      "requiredExtension": "smartphone versus other mobile phones"
+    },
+    {
+      "fundblick": "electronics.headphones",
+      "shopify": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "computing.laptop",
+      "shopify": "gid://shopify/TaxonomyCategory/el-6-6",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "computing.monitor",
+      "shopify": "gid://shopify/TaxonomyCategory/el-17-1",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "tools.cordless_drill",
+      "shopify": "gid://shopify/TaxonomyCategory/ha-15-14-3",
+      "relation": "broader",
+      "requiredExtension": "cordless power source"
+    },
+    {
+      "fundblick": "tools.angle_grinder",
+      "shopify": "gid://shopify/TaxonomyCategory/ha-15-18-1",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "home.vacuum",
+      "shopify": "gid://shopify/TaxonomyCategory/hg-9-10",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "home.coffee_machine",
+      "shopify": "gid://shopify/TaxonomyCategory/hg-11-7-4",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "garden.robot_mower",
+      "shopify": "gid://shopify/TaxonomyCategory/hg-12-3-5-2",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "garden.lawn_mower",
+      "shopify": "gid://shopify/TaxonomyCategory/hg-12-3-5",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "baby.stroller",
+      "shopify": "gid://shopify/TaxonomyCategory/bt-6-3",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "sports.ebike",
+      "shopify": "gid://shopify/TaxonomyCategory/sg-4-4-3-5",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "sports.bicycle",
+      "shopify": "gid://shopify/TaxonomyCategory/sg-4-4-3",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "appliance.washing_machine",
+      "shopify": "gid://shopify/TaxonomyCategory/hg-9-8-6",
+      "relation": "equivalent"
+    },
+    {
+      "fundblick": "appliance.refrigerator",
+      "shopify": "gid://shopify/TaxonomyCategory/hg-11-7-41",
+      "relation": "equivalent"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "gid://shopify/TaxonomyCategory/aa",
+      "parentId": null,
+      "level": 0,
+      "labels": {
+        "en": "Apparel & Accessories",
+        "de": "Bekleidung & Accessoires"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/837"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/bt",
+      "parentId": null,
+      "level": 0,
+      "labels": {
+        "en": "Baby & Toddler",
+        "de": "Baby & Kleinkind"
+      },
+      "attributeIds": []
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el",
+      "parentId": null,
+      "level": 0,
+      "labels": {
+        "en": "Electronics",
+        "de": "Elektronik"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1716"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/ha",
+      "parentId": null,
+      "level": 0,
+      "labels": {
+        "en": "Hardware",
+        "de": "Heimwerkerbedarf"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg",
+      "parentId": null,
+      "level": 0,
+      "labels": {
+        "en": "Home & Garden",
+        "de": "Heim & Garten"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/12756",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/sg",
+      "parentId": null,
+      "level": 0,
+      "labels": {
+        "en": "Sporting Goods",
+        "de": "Sportartikel"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp",
+      "parentId": null,
+      "level": 0,
+      "labels": {
+        "en": "Vehicles & Parts",
+        "de": "Fahrzeuge & Teile"
+      },
+      "attributeIds": []
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/aa-1",
+      "parentId": "gid://shopify/TaxonomyCategory/aa",
+      "level": 1,
+      "labels": {
+        "en": "Clothing",
+        "de": "Bekleidung"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/30",
+        "gid://shopify/TaxonomyAttribute/2336",
+        "gid://shopify/TaxonomyAttribute/3001",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/2777",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/2778",
+        "gid://shopify/TaxonomyAttribute/12821",
+        "gid://shopify/TaxonomyAttribute/837"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/aa-8",
+      "parentId": "gid://shopify/TaxonomyCategory/aa",
+      "level": 1,
+      "labels": {
+        "en": "Shoes",
+        "de": "Schuhe"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/30",
+        "gid://shopify/TaxonomyAttribute/2336",
+        "gid://shopify/TaxonomyAttribute/80",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/6696",
+        "gid://shopify/TaxonomyAttribute/2783",
+        "gid://shopify/TaxonomyAttribute/128",
+        "gid://shopify/TaxonomyAttribute/6759",
+        "gid://shopify/TaxonomyAttribute/1203",
+        "gid://shopify/TaxonomyAttribute/6774",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/3009",
+        "gid://shopify/TaxonomyAttribute/846",
+        "gid://shopify/TaxonomyAttribute/87",
+        "gid://shopify/TaxonomyAttribute/837",
+        "gid://shopify/TaxonomyAttribute/6837",
+        "gid://shopify/TaxonomyAttribute/847"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/bt-6",
+      "parentId": "gid://shopify/TaxonomyCategory/bt",
+      "level": 1,
+      "labels": {
+        "en": "Baby Transport",
+        "de": "Babytransport"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/12755",
+        "gid://shopify/TaxonomyAttribute/2336",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1715",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1716"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-17",
+      "parentId": "gid://shopify/TaxonomyCategory/el",
+      "level": 1,
+      "labels": {
+        "en": "Video",
+        "de": "Video"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1334",
+        "gid://shopify/TaxonomyAttribute/1248",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-2",
+      "parentId": "gid://shopify/TaxonomyCategory/el",
+      "level": 1,
+      "labels": {
+        "en": "Audio",
+        "de": "Audio"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-4",
+      "parentId": "gid://shopify/TaxonomyCategory/el",
+      "level": 1,
+      "labels": {
+        "en": "Communications",
+        "de": "Kommunikationsgeräte"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-6",
+      "parentId": "gid://shopify/TaxonomyCategory/el",
+      "level": 1,
+      "labels": {
+        "en": "Computers",
+        "de": "Computer"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1871",
+        "gid://shopify/TaxonomyAttribute/3077",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/1873",
+        "gid://shopify/TaxonomyAttribute/1840",
+        "gid://shopify/TaxonomyAttribute/1859",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/1901",
+        "gid://shopify/TaxonomyAttribute/1869",
+        "gid://shopify/TaxonomyAttribute/1922"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/ha-15",
+      "parentId": "gid://shopify/TaxonomyCategory/ha",
+      "level": 1,
+      "labels": {
+        "en": "Tools",
+        "de": "Werkzeuge"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-11",
+      "parentId": "gid://shopify/TaxonomyCategory/hg",
+      "level": 1,
+      "labels": {
+        "en": "Kitchen & Dining",
+        "de": "Küche & Esszimmer"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/2336",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-12",
+      "parentId": "gid://shopify/TaxonomyCategory/hg",
+      "level": 1,
+      "labels": {
+        "en": "Lawn & Garden",
+        "de": "Rasen & Garten"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/12755",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-9",
+      "parentId": "gid://shopify/TaxonomyCategory/hg",
+      "level": 1,
+      "labels": {
+        "en": "Household Appliances",
+        "de": "Haushaltsgeräte"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/12755",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1716"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/sg-4",
+      "parentId": "gid://shopify/TaxonomyCategory/sg",
+      "level": 1,
+      "labels": {
+        "en": "Outdoor Recreation",
+        "de": "Outdoor-Aktivitäten"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/2336",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1",
+      "parentId": "gid://shopify/TaxonomyCategory/vp",
+      "level": 1,
+      "labels": {
+        "en": "Vehicle Parts & Accessories",
+        "de": "Fahrzeugersatzteile & -zubehör"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/2680",
+        "gid://shopify/TaxonomyAttribute/2948",
+        "gid://shopify/TaxonomyAttribute/2681",
+        "gid://shopify/TaxonomyAttribute/2706",
+        "gid://shopify/TaxonomyAttribute/3204",
+        "gid://shopify/TaxonomyAttribute/2705"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/bt-6-3",
+      "parentId": "gid://shopify/TaxonomyCategory/bt-6",
+      "level": 2,
+      "labels": {
+        "en": "Baby Strollers",
+        "de": "Kinderwagen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-17-1",
+      "parentId": "gid://shopify/TaxonomyCategory/el-17",
+      "level": 2,
+      "labels": {
+        "en": "Computer Monitors",
+        "de": "Computermonitore"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/5391",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1962",
+        "gid://shopify/TaxonomyAttribute/1955",
+        "gid://shopify/TaxonomyAttribute/845",
+        "gid://shopify/TaxonomyAttribute/1334",
+        "gid://shopify/TaxonomyAttribute/1248",
+        "gid://shopify/TaxonomyAttribute/1956",
+        "gid://shopify/TaxonomyAttribute/1957",
+        "gid://shopify/TaxonomyAttribute/2905",
+        "gid://shopify/TaxonomyAttribute/3085",
+        "gid://shopify/TaxonomyAttribute/1958",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/5389",
+        "gid://shopify/TaxonomyAttribute/5390"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-17-4",
+      "parentId": "gid://shopify/TaxonomyCategory/el-17",
+      "level": 2,
+      "labels": {
+        "en": "Televisions",
+        "de": "Fernseher"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1803",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/5439",
+        "gid://shopify/TaxonomyAttribute/1955",
+        "gid://shopify/TaxonomyAttribute/1334",
+        "gid://shopify/TaxonomyAttribute/1248",
+        "gid://shopify/TaxonomyAttribute/1956",
+        "gid://shopify/TaxonomyAttribute/1957",
+        "gid://shopify/TaxonomyAttribute/1959",
+        "gid://shopify/TaxonomyAttribute/1958",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1960",
+        "gid://shopify/TaxonomyAttribute/2905",
+        "gid://shopify/TaxonomyAttribute/3094",
+        "gid://shopify/TaxonomyAttribute/1812",
+        "gid://shopify/TaxonomyAttribute/5390",
+        "gid://shopify/TaxonomyAttribute/1847"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-2-2",
+      "parentId": "gid://shopify/TaxonomyCategory/el-2",
+      "level": 2,
+      "labels": {
+        "en": "Audio Components",
+        "de": "Audiokomponenten"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/5435",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/845",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/5544",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-4-8",
+      "parentId": "gid://shopify/TaxonomyCategory/el-4",
+      "level": 2,
+      "labels": {
+        "en": "Telephony",
+        "de": "Telefone"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1811",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-6-6",
+      "parentId": "gid://shopify/TaxonomyCategory/el-6",
+      "level": 2,
+      "labels": {
+        "en": "Laptops",
+        "de": "Laptops"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1871",
+        "gid://shopify/TaxonomyAttribute/3077",
+        "gid://shopify/TaxonomyAttribute/1857",
+        "gid://shopify/TaxonomyAttribute/1334",
+        "gid://shopify/TaxonomyAttribute/1248",
+        "gid://shopify/TaxonomyAttribute/1873",
+        "gid://shopify/TaxonomyAttribute/1911",
+        "gid://shopify/TaxonomyAttribute/1879",
+        "gid://shopify/TaxonomyAttribute/1840",
+        "gid://shopify/TaxonomyAttribute/1859",
+        "gid://shopify/TaxonomyAttribute/1877",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/1901",
+        "gid://shopify/TaxonomyAttribute/1869",
+        "gid://shopify/TaxonomyAttribute/1860",
+        "gid://shopify/TaxonomyAttribute/1922",
+        "gid://shopify/TaxonomyAttribute/1876"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/ha-15-14",
+      "parentId": "gid://shopify/TaxonomyCategory/ha-15",
+      "level": 2,
+      "labels": {
+        "en": "Drills",
+        "de": "Bohrmaschinen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/2192",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3120",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/ha-15-18",
+      "parentId": "gid://shopify/TaxonomyCategory/ha-15",
+      "level": 2,
+      "labels": {
+        "en": "Grinders",
+        "de": "Schleifmaschinen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-11-7",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-11",
+      "level": 2,
+      "labels": {
+        "en": "Kitchen Appliances",
+        "de": "Küchengeräte"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-12-3",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-12",
+      "level": 2,
+      "labels": {
+        "en": "Outdoor Power Equipment",
+        "de": "Gartenmaschinen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/2175",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/2179"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-9-10",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-9",
+      "level": 2,
+      "labels": {
+        "en": "Vacuums",
+        "de": "Staubsauger"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1378",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1379",
+        "gid://shopify/TaxonomyAttribute/1380",
+        "gid://shopify/TaxonomyAttribute/1381",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/1382"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-9-8",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-9",
+      "level": 2,
+      "labels": {
+        "en": "Laundry Appliances",
+        "de": "Waschen & Trocknen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/sg-4-4",
+      "parentId": "gid://shopify/TaxonomyCategory/sg-4",
+      "level": 2,
+      "labels": {
+        "en": "Cycling",
+        "de": "Radfahren"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1-4",
+      "parentId": "gid://shopify/TaxonomyCategory/vp-1",
+      "level": 2,
+      "labels": {
+        "en": "Motor Vehicle Parts",
+        "de": "Kfz-Teile"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/2696",
+        "gid://shopify/TaxonomyAttribute/2680",
+        "gid://shopify/TaxonomyAttribute/2948",
+        "gid://shopify/TaxonomyAttribute/2681",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/2705"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1-5",
+      "parentId": "gid://shopify/TaxonomyCategory/vp-1",
+      "level": 2,
+      "labels": {
+        "en": "Vehicle Maintenance, Care & Decor",
+        "de": "Kfz-Wartung & -Pflege"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/2705"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-2-2-7",
+      "parentId": "gid://shopify/TaxonomyCategory/el-2-2",
+      "level": 3,
+      "labels": {
+        "en": "Headphones & Headsets",
+        "de": "Kopfhörer & Headsets"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/5435",
+        "gid://shopify/TaxonomyAttribute/1813",
+        "gid://shopify/TaxonomyAttribute/1682",
+        "gid://shopify/TaxonomyAttribute/1571",
+        "gid://shopify/TaxonomyAttribute/5002",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/845",
+        "gid://shopify/TaxonomyAttribute/3064",
+        "gid://shopify/TaxonomyAttribute/5448",
+        "gid://shopify/TaxonomyAttribute/1814",
+        "gid://shopify/TaxonomyAttribute/5010",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/5544",
+        "gid://shopify/TaxonomyAttribute/1815",
+        "gid://shopify/TaxonomyAttribute/5449",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-4-8-5",
+      "parentId": "gid://shopify/TaxonomyCategory/el-4-8",
+      "level": 3,
+      "labels": {
+        "en": "Mobile & Smart Phones",
+        "de": "Mobiltelefone und Smartphones"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1682",
+        "gid://shopify/TaxonomyAttribute/1856",
+        "gid://shopify/TaxonomyAttribute/1571",
+        "gid://shopify/TaxonomyAttribute/4999",
+        "gid://shopify/TaxonomyAttribute/5002",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/1857",
+        "gid://shopify/TaxonomyAttribute/1858",
+        "gid://shopify/TaxonomyAttribute/1334",
+        "gid://shopify/TaxonomyAttribute/1248",
+        "gid://shopify/TaxonomyAttribute/1807",
+        "gid://shopify/TaxonomyAttribute/5010",
+        "gid://shopify/TaxonomyAttribute/5016",
+        "gid://shopify/TaxonomyAttribute/1859",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/1860",
+        "gid://shopify/TaxonomyAttribute/1861",
+        "gid://shopify/TaxonomyAttribute/1855",
+        "gid://shopify/TaxonomyAttribute/1855",
+        "gid://shopify/TaxonomyAttribute/1864",
+        "gid://shopify/TaxonomyAttribute/5029"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/ha-15-14-3",
+      "parentId": "gid://shopify/TaxonomyCategory/ha-15-14",
+      "level": 3,
+      "labels": {
+        "en": "Handheld Power Drills",
+        "de": "Elektrische Handbohrmaschinen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1682",
+        "gid://shopify/TaxonomyAttribute/1571",
+        "gid://shopify/TaxonomyAttribute/2192",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3120",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/ha-15-18-1",
+      "parentId": "gid://shopify/TaxonomyCategory/ha-15-18",
+      "level": 3,
+      "labels": {
+        "en": "Angle Grinders",
+        "de": "Winkelschleifer"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-11-7-4",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-11-7",
+      "level": 3,
+      "labels": {
+        "en": "Coffee Makers & Espresso Machines",
+        "de": "Kaffee- & Espressomaschinen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1398",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-11-7-41",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-11-7",
+      "level": 3,
+      "labels": {
+        "en": "Refrigerators",
+        "de": "Kühlschränke"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/2062",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/1205",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/6113",
+        "gid://shopify/TaxonomyAttribute/1401",
+        "gid://shopify/TaxonomyAttribute/6240"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-12-3-5",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-12-3",
+      "level": 3,
+      "labels": {
+        "en": "Lawn Mowers",
+        "de": "Rasenmäher"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/2175",
+        "gid://shopify/TaxonomyAttribute/6295",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/1433",
+        "gid://shopify/TaxonomyAttribute/2179"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-9-8-6",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-9-8",
+      "level": 3,
+      "labels": {
+        "en": "Washing Machines",
+        "de": "Waschmaschinen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1331",
+        "gid://shopify/TaxonomyAttribute/1370",
+        "gid://shopify/TaxonomyAttribute/1374",
+        "gid://shopify/TaxonomyAttribute/1205",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/3141",
+        "gid://shopify/TaxonomyAttribute/1377"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/sg-4-4-3",
+      "parentId": "gid://shopify/TaxonomyCategory/sg-4-4",
+      "level": 3,
+      "labels": {
+        "en": "Bicycles",
+        "de": "Fahrräder"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/30",
+        "gid://shopify/TaxonomyAttribute/1682",
+        "gid://shopify/TaxonomyAttribute/1571",
+        "gid://shopify/TaxonomyAttribute/3184",
+        "gid://shopify/TaxonomyAttribute/7100",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1282",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/837"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1-4-20",
+      "parentId": "gid://shopify/TaxonomyCategory/vp-1-4",
+      "level": 3,
+      "labels": {
+        "en": "Motor Vehicle Wheel Systems",
+        "de": "Kfz-Räder"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/2680",
+        "gid://shopify/TaxonomyAttribute/2948",
+        "gid://shopify/TaxonomyAttribute/2681",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/8785",
+        "gid://shopify/TaxonomyAttribute/3210",
+        "gid://shopify/TaxonomyAttribute/8917"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1-5-5",
+      "parentId": "gid://shopify/TaxonomyCategory/vp-1-5",
+      "level": 3,
+      "labels": {
+        "en": "Vehicle Fluids",
+        "de": "Kfz-Flüssigkeiten"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/2705"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/el-2-2-7-1",
+      "parentId": "gid://shopify/TaxonomyCategory/el-2-2-7",
+      "level": 4,
+      "labels": {
+        "en": "Headphones",
+        "de": "Kopfhörer"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/5435",
+        "gid://shopify/TaxonomyAttribute/1813",
+        "gid://shopify/TaxonomyAttribute/1682",
+        "gid://shopify/TaxonomyAttribute/1571",
+        "gid://shopify/TaxonomyAttribute/5002",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/845",
+        "gid://shopify/TaxonomyAttribute/3064",
+        "gid://shopify/TaxonomyAttribute/5448",
+        "gid://shopify/TaxonomyAttribute/1814",
+        "gid://shopify/TaxonomyAttribute/5010",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/5544",
+        "gid://shopify/TaxonomyAttribute/1815",
+        "gid://shopify/TaxonomyAttribute/5449",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/hg-12-3-5-2",
+      "parentId": "gid://shopify/TaxonomyCategory/hg-12-3-5",
+      "level": 4,
+      "labels": {
+        "en": "Robotic Mowers",
+        "de": "Mähroboter"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/1272",
+        "gid://shopify/TaxonomyAttribute/2175",
+        "gid://shopify/TaxonomyAttribute/6295",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/1221",
+        "gid://shopify/TaxonomyAttribute/1433",
+        "gid://shopify/TaxonomyAttribute/2179"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/sg-4-4-3-5",
+      "parentId": "gid://shopify/TaxonomyCategory/sg-4-4-3",
+      "level": 4,
+      "labels": {
+        "en": "Electric Bikes",
+        "de": "Elektrofahrräder"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/30",
+        "gid://shopify/TaxonomyAttribute/1682",
+        "gid://shopify/TaxonomyAttribute/1571",
+        "gid://shopify/TaxonomyAttribute/3184",
+        "gid://shopify/TaxonomyAttribute/7090",
+        "gid://shopify/TaxonomyAttribute/7100",
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/7397",
+        "gid://shopify/TaxonomyAttribute/1282",
+        "gid://shopify/TaxonomyAttribute/4",
+        "gid://shopify/TaxonomyAttribute/10716",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/837"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1-4-20-3",
+      "parentId": "gid://shopify/TaxonomyCategory/vp-1-4-20",
+      "level": 4,
+      "labels": {
+        "en": "Motor Vehicle Tires",
+        "de": "Kfz-Reifen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/2680",
+        "gid://shopify/TaxonomyAttribute/2948",
+        "gid://shopify/TaxonomyAttribute/2681",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/6218",
+        "gid://shopify/TaxonomyAttribute/8783",
+        "gid://shopify/TaxonomyAttribute/8785",
+        "gid://shopify/TaxonomyAttribute/8789",
+        "gid://shopify/TaxonomyAttribute/3210"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1-5-5-8",
+      "parentId": "gid://shopify/TaxonomyCategory/vp-1-5-5",
+      "level": 4,
+      "labels": {
+        "en": "Vehicle Motor Oil",
+        "de": "Motoröl"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/3202",
+        "gid://shopify/TaxonomyAttribute/2705",
+        "gid://shopify/TaxonomyAttribute/2711"
+      ]
+    },
+    {
+      "id": "gid://shopify/TaxonomyCategory/vp-1-4-20-3-1",
+      "parentId": "gid://shopify/TaxonomyCategory/vp-1-4-20-3",
+      "level": 5,
+      "labels": {
+        "en": "Automotive Tires",
+        "de": "Autoreifen"
+      },
+      "attributeIds": [
+        "gid://shopify/TaxonomyAttribute/1",
+        "gid://shopify/TaxonomyAttribute/2680",
+        "gid://shopify/TaxonomyAttribute/2948",
+        "gid://shopify/TaxonomyAttribute/2681",
+        "gid://shopify/TaxonomyAttribute/3",
+        "gid://shopify/TaxonomyAttribute/6218",
+        "gid://shopify/TaxonomyAttribute/8782",
+        "gid://shopify/TaxonomyAttribute/8783",
+        "gid://shopify/TaxonomyAttribute/8784",
+        "gid://shopify/TaxonomyAttribute/8785",
+        "gid://shopify/TaxonomyAttribute/8787",
+        "gid://shopify/TaxonomyAttribute/8788",
+        "gid://shopify/TaxonomyAttribute/8789",
+        "gid://shopify/TaxonomyAttribute/3210",
+        "gid://shopify/TaxonomyAttribute/2701"
+      ]
+    }
+  ],
+  "attributes": [
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5391",
+      "name": "Adaptive sync technology",
+      "handle": "adaptive-sync-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/30",
+      "name": "Age group",
+      "handle": "age-group"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/12755",
+      "name": "Assembly required",
+      "handle": "assembly-required"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5435",
+      "name": "Audio component form factor",
+      "handle": "audio-component-form-factor"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1813",
+      "name": "Audio connectivity",
+      "handle": "audio-connectivity"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1803",
+      "name": "Audio technology",
+      "handle": "audio-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1682",
+      "name": "Battery size",
+      "handle": "battery-size"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1856",
+      "name": "Battery technology",
+      "handle": "battery-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1571",
+      "name": "Battery type",
+      "handle": "battery-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3184",
+      "name": "Bicycle features",
+      "handle": "bicycle-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/7090",
+      "name": "Bicycle frame design",
+      "handle": "bicycle-frame-design"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/7100",
+      "name": "Bicycle suspension type",
+      "handle": "bicycle-suspension-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/4999",
+      "name": "Biometric authentication method",
+      "handle": "biometric-authentication-method"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2336",
+      "name": "Care instructions",
+      "handle": "care-instructions"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5002",
+      "name": "Charging interface type",
+      "handle": "charging-interface-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2192",
+      "name": "Chuck type",
+      "handle": "chuck-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1378",
+      "name": "Cleaning surfaces",
+      "handle": "cleaning-surfaces"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/80",
+      "name": "Closure type",
+      "handle": "closure-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3001",
+      "name": "Clothing features",
+      "handle": "clothing-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1398",
+      "name": "Coffee input type",
+      "handle": "coffee-input-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1",
+      "name": "Color",
+      "handle": "color"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1962",
+      "name": "Color accuracy standards",
+      "handle": "color-accuracy-standards"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5439",
+      "name": "Compatible voice assistant",
+      "handle": "compatible-voice-assistant"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1871",
+      "name": "Computer form",
+      "handle": "computer-form"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3077",
+      "name": "Computer specialized features",
+      "handle": "computer-specialized-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1811",
+      "name": "Connection type",
+      "handle": "connection-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1272",
+      "name": "Connectivity technology",
+      "handle": "connectivity-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1955",
+      "name": "Contrast ratio (typical)",
+      "handle": "contrast-ratio-typical"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1331",
+      "name": "Control type",
+      "handle": "control-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1857",
+      "name": "Cosmetic condition",
+      "handle": "cosmetic-condition"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1858",
+      "name": "Data network",
+      "handle": "data-network"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/845",
+      "name": "Device interface",
+      "handle": "device-interface"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1379",
+      "name": "Dirt separating method",
+      "handle": "dirt-separating-method"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1334",
+      "name": "Display resolution",
+      "handle": "display-resolution"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1248",
+      "name": "Display technology",
+      "handle": "display-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3120",
+      "name": "Drill features",
+      "handle": "drill-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1380",
+      "name": "Dry/Wet cleaning",
+      "handle": "dry-wet-cleaning"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1381",
+      "name": "Dust container type",
+      "handle": "dust-container-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3064",
+      "name": "Earphone features",
+      "handle": "earphone-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/7397",
+      "name": "Electric bike class",
+      "handle": "electric-bike-class"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1370",
+      "name": "Energy efficiency class",
+      "handle": "energy-efficiency-class"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1956",
+      "name": "Energy efficiency class (HDR)",
+      "handle": "energy-efficiency-class-hdr"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1957",
+      "name": "Energy efficiency class (SDR)",
+      "handle": "energy-efficiency-class-sdr"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2175",
+      "name": "Engine design",
+      "handle": "engine-design"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2777",
+      "name": "Fabric",
+      "handle": "fabric"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2062",
+      "name": "Finish",
+      "handle": "finish"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2696",
+      "name": "Fit type",
+      "handle": "fit-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6696",
+      "name": "Footwear construction method",
+      "handle": "footwear-construction-method"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2783",
+      "name": "Footwear material",
+      "handle": "footwear-material"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1282",
+      "name": "Gearing type",
+      "handle": "gearing-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1873",
+      "name": "Graphics card type",
+      "handle": "graphics-card-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6295",
+      "name": "Grass discharge type",
+      "handle": "grass-discharge-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1959",
+      "name": "HDR format",
+      "handle": "hdr-format"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5448",
+      "name": "Headphone driver technology",
+      "handle": "headphone-driver-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1807",
+      "name": "Headphone jack type",
+      "handle": "headphone-jack-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1814",
+      "name": "Headphone style",
+      "handle": "headphone-style"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/128",
+      "name": "Heel height type",
+      "handle": "heel-height-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1715",
+      "name": "Infant age group",
+      "handle": "infant-age-group"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5010",
+      "name": "Ingress protection (IP) rating",
+      "handle": "ingress-protection-ip-rating"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2680",
+      "name": "Item condition",
+      "handle": "item-condition"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2948",
+      "name": "Item material",
+      "handle": "item-material"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1911",
+      "name": "Keyboard layout",
+      "handle": "keyboard-layout"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1879",
+      "name": "Keyboard type",
+      "handle": "keyboard-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6759",
+      "name": "Lining material",
+      "handle": "lining-material"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1374",
+      "name": "Loading type",
+      "handle": "loading-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2681",
+      "name": "Manufacturer type",
+      "handle": "manufacturer-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/4",
+      "name": "Material",
+      "handle": "material"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5544",
+      "name": "Maximum bit depth",
+      "handle": "maximum-bit-depth"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1840",
+      "name": "Memory technology",
+      "handle": "memory-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1815",
+      "name": "Microphone type",
+      "handle": "microphone-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5016",
+      "name": "Mobile phone form factor",
+      "handle": "mobile-phone-form-factor"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2905",
+      "name": "Monitor shape",
+      "handle": "monitor-shape"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3085",
+      "name": "Monitor/Screen specialized features",
+      "handle": "monitor-screen-specialized-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/10716",
+      "name": "Motor position",
+      "handle": "motor-position"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1205",
+      "name": "Mounting type",
+      "handle": "mounting-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1958",
+      "name": "Native aspect ratio",
+      "handle": "native-aspect-ratio"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5449",
+      "name": "Noise cancellation technology",
+      "handle": "noise-cancellation-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1203",
+      "name": "Occasion style",
+      "handle": "occasion-style"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1859",
+      "name": "Operating system",
+      "handle": "operating-system"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1877",
+      "name": "Optical drive type",
+      "handle": "optical-drive-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/12756",
+      "name": "Organic certification",
+      "handle": "organic-certification"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6774",
+      "name": "Outsole material",
+      "handle": "outsole-material"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3",
+      "name": "Pattern",
+      "handle": "pattern"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1221",
+      "name": "Power source",
+      "handle": "power-source"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1901",
+      "name": "Processor cores",
+      "handle": "processor-cores"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1869",
+      "name": "Processor family",
+      "handle": "processor-family"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1433",
+      "name": "Propulsion type",
+      "handle": "propulsion-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6113",
+      "name": "Refrigerator configuration",
+      "handle": "refrigerator-configuration"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1860",
+      "name": "Removable storage formats supported",
+      "handle": "removable-storage-formats-supported"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1861",
+      "name": "SIM card capability",
+      "handle": "sim-card-capability"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1855",
+      "name": "SIM card type",
+      "handle": "sim-card-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1716",
+      "name": "Safety certifications",
+      "handle": "safety-certifications"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5389",
+      "name": "Screen curvature rating",
+      "handle": "screen-curvature-rating"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3009",
+      "name": "Shoe features",
+      "handle": "shoe-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/846",
+      "name": "Shoe fit",
+      "handle": "shoe-fit"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/87",
+      "name": "Shoe size",
+      "handle": "shoe-size"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2778",
+      "name": "Size",
+      "handle": "size"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/12821",
+      "name": "Size type",
+      "handle": "size-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1960",
+      "name": "Smart TV platform",
+      "handle": "smart-tv-platform"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1401",
+      "name": "Star rating",
+      "handle": "star-rating"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2179",
+      "name": "Start type",
+      "handle": "start-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1922",
+      "name": "Storage drive type installed",
+      "handle": "storage-drive-type-installed"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1876",
+      "name": "Storage types supported",
+      "handle": "storage-types-supported"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1864",
+      "name": "Subscription type",
+      "handle": "subscription-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/837",
+      "name": "Target gender",
+      "handle": "target-gender"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3094",
+      "name": "Television specialized features",
+      "handle": "television-specialized-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6218",
+      "name": "Tire construction type",
+      "handle": "tire-construction-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8782",
+      "name": "Tire load range",
+      "handle": "tire-load-range"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8783",
+      "name": "Tire position",
+      "handle": "tire-position"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8784",
+      "name": "Tire sidewall type",
+      "handle": "tire-sidewall-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8785",
+      "name": "Tire speed rating",
+      "handle": "tire-speed-rating"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8787",
+      "name": "Tire temperature rating (UTQG)",
+      "handle": "tire-temperature-rating-utqg"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8788",
+      "name": "Tire traction rating (UTQG)",
+      "handle": "tire-traction-rating-utqg"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8789",
+      "name": "Tire tube type",
+      "handle": "tire-tube-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6837",
+      "name": "Toe protection type",
+      "handle": "toe-protection-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/847",
+      "name": "Toe style",
+      "handle": "toe-style"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1812",
+      "name": "Tuner type",
+      "handle": "tuner-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/6240",
+      "name": "Umbrella opening mechanism",
+      "handle": "umbrella-opening-mechanism"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5390",
+      "name": "VESA mounting pattern",
+      "handle": "vesa-mounting-pattern"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1382",
+      "name": "Vacuum air filtering technology",
+      "handle": "vacuum-air-filtering-technology"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2706",
+      "name": "Vehicle application area",
+      "handle": "vehicle-application-area"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3210",
+      "name": "Vehicle drive/handling features",
+      "handle": "vehicle-drive-handling-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3204",
+      "name": "Vehicle engine/part features",
+      "handle": "vehicle-engine-part-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3202",
+      "name": "Vehicle oil features",
+      "handle": "vehicle-oil-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2701",
+      "name": "Vehicle tire type",
+      "handle": "vehicle-tire-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2705",
+      "name": "Vehicle type",
+      "handle": "vehicle-type"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/2711",
+      "name": "Viscosity",
+      "handle": "viscosity"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/3141",
+      "name": "Washer/Dryer features",
+      "handle": "washer-dryer-features"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1377",
+      "name": "Washing programs",
+      "handle": "washing-programs"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/8917",
+      "name": "Wheel system finish",
+      "handle": "wheel-system-finish"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/1847",
+      "name": "Wi-Fi standard",
+      "handle": "wi-fi-standard"
+    },
+    {
+      "id": "gid://shopify/TaxonomyAttribute/5029",
+      "name": "Wireless charging standard",
+      "handle": "wireless-charging-standard"
+    }
+  ]
+}
