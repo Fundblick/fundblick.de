@@ -8,7 +8,7 @@
   if(language!=='ru')return;
   const copy={
   "1": "Политика конфиденциальности",
-  "2": "Актуально на 28 сентября 2026 г.",
+  "2": "Актуально на 30 сентября 2026 г.",
   "3": "1. Ответственное лицо",
   "4": "Ответственным за обработку персональных данных в рамках этого сайта является:",
   "5": "<strong>Jens Albin Danhel</strong><br>Uhlandstraße 12<br>78655 Dunningen<br>Германия",
@@ -76,13 +76,14 @@
   document.querySelector('meta[name="description"]')?.setAttribute('content','Политика конфиденциальности FundBlick.');
   const shellHome=document.querySelector('.fb-shell-home');
   if(shellHome)shellHome.textContent='Главная';
+  Object.assign(copy,{"70":"4c. Добровольный веб-поиск","71":"Поиск по каталогу FundBlick не отправляет запрос внешнему поисковому сервису. Нажатие «Продолжить поиск в интернете» активирует веб-поиск. Параметр web=1 в адресе поиска сохраняет этот режим. Новый поиск без этого параметра снова использует только собственный каталог.","72":"Для веб-поиска FundBlick использует Cloudflare Worker и Brave Search API компании Brave Software Inc., США. В Cloudflare передаются запрос, при необходимости дополнительные характеристики товара, язык, страна и страница результатов, а также технические данные соединения, включая IP-адрес. Worker передаёт параметры в Brave через собственный API-доступ. Код FundBlick не пересылает в Brave cookies и IP-адрес посетителя в заголовках.","73":"Обработка служит предоставлению явно запрошенных внешних результатов. Не вводите персональные или чувствительные данные в поиск товаров. Активация веб-поиска отделена от решения о партнёрском отслеживании.","74":"Поисковый запрос отправляется без cookies и Referrer. Успешные ответы временно хранятся в памяти открытой страницы; FundBlick не сохраняет этот кеш постоянно в браузере. Адреса поиска могут оставаться в истории браузера и технических журналах сервисов.","75":"Brave указывает хранение поисковых запросов до 90 дней, в том числе для расчётов и устранения ошибок, с учётом законных обязанностей. FundBlick не обещает обработку без хранения. Cloudflare может вести технические журналы; объём и сроки зависят от сервисов и настроек. Подробнее: <a href=\"https://api-dashboard.search.brave.com/app/documentation/general/privacy-policy\" rel=\"noopener noreferrer\">Brave Search API Privacy Notice</a> и <a href=\"https://www.cloudflare.com/privacypolicy/\" rel=\"noopener noreferrer\">Cloudflare Privacy Policy</a>. Возможна обработка вне ЕС и ЕЭЗ, в частности в США.","76":"Изображения результатов загружаются с внешних сайтов. Эти поставщики получают IP-адрес, но не Referrer от FundBlick. При открытии ссылки действуют правила конфиденциальности продавца или источника. Веб-поиск сам по себе не создаёт согласия на партнёрское отслеживание."});
   const shellTagline=document.querySelector('.fb-legal-footer span');
   if(shellTagline)shellTagline.textContent='Поиск товаров · сравнение цен';
   document.querySelector('.fb-shell-brand')?.setAttribute('aria-label','Главная FundBlick');
   for(const [key,value] of Object.entries(copy)){
     const target=document.querySelector('[data-privacy-i18n="'+key+'"]');
     if(!target)continue;
-    if([5,6,25,40,42].includes(Number(key)))target.innerHTML=value;
+    if([5,6,25,40,42,75].includes(Number(key)))target.innerHTML=value;
     else target.textContent=value;
   }
 })();

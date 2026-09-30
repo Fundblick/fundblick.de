@@ -1,0 +1,23 @@
+'use strict';
+
+const fashionQueryAssert=require('node:assert/strict'),fashionStrategy=require('./product-query-strategy.js');fashionQueryAssert.ok(!fashionStrategy.build('Nike Jordan 40 Schuhe').query.includes('EU 40'),'model number must not become a shoe-size search constraint');
+const assert=require('node:assert/strict');const q=require('./product-query-strategy.js');
+let x=q.build('10W40 5 Liter','de');assert.equal(x.analysis.category,'automotive.motor_oil');assert.match(x.query,/Motoröl/i);assert.match(x.query,/10W-40/i);assert.equal(x.added.filter(v=>/liter/i.test(v)).length,0,'existing volume must not be duplicated');
+x=q.build('Winterreifen 205/55 R16','de');assert.equal(x.analysis.category,'automotive.tires');assert.match(x.query,/205\/55 R16/i);assert.equal((x.query.match(/205\/55 R16/gi)||[]).length,1);
+x=q.build('Akkuschrauber 18V','de');assert.equal(x.analysis.category,'tools.cordless_drill');assert.equal((x.query.match(/18V/gi)||[]).length,1);
+x=q.build('Adidas Schuhe EU 39','de');assert.equal(x.analysis.category,'fashion.shoes');assert.equal((x.query.match(/adidas/gi)||[]).length,1);assert.equal((x.query.match(/EU 39/gi)||[]).length,1);
+x=q.build('205/55 R16','de');assert.equal(x.analysis.category,null,'dimensions alone must not invent a category');assert.equal(x.query,'205/55 R16');
+x=q.buildOffers('10W40 5 Liter','de');assert.equal(x.offerMode,'focused');assert.match(x.query,/Motoröl/);assert.match(x.query,/10W-40/);assert.match(x.query,/-preisvergleich -site:idealo.de -site:geizhals.de$/);assert.ok(!x.query.includes('Preis Angebot'));assert.equal((x.query.match(/5 Liter/g)||[]).length,1);
+x=q.buildOffers('Bosch Akkuschrauber 18V','de');assert.equal(x.offerMode,'focused');assert.ok(x.query.startsWith('Bosch Akkuschrauber 18V'));assert.equal((x.query.match(/18V/g)||[]).length,1);
+x=q.buildOffers('Bosch Akkuschrauber 18V kaufen','de');assert.equal((x.query.match(/kaufen/g)||[]).length,1,'existing purchase intent is not duplicated');
+assert.equal(q.buildOffers('Winterreifen 205/55 R16','de').query,'Winterreifen 205/55 R16 kaufen Preis Angebot','tire query retains measured better baseline');
+assert.equal(q.buildOffers('Bleistift','de').query,'Bleistift kaufen Preis Angebot','unvalidated categories keep existing behavior');
+assert.equal(q.buildOffers('Bosch cordless drill 18V','en').offerMode,'default','unvalidated languages do not receive German exclusions');
+x=q.buildOffers('Bosch Akkuschrauber 18V '+('A'.repeat(80)),'de');assert.equal(x.offerMode,'default','do not append focus operators beyond worker query budget');
+assert.equal(q.buildOffers('','de').query,'');
+assert.equal(q.buildOffers('Hausschuhe','de').analysis.category,'fashion.shoes');
+assert.equal(q.buildOffers('Hausschuhe','de').query,'Hausschuhe kaufen -preisvergleich -site:idealo.de -site:geizhals.de');
+assert.equal(q.buildOffers('Adidas Schuhe EU 39','de').offerMode,'default','focused Hausschuhe evidence does not generalize to all shoes');
+assert.equal(q.buildOffers('slippers','en').offerMode,'default','German measurement does not change unmeasured English queries');
+x=q.build('Lenovo Laptop 16 GB RAM 512 GB SSD','de');assert.equal(x.analysis.attributes.storage.value,512);assert.equal(x.analysis.attributes.memory.value,16);assert.equal((x.query.match(/512 GB/g)||[]).length,1,'preserve explicit disk capacity without duplicate RAM/storage terms');
+console.log('Product query strategy: category-aware refinement without duplicate constraints OK');

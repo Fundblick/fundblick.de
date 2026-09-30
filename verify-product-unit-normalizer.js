@@ -1,0 +1,26 @@
+'use strict';
+const assert=require('node:assert/strict');
+const u=require('./product-unit-normalizer.js');
+assert.deepEqual(u.quantity(5000,'ml'),{value:5,unit:'l'});
+assert.deepEqual(u.quantity(750,'g'),{value:.75,unit:'kg'});
+assert.deepEqual(u.fromText('Castrol 10W-40 5 Liter'),{value:5,unit:'l'});
+assert.deepEqual(u.fromText('Öl 500 ml'),{value:.5,unit:'l'});
+assert.deepEqual(u.unitPrice('34,99',{value:5,unit:'l'},'EUR'),{value:6.998,unit:'EUR/l'});
+const x=u.enrich({title:'Motoröl 5 L',price:'34,99',currency:'EUR',attributes:{}});
+assert.equal(x.attributes.normalized_quantity.value,5);
+assert.equal(x.attributes.unit_price.value,6.998);
+assert.equal(x.attributes.unit_price.unit,'EUR/l');
+assert.equal(u.fromText('Samsung TV 65 Zoll'),null,'screen size must not be treated as sell quantity');
+console.log('Unit normalizer: volume/weight/count + unit price OK');
+
+assert.deepEqual(u.unitPrice(20,{value:5,unit:'l'},'USD'),{value:4,unit:'USD/l'});
+assert.equal(u.unitPrice(20,{value:5,unit:'l'}),null,'unknown currency cannot become EUR');
+assert.equal(u.enrich({title:'Oil 5 L',price:20}).attributes.unit_price,undefined);
+assert.equal(u.enrich({title:'Oil 5 L',price:20,currency:'USD'}).attributes.unit_price.unit,'USD/l');
+assert.equal(u.enrich({title:'Oil 5 L',price:'20 €',currency:'USD'}).attributes.unit_price,undefined,'conflicting currencies remain unknown');
+assert.equal(u.facetValue('volume',{value:5000,unit:'ml'}),5);
+assert.equal(u.facetValue('volume','5 Liter'),5);
+assert.equal(u.facetValue('storage',{value:1,unit:'TB'}),1000);
+assert.equal(u.facetValue('storage',{value:1024,unit:'GB'}),1024);
+assert.equal(u.facetValue('battery_capacity',{value:1500,unit:'mAh'}),1.5);
+assert.notEqual(u.facetValue('volume',{value:5,unit:'gal'}),5,'unknown unit must not silently become litres');

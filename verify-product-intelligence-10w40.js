@@ -1,0 +1,30 @@
+'use strict';
+const assert=require('node:assert/strict');
+const pipeline=require('./product-intelligence-pipeline.js');
+const pager=require('./external-result-page.js');
+const facetUI=require('./external-intelligence-ui.js');
+
+const offers=Array.from({length:27},(_,i)=>{
+  const brand=['Castrol','Liqui Moly','Shell'][i%3];
+  const litres=i%4===0?1:5;
+  const price=litres===1?(9.49+i*.03):(31.99+i*.17);
+  return {title:`${brand} 10W-40 Motoröl ${litres} Liter`,description:'Motoröl Angebot',currency:'EUR',price:price.toFixed(2).replace('.',','),resultType:'product',gtin:`oil-${i%3}-${litres}`,url:`https://shop-${i}.example/oil-${i}`};
+});
+const sameMerchant=pipeline.run('10W40 Motoröl',offers.map((offer,i)=>({...offer,url:`https://shop.example/oil-${i}`})));
+assert.equal(sameMerchant.results.length,6,'same-merchant duplicates collapse to six brand/volume products');
+assert.equal(sameMerchant.quality.duplicateCount,21);
+const state=pipeline.run('10W40 Motoröl',offers,{facets:{minCoverage:.35,maxPrimary:6}});
+assert.equal(state.analysis.category,'automotive.motor_oil');
+assert.equal(state.results.length,27);
+assert.equal(state.quality.duplicateCount,0,'all separate merchant offers remain available for comparison');
+assert.ok(state.results.every(x=>x.attributes.viscosity.value==='10W-40'));
+assert.ok(state.results.every(x=>x.attributes.unit_price?.unit==='EUR/l'));
+const ids=state.facets.primary.map(x=>x.id);
+for(const id of ['brand','viscosity','volume','price','unit_price'])assert.ok(ids.includes(id),`missing facet ${id}`);
+let page=pager.page(state.results,{page:1,pageSize:20,sort:'price-asc'});
+assert.equal(page.items.length,20);assert.equal(page.totalPages,2);assert.equal(page.hasNext,true);
+page=pager.page(state.results,{page:2,pageSize:20,sort:'price-asc'});assert.equal(page.items.length,7);assert.equal(page.hasNext,false);
+const castrol=facetUI.apply(state.results,{brand:'castrol'});assert.equal(castrol.length,9);
+const castrol5=facetUI.apply(state.results,{brand:'castrol',volume:'5'});assert.ok(castrol5.length>0);assert.ok(castrol5.every(x=>x.attributes.brand.value==='castrol'&&x.attributes.volume.value===5));
+const unitSorted=pager.sort(state.results,'unit-price-asc');assert.ok(unitSorted[0].attributes.unit_price.value<=unitSorted.at(-1).attributes.unit_price.value);
+console.log('10W40 practical regression: intelligence + facets + unit price + 20 paging + sorting OK');

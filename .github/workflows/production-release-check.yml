@@ -1,30 +1,24 @@
-name: Publish FundBlick production
+name: Production release check
 
 on:
   push:
+    branches: [development]
+  pull_request:
     branches: [main]
-  workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: fundblick-production-pages
+  group: fundblick-release-check-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  verify:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout production source
         uses: actions/checkout@v4
-        with:
-          ref: main
       - name: Validate production JavaScript
         run: |
           for f in app.js i18n.js home-i18n.js deal-of-day.js home-deal.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js merchant-offers.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-seo-landings.js audit-seo-landing-candidates.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-merchant-offers.js verify-affiliate-routing.js verify-user-flows.js verify-google-indexability.js; do node --check "$f"; done
@@ -103,12 +97,18 @@ jobs:
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/asset-manifest.json'));if(!m.assets||!Object.keys(m.assets).length)process.exit(1);for(const [src,dst] of Object.entries(m.assets)){if(src===dst||!/\.[a-f0-9]{12}\.(js|css)$/.test(dst)||!fs.existsSync('_site/'+dst))process.exit(1)};console.log('Hashed asset gate OK',Object.keys(m.assets).length)"
       - name: Verify packaged production dependencies
         run: node development/verify-production-package.js _site
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-      - name: Upload production artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: _site
-      - name: Deploy production
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve the final production package
+        run: |
+          python3 -m http.server 4173 --directory _site >/tmp/fundblick-release-http.log 2>&1 &
+          for i in {1..20}; do
+            if curl -fsS http://127.0.0.1:4173/search.html >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/fundblick-release-http.log
+          exit 1
+      - name: Browser tests against hashed production files
+        run: npx playwright test result-card-e2e.spec.js external-search-e2e.spec.js search-relevance-e2e.spec.js --reporter=line --workers=1

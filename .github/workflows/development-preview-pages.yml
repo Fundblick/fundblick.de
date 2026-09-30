@@ -1,0 +1,81 @@
+name: Development Preview Build
+
+on:
+  push:
+    branches:
+      - development
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: development-preview-build
+  cancel-in-progress: true
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout development
+        uses: actions/checkout@v6
+        with:
+          ref: development
+
+      - name: Build full real merchant catalog
+        run: |
+          set -euo pipefail
+          node build-production-catalog.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          node verify-production-merchants.js build/catalog
+          node verify-production-categories.js build/catalog
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Development merchant catalog OK',m.realCount)"
+          test -s build/catalog/categories.json
+
+      - name: Build isolated development preview
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          rsync -a ./ _site/ \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '_site/' \
+            --exclude 'build/' \
+            --exclude 'catalog/' \
+            --exclude 'CNAME'
+          rm -rf _site/catalog
+          cp -R build/catalog _site/catalog
+          touch _site/.nojekyll
+          test -f _site/index.html
+          grep -Fq 'Suchen. Angebote vergleichen. Fertig.' _site/index.html
+          grep -Fq 'action="search.html"' _site/index.html
+          grep -Fq 'external-search-runtime.js' _site/search.html
+          test -s _site/catalog/categories.json
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/catalog/manifest.json'));if(Number(m.itemCount)<1000)process.exit(1);console.log('Packaged preview catalog OK',m.itemCount)"
+
+      - name: Protect isolated preview from search indexing
+        run: |
+          node development/verify-preview-indexing.js
+          node development/protect-preview-indexing.js _site
+          grep -Fq 'noindex,nofollow' _site/index.html
+          grep -Fq 'noindex,nofollow' _site/search.html
+          ! grep -q 'Sitemap:' _site/robots.txt
+
+      - name: Assert production Pages isolation
+        run: |
+          set -euo pipefail
+          ! grep -q 'pages: write' .github/workflows/development-preview-pages.yml
+          ! grep -q 'id-token: write' .github/workflows/development-preview-pages.yml
+          ! grep -q 'name: github-pages' .github/workflows/development-preview-pages.yml
+          ! grep -q 'configure-pages' .github/workflows/development-preview-pages.yml
+          ! grep -q 'upload-pages-artifact' .github/workflows/development-preview-pages.yml
+          ! grep -q 'deploy-pages' .github/workflows/development-preview-pages.yml
+          echo 'Development preview is isolated from GitHub Pages production deployment.'
+
+      - name: Upload development preview artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fundblick-development-preview
+          path: _site
+          retention-days: 7
+          if-no-files-found: error

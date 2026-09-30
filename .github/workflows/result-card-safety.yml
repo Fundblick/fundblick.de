@@ -9,6 +9,13 @@ on:
       - 'verify-merchant-offers.js'
       - 'result-card.css'
       - 'result-card-e2e.spec.js'
+      - 'external-search-e2e.spec.js'
+      - 'external-search*.js'
+      - 'external-price*.js'
+      - 'external-result-page.js'
+      - 'external-intelligence-ui.js'
+      - 'product-*.js'
+      - 'external-search.css'
       - 'search.html'
       - '.github/workflows/result-card-safety.yml'
       - '.github/workflows/production-pages.yml'
@@ -61,4 +68,4 @@ jobs:
           cat /tmp/fundblick-http.log
           exit 1
       - name: Browser result card and voucher regression
-        run: npx playwright test result-card-e2e.spec.js --reporter=line --workers=1
+        run: npx playwright test result-card-e2e.spec.js external-search-e2e.spec.js --reporter=line --workers=1

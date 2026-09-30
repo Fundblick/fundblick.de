@@ -15,12 +15,16 @@ jobs:
       - run: node development/verify-catalog.js
       - run: node development/verify-publication-apply.js
       - run: node development/verify-seo-preview-apply.js
+      - run: node development/verify-preview-indexing.js
+      - run: node development/verify-local-preview.js
+      - run: node development/verify-taxonomy-evaluation.js
       - run: node development/verify-delivery-contract.js
       - run: node development/verify-merchant-handoff.js
       - run: node development/verify-outbound-click.js
       - run: node development/verify-ui-language.js
       - run: node development/verify-frontend-language.js
       - run: node development/verify-search-routing.js
+      - run: node verify-category-query-router.js
       - run: node development/verify-substring-routing.js
       - run: node development/verify-substring-browser-shadow.js
       - run: node development/verify-search-shadow.js
@@ -32,3 +36,23 @@ jobs:
       - run: node verify-anthbot-feed.js
       - run: node verify-anthbot-search-facets.js
       - run: node verify-robot-mower-classifier.js
+      - run: node verify-external-search-client.js
+      - run: node verify-external-search-policy.js
+      - run: node verify-external-price-confidence.js
+      - run: node verify-search-intent-query.js
+      - run: node verify-universal-search-intent.js
+      - run: node verify-external-offer-quality.js
+      - run: node verify-external-search-runtime.js
+      - run: node verify-product-intelligence-core.js
+      - run: node verify-product-storage-parser.js
+      - run: node verify-product-query-strategy.js
+      - run: node verify-product-facet-engine.js
+      - run: node verify-product-unit-normalizer.js
+      - run: node verify-product-result-attribute-extractor.js
+      - run: node verify-product-result-deduper.js
+      - run: node verify-product-constraint-ranker.js
+      - run: node verify-product-conflict-filter.js
+      - run: node verify-product-intelligence-pipeline.js
+      - run: node verify-product-intelligence-golden-queries.js
+      - run: node verify-external-result-page.js
+      - run: node verify-product-intelligence-10w40.js

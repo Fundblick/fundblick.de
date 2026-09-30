@@ -1,0 +1,104 @@
+'use strict';
+
+(function (root, factory) {
+  const api = factory(root && root.FundBlickExternalSearchPolicy);
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  if (root) root.FundBlickExternalSearchClient = api;
+})(typeof window !== 'undefined' ? window : globalThis, function (policy) {
+  const sessionCache = new Map();
+  const pending = new Map();
+
+  function endpoint(value, developmentRelay = false) {
+    const raw = String(value || '').trim();
+    if (!raw) return null;
+    try {
+      const url = new URL(raw, typeof location !== 'undefined' ? location.href : 'https://fundblick.de/');
+      const localRelay=developmentRelay===true&&typeof location!=='undefined'&&location.protocol==='http:'&&['127.0.0.1','localhost','[::1]'].includes(location.hostname)&&url.origin===location.origin;
+      if (url.protocol !== 'https:' && !localRelay) return null;
+      return url;
+    } catch {
+      return null;
+    }
+  }
+
+  function normalizeQuery(value) {
+    return policy?.normalizeQuery ? policy.normalizeQuery(value) : String(value || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 120);
+  }
+
+  function validQuery(value) {
+    return policy?.validQuery ? policy.validQuery(value) : normalizeQuery(value).length >= 2;
+  }
+
+  function requestKey(query, language, country, count, offset) {
+    const base = policy?.requestKey ? policy.requestKey(query, language, country) : `${country}:${language}:${normalizeQuery(query).toLowerCase()}`;
+    return `${base}:count=${count}:offset=${offset}`;
+  }
+
+  function normalizeResults(items) {
+    if (policy?.normalizeExternalResults) return policy.normalizeExternalResults(items);
+    return (Array.isArray(items) ? items : []).filter(Boolean);
+  }
+
+  async function search(options = {}) {
+    const query = normalizeQuery(options.query);
+    const base = endpoint(options.endpoint, options.developmentRelay);
+    if (!validQuery(query)) return { ok: false, skipped: 'invalid-query', results: [] };
+    if (!base) return { ok: false, skipped: 'endpoint-disabled', results: [] };
+
+    const language = String(options.language || 'de').trim().toLowerCase();
+    const country = String(options.country || 'DE').trim().toUpperCase();
+    const count = Math.max(1, Math.min(20, Math.floor(Number(options.count) || 20)));
+    const offset = Math.max(0, Math.min(9, Math.floor(Number(options.offset) || 0)));
+    const key = `${base.origin}:${requestKey(query, language, country, count, offset)}`;
+    if (sessionCache.has(key)) return { ...sessionCache.get(key), cached: true };
+    if (pending.has(key)) return pending.get(key);
+
+    const timeoutMs = Math.max(500, Math.min(10000, Number(options.timeoutMs) || 4000));
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const url = new URL('/search', base);
+    url.searchParams.set('q', query);
+    url.searchParams.set('lang', language);
+    url.searchParams.set('country', country);
+    url.searchParams.set('count', String(count));
+    url.searchParams.set('offset', String(offset));
+
+    const task = (async () => {
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: { Accept: 'application/json' },
+          signal: controller.signal,
+          credentials: 'omit',
+          referrerPolicy: 'no-referrer'
+        });
+        if (!response.ok) return { ok: false, status: response.status, results: [] };
+        const body = await response.json();
+        const result = {
+          ok: true,
+          status: response.status,
+          query,
+          offset,
+          results: normalizeResults(body?.results),
+          moreResultsAvailable: body?.moreResultsAvailable === true && offset < 9
+        };
+        sessionCache.set(key, result);
+        return result;
+      } catch (error) {
+        return { ok: false, timeout: error?.name === 'AbortError', results: [] };
+      } finally {
+        clearTimeout(timer);
+        pending.delete(key);
+      }
+    })();
+
+    pending.set(key, task);
+    return task;
+  }
+
+  function clearSessionCache() {
+    sessionCache.clear();
+  }
+
+  return Object.freeze({ search, clearSessionCache, _endpoint: endpoint });
+});

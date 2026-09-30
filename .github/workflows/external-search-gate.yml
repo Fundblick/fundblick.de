@@ -1,0 +1,126 @@
+name: External search safety gate
+
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'search.html'
+      - 'search-render-signal.js'
+      - 'search-demand-analytics.js'
+      - 'search-intent.js'
+      - 'universal-search-intent.js'
+      - 'external-search-policy.js'
+      - 'external-search-client.js'
+      - 'external-search-i18n.js'
+      - 'external-search-ui.js'
+      - 'external-price-confidence.js'
+      - 'external-price-evidence.js'
+      - 'external-search-runtime.js'
+      - 'external-search.css'
+      - 'verify-search-demand-analytics.js'
+      - 'verify-universal-search-intent.js'
+      - 'verify-external-search-policy.js'
+      - 'verify-external-search-client.js'
+      - 'verify-external-search-i18n.js'
+      - 'verify-external-price-confidence.js'
+      - 'verify-brave-worker-contract.js'
+      - 'cloudflare/brave-search-worker.js'
+      - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
+      - '.github/workflows/external-search-gate.yml'
+  pull_request:
+    paths:
+      - 'search.html'
+      - 'search-render-signal.js'
+      - 'search-demand-analytics.js'
+      - 'search-intent.js'
+      - 'universal-search-intent.js'
+      - 'external-search-policy.js'
+      - 'external-search-client.js'
+      - 'external-search-i18n.js'
+      - 'external-search-ui.js'
+      - 'external-price-confidence.js'
+      - 'external-price-evidence.js'
+      - 'external-search-runtime.js'
+      - 'external-search.css'
+      - 'verify-search-demand-analytics.js'
+      - 'verify-universal-search-intent.js'
+      - 'verify-external-search-policy.js'
+      - 'verify-external-search-client.js'
+      - 'verify-external-search-i18n.js'
+      - 'verify-external-price-confidence.js'
+      - 'verify-brave-worker-contract.js'
+      - 'cloudflare/brave-search-worker.js'
+      - 'docs/EXTERNAL-SEARCH-WORKPLAN-2026-09-29.md'
+      - '.github/workflows/external-search-gate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  external-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JavaScript syntax
+        run: |
+          node --check search-render-signal.js
+          node --check search-demand-analytics.js
+          node --check search-intent.js
+          node --check universal-search-intent.js
+          node --check external-search-policy.js
+          node --check external-search-client.js
+          node --check external-search-i18n.js
+          node --check external-search-ui.js
+          node --check external-price-confidence.js
+          node --check external-search-runtime.js
+          node --check cloudflare/brave-search-worker.js
+          node --check verify-search-demand-analytics.js
+          node --check verify-universal-search-intent.js
+          node --check verify-external-price-confidence.js
+          node --check verify-brave-worker-contract.js
+      - name: Verify local completion signal wiring
+        shell: bash
+        run: |
+          grep -q 'search-render-signal.js' search.html
+          grep -q "fundblick:search-rendered" search-render-signal.js
+          grep -q "fundblick:search-rendered" external-search-runtime.js
+          signal_line=$(grep -n 'search-render-signal.js' search.html | head -1 | cut -d: -f1)
+          runtime_line=$(grep -n 'external-search-runtime.js' search.html | head -1 | cut -d: -f1)
+          test "$signal_line" -le "$runtime_line"
+          echo 'Local completion signal is wired before external runtime.'
+      - name: Verify universal intent routing
+        run: node verify-universal-search-intent.js
+      - name: Verify fallback policy
+        run: node verify-external-search-policy.js
+      - name: Verify external client
+        run: node verify-external-search-client.js
+      - name: Verify fallback translations
+        run: node verify-external-search-i18n.js
+      - name: Verify external price confidence
+        run: node verify-external-price-confidence.js
+      - name: Verify demand analytics privacy contract
+        run: node verify-search-demand-analytics.js
+      - name: Verify Brave Worker contract
+        run: node verify-brave-worker-contract.js
+      - name: Verify explicit development activation
+        shell: bash
+        run: |
+          grep -q 'data-external-search-enabled="true"' search.html
+          grep -q 'data-external-search-endpoint="https://fundblick-search.frosty-moon-518b.workers.dev"' search.html
+          grep -q 'universal-search-intent.js' search.html
+          grep -q 'external-price-confidence.js' search.html
+          ! grep -q 'search-demand-analytics.js' search.html
+          echo 'External fallback, universal intent routing and price confidence are explicitly enabled; demand analytics remain dormant.'
+      - name: Reject committed Brave secrets
+        shell: bash
+        run: |
+          if grep -RInE --exclude-dir=.git --exclude='*.md' '(X-Subscription-Token[[:space:]]*:[[:space:]]*["'"'][A-Za-z0-9_-]{20,}|BRAVE_SEARCH_API_KEY[[:space:]]*=[[:space:]]*["'"'][^"'"']+)' .; then
+            echo 'Potential Brave secret committed to repository.' >&2
+            exit 1
+          fi
+          echo 'No committed Brave secret pattern found.'

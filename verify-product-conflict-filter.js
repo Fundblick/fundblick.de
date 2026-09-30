@@ -1,0 +1,7 @@
+'use strict';
+const assert=require('node:assert/strict');const f=require('./product-conflict-filter.js');
+const mk=(kind,i)=>({id:i,constraintMatch:kind==='unknown'?{known:0,conflicts:0}:kind==='bad'?{known:1,conflicts:1}:{known:1,conflicts:0}});
+let items=[...Array.from({length:15},(_,i)=>mk('good',i)),...Array.from({length:3},(_,i)=>mk('unknown',20+i)),...Array.from({length:5},(_,i)=>mk('bad',30+i))];let out=f.apply(items);assert.equal(out.mode,'strict');assert.equal(out.items.length,18);assert.equal(out.suppressedCount,5);assert.ok(out.items.every(x=>x.constraintMatch.conflicts===0));
+items=[...Array.from({length:4},(_,i)=>mk('good',i)),...Array.from({length:6},(_,i)=>mk('bad',10+i))];out=f.apply(items);assert.equal(out.mode,'fallback');assert.equal(out.items.length,10);assert.equal(out.suppressedCount,0);
+items=[...Array.from({length:2},(_,i)=>mk('good',i)),...Array.from({length:14},(_,i)=>mk('unknown',10+i)),...Array.from({length:4},(_,i)=>mk('bad',30+i))];out=f.apply(items);assert.equal(out.mode,'fallback','too few clean matches must not trigger strict suppression');assert.equal(out.items.length,20);
+console.log('Conflict filter: strict suppression only with enough clean evidence; fallback prevents empty/thin results OK');

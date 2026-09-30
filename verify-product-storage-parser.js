@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict'),parser=require('./product-storage-parser.js');
+let x=parser.parse('16 GB RAM 512 GB SSD','computing.laptop');assert.equal(x.attributes.memory.value,16);assert.equal(x.attributes.storage.value,512);
+x=parser.parse('RAM: 16 GB / SSD: 512 GB','computing.laptop');assert.equal(x.attributes.storage.value,512);
+x=parser.parse('8 GB 256 GB','electronics.smartphone');assert.equal(x.attributes.memory.value,8);assert.equal(x.attributes.storage.value,256);
+x=parser.parse('8 GB RAM 256 GB','electronics.smartphone');assert.equal(x.attributes.storage.value,256,'RAM label belongs to the preceding capacity');assert.equal(x.attributes.memory.value,8);
+x=parser.parse('Samsung Galaxy A26 8256GB Black','electronics.smartphone');assert.equal(x.attributes.storage.value,256);assert.equal(x.attributes.memory.value,8);
+x=parser.parse('Lenovo Laptop 16 GB','computing.laptop');assert.equal(x.attributes.memory.value,16);assert.equal(x.attributes.storage,undefined);
+x=parser.parse('Smartphone 16 GB','electronics.smartphone');assert.equal(x.attributes.storage.value,16,'small explicit phone storage remains possible');
+x=parser.parse('256 GB oder 512 GB','electronics.smartphone');assert.equal(x.attributes.storage,undefined);assert.ok(x.ambiguities.includes('storage'));
+x=parser.parse('1 TB / 1000 GB SSD','computing.laptop');assert.equal(parser.baseValue(x.attributes.storage),1000);assert.deepEqual(x.ambiguities,[]);
+assert.deepEqual(parser.parse('8 GB RAM','computing.laptop').attributes.storage,undefined);
+console.log('Storage parser: RAM/storage separation + phone slug + ambiguous variants + equivalent units OK');
