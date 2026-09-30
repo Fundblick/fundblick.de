@@ -21,3 +21,10 @@ assert.equal(urlQuantity.attributes.volume.value,1);assert.equal(urlQuantity.att
 const disputed=evidenceCases.results.find(x=>x.url.includes('castrol-10w-40-1-l'));
 assert.equal(disputed.attributes.volume,undefined);assert.equal(disputed.attributes.normalized_quantity,undefined);assert.equal(disputed.attributes.unit_price,undefined,'normalizer cannot reintroduce disputed quantity from text');
 assert.equal(evidenceCases.results[0].attributes.volume.value,5,'unambiguous exact offer ranks first');
+const laptopCases=p.run('Lenovo Laptop 512 GB',[
+ {title:'Lenovo Laptop 16 GB RAM 512 GB SSD',url:'https://shop.example/product/lenovo-laptop-16-gb-ram-512-gb-ssd',price:599},
+ {title:'Lenovo PCs online kaufen',url:'https://shop.example/product/lenovo-thinkcentre-mini-pc-16-gb-ram-512-gb-ssd',price:399},
+ {title:'Lenovo Desktop PC 512 GB SSD',url:'https://shop.example/product/desktop',price:299}
+]);
+assert.equal(laptopCases.results.length,1,'explicit desktop products do not fill laptop search fallback');assert.equal(laptopCases.quality.relevanceRejectedCount,2);assert.equal(laptopCases.quality.duplicateCount,0,'category exclusions are not counted as duplicates');assert.equal(laptopCases.results[0].attributes.storage.value,512);assert.equal(laptopCases.results[0].attributes.memory.value,16);assert.equal(laptopCases.results[0].constraintMatch.conflicts,0);
+const phoneCases=p.run('Samsung Smartphone 256 GB',[{title:'Samsung Handy 256 GB',url:'https://shop.example/product/samsung-galaxy-a26-8256gb-black-256-gb',price:319}]);assert.equal(phoneCases.results[0].attributes.storage.value,256);assert.equal(phoneCases.results[0].constraintMatch.matched,2);assert.deepEqual(phoneCases.results[0].attributeConflicts,[]);

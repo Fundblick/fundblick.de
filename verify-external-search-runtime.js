@@ -12,6 +12,11 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V'){
  context.addEventListener=(name,fn)=>{events[name]=fn};
  Object.assign(context,{FundBlickExternalSearchPolicy:require('./external-search-policy.js'),FundBlickExternalSearchClient:{async search({offset,query}){calls++;requests.push({offset,query});assert.ok(offset<pages.length,'unexpected additional search request');return{ok:true,results:pages[offset],moreResultsAvailable:offset<pages.length-1}}},FundBlickExternalSearchUI:{...ui,render(_,state){renders.push(state)},hide(){}},FundBlickUniversalSearchIntent:require('./universal-search-intent.js'),FundBlickExternalPriceConfidence:require('./external-price-confidence.js'),FundBlickIntentQuery:require('./search-intent-query.js'),FundBlickProductIntelligence:require('./product-intelligence-core.js'),FundBlickProductQueryStrategy:require('./product-query-strategy.js'),FundBlickExternalResultPage:require('./external-result-page.js'),FundBlickProductIntelligencePipeline:require('./product-intelligence-pipeline.js'),FundBlickExternalIntelligenceUI:{render(_,state){facets.push(state)},apply:require('./external-intelligence-ui.js').apply}});
  vm.createContext(context);
+ vm.runInContext(fs.readFileSync('product-storage-parser.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('product-intelligence-core.js','utf8'),context);
+ vm.runInContext(fs.readFileSync('product-result-attribute-extractor.js','utf8'),context);
+ const browserStorage=context.FundBlickProductResultAttributeExtractor.extract({title:'Samsung Smartphone 8 GB RAM 256 GB'},{category:'electronics.smartphone'});
+ assert.equal(browserStorage.attributes.storage.value,256,'browser dependency wiring preserves storage separately from RAM');
  vm.runInContext(fs.readFileSync('product-query-strategy.js','utf8'),context);
  vm.runInContext(fs.readFileSync('external-search-ui.js','utf8'),context);
  const realUI=context.FundBlickExternalSearchUI;

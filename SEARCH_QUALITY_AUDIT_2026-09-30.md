@@ -61,3 +61,26 @@ Implemented `buildOffers` and connected it to Offers in the browser runtime. Foc
 Added query strategy and runtime regressions for category/language scope, query preservation, request budget, browser dependency wiring, consistent pagination queries and unchanged information search. Updated script versions so the development page loads the corrected modules.
 
 Block 2 remains in progress: tire retrieval, wider reference-query coverage, merchant-page price checks, ranking and model fidelity still need work. Blocks 3–5 and Development acceptance remain open as recorded in the Desktop handoff.
+
+## Follow-up: remaining reference-query families (roadmap block 2)
+
+Four additional worker requests using the existing offer queries, count=20 and offset=0: `Adidas Damen Schuhe EU 39`, `Samsung Fernseher 55 Zoll`, `Samsung Smartphone 256 GB`, and `Lenovo Laptop 512 GB`. Replayed the saved responses after corrections; no extra upstream requests during replay.
+
+Findings fixed:
+
+- Shoe brand/size category pages from eschuhe and Sizeer were counted as products. Exclude their observed listing paths.
+- Samsung's 55-inch TV overview was counted as a direct offer. Exclude the observed overview path while retaining specific product pages.
+- A Netzwelt deal article and a mydealz group page leaked into offers. Exclude these editorial/group paths.
+- RAM was read as storage: e.g. `16 GB RAM 512 GB SSD` became 16 GB storage. Use one shared parser in query analysis and result extraction to keep RAM and disk/phone storage separate.
+- The Samsung A26 URL contained `8256GB` alongside `256 GB`. Recognize the phone-specific concatenated RAM/storage form instead of flagging a false 8256-vs-256 conflict.
+- Multiple storage variants remain ambiguous. Equivalent decimal GB/TB capacities agree in evidence and ranking (1 TB = 1000 GB); different units cannot cause a false numeric match.
+- The only remaining Lenovo candidate was a ThinkCentre mini-PC. Category schemas can now declare explicit incompatible product kinds. The laptop schema rejects clearly named desktop/mini-PC products using title or URL evidence; unrelated description text does not reject a laptop. These exclusions have their own quality count and are not counted as duplicates.
+
+| Query | After correction, first upstream page | Remaining work |
+| --- | --- | --- |
+| Adidas Damen Schuhe EU 39 | 0 suitable candidates; both apparent offers were listings | Improve direct-product retrieval; validate actual product sizes |
+| Samsung Fernseher 55 Zoll | 2 matching direct-offer candidates | Check merchant prices and model details |
+| Samsung Smartphone 256 GB | 2 matching direct-offer candidates | Check merchant prices and availability |
+| Lenovo Laptop 512 GB | 0 suitable candidates; explicit mini-PC excluded | Improve laptop retrieval |
+
+Candidate counts are not a final confirmation of stock, checkout price or every model requirement. The original 20 product classes and earlier regression cases remain covered. The storage parser adds one automated gate, bringing local search/intelligence checks to 20. Browser dependency wiring for the new module is covered by the existing runtime harness; the full Development browser acceptance remains open.

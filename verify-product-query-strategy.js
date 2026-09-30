@@ -13,4 +13,5 @@ assert.equal(q.buildOffers('Bleistift','de').query,'Bleistift kaufen Preis Angeb
 assert.equal(q.buildOffers('Bosch cordless drill 18V','en').offerMode,'default','unvalidated languages do not receive German exclusions');
 x=q.buildOffers('Bosch Akkuschrauber 18V '+('A'.repeat(80)),'de');assert.equal(x.offerMode,'default','do not append focus operators beyond worker query budget');
 assert.equal(q.buildOffers('','de').query,'');
+x=q.build('Lenovo Laptop 16 GB RAM 512 GB SSD','de');assert.equal(x.analysis.attributes.storage.value,512);assert.equal(x.analysis.attributes.memory.value,16);assert.equal((x.query.match(/512 GB/g)||[]).length,1,'preserve explicit disk capacity without duplicate RAM/storage terms');
 console.log('Product query strategy: category-aware refinement without duplicate constraints OK');

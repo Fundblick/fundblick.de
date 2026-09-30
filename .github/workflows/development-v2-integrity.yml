@@ -40,6 +40,7 @@ jobs:
       - run: node verify-external-offer-quality.js
       - run: node verify-external-search-runtime.js
       - run: node verify-product-intelligence-core.js
+      - run: node verify-product-storage-parser.js
       - run: node verify-product-query-strategy.js
       - run: node verify-product-facet-engine.js
       - run: node verify-product-unit-normalizer.js

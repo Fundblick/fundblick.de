@@ -9,4 +9,8 @@ x=intel.analyze('Continental Winterreifen 205/55 R16');assert.equal(x.attributes
 for(const query of ['Winterreifen Modell 205/55 R16','Hochpreisiges Motoröl','Shellac Lack','Mobilität Zubehör','Trekking Ausrüstung'])assert.equal(intel.analyze(query).attributes.brand,undefined,`no substring brand in ${query}`);
 assert.equal(intel.analyze('LIQUI-MOLY Motoröl').attributes.brand.value,'liqui moly');
 assert.equal(intel.analyze('HP Laptop').attributes.brand.value,'hp');
+x=intel.analyze('Lenovo Laptop 16 GB RAM 512 GB SSD');assert.equal(x.attributes.memory.value,16);assert.equal(x.attributes.storage.value,512,'RAM must not become the storage constraint');
+x=intel.analyze('Samsung Smartphone 8 GB RAM 256 GB');assert.equal(x.attributes.storage.value,256);assert.equal(x.attributes.memory.value,8);
+assert.equal(intel.compatible(intel.analyze('Lenovo Laptop'),{title:'Lenovo ThinkCentre Mini-PC'}),false);
+assert.equal(intel.compatible(intel.analyze('Lenovo Laptop'),{title:'Lenovo Laptop',description:'Schneller als unser Desktop PC'}),true,'unrelated comparison snippet does not reject a laptop');
 x=intel.analyze('seltsames unbekanntes produkt xyz');assert.equal(x.category,null);assert.deepEqual(x.facets,['brand','price']);assert.ok(intel.classes.length>=20);console.log('Product intelligence core: 20+ classes + golden queries + conservative fallback OK');
