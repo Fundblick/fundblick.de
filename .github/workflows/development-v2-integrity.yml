@@ -46,5 +46,6 @@ jobs:
       - run: node verify-product-constraint-ranker.js
       - run: node verify-product-conflict-filter.js
       - run: node verify-product-intelligence-pipeline.js
+      - run: node verify-product-intelligence-golden-queries.js
       - run: node verify-external-result-page.js
       - run: node verify-product-intelligence-10w40.js
