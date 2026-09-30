@@ -114,3 +114,13 @@ item = confidence.annotate([{
 assert.equal(ui.trustedPrice(item, item.url), '24,90 €', 'worker-verified price remains renderable');
 
 console.log('External price confidence: visible precedence + decimal parser + listing-price isolation OK');
+
+const promotion={title:'Akku-Bohrschrauber Bosch GSR 18V-65',description:'Kaufen Sie Bosch Professional Produkte für mindestens 236,81 € inkl. MwSt. und erhalten Sie eine Zugabe.',url:'https://shop.example/product/bosch',image:'https://img.example/drill.jpg',productCandidate:true,price:'236,81 €',currency:'EUR',priceConfidence:'visible'};
+const rejected=confidence.annotate([promotion])[0];
+assert.equal(rejected.priceIssue,'non-offer-amount');assert.equal(ui.trustedPrice(rejected,rejected.url),'');assert.equal(ui.offerEligible(rejected),false,'promotion thresholds are not purchase offers');
+assert.equal(ui.visiblePriceFromText('Versand 4,95 €; Produktpreis 24,90 €'),'24,90 €');
+assert.equal(ui.visiblePriceFromText('Grundpreis 7,00 € / l; Gesamtpreis 34,99 €'),'34,99 €');
+assert.equal(ui.visiblePriceFromText('UVP 99,99 €; jetzt 79,99 €'),'79,99 €');
+assert.equal(ui.visiblePriceFromText('Gratisversand ab 50,00 €'),'');
+assert.equal(ui.trustedPrice({...promotion,price:'249.99',priceConfidence:'verified'},promotion.url),'249,99 €','independent different offer price remains usable');
+const aligned=confidence.annotate([{...promotion,description:'Produktpreis 249,99 €',price:'236.81',priceConfidence:'structured'}])[0];assert.equal(aligned.price,'249,99 €','sorting metadata uses the same visible price as the card');

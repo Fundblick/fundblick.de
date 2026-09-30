@@ -1,10 +1,11 @@
 'use strict';
 
 (function (root, factory) {
-  const api = factory();
+  const api = factory(root);
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.FundBlickExternalPriceConfidence = api;
-})(typeof window !== 'undefined' ? window : globalThis, function () {
+})(typeof window !== 'undefined' ? window : globalThis, function (root) {
+  const evidence=typeof require==='function'?require('./external-price-evidence.js'):root.FundBlickExternalPriceEvidence;
   const blockedHosts = [
     'ebay.', 'autouncle.', 'dasparking.', 'idealo.', 'kleinanzeigen.'
   ];
@@ -39,6 +40,7 @@
 
   function canTrustStructuredPrice(item) {
     if (!item || !String(item.price || '').trim()) return false;
+    if(evidence?.isNonOfferPrice(item))return false;
     if (String(item.priceConfidence || '').toLowerCase() === 'verified') return true;
     if (!item.productCandidate) return false;
     if (!String(item.image || '').trim()) return false;
@@ -51,6 +53,8 @@
 
   function annotate(items) {
     return (Array.isArray(items) ? items : []).map(item => {
+      if(evidence?.isNonOfferPrice(item))return {...item,priceConfidence:'ambiguous',priceIssue:'non-offer-amount'};
+      const visible=evidence?.visiblePrice(item);if(visible)item={...item,price:visible};
       if (!canTrustStructuredPrice(item)) return item;
       if (String(item.priceConfidence || '').toLowerCase() === 'verified') return item;
       return { ...item, priceConfidence: 'verified' };

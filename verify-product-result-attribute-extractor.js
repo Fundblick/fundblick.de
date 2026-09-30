@@ -1,4 +1,9 @@
 'use strict';
+
+const decimalExtractor=require('./product-result-attribute-extractor.js');
+const decimalAssert=require('node:assert/strict');
+for(const [slug,value]of [['1-5ah',1.5],['4-0-ah',4]]){const result=decimalExtractor.extract({title:'Bosch Akkuschrauber 18V',url:`https://shop.example/product/bosch-18v-${slug}`},{category:'tools.cordless_drill'});decimalAssert.equal(result.attributes.battery_capacity.value,value)}
+const decimalModel=decimalExtractor.extract({title:'Bosch GSR 18V-65',url:'https://shop.example/product/bosch-gsr-18v-65'},{category:'tools.cordless_drill'});decimalAssert.equal(decimalModel.attributes.voltage.value,18);decimalAssert.equal(decimalModel.attributes.battery_capacity,undefined,'model suffix is not a decimal capacity');
 const assert=require('node:assert/strict');const e=require('./product-result-attribute-extractor.js');
 let x=e.extract({title:'Castrol Magnatec 10W-40 Motoröl 5 Liter'},{category:'automotive.motor_oil'});assert.equal(x.attributes.viscosity.value,'10W-40');assert.equal(x.attributes.volume.value,5);
 x=e.extract({title:'Adidas Damen Sneaker schwarz EU 39'},{category:'fashion.shoes'});assert.equal(x.attributes.audience.value,'women');assert.equal(x.attributes.color.value,'black');assert.equal(x.attributes.size.value,39);

@@ -84,3 +84,17 @@ Findings fixed:
 | Lenovo Laptop 512 GB | 0 suitable candidates; explicit mini-PC excluded | Improve laptop retrieval |
 
 Candidate counts are not a final confirmation of stock, checkout price or every model requirement. The original 20 product classes and earlier regression cases remain covered. The storage parser adds one automated gate, bringing local search/intelligence checks to 20. Browser dependency wiring for the new module is covered by the existing runtime harness; the full Development browser acceptance remains open.
+
+## Follow-up: merchant-page price checks and real-data sorting
+
+Read-only merchant-page checks through the web tool (cached/indexed page extraction, not a checkout session): [OBI 5L oil](https://www.obi.de/p/5805247/liqui-moly-nr-1-leichtlaufmotoroel-10w-40-5-l), [Böttcher Bosch drill](https://www.bueromarkt-ag.de/akku-bohrschrauber_bosch_gsr_18v-65_professional,p-06019n3203.html), [MediaMarkt A26](https://www.mediamarkt.de/de/product/_samsung-galaxy-a26-5g-8256gb-black-256-gb-black-dual-sim-152441604.html).
+
+OBI confirms EUR 34.99 for 5L and displayed EUR 7.00/L, consistent with the calculated 6.998 rounded to two decimals. Shipping is separate; this is not a landed-price comparison. The A26 page confirms the 8+256GB variant; the saved EUR 319.35 price was not confirmed by the retrieved text.
+
+Böttcher's EUR 236.81 is a qualifying minimum spend for a promotional gift. It is not this drill's purchase price. The retrieved page also contains tiered prices and business/private-customer VAT modes; do not substitute one of these values automatically. Added shared visible-price evidence for cards and confidence assessment: skip explicitly marked minimum spend, shipping, coupon/discount amounts, crossed-out/UVP context and per-unit prices; reject metadata matching only such amounts. Independent different verified prices remain usable. When a valid visible offer price exists, sort metadata uses that same amount.
+
+Saved Bosch data exposed URL-decimal loss: `1-5ah` and `4-0-ah` became 5Ah and 0Ah. Normalize the demonstrated Ah slug form before decoding separators. Keep model `18V-65` and motor-oil `10w-40-5-l` unchanged. Do not generalize all numeric hyphens to decimals.
+
+Replayed all saved samples without another provider search. Current suitable counts in first 5/10/20 upstream results: focused oil 3/6/6; focused Bosch 2/3/3 (one false promotional price removed); baseline tires 0/1/1; shoes 0/0/0; TV 1/2/2; smartphones 2/2/2; laptops 0/0/0. Counts are pipeline-eligible candidates, not confirmed complete offers. Ascending oil prices: 9.99, 20.95, 20.99, 21.35, 26.54, 34.99 EUR; ascending unit prices: 4.19, 4.198, 4.27, 5.308, 6.998, 9.99 EUR/L. The 1L result remains a marked query conflict under the existing thin-result fallback.
+
+Open: mixed-currency/unit-basis sorting, equivalent storage facets, full browser acceptance, all merchant stock/checkout prices, stronger model fidelity and sparse-query retrieval.
