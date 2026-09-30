@@ -8,6 +8,86 @@ Diese Datei ist die verbindliche Übergabe für die Fortsetzung der FundBlick-We
 **Arbeitsbranch:** `development`  
 **WICHTIG:** `main` und Live/Produktion NICHT verändern, solange keine ausdrückliche Freigabe des Nutzers nach vollständiger Development-Abnahme erfolgt.
 
+## Arbeits- und Berichtsprotokoll für Jens – VERBINDLICH
+
+Der technische Stand allein reicht nicht. Die Zusammenarbeit mit Jens soll auf dem Desktop genauso fortgesetzt werden wie im bisherigen mobilen FundBlick-Chat.
+
+### Grundmodus
+
+- Jens steuert häufig nur mit kurzen Nachrichten wie `Weiter`, `Los`, `Los geht's` oder `Attacke`.
+- Das bedeutet: autonom am aktuell vereinbarten Arbeitsblock weiterarbeiten, ohne für jeden kleinen technischen Schritt Rückfragen zu stellen.
+- So viel sinnvoll zusammenhängende Arbeit wie möglich am Stück erledigen.
+- Nicht nach jedem einzelnen Dateizugriff oder Test auf eine neue Bestätigung warten.
+- Nur nachfragen, wenn eine echte fachliche Entscheidung von Jens nötig ist, ein erhebliches Risiko besteht oder eine ausdrücklich geschützte Grenze betroffen wäre.
+- `development` ist der Arbeitsbereich. `main`, Backup und Live/Produktion bleiben unangetastet, bis Jens ausdrücklich etwas anderes freigibt.
+
+### Wie Jens informiert werden möchte
+
+Nach einem sinnvollen Arbeitsblock eine kurze, aber konkrete Zusammenfassung in normalem Deutsch geben. Nicht nur Agenten-/Terminalstatus wie `Block 2`, `3 files changed` oder `commands executed` ausgeben.
+
+Jens soll nachvollziehen können:
+
+1. **Was wurde geprüft?**
+2. **Was wurde konkret gefunden?**
+3. **Was wurde geändert?**
+4. **Warum war die Änderung notwendig bzw. was verbessert sie für FundBlick?**
+5. **Wie wurde sie abgesichert/getestet?**
+6. **Ist CI/Gate tatsächlich grün oder noch nicht geprüft?**
+7. **Welche Commits wurden erzeugt?**
+8. **Was ist der nächste sinnvolle Schritt?**
+
+Dabei streng zwischen folgenden Zuständen unterscheiden:
+
+- **gefunden** = Problem/Beobachtung ist nachgewiesen;
+- **implementiert/geändert** = Code wurde tatsächlich geändert;
+- **getestet** = konkrete Tests wurden ausgeführt;
+- **CI grün** = zugehöriger GitHub-Actions-Lauf wurde tatsächlich erfolgreich kontrolliert;
+- **noch offen/nicht bewiesen** = nicht als erledigt darstellen.
+
+Keine Formulierungen wie „sauber erledigt“ oder „vollständig grün“, solange der relevante Lauf nicht wirklich kontrolliert wurde.
+
+### Gewünschter Berichtsstil
+
+Beispiel für einen guten Zwischenbericht:
+
+> Weiter. Das neue Gate hat einen echten Fehler gefunden: Bei Laptop-Treffern wurde eine RAM-Angabe teilweise als Gerätespeicher interpretiert. Dadurch konnten falsche Speicher-Facetten entstehen.
+>
+> Ich habe die Extraktion so geändert, dass RAM-Kontexte und Storage-Kontexte getrennt bewertet werden. Dazu kam ein Regressionstest mit typischen Laptop-Titeln.
+>
+> Commit: `...`
+>
+> Der Code ist implementiert und lokal/testseitig abgesichert. Den zugehörigen CI-Lauf prüfe ich als Nächstes; bis dahin bezeichne ich den Stand nicht als vollständig grün.
+
+Das ist besser als reine interne Meldungen wie „Block 2 abgeschlossen“ oder eine Liste von ausgeführten Befehlen.
+
+### Technische Tiefe
+
+- Fachbegriffe dürfen und sollen verwendet werden, aber kurz erklären, was die Änderung praktisch für die FundBlick-Suche bedeutet.
+- Nicht jeden Quellcodeblock an Jens ausgeben.
+- Bei Fehlern die Ursache nennen, nicht nur den fehlgeschlagenen Test.
+- Bei CI-Fehlern möglichst den konkreten failing Test und dessen fachliche Bedeutung nennen.
+- Commit-SHAs nennen, wenn tatsächlich committed wurde.
+- Wenn mehrere kleine Commits zusammen einen Block bilden, zusammenhängend erklären.
+
+### Fortschritt und Checklisten
+
+- Bei längeren Entwicklungsphasen regelmäßig einordnen, wo das Gesamtprojekt steht.
+- Erledigt, implementiert-aber-noch-zu-validieren und offen sauber trennen.
+- Prozentangaben nur als grobe Arbeitsstandsschätzung kennzeichnen; nicht als exakte Messung ausgeben.
+- Bereits erledigte Arbeit nicht unnötig erneut implementieren.
+
+### Sicherheits- und Qualitätsprinzip
+
+- Gates niemals abschwächen oder Tests löschen, nur damit CI grün wird.
+- Ein rotes Gate als Hinweis auf einen möglichen echten Fehler behandeln und ursächlich untersuchen.
+- Reale Trefferqualität ist wichtiger als bloß eine formal funktionierende Pipeline.
+- Keine stillen Änderungen an Live/`main`.
+- Wenn ein Schritt Live/Produktion berühren würde, vorher Jens' ausdrückliche Freigabe einholen.
+
+### Kommunikationskontinuität
+
+Der Desktop-Chat soll sich nicht wie ein neues, fremdes Projekt verhalten. Jens kennt die technischen Details inzwischen teilweise und möchte die Entwicklung nachvollziehen können. Deshalb bei einem `Weiter` nicht wieder Grundlagen erklären, sondern am letzten nachgewiesenen Stand fortsetzen und anschließend verständlich berichten.
+
 ## Unmittelbarer Stand bei Übergabe
 
 Letzter fachlicher Code-Fix vor dieser Übergabedatei:
@@ -221,4 +301,4 @@ Der Nutzer möchte jedoch keine beliebige allgemeine Websuche. Insbesondere die 
 
 Wenn diese Datei im neuen Chat gefunden wurde, lautet der Arbeitsauftrag sinngemäß:
 
-**`Lies DESKTOP_HANDOFF_2026-09-30.md auf Branch development vollständig. Prüfe danach zuerst HEAD und die CI-Läufe nach dem letzten Deduper-Fix. Arbeite anschließend die offenen Punkte autonom weiter ab. main/Live nicht verändern.`**
+**`Lies DESKTOP_HANDOFF_2026-09-30.md auf Branch development vollständig, einschließlich des Arbeits- und Berichtsprotokolls für Jens. Prüfe danach HEAD und den aktuellen CI-Stand. Arbeite anschließend autonom am letzten nachgewiesenen FundBlick-Stand weiter. Berichte nach sinnvollen Arbeitsblöcken konkret: geprüft -> gefunden -> geändert -> getestet -> CI-Status -> Commit -> nächster Schritt. main/Live nicht verändern.`**
