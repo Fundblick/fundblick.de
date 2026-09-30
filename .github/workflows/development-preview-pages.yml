@@ -1,4 +1,4 @@
-name: Development Preview Pages
+name: Development Preview Build
 
 on:
   push:
@@ -8,19 +8,14 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: development-preview-pages
+  group: development-preview-build
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build-preview:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout development
         uses: actions/checkout@v6
@@ -37,7 +32,7 @@ jobs:
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Development merchant catalog OK',m.realCount)"
           test -s build/catalog/categories.json
 
-      - name: Build current development preview
+      - name: Build isolated development preview
         run: |
           set -euo pipefail
           mkdir -p _site
@@ -58,14 +53,21 @@ jobs:
           test -s _site/catalog/categories.json
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/catalog/manifest.json'));if(Number(m.itemCount)<1000)process.exit(1);console.log('Packaged preview catalog OK',m.itemCount)"
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
+      - name: Assert production Pages isolation
+        run: |
+          set -euo pipefail
+          ! grep -q 'pages: write' .github/workflows/development-preview-pages.yml
+          ! grep -q 'id-token: write' .github/workflows/development-preview-pages.yml
+          ! grep -q 'name: github-pages' .github/workflows/development-preview-pages.yml
+          ! grep -q 'configure-pages' .github/workflows/development-preview-pages.yml
+          ! grep -q 'upload-pages-artifact' .github/workflows/development-preview-pages.yml
+          ! grep -q 'deploy-pages' .github/workflows/development-preview-pages.yml
+          echo 'Development preview is isolated from GitHub Pages production deployment.'
 
-      - name: Upload preview artifact
-        uses: actions/upload-pages-artifact@v4
+      - name: Upload development preview artifact
+        uses: actions/upload-artifact@v4
         with:
+          name: fundblick-development-preview
           path: _site
-
-      - name: Deploy preview
-        id: deployment
-        uses: actions/deploy-pages@v4
+          retention-days: 7
+          if-no-files-found: error
