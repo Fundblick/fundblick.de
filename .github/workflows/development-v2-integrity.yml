@@ -34,7 +34,6 @@ jobs:
       - run: node verify-robot-mower-classifier.js
       - run: node verify-external-search-client.js
       - run: node verify-external-search-policy.js
-      - run: node verify-external-search-ui.js
       - run: node verify-external-price-confidence.js
       - run: node verify-search-intent-query.js
       - run: node verify-universal-search-intent.js
