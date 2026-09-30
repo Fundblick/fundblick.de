@@ -1,0 +1,6 @@
+'use strict';
+(function(root,factory){const api=factory();if(typeof module!=='undefined'&&module.exports)module.exports=api;if(root)root.FundBlickProductConflictFilter=api;})(typeof window!=='undefined'?window:globalThis,function(){
+ function partition(items){const clean=[],conflicting=[],unknown=[];for(const item of Array.isArray(items)?items:[]){const m=item?.constraintMatch;if(!m||m.known===0)unknown.push(item);else if(m.conflicts>0)conflicting.push(item);else clean.push(item)}return{clean,conflicting,unknown}}
+ function apply(items,options={}){const all=Array.isArray(items)?items:[],minKeep=Number.isFinite(options.minKeep)?Math.max(1,options.minKeep):12,minCleanRatio=Number.isFinite(options.minCleanRatio)?options.minCleanRatio:.45;const p=partition(all),safe=[...p.clean,...p.unknown],ratio=all.length?p.clean.length/all.length:0;const canSuppress=p.conflicting.length>0&&safe.length>=minKeep&&ratio>=minCleanRatio;return Object.freeze({items:canSuppress?safe:all,suppressed:canSuppress?p.conflicting:[],suppressedCount:canSuppress?p.conflicting.length:0,mode:canSuppress?'strict':'fallback',stats:Object.freeze({total:all.length,clean:p.clean.length,unknown:p.unknown.length,conflicting:p.conflicting.length,cleanRatio:Number(ratio.toFixed(3)),minKeep,minCleanRatio})})}
+ return Object.freeze({apply,partition});
+});
