@@ -1,7 +1,12 @@
 'use strict';
 const assert=require('node:assert/strict');const e=require('./product-result-attribute-extractor.js');
-let x=e.extract({title:'Castrol Magnatec 10W-40 Motoröl 5 Liter',description:'Angebot'},{category:'automotive.motor_oil'});assert.equal(x.attributes.brand.value,'castrol');assert.equal(x.attributes.viscosity.value,'10W-40');assert.equal(x.attributes.volume.value,5);
-x=e.extract({title:'Adidas Damen Sneaker schwarz EU 39',description:''},{category:'fashion.shoes'});assert.equal(x.attributes.brand.value,'adidas');assert.equal(x.attributes.audience.value,'women');assert.equal(x.attributes.color.value,'black');assert.equal(x.attributes.size.value,39);
-x=e.extract({title:'Samsung Smart TV 65 Zoll',description:''},{category:'electronics.television'});assert.equal(x.attributes.brand.value,'samsung');assert.equal(x.attributes.screen_size.value,65);
-x=e.extract({title:'Bosch Akkuschrauber 18 V',description:''},{category:'tools.cordless_drill'});assert.equal(x.attributes.voltage.value,18);
-console.log('Web offer attribute extractor: category-aware normalized attributes OK');
+let x=e.extract({title:'Castrol Magnatec 10W-40 Motoröl 5 Liter'},{category:'automotive.motor_oil'});assert.equal(x.attributes.viscosity.value,'10W-40');assert.equal(x.attributes.volume.value,5);
+x=e.extract({title:'Adidas Damen Sneaker schwarz EU 39'},{category:'fashion.shoes'});assert.equal(x.attributes.audience.value,'women');assert.equal(x.attributes.color.value,'black');assert.equal(x.attributes.size.value,39);
+x=e.extract({title:'Continental Winterreifen 205/55 R16'},{category:'automotive.tires'});assert.equal(x.attributes.width.value,205);assert.equal(x.attributes.aspect_ratio.value,55);assert.equal(x.attributes.rim_size.value,16);assert.equal(x.attributes.season.value,'winter');
+x=e.extract({title:'LG OLED 4K Monitor 27 Zoll 144 Hz'},{category:'computing.monitor'});assert.equal(x.attributes.screen_size.value,27);assert.equal(x.attributes.refresh_rate.value,144);assert.equal(x.attributes.display_technology.value,'OLED');assert.equal(x.attributes.resolution.value,'4K');
+x=e.extract({title:'Bosch Akkuschrauber 18 V 5 Ah 60 Nm'},{category:'tools.cordless_drill'});assert.equal(x.attributes.voltage.value,18);assert.equal(x.attributes.battery_capacity.value,5);assert.equal(x.attributes.torque.value,60);
+x=e.extract({title:'Sony Bluetooth Over-Ear Kopfhörer ANC'},{category:'electronics.headphones'});assert.equal(x.attributes.connectivity.value,'wireless');assert.equal(x.attributes.type.value,'over-ear');assert.equal(x.attributes.noise_cancelling.value,'yes');
+x=e.extract({title:'Husqvarna Mähroboter bis 1000 m² 45% Steigung 22 cm Schnittbreite'},{category:'garden.robot_mower'});assert.equal(x.attributes.max_area.value,1000);assert.equal(x.attributes.max_slope.value,45);assert.equal(x.attributes.cutting_width.value,22);
+x=e.extract({title:'Miele Waschmaschine 9 kg 1400 U/min'},{category:'appliance.washing_machine'});assert.equal(x.attributes.capacity.value,9);assert.equal(x.attributes.spin_speed.value,1400);
+x=e.extract({title:'Cube Mountainbike Rahmen 54 cm 29 Zoll 12 Gang'},{category:'sports.bicycle'});assert.equal(x.attributes.frame_size.value,54);assert.equal(x.attributes.wheel_size.value,29);assert.equal(x.attributes.gears.value,12);
+console.log('Web offer attribute extractor: cross-category normalized attributes OK');
