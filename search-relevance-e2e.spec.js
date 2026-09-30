@@ -46,6 +46,8 @@ test('product type prefix outranks feed order',async({page})=>{
   await waitResults(page);
   await expect(page.locator('#cards article.product').first()).toBeVisible();
   await expect(page.locator('#cards article.product h2').first()).toHaveText(/^Mosaiktisch\b/i);
+  expect(new URL(page.url()).searchParams.get('q')).toBe('Mosaiktisch');
+  expect(new URL(page.url()).searchParams.has('category')).toBe(false);
 });
 
 test('brand plus product type is stable across word order',async({page})=>{

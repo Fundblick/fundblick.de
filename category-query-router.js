@@ -25,12 +25,21 @@
     return '';
   };
 
+  const categoryNames={
+    'home.furniture':['möbel','moebel','furniture'],
+    'home.lighting':['lampen','beleuchtung','lighting'],
+    'home.decor':['dekoration','deko','decor'],
+    'home.living':['wohnen','haushalt','living'],
+    'pet.equestrian':['pferd','pferde','reitsport','equestrian','horse care']
+  };
   let matched='';
   let matchedLength=0;
   for(const [key,schema] of Object.entries(schemas)){
     const canonical=canonicalFor(key,schema);
     if(!canonical)continue;
-    const candidates=[schema?.label,...(schema?.terms||[])].filter(Boolean);
+    // Schema terms also contain product subtypes and model names. Those must
+    // remain text queries rather than losing their meaning in a broad category.
+    const candidates=[schema?.label,canonical,...(categoryNames[canonical]||[])].filter(Boolean);
     for(const candidate of candidates){
       const token=normalize(candidate);
       if(!token||token!==query)continue;
@@ -49,7 +58,7 @@
     'mähroboter ersatzteile':'home.garden.robot-mower-accessories',
     'maehroboter ersatzteile':'home.garden.robot-mower-accessories'
   };
-  matched=explicit[query]||matched;
+  matched=Object.entries(explicit).find(([name])=>normalize(name)===query)?.[1]||matched;
   if(!matched)return;
 
   params.set('category',matched);

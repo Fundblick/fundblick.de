@@ -111,4 +111,4 @@ jobs:
           cat /tmp/fundblick-release-http.log
           exit 1
       - name: Browser tests against hashed production files
-        run: npx playwright test result-card-e2e.spec.js external-search-e2e.spec.js --reporter=line --workers=1
+        run: npx playwright test result-card-e2e.spec.js external-search-e2e.spec.js search-relevance-e2e.spec.js --reporter=line --workers=1

@@ -37,3 +37,7 @@ Kosten: keine neuen Dienste oder Suchprovider-Aufrufe für diese Prüfung. Lokal
 ## Fortschreibung für den ausdrücklich autorisierten Release
 
 Jens hat main/Live nun ausdrücklich freigegeben. Öffentliche datenschutz.html enthält den nachgewiesenen Web-Datenfluss und DE/RU-Hinweise; keine Nullspeicherung, kein bestätigter ZDR-Tarif und keine abgeschlossene Rechtsprüfung werden zugesagt. Der vor Aktivierung sichtbare Link führt auf den öffentlichen Abschnitt #websuche. Diese technische Text-/Linkkorrektur ist erledigt. Die oben genannten Nachweise zu Kontotarif, Logs, Rechtsgrundlage, Rollen und Übermittlung sind weiterhin nicht verfügbar und dürfen nicht als erledigt markiert werden. Live-CORS ist technisch geprüft, die echte öffentliche Browser-Abnahme folgt erst nach einem tatsächlichen Deployment.
+
+### Entscheidung nach Rückmeldung von Jens
+
+Die Konto-/Tarifdetails sind Jens nicht bekannt. Ein besonderer ZDR-Tarif ist für eine vorsichtige technische Beschreibung nicht erforderlich; es wird deshalb die veröffentlichte Brave-Obergrenze von 90 Tagen genannt und Cloudflare-Protokollierung nicht ausgeschlossen. Die frühere pauschale Vorab-Anforderung aller Kontonachweise wird als interner Prüfplan fortgeführt, ohne diese Angaben als erledigt zu behaupten. Keine neue Vertragsannahme, keine Account-/Logänderung und keine Aussage juristischer Gesamtfreigabe. Öffentlicher Text bleibt bei belegten technischen Fakten. Jens' ausdrücklicher Merge-/Live-Auftrag gilt; offene betriebliche/rechtliche Nachweise bleiben dokumentiert.

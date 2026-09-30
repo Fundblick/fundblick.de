@@ -322,3 +322,7 @@ Der Nutzer möchte jedoch keine beliebige allgemeine Websuche. Insbesondere die 
 Wenn diese Datei im neuen Chat gefunden wurde, lautet der Arbeitsauftrag sinngemäß:
 
 **`Lies DESKTOP_HANDOFF_2026-09-30.md auf Branch development vollständig, einschließlich des Arbeits- und Berichtsprotokolls für Jens. Prüfe danach HEAD und den aktuellen CI-Stand. Arbeite anschließend autonom am letzten nachgewiesenen FundBlick-Stand weiter. Berichte nach sinnvollen Arbeitsblöcken konkret: geprüft -> gefunden -> geändert -> getestet -> CI-Status -> Commit -> nächster Schritt. main/Live nicht verändern.`**
+
+## Letzte Releasekorrektur
+
+Jens autorisiert Merge/Live weiterhin und kennt Brave-/Cloudflare-Kontodetails nicht. Keine erneute Tariffrage; konservativer öffentlicher Hinweis ohne Speicherfrei-/ZDR-Zusage. Konto-/Vertragsprüfung nicht als erledigt behaupten. 12fcd917 hatte sechs grüne Development-Läufe; zusätzlicher PR-Relevanzgate fand konkrete Produkttyp->Kategorie-Fehlleitung. Korrektur im Router erhält Mosaiktisch-/Modellquery, Gegenproben erfolgreich. Finalen CI-Head, Merge und Pages-Deployment anschließend separat beweisen. Historische Anweisungen main unangetastet sind durch den ausdrücklichen aktuellen Releaseauftrag für diesen Release ersetzt; Backup bleibt geschützt.
