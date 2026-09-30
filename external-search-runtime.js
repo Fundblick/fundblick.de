@@ -7,6 +7,7 @@
   const intentEngine = window.FundBlickUniversalSearchIntent;
   const priceConfidence = window.FundBlickExternalPriceConfidence;
   const intentQuery = window.FundBlickIntentQuery;
+  const resultPage = window.FundBlickExternalResultPage;
   if (!policy || !client || !ui) return;
 
   const container = document.getElementById('external-results');
@@ -20,339 +21,38 @@
   const MAX_OFFSET = 9;
   const MIN_INITIAL_PRICED_PRODUCTS = 10;
   const LOCAL_CARD_SELECTOR = '.product:not([hidden]), .product-card:not([hidden])';
-  let sequence = 0;
-  let localSearchSettled = false;
-  let timer = null;
-  let lastLocalSignature = '';
-  let accumulatedResults = [];
-  let nextOffset = 1;
-  let moreResultsAvailable = false;
-  let loadingMore = false;
-  let activeQuery = '';
-  let activeIntent = null;
-  let scrollObserver = null;
+  let sequence = 0, localSearchSettled = false, timer = null, lastLocalSignature = '';
+  let accumulatedResults = [], nextOffset = 1, moreResultsAvailable = false, loadingMore = false;
+  let activeQuery = '', activeIntent = null, displayPage = 1, activeSort = 'relevance';
 
-  function query() {
-    const params = new URLSearchParams(location.search);
-    return policy.normalizeQuery(params.get('rawq') || params.get('q'));
-  }
+  function query(){const p=new URLSearchParams(location.search);return policy.normalizeQuery(p.get('rawq')||p.get('q'));}
+  function language(){return document.documentElement.lang||'de';}
+  function explicitView(){const v=new URLSearchParams(location.search).get('intentView')||'offers';return ['offers','info','video','local'].includes(v)?v:'offers';}
+  function webRequested(){return new URLSearchParams(location.search).get('web')==='1';}
+  function intentFor(q){try{const base=intentEngine?.analyze?.(q,language())||null;return base?Object.freeze({...base,explicitView:explicitView()}):null}catch{return null}}
+  function externalQuery(){try{return intentQuery?.refine?.(activeQuery,activeIntent?.explicitView||'offers',activeIntent?.searchLanguage||language())||activeQuery}catch{return activeQuery}}
+  function visibleLocalCards(){return Array.from(cards.querySelectorAll(LOCAL_CARD_SELECTOR)).filter(card=>{if(card.hidden)return false;const s=window.getComputedStyle?window.getComputedStyle(card):null;return !s||(s.display!=='none'&&s.visibility!=='hidden')})}
+  function visibleLocalCount(){return visibleLocalCards().length}
+  function localSignature(){return visibleLocalCards().map((card,index)=>`${index}:${String(card.textContent||'').replace(/\s+/g,' ').trim()}`).join('\u0001')}
+  function canUseExternalSearch(q){return !!(enabled&&endpoint&&policy.validQuery(q)&&webRequested())}
 
-  function language() {
-    return document.documentElement.lang || 'de';
-  }
-
-  function explicitView() {
-    const value = new URLSearchParams(location.search).get('intentView') || 'offers';
-    return ['offers','info','video','local'].includes(value) ? value : 'offers';
-  }
-
-  function webRequested() {
-    return new URLSearchParams(location.search).get('web') === '1';
-  }
-
-  function intentFor(q) {
-    try {
-      const base=intentEngine?.analyze?.(q, language()) || null;
-      return base ? Object.freeze({ ...base, explicitView:explicitView() }) : null;
-    } catch { return null; }
-  }
-
-  function externalQuery() {
-    try {
-      return intentQuery?.refine?.(
-        activeQuery,
-        activeIntent?.explicitView || 'offers',
-        activeIntent?.searchLanguage || language()
-      ) || activeQuery;
-    } catch { return activeQuery; }
-  }
-
-  function visibleLocalCards() {
-    return Array.from(cards.querySelectorAll(LOCAL_CARD_SELECTOR)).filter(card => {
-      if (card.hidden) return false;
-      const style = window.getComputedStyle ? window.getComputedStyle(card) : null;
-      return !style || (style.display !== 'none' && style.visibility !== 'hidden');
-    });
-  }
-
-  function visibleLocalCount() {
-    return visibleLocalCards().length;
-  }
-
-  function localSignature() {
-    return visibleLocalCards().map((card, index) => `${index}:${String(card.textContent || '').replace(/\s+/g, ' ').trim()}`).join('\u0001');
-  }
-
-  function canUseExternalSearch(q) {
-    if (!enabled || !endpoint || !policy.validQuery(q)) return false;
-    return webRequested();
-  }
-
-  function gateCopy(localResults) {
-    const lang=String(language()).toLowerCase().split('-')[0];
-    const hasLocal=Number(localResults)>0;
-    const copies={
-      de:{
-        with:{title:'Noch mehr finden?',body:'Du kannst deine Suche auch auf das World Wide Web erweitern.',button:'Im Web weitersuchen'},
-        empty:{title:'Aktuell keine Produkte vorhanden.',body:'Du kannst deine Suche stattdessen auf das World Wide Web erweitern.',button:'Im Web weitersuchen'}
-      },
-      en:{
-        with:{title:'Want to explore further?',body:'You can also extend your search to the World Wide Web.',button:'Continue on the web'},
-        empty:{title:'No products currently available.',body:'You can extend your search to the World Wide Web instead.',button:'Continue on the web'}
-      },
-      ru:{
-        with:{title:'Найти больше?',body:'Можно расширить поиск на весь интернет.',button:'Продолжить поиск в интернете'},
-        empty:{title:'Сейчас товаров нет.',body:'Можно продолжить поиск во всём интернете.',button:'Продолжить поиск в интернете'}
-      },
-      ro:{
-        with:{title:'Vrei să găsești mai multe?',body:'Poți extinde căutarea și pe internet.',button:'Continuă căutarea pe internet'},
-        empty:{title:'Momentan nu sunt produse disponibile.',body:'Poți continua căutarea pe internet.',button:'Continuă căutarea pe internet'}
-      },
-      tr:{
-        with:{title:'Daha fazlasını bulmak ister misin?',body:'Aramanı World Wide Web’e de genişletebilirsin.',button:'Web’de aramaya devam et'},
-        empty:{title:'Şu anda ürün bulunmuyor.',body:'Aramana World Wide Web’de devam edebilirsin.',button:'Web’de aramaya devam et'}
-      }
-    };
-    const t=copies[lang]||copies.en;
-    return hasLocal?t.with:t.empty;
-  }
-
-  function renderWebGate(localResults=visibleLocalCount()) {
-    disconnectScrollObserver();
-    container.replaceChildren();
-    container.hidden=false;
-    const t=gateCopy(localResults);
-    const box=document.createElement('div');
-    box.className='external-search-gate';
-    const title=document.createElement('h2');
-    title.className='external-results-title';
-    title.textContent=t.title;
-    box.appendChild(title);
-    const body=document.createElement('p');
-    body.className='external-results-status';
-    body.textContent=t.body;
-    box.appendChild(body);
-    const button=document.createElement('button');
-    button.type='button';
-    button.className='external-search-gate-button';
-    button.textContent=t.button;
-    button.addEventListener('click',()=>{
-      const params=new URLSearchParams(location.search);
-      params.set('web','1');
-      history.replaceState(null,'',`${location.pathname}?${params.toString()}`);
-      schedule(0);
-    });
-    box.appendChild(button);
-    container.appendChild(box);
-  }
-
-  function mergeUnique(existing, incoming) {
-    const out = [];
-    const seen = new Set();
-    for (const item of [...(Array.isArray(existing)?existing:[]), ...(Array.isArray(incoming)?incoming:[])]) {
-      const key = String(item?.url || item?.productUrl || '').replace(/#.*$/, '').replace(/\/$/, '');
-      if (!key || seen.has(key)) continue;
-      seen.add(key);
-      out.push(item);
-    }
-    return out;
-  }
-
-  function prepareResults(items, intent) {
-    let results = Array.isArray(items) ? items : [];
-    try { results = priceConfidence?.annotate?.(results) || results; } catch {}
-    try { results = intentEngine?.rankResults?.(results, intent) || results; } catch {}
-    return results;
-  }
-
-  function trustedPricedProductCount(items, intent) {
-    const prepared = prepareResults(items, intent);
-    return prepared.filter(item => {
-      const type = String(item?.resultType || '');
-      const trusted = intentEngine?.hasTrustedPrice?.(item) === true;
-      return type === 'product' && trusted;
-    }).length;
-  }
-
-  function disconnectScrollObserver() {
-    if (scrollObserver) scrollObserver.disconnect();
-    scrollObserver = null;
-  }
-
-  function armInfiniteScroll() {
-    disconnectScrollObserver();
-    if (!moreResultsAvailable || nextOffset > MAX_OFFSET || loadingMore) return;
-    const sentinel = document.createElement('div');
-    sentinel.className = 'external-results-sentinel';
-    sentinel.setAttribute('aria-hidden', 'true');
-    sentinel.style.minHeight = '1px';
-    container.appendChild(sentinel);
-    scrollObserver = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) loadMore();
-    }, { rootMargin:'900px 0px' });
-    scrollObserver.observe(sentinel);
-  }
-
-  function renderAccumulated() {
-    ui.render(container, { results:prepareResults(accumulatedResults, activeIntent), intent:activeIntent });
-    armInfiniteScroll();
-  }
-
-  async function requestPage(offset) {
-    return client.search({
-      endpoint,
-      query:externalQuery(),
-      language:activeIntent?.searchLanguage || language(),
-      country:'DE',
-      count:PAGE_SIZE,
-      offset
-    });
-  }
-
-  async function loadMore() {
-    if (loadingMore || !moreResultsAvailable || nextOffset > MAX_OFFSET || !activeQuery) return;
-    loadingMore = true;
-    disconnectScrollObserver();
-    const current = sequence;
-    const offset = nextOffset;
-    const result = await requestPage(offset);
-    loadingMore = false;
-    if (current !== sequence || query() !== activeQuery || !webRequested()) return;
-    if (!result.ok) {
-      moreResultsAvailable = false;
-      renderAccumulated();
-      return;
-    }
-    accumulatedResults = mergeUnique(accumulatedResults, result.results);
-    nextOffset = offset + 1;
-    moreResultsAvailable = result.moreResultsAvailable === true && nextOffset <= MAX_OFFSET;
-    renderAccumulated();
-  }
-
-  async function prefetchPricedProducts(current) {
-    if (activeIntent?.explicitView && activeIntent.explicitView !== 'offers') return true;
-    while (
-      current === sequence &&
-      moreResultsAvailable &&
-      nextOffset <= MAX_OFFSET &&
-      trustedPricedProductCount(accumulatedResults, activeIntent) < MIN_INITIAL_PRICED_PRODUCTS
-    ) {
-      const offset = nextOffset;
-      const result = await requestPage(offset);
-      if (current !== sequence || query() !== activeQuery || !webRequested()) return false;
-      if (!result.ok) {
-        moreResultsAvailable = false;
-        break;
-      }
-      accumulatedResults = mergeUnique(accumulatedResults, result.results);
-      nextOffset = offset + 1;
-      moreResultsAvailable = result.moreResultsAvailable === true && nextOffset <= MAX_OFFSET;
-    }
-    return true;
-  }
-
-  function resetExternalState() {
-    disconnectScrollObserver();
-    accumulatedResults = [];
-    nextOffset = 1;
-    moreResultsAvailable = false;
-    loadingMore = false;
-    activeQuery = '';
-    activeIntent = null;
-  }
-
-  function markSettled() {
-    localSearchSettled = true;
-    lastLocalSignature = localSignature();
-    schedule(0);
-  }
-
-  async function evaluate() {
-    const current = ++sequence;
-    const q = query();
-    const intent = intentFor(q);
-    resetExternalState();
-    if (!localSearchSettled || !q) {
-      ui.hide(container);
-      return;
-    }
-
-    const localResults=visibleLocalCount();
-    if (!webRequested()) {
-      renderWebGate(localResults);
-      return;
-    }
-
-    if (!canUseExternalSearch(q)) {
-      ui.hide(container);
-      return;
-    }
-
-    activeQuery = q;
-    activeIntent = intent;
-    ui.render(container, { loading:true, intent });
-    const result = await requestPage(0);
-    if (current !== sequence) return;
-
-    if (query() !== q || !webRequested()) {
-      resetExternalState();
-      ui.hide(container);
-      return;
-    }
-
-    if (!result.ok) {
-      ui.render(container, { error:true, intent });
-      return;
-    }
-
-    accumulatedResults = mergeUnique([], result.results);
-    moreResultsAvailable = result.moreResultsAvailable === true;
-    nextOffset = 1;
-
-    const stillCurrent = await prefetchPricedProducts(current);
-    if (!stillCurrent || current !== sequence) return;
-    renderAccumulated();
-  }
-
-  function schedule(delay = 150) {
-    clearTimeout(timer);
-    timer = setTimeout(evaluate, delay);
-  }
-
-  const observer = new MutationObserver(() => {
-    if (!localSearchSettled) return;
-    const nextSignature = localSignature();
-    if (nextSignature === lastLocalSignature) return;
-    lastLocalSignature = nextSignature;
-    sequence += 1;
-    resetExternalState();
-    ui.hide(container);
-    schedule();
-  });
-  observer.observe(cards, { childList:true, subtree:true, attributes:true, attributeFilter:['hidden','class','style'] });
-
-  window.addEventListener('fundblick:search-rendered', markSettled);
-
-  if (summary) {
-    const summaryObserver = new MutationObserver(() => {
-      const value = String(summary.textContent || '').trim();
-      if (value && !/werden geladen|loading/i.test(value)) {
-        summaryObserver.disconnect();
-        markSettled();
-      }
-    });
-    summaryObserver.observe(summary, { childList:true, subtree:true, characterData:true });
-  }
-
-  window.addEventListener('pageshow', () => {
-    sequence += 1;
-    localSearchSettled = false;
-    lastLocalSignature = '';
-    resetExternalState();
-    ui.hide(container);
-    setTimeout(() => {
-      const value = String(summary?.textContent || '').trim();
-      if (value && !/werden geladen|loading/i.test(value)) markSettled();
-    }, 0);
-  }, { once:true });
+  function gateCopy(localResults){const lang=String(language()).toLowerCase().split('-')[0],hasLocal=Number(localResults)>0;const copies={de:{with:{title:'Noch mehr finden?',body:'Du kannst deine Suche auch auf das World Wide Web erweitern.',button:'Im Web weitersuchen'},empty:{title:'Aktuell keine Produkte vorhanden.',body:'Du kannst deine Suche stattdessen auf das World Wide Web erweitern.',button:'Im Web weitersuchen'}},en:{with:{title:'Want to explore further?',body:'You can also extend your search to the World Wide Web.',button:'Continue on the web'},empty:{title:'No products currently available.',body:'You can extend your search to the World Wide Web instead.',button:'Continue on the web'}},ru:{with:{title:'Найти больше?',body:'Можно расширить поиск на весь интернет.',button:'Продолжить поиск в интернете'},empty:{title:'Сейчас товаров нет.',body:'Можно продолжить поиск во всём интернете.',button:'Продолжить поиск в интернете'}},ro:{with:{title:'Vrei să găsești mai multe?',body:'Poți extinde căutarea și pe internet.',button:'Continuă căutarea pe internet'},empty:{title:'Momentan nu sunt produse disponibile.',body:'Poți continua căutarea pe internet.',button:'Continuă căutarea pe internet'}},tr:{with:{title:'Daha fazlasını bulmak ister misin?',body:'Aramanı World Wide Web’e de genişletebilirsin.',button:'Web’de aramaya devam et'},empty:{title:'Şu anda ürün bulunmuyor.',body:'Aramana World Wide Web’de devam edebilirsin.',button:'Web’de aramaya devam et'}}};const t=copies[lang]||copies.en;return hasLocal?t.with:t.empty}
+  function renderWebGate(localResults=visibleLocalCount()){container.replaceChildren();container.hidden=false;const t=gateCopy(localResults),box=document.createElement('div');box.className='external-search-gate';const title=document.createElement('h2');title.className='external-results-title';title.textContent=t.title;box.appendChild(title);const body=document.createElement('p');body.className='external-results-status';body.textContent=t.body;box.appendChild(body);const button=document.createElement('button');button.type='button';button.className='external-search-gate-button';button.textContent=t.button;button.addEventListener('click',()=>{const p=new URLSearchParams(location.search);p.set('web','1');history.replaceState(null,'',`${location.pathname}?${p.toString()}`);schedule(0)});box.appendChild(button);container.appendChild(box)}
+  function mergeUnique(existing,incoming){const out=[],seen=new Set();for(const item of [...(Array.isArray(existing)?existing:[]),...(Array.isArray(incoming)?incoming:[])]){const key=String(item?.url||item?.productUrl||'').replace(/#.*$/,'').replace(/\/$/,'');if(!key||seen.has(key))continue;seen.add(key);out.push(item)}return out}
+  function prepareResults(items,intent){let r=Array.isArray(items)?items:[];try{r=priceConfidence?.annotate?.(r)||r}catch{}try{r=intentEngine?.rankResults?.(r,intent)||r}catch{}return r}
+  function trustedPricedProductCount(items,intent){return prepareResults(items,intent).filter(item=>String(item?.resultType||'')==='product'&&intentEngine?.hasTrustedPrice?.(item)===true).length}
+  function pagerCopy(){const lang=String(language()).toLowerCase().split('-')[0];return ({de:{prev:'Zurück',next:'Weitere 20',page:'Seite',sort:'Sortierung',rel:'Relevanz',asc:'Preis aufsteigend',desc:'Preis absteigend'},en:{prev:'Previous',next:'Next 20',page:'Page',sort:'Sort',rel:'Relevance',asc:'Price low to high',desc:'Price high to low'},ru:{prev:'Назад',next:'Ещё 20',page:'Страница',sort:'Сортировка',rel:'Релевантность',asc:'Цена по возрастанию',desc:'Цена по убыванию'}})[lang]||({prev:'Previous',next:'Next 20',page:'Page',sort:'Sort',rel:'Relevance',asc:'Price low to high',desc:'Price high to low'})}
+  function renderControls(pageState){const t=pagerCopy(),bar=document.createElement('div');bar.className='external-results-controls';if(activeIntent?.explicitView==='offers'&&resultPage){const select=document.createElement('select');select.setAttribute('aria-label',t.sort);for(const [value,label] of [['relevance',t.rel],['price-asc',t.asc],['price-desc',t.desc]]){const o=document.createElement('option');o.value=value;o.textContent=label;o.selected=value===activeSort;select.appendChild(o)}select.addEventListener('change',()=>{activeSort=select.value;displayPage=1;renderAccumulated()});bar.appendChild(select)}const nav=document.createElement('div');nav.className='external-results-pagination';const prev=document.createElement('button');prev.type='button';prev.textContent=t.prev;prev.disabled=displayPage<=1;prev.addEventListener('click',()=>{displayPage=Math.max(1,displayPage-1);renderAccumulated();container.scrollIntoView({behavior:'smooth',block:'start'})});nav.appendChild(prev);const label=document.createElement('span');label.textContent=`${t.page} ${displayPage}`;nav.appendChild(label);const next=document.createElement('button');next.type='button';next.textContent=t.next;next.disabled=!(pageState?.hasNext||moreResultsAvailable);next.addEventListener('click',async()=>{if(pageState?.hasNext){displayPage++;renderAccumulated()}else if(moreResultsAvailable){await loadMore();displayPage++;renderAccumulated()}container.scrollIntoView({behavior:'smooth',block:'start'})});nav.appendChild(next);bar.appendChild(nav);container.appendChild(bar)}
+  function renderAccumulated(){const prepared=prepareResults(accumulatedResults,activeIntent);if(resultPage){const state=resultPage.page(prepared,{page:displayPage,pageSize:PAGE_SIZE,sort:activeSort});ui.render(container,{results:state.items,intent:activeIntent});renderControls(state)}else ui.render(container,{results:prepared.slice((displayPage-1)*PAGE_SIZE,displayPage*PAGE_SIZE),intent:activeIntent})}
+  async function requestPage(offset){return client.search({endpoint,query:externalQuery(),language:activeIntent?.searchLanguage||language(),country:'DE',count:PAGE_SIZE,offset})}
+  async function loadMore(){if(loadingMore||!moreResultsAvailable||nextOffset>MAX_OFFSET||!activeQuery)return;loadingMore=true;const current=sequence,offset=nextOffset,result=await requestPage(offset);loadingMore=false;if(current!==sequence||query()!==activeQuery||!webRequested())return;if(!result.ok){moreResultsAvailable=false;return}accumulatedResults=mergeUnique(accumulatedResults,result.results);nextOffset=offset+1;moreResultsAvailable=result.moreResultsAvailable===true&&nextOffset<=MAX_OFFSET}
+  async function prefetchPricedProducts(current){if(activeIntent?.explicitView&&activeIntent.explicitView!=='offers')return true;while(current===sequence&&moreResultsAvailable&&nextOffset<=MAX_OFFSET&&trustedPricedProductCount(accumulatedResults,activeIntent)<MIN_INITIAL_PRICED_PRODUCTS){const offset=nextOffset,result=await requestPage(offset);if(current!==sequence||query()!==activeQuery||!webRequested())return false;if(!result.ok){moreResultsAvailable=false;break}accumulatedResults=mergeUnique(accumulatedResults,result.results);nextOffset=offset+1;moreResultsAvailable=result.moreResultsAvailable===true&&nextOffset<=MAX_OFFSET}return true}
+  function resetExternalState(){accumulatedResults=[];nextOffset=1;moreResultsAvailable=false;loadingMore=false;activeQuery='';activeIntent=null;displayPage=1;activeSort='relevance'}
+  function markSettled(){localSearchSettled=true;lastLocalSignature=localSignature();schedule(0)}
+  async function evaluate(){const current=++sequence,q=query(),intent=intentFor(q);resetExternalState();if(!localSearchSettled||!q){ui.hide(container);return}const localResults=visibleLocalCount();if(!webRequested()){renderWebGate(localResults);return}if(!canUseExternalSearch(q)){ui.hide(container);return}activeQuery=q;activeIntent=intent;ui.render(container,{loading:true,intent});const result=await requestPage(0);if(current!==sequence)return;if(query()!==q||!webRequested()){resetExternalState();ui.hide(container);return}if(!result.ok){ui.render(container,{error:true,intent});return}accumulatedResults=mergeUnique([],result.results);moreResultsAvailable=result.moreResultsAvailable===true;nextOffset=1;const stillCurrent=await prefetchPricedProducts(current);if(!stillCurrent||current!==sequence)return;renderAccumulated()}
+  function schedule(delay=150){clearTimeout(timer);timer=setTimeout(evaluate,delay)}
+  const observer=new MutationObserver(()=>{if(!localSearchSettled)return;const next=localSignature();if(next===lastLocalSignature)return;lastLocalSignature=next;sequence+=1;resetExternalState();ui.hide(container);schedule()});observer.observe(cards,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','style']});
+  window.addEventListener('fundblick:search-rendered',markSettled);
+  if(summary){const so=new MutationObserver(()=>{const v=String(summary.textContent||'').trim();if(v&&!/werden geladen|loading/i.test(v)){so.disconnect();markSettled()}});so.observe(summary,{childList:true,subtree:true,characterData:true})}
+  window.addEventListener('pageshow',()=>{sequence+=1;localSearchSettled=false;lastLocalSignature='';resetExternalState();ui.hide(container);setTimeout(()=>{const v=String(summary?.textContent||'').trim();if(v&&!/werden geladen|loading/i.test(v))markSettled()},0)},{once:true});
 })();
