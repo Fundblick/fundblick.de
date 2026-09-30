@@ -5,16 +5,13 @@
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   if (root) root.FundBlickExternalSearchUI = api;
 })(typeof window !== 'undefined' ? window : globalThis, function (root) {
-  const fallback = {
-    title:'More results from the web', loading:'Searching for more results …', empty:'No additional web results found.',
-    error:'Web search is currently unavailable.', source:'Web result', note:'Additional results from external sources.',
-    productSource:'Web product', videoSource:'Video', guideSource:'Guide', comparisonSource:'Comparison', localSource:'Local result'
-  };
+  const fallback = {title:'More results from the web',loading:'Searching for more results …',empty:'No additional web results found.',error:'Web search is currently unavailable.',source:'Web result',note:'Additional results from external sources.',productSource:'Web product',videoSource:'Video',guideSource:'Guide',comparisonSource:'Comparison',localSource:'Local result'};
   const currencySymbols={EUR:'€',USD:'$',GBP:'£',CHF:'CHF',PLN:'PLN',CZK:'CZK',RON:'RON',MDL:'MDL',RUB:'₽'};
   const domainCurrency={ru:'RUB',ro:'RON',md:'MDL',pl:'PLN',cz:'CZK',ch:'CHF',uk:'GBP',gb:'GBP',de:'EUR',at:'EUR',fr:'EUR',it:'EUR',es:'EUR',pt:'EUR',nl:'EUR',be:'EUR',fi:'EUR',ie:'EUR',gr:'EUR'};
-  const NON_OFFER_PATH=/(?:^|\/)(?:news|nachrichten|blog|magazin|ratgeber|guide|press|presse|announcement|announcements|neuigkeiten|article|articles|story|stories)(?:\/|$)/i;
+  const NON_OFFER_PATH=/(?:^|\/)(?:news|nachrichten|blog|magazin|ratgeber|guide|press|presse|announcement|announcements|neuigkeiten|article|articles|story|stories|forum|forums|community|wiki|help|support)(?:\/|$)/i;
+  const LISTING_PATH=/(?:^|\/)(?:search|suche|suchen|category|categories|kategorie|kategorien|catalog|catalogue|collection|collections|angebote|deals)(?:\/|$)/i;
+  const EDITORIAL_TEXT=/(?:\b(?:test|testsieger|vergleich|review|reviews|erfahrungen|ratgeber|kaufberatung|neuheit|neuheiten|news|ankündigung|pressemitteilung|release|launch|hands-on|besten|top\s*\d+)\b|(?:обзор|сравнен|новост|тест)|(?:recenzie|comparativ|noutăți))/iu;
   const VIDEO_HOST=/(^|\.)(youtube\.com|youtu\.be|vimeo\.com)$/i;
-
   function text(){try{return root?.FundBlickExternalSearchI18n?.get?.()||fallback}catch{return fallback}}
   function language(){try{return root?.FundBlickExternalSearchI18n?.language?.()||document.documentElement.lang||'de'}catch{return 'de'}}
   function safeHttpUrl(value){try{const url=new URL(String(value||''));return /^https?:$/.test(url.protocol)?url.href:null}catch{return null}}
@@ -29,35 +26,18 @@
     const href=safeHttpUrl(item?.url||item?.productUrl);if(!href)return false;
     let parsed;try{parsed=new URL(href)}catch{return false}
     const host=parsed.hostname.toLowerCase().replace(/^www\./,'');
-    if(VIDEO_HOST.test(host)||NON_OFFER_PATH.test(parsed.pathname))return false;
-    const productSignal=item?.productCandidate===true||String(item?.resultType||'')==='product';
-    if(!productSignal)return false;
+    if(VIDEO_HOST.test(host)||NON_OFFER_PATH.test(parsed.pathname)||LISTING_PATH.test(parsed.pathname))return false;
+    const productSignal=item?.productCandidate===true||String(item?.resultType||'')==='product';if(!productSignal)return false;
     if(!safeHttpUrl(item?.image))return false;
     if(!trustedPrice(item,href))return false;
+    const combined=`${String(item?.title||'')} ${String(item?.description||'')}`;
+    if(EDITORIAL_TEXT.test(combined))return false;
     return true;
   }
   function usableResults(items,state={}){let values=Array.isArray(items)?items:[];const view=String(state?.intent?.explicitView||'').toLowerCase();if(view==='offers')values=values.filter(offerEligible);return values.map(item=>({item,href:safeHttpUrl(item?.url||item?.productUrl)})).filter(entry=>entry.href)}
   function merchantLabel(item){const merchant=String(item?.merchant||'').trim(),title=String(item?.title||'').trim();if(merchant&&merchant.length<=60&&merchant.toLocaleLowerCase()!==title.toLocaleLowerCase())return merchant;return String(item?.host||'').trim()}
   function sourceLabel(item,t){const type=String(item?.resultType||'').trim();if(type==='video')return t.videoSource||fallback.videoSource;if(type==='guide')return t.guideSource||fallback.guideSource;if(type==='comparison')return t.comparisonSource||fallback.comparisonSource;if(type==='local')return t.localSource||fallback.localSource;if(type==='product'||item?.productCandidate)return t.productSource||fallback.productSource;return t.source||fallback.source}
-  function render(container,state={}){
-    if(!container)return;const t=text();container.replaceChildren();container.hidden=false;
-    const heading=document.createElement('h2');heading.className='external-results-title';heading.textContent=t.title;container.appendChild(heading);
-    if(state.loading){const status=document.createElement('p');status.className='external-results-status';status.setAttribute('role','status');status.textContent=t.loading;container.appendChild(status);return}
-    const results=usableResults(state.results,state);
-    if(state.error||!results.length){const status=document.createElement('p');status.className='external-results-status';status.setAttribute('role','status');status.textContent=state.error?t.error:t.empty;container.appendChild(status);return}
-    const note=document.createElement('p');note.className='external-results-status';note.textContent=t.note||fallback.note;container.appendChild(note);
-    const list=document.createElement('div');list.className='external-results-list';
-    for(const {item,href} of results){
-      const article=document.createElement('article');article.className='external-result-card';if(item.productCandidate)article.classList.add('external-product-candidate');if(item.resultType)article.dataset.resultType=String(item.resultType);
-      const imageHref=safeHttpUrl(item.image);if(imageHref){const image=document.createElement('img');image.className='external-result-image';image.src=imageHref;image.alt='';image.loading='lazy';image.referrerPolicy='no-referrer';article.appendChild(image)}
-      const body=document.createElement('div');body.className='external-result-body';const title=document.createElement('h3');const link=document.createElement('a');link.href=href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=String(item.title||href);title.appendChild(link);body.appendChild(title);
-      const merchantText=merchantLabel(item);if(merchantText){const merchant=document.createElement('small');merchant.className='external-result-host';merchant.textContent=merchantText;body.appendChild(merchant)}
-      const displayPrice=trustedPrice(item,href);if(displayPrice){const price=document.createElement('strong');price.className='external-result-price';price.textContent=displayPrice;body.appendChild(price)}
-      if(item.description){const description=document.createElement('p');description.className='external-result-description';description.textContent=String(item.description);body.appendChild(description)}
-      const source=document.createElement('small');source.className='external-result-source';source.textContent=sourceLabel(item,t);body.appendChild(source);article.appendChild(body);list.appendChild(article)
-    }
-    container.appendChild(list);
-  }
+  function render(container,state={}){if(!container)return;const t=text();container.replaceChildren();container.hidden=false;const heading=document.createElement('h2');heading.className='external-results-title';heading.textContent=t.title;container.appendChild(heading);if(state.loading){const status=document.createElement('p');status.className='external-results-status';status.setAttribute('role','status');status.textContent=t.loading;container.appendChild(status);return}const results=usableResults(state.results,state);if(state.error||!results.length){const status=document.createElement('p');status.className='external-results-status';status.setAttribute('role','status');status.textContent=state.error?t.error:t.empty;container.appendChild(status);return}const note=document.createElement('p');note.className='external-results-status';note.textContent=t.note||fallback.note;container.appendChild(note);const list=document.createElement('div');list.className='external-results-list';for(const {item,href} of results){const article=document.createElement('article');article.className='external-result-card';if(item.productCandidate)article.classList.add('external-product-candidate');if(item.resultType)article.dataset.resultType=String(item.resultType);const imageHref=safeHttpUrl(item.image);if(imageHref){const image=document.createElement('img');image.className='external-result-image';image.src=imageHref;image.alt='';image.loading='lazy';image.referrerPolicy='no-referrer';article.appendChild(image)}const body=document.createElement('div');body.className='external-result-body';const title=document.createElement('h3');const link=document.createElement('a');link.href=href;link.target='_blank';link.rel='noopener noreferrer';link.textContent=String(item.title||href);title.appendChild(link);body.appendChild(title);const merchantText=merchantLabel(item);if(merchantText){const merchant=document.createElement('small');merchant.className='external-result-host';merchant.textContent=merchantText;body.appendChild(merchant)}const displayPrice=trustedPrice(item,href);if(displayPrice){const price=document.createElement('strong');price.className='external-result-price';price.textContent=displayPrice;body.appendChild(price)}if(item.description){const description=document.createElement('p');description.className='external-result-description';description.textContent=String(item.description);body.appendChild(description)}const source=document.createElement('small');source.className='external-result-source';source.textContent=sourceLabel(item,t);body.appendChild(source);article.appendChild(body);list.appendChild(article)}container.appendChild(list)}
   function hide(container){if(!container)return;container.replaceChildren();container.hidden=true}
   return Object.freeze({render,hide,safeHttpUrl,usableResults,offerEligible,formatPrice,trustedPrice,merchantLabel,currencyCode,currencyFromUrl,visiblePriceFromText,visiblePrice,sourceLabel});
 });
