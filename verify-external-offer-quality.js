@@ -1,0 +1,34 @@
+'use strict';
+
+const assert = require('node:assert/strict');
+const ui = require('./external-search-ui.js');
+
+const good = {
+  url:'https://shop.example/product/bosch-gsr',
+  title:'Bosch GSR 18V-55 – 129,99 €',
+  image:'https://cdn.example/bosch.jpg',
+  productCandidate:true,
+  price:'129,99 €',
+  priceConfidence:'visible'
+};
+assert.equal(ui.offerEligible(good), true, 'real product with image and visible price must pass');
+assert.equal(ui.offerEligible({...good,image:''}), false, 'offer without image must be rejected');
+assert.equal(ui.offerEligible({...good,price:'',title:'Bosch GSR 18V-55',description:''}), false, 'offer without trusted/visible price must be rejected');
+assert.equal(ui.offerEligible({...good,productCandidate:false,resultType:'guide'}), false, 'guide must not leak into offers');
+assert.equal(ui.offerEligible({...good,url:'https://example.com/news/new-bosch-gsr'}), false, 'news/announcement page must be rejected');
+assert.equal(ui.offerEligible({...good,url:'https://www.youtube.com/watch?v=123'}), false, 'video belongs in video view, not offers');
+
+const offerView = ui.usableResults([
+  good,
+  {...good,url:'https://example.com/blog/bosch',title:'Bosch Neuheit 129,99 €'},
+  {url:'https://youtube.com/watch?v=1',title:'Bosch Video',image:'https://img.example/video.jpg',productCandidate:false}
+], {intent:{explicitView:'offers'}});
+assert.equal(offerView.length,1);
+assert.equal(offerView[0].item.url,good.url);
+
+const videoView = ui.usableResults([
+  {url:'https://youtube.com/watch?v=1',title:'Bosch Video',image:'https://img.example/video.jpg',resultType:'video'}
+], {intent:{explicitView:'video'}});
+assert.equal(videoView.length,1,'video view must remain open for useful video results');
+
+console.log('External offer quality gate: strict price + image + product checks OK');
