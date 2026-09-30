@@ -41,6 +41,10 @@ test('initial 429 leaves the existing catalog usable',async({page})=>{
  const state=await mockSearch(page,()=>({status:429,body:{error:'rate-limited'}}));await page.goto(base+'?q=Ahipos%20Flexen&lang=de&web=1');await expect(page.locator('#external-results')).toContainText('Websuche ist momentan nicht verfügbar');await expect(page.locator('#cards article.product').first()).toHaveAttribute('data-real-merchant','true');expect(state.requests).toHaveLength(1);expect(state.errors).toEqual([]);
 });
 
+test('initial search retries only after a user action and preserves catalog cards',async({page})=>{
+ let fail=true;const state=await mockSearch(page,()=>fail?{status:429,body:{error:'rate-limited'}}:{results:[offer(1)],moreResultsAvailable:false});await page.goto(base+'?q=Ahipos%20Flexen&lang=de&web=1');const retry=page.getByRole('button',{name:'Websuche erneut versuchen',exact:true});await expect(retry).toBeVisible();expect(state.requests).toHaveLength(1);fail=false;await retry.click();await expect(page.locator('.external-result-card')).toHaveCount(1);expect(state.requests.map(r=>r.offset)).toEqual([0,0]);await expect(page.locator('#cards article.product').first()).toHaveAttribute('data-real-merchant','true');expect(state.errors).toEqual([]);
+});
+
 test('390px mobile web results and controls fit with usable touch targets',async({page})=>{
  await page.setViewportSize({width:390,height:844});const state=await mockSearch(page,()=>({results:[offer(1),offer(3)],moreResultsAvailable:true}));await page.goto(base+'?q=10W40%20Motor%C3%B6l&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(2);
  for(const node of [page.locator('.external-result-card').first(),next(page),page.locator('#external-results').getByRole('combobox',{name:'Sortierung',exact:true})]){const box=await node.boundingBox();expect(box).not.toBeNull();expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(390);if(node!==undefined&&await node.evaluate(el=>el.matches('button,select')))expect(box.height).toBeGreaterThanOrEqual(44)}
