@@ -25,3 +25,19 @@ The first 20 upstream responses provide very few eligible direct-offer candidate
 - Check subsequent pages, mobile layout and request budgets in a full browser run before release.
 
 No live release is authorized by this audit.
+
+## Follow-up: attribute evidence
+
+Implemented on development after the runtime correction:
+
+- Query and result brand detection now requires Unicode token boundaries; `Modell`, `Hochpreisiges`, `Shellac`, `Mobilität` and `Trekking` cannot establish Dell, HP, Shell, Mobil or Trek. Hyphenated LIQUI-MOLY remains recognized.
+- Extract title, product URL path and description independently. Do not use URL hostname/query parameters as product evidence.
+- Preserve the source for each attribute. Structured attributes, title and URL are stronger evidence; description-only values have MEDIUM confidence. A description alone cannot establish the linked product's brand.
+- When strong sources disagree, omit the disputed attribute and record the conflict. Multiple volume/viscosity variants in strong sources also remain unknown. Equivalent `5000 ml` / `5 l` agree.
+- Unit normalization must not recover rejected quantities from the original snippet or publish their derived unit price. Preserve quantity confidence in derived fields.
+- Do not deduplicate disputed variants into an unambiguous offer merely because their titles match.
+- Do not extract wattage from motor-oil viscosity.
+
+Replayed the saved real-search responses without additional upstream requests: the OBI URL now yields 1 litre and EUR 9.99/l instead of 5 litres and EUR 1.998/l; it no longer inherits Castrol. The Fortuna tire URL no longer inherits Continental from its snippet. The Bosch candidates retain Bosch.
+
+Added regression coverage in the existing core, extractor, deduper and pipeline tests. All 19 local search/intelligence gates pass. Product-page validation, query improvement and low eligible-offer counts remain open.

@@ -4,7 +4,7 @@
  function identifier(v){return String(v??'').normalize('NFKC').toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,'').trim()}
  function host(v){try{return new URL(String(v||'')).hostname.toLowerCase().replace(/^www\./,'')}catch{return''}}
  function titleKey(item){return clean(item?.title).split(' ').filter(Boolean).slice(0,12).join(' ')}
- function key(item){const h=host(item?.url||item?.productUrl);if(!h)return'';const field=['gtin','ean','sku','mpn'].find(name=>identifier(item?.[name]));if(field){const kind=field==='ean'?'gtin':field;return`id:${kind}:${identifier(item[field])}|host:${h}`}const t=titleKey(item);return t?`title:${t}|host:${h}`:''}
+ function key(item){if(item?.attributeConflicts?.length)return'';const h=host(item?.url||item?.productUrl);if(!h)return'';const field=['gtin','ean','sku','mpn'].find(name=>identifier(item?.[name]));if(field){const kind=field==='ean'?'gtin':field;return`id:${kind}:${identifier(item[field])}|host:${h}`}const t=titleKey(item);return t?`title:${t}|host:${h}`:''}
  function quality(item){let n=0;if(item?.image)n+=2;if(item?.price!=null)n+=2;if(item?.priceConfidence==='verified')n+=2;if(item?.description)n+=1;if(item?.merchant)n+=1;return n}
  function dedupe(items){const out=[],seen=new Map();for(const item of Array.isArray(items)?items:[]){const k=key(item);if(!k){out.push(item);continue}if(!seen.has(k)){seen.set(k,out.length);out.push(item);continue}const i=seen.get(k);if(quality(item)>quality(out[i]))out[i]=item}return out}
  return Object.freeze({dedupe,key,titleKey,quality,identifier});

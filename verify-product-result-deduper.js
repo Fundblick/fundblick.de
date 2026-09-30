@@ -14,5 +14,6 @@ assert.equal(d.dedupe([{...a,sku:'123'},{...b,mpn:'123'}]).length,2,'different i
 assert.equal(d.dedupe([{title:'Same product',gtin:'123'},{title:'Same product',gtin:'123'}]).length,2,'unknown merchants must not be merged');
 assert.equal(d.dedupe([a,{...b,url:'https://www.shop.de/other'}]).length,1,'www aliases belong to the same merchant');
 assert.equal(d.dedupe([a,{...a,title:'Bosch GSR 18V-21 Akkuschrauber'}]).length,2,'model numbers must remain distinct');
+assert.equal(d.dedupe([a,{...b,attributeConflicts:['voltage']}]).length,2,'disputed variants must not replace an unambiguous offer');
 const weak={url:'https://shop.de/a',title:'Makita DDF485 18V',price:'99,00 €'};const rich={url:'https://shop.de/b',title:'Makita DDF485 18V',price:'99,00 €',image:'x.jpg',description:'inkl. Koffer',priceConfidence:'verified'};const got=d.dedupe([weak,rich]);assert.equal(got.length,1);assert.equal(got[0].image,'x.jpg','richer duplicate should survive');
 console.log('Product result deduper: merchant duplicates collapse; cross-merchant offers remain distinct');

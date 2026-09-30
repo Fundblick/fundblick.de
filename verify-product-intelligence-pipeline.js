@@ -11,3 +11,13 @@ results=[...Array.from({length:14},(_,i)=>({title:`Bosch Akkuschrauber 18 V ${i+
 results=[{title:'Bosch Akkuschrauber 18 V',price:99},{title:'Makita Akkuschrauber 12 V',price:79},{title:'DeWalt Akkuschrauber 12 V',price:89},{title:'Metabo Akkuschrauber',price:69}];out=p.run('Akkuschrauber 18V',results,{conflicts:{minKeep:12,minCleanRatio:.45}});assert.equal(out.quality.conflictMode,'fallback');assert.equal(out.quality.suppressedCount,0);assert.equal(out.results.length,4);assert.equal(out.results[0].attributes.voltage.value,18);assert.ok(out.results.some(x=>x.attributes.voltage?.value===12),'thin-result fallback must preserve conflicting offers');
 results=[{title:'Continental Winterreifen 205/55 R16',price:89},{title:'Michelin Winterreifen 205/55 R16',price:95},{title:'Goodyear Winterreifen 225/45 R17',price:99}];out=p.run('Winterreifen 205/55 R16',results,{conflicts:{minKeep:2,minCleanRatio:.5}});assert.equal(out.analysis.category,'automotive.tires');assert.equal(out.quality.conflictMode,'strict');assert.equal(out.quality.suppressedCount,1);assert.equal(out.results.length,2);assert.ok(out.results.every(x=>x.attributes.width.value===205&&x.attributes.aspect_ratio.value===55&&x.attributes.rim_size.value===16));ids=out.facets.primary.map(x=>x.id);assert.ok(ids.includes('width'));assert.ok(ids.includes('aspect_ratio'));assert.ok(ids.includes('rim_size'));
 console.log('Product intelligence pipeline E2E: classify -> extract -> normalize -> rank -> safe conflict filter -> facets OK');
+const evidenceCases=p.run('10W40 5 Liter',[
+ {title:'Motoröl 10W40',url:'https://shop.example/product/high-star-10w-40-1-l',description:'Castrol 10W40 5 Liter',price:9.99},
+ {title:'Castrol 10W40 5 Liter',url:'https://shop.example/product/castrol-10w-40-1-l',description:'Castrol 10W40 5 Liter',price:34.99},
+ {title:'Castrol 10W40 5 Liter',url:'https://shop.example/product/castrol-10w-40-5-l',price:34.99}
+]);
+const urlQuantity=evidenceCases.results.find(x=>x.url.includes('high-star'));
+assert.equal(urlQuantity.attributes.volume.value,1);assert.equal(urlQuantity.attributes.unit_price.value,9.99);assert.equal(urlQuantity.attributes.brand,undefined);assert.ok(urlQuantity.constraintMatch.conflicts>0,'1L URL must not match a 5L query via unrelated description');
+const disputed=evidenceCases.results.find(x=>x.url.includes('castrol-10w-40-1-l'));
+assert.equal(disputed.attributes.volume,undefined);assert.equal(disputed.attributes.normalized_quantity,undefined);assert.equal(disputed.attributes.unit_price,undefined,'normalizer cannot reintroduce disputed quantity from text');
+assert.equal(evidenceCases.results[0].attributes.volume.value,5,'unambiguous exact offer ranks first');
