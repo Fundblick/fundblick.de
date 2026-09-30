@@ -8,7 +8,7 @@
  function buildOffers(query,language='de'){
   const product=build(query,language),lang=String(language||'de').toLowerCase().split('-')[0];
   // Enable only where the real-response comparison improved eligible exact matches.
-  if(lang==='de'&&['automotive.motor_oil','tools.cordless_drill'].includes(product.analysis?.category)){
+  if(lang==='de'&&(['automotive.motor_oil','tools.cordless_drill'].includes(product.analysis?.category)||(product.analysis?.category==='fashion.shoes'&&/\bhausschuhe?\b/i.test(product.original)))){
    const purchase=/\bkaufen\b/i.test(product.query)?'':'kaufen';
    const focused=clean([product.query,purchase,'-preisvergleich -site:idealo.de -site:geizhals.de'].join(' '));
    if(focused.length<=120)return Object.freeze({...product,query:focused,changed:focused!==product.original,offerMode:'focused'});

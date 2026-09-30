@@ -8,12 +8,13 @@
   const sessionCache = new Map();
   const pending = new Map();
 
-  function endpoint(value) {
+  function endpoint(value, developmentRelay = false) {
     const raw = String(value || '').trim();
     if (!raw) return null;
     try {
       const url = new URL(raw, typeof location !== 'undefined' ? location.href : 'https://fundblick.de/');
-      if (url.protocol !== 'https:') return null;
+      const localRelay=developmentRelay===true&&typeof location!=='undefined'&&location.protocol==='http:'&&['127.0.0.1','localhost','[::1]'].includes(location.hostname)&&url.origin===location.origin;
+      if (url.protocol !== 'https:' && !localRelay) return null;
       return url;
     } catch {
       return null;
@@ -40,7 +41,7 @@
 
   async function search(options = {}) {
     const query = normalizeQuery(options.query);
-    const base = endpoint(options.endpoint);
+    const base = endpoint(options.endpoint, options.developmentRelay);
     if (!validQuery(query)) return { ok: false, skipped: 'invalid-query', results: [] };
     if (!base) return { ok: false, skipped: 'endpoint-disabled', results: [] };
 

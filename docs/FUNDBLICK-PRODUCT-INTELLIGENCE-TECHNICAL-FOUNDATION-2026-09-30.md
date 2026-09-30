@@ -387,3 +387,13 @@ Wenn die Arbeit unterbrochen wird:
 7. dieses Dokument bei wesentlichen Architekturentscheidungen aktualisieren.
 
 **Nächster geplanter technischer Schritt:** Phase 1 als isolierten Development-Block beginnen: Shopify-Release-Snapshot und kompaktes FundBlick-Taxonomieformat evaluieren, zunächst ohne bestehende Suche umzuschalten.
+
+## 25. Nachgewiesene Fortschreibung vom 30.09.2026
+
+Die vorstehende Phase-1-Ankündigung ist inzwischen umgesetzt: isolierte Evaluation v2026-08, kompakter Snapshot, Hierarchie-/Mappingadapter, Digests und Offline-Gate. Noch keine Runtime-Migration. Entscheidung und Grenzen in `TAXONOMY-EVALUATION-2026-09-30.md`: Kandidatenvererbung braucht fachliche Whitelist; numerische FundBlick-Merkmale bleiben ergänzungsbedürftig, zwei evaluierte Sprachen ersetzen keine 20 Sprachfassungen.
+
+Weitere verbindliche implementierte Verträge: eigene Katalogsuche zuerst; ein externer Erstabruf ausschließlich nach Aktivierung; weitere Abrufe nur per Aktion; Cache pro Dienst-Origin; ausdrückliche Fehlerwiederholung; Preisvergleich nur bei belegter gleicher Währung bzw. Mengenbasis; gemeinsame Einheitenwerte für Extraktion, Ranking und Facetten. Schwache MEDIUM-Evidenz ist Ranghinweis, kein unterdrückbarer Konflikt; LOW standardmäßig weder Constraint noch sichtbarer Facettenwert. Fehlende Confidence an strukturierten Altwerten behält den bestehenden Vertrag, ist keine neu bewiesene Provenance.
+
+Fashion-Extraktion gemeinsam für Query und Treffer: explizite Größenlabels im Kategorie-Kontext, keine Modellnummer als EU-Größe; mehrdeutige Farben/Zielgruppen/Größen bleiben unbekannt. Vorhandene Klassenwörter mit Unicode-Grenzen repariert; keine Behauptung vollständiger Sprach-/Modellabdeckung. Datenschutzprüfstand und noch fehlende Konto-/Vertragsbelege separat in `EXTERNAL-SEARCH-PRIVACY-REVIEW-2026-09-30.md`.
+
+Aktueller Code-/CI-Nachweis im Handoff und Worklog. Offene Reihenfolge: reale dünne Referenzfamilien und Modelltreue verbessern, Fachregeln evaluieren, öffentliche isolierte Development-Abnahme vorbereiten; größere Erweiterungen weiterhin erst nach Bestandskonsolidierung. Jens hat anschließend ausdrücklich die Fertigstellung und den Merge nach Live für heute verlangt. Aktuelle Release-Vorbereitung im Worklog; die größeren offenen Fahrplanphasen werden dadurch nicht als vollständig erledigt erklärt.

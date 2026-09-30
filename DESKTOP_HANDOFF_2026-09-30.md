@@ -1,5 +1,25 @@
 # FundBlick Desktop-Handoff – 30.09.2026
 
+## Fortschreibung nach autonomer Desktop-Arbeit am 30.09.2026
+
+Aktueller fachlicher Code-Stand: `c4b5f91deef0ece7f8556724c0faade4e5600661` auf development. Die weiter unten enthaltene ursprüngliche Übergabe bleibt als Chronik erhalten. Arbeitsdauer/-methodik gemäß `AUTONOMOUS_WORK_MODE_JENS.md`; Jens hatte zwischenzeitlich den Abschluss und die Vorschau verlangt. Sein neuester Auftrag lautet: „Dann mach jetzt alles fertig. Ich möchte, dass wir heute noch in Live merchen.“ Damit ist der Release einschließlich main/Live ausdrücklich autorisiert; Backup bleibt unangetastet. Nachgewiesene technische und dokumentierte Freigabebedingungen bleiben zu prüfen.
+
+Lokale Development-Startseite: **http://127.0.0.1:4180/** auf Jens' Rechner, Suchseite `/search.html`. Separates Paket in `work/developer-homepage/_site`, 1.515 echte Produkte, neun Kategorien, 14 HTML-Seiten mit noindex/nofollow. Katalog-/Händler-/Kategorieprüfungen und HTTP-Abrufe bestanden. Das ist eine lokale Vorschau; kein öffentliches Deployment. Originalrepository, main, Backup und Live werden dadurch nicht verändert. Direkter localhost-CORS bleibt vom Worker gesperrt. Die lokale Vorschau nutzt nun einen ausschließlich an 127.0.0.1 gebundenen Same-Origin-Relay zum festen vorhandenen Worker, ohne Besucher-Cookies/Origin weiterzugeben. Im tatsächlichen Vorschau-Browser wurden nach ausdrücklicher Aktivierung drei Hausschuhe-Angebote mit Bild, Produktlink und strukturiertem Preis dargestellt. Produktions-HTML bleibt beim HTTPS-Worker; dort wird kein Relay aktiviert.
+
+Nachgewiesene Ergebnisse der Arbeitsserie:
+
+| Fahrplan | Implementiert und geprüft | Weiter offen |
+| --- | --- | --- |
+| 1 – CI/Dubletten | Händlerbezogene Dubletten; Kennungen/Modellvarianten bleiben erhalten; Regression grün | Weitere reale Händler-/Variantenproben |
+| 2 – Trefferqualität | Listings/Informationsrauschen vor Seitenaufteilung; RAM/Storage getrennt; Mini-PC/Laptop-Abgrenzung; belegte Query-Verbesserung für Öl/Bosch; Confidence-Schutz; explizite Fashion-Merkmale | Dünne Schuh-/Laptop-/Reifentreffer, Modellidentität, tatsächliche Verfügbarkeit und Gesamtpreis |
+| 3 – Preise/Facetten | Rabatt-/Mindestbeträge nicht als Kaufpreis; kanonische Einheiten; Währungs-/Grundpreisbasis geschützt; LOW-Werte nicht in Standardfacetten | Händler-/Checkout-Abnahme, fachliche Must-have/Nice-to-have-Prioritäten |
+| 4 – Skalierung/Sprachen | Shopify v2026-08 isoliert evaluiert, kompakter Snapshot/Adapter; vorhandene kyrillische Klassenbegriffe repariert | Runtime-Migration, geprüfte Attribut-Whitelist, vollständige 20 Sprachfassungen |
+| 5 – Development-Abnahme | Ein Erstabruf, weiteres Laden nur per Aktion; Timeout/429/Netzwerk/Wiederholung; mobile Steuerungen; Preview-SEO; 17 Browserfälle mit echten Katalogdaten und kontrollierter Suchantwort; Datenschutz-Datenfluss dokumentiert | Öffentlicher isolierter Dev-Host/CORS, reale Worker-Browserabnahme, rechtliche/vertragliche Belege, vollständige Accessibility/SEO-/Live-Abnahme |
+
+Keine Live-/Main-Freigabe aus grüner Development-CI ableiten. Taxonomie-Evaluation ist keine aktivierte neue Produkttaxonomie. Browsertests mit abgefangenen Antworten sind kein Beweis echter Worker-CORS oder aktueller Händlerpreise.
+
+Weitere aktuelle Aufzeichnungen vollständig einlesen: `docs/WORKLOG_2026-09-30_DEVELOPMENT.md`, `SEARCH_QUALITY_AUDIT_2026-09-30.md`, `docs/TAXONOMY-EVALUATION-2026-09-30.md`, `docs/EXTERNAL-SEARCH-PRIVACY-REVIEW-2026-09-30.md`, `docs/FUNDBLICK-PRODUCT-INTELLIGENCE-TECHNICAL-FOUNDATION-2026-09-30.md` und separate `docs/FUNDBLICK-PROJEKTAUFWAND-KOSTEN-2026-09-30.md`. Separat benannte Originalaufzeichnungen, die im verfügbaren Bestand fehlen, nicht als gelesen behaupten. Bei Wiederaufnahme tatsächlichen HEAD und CI zuerst abgleichen.
+
 ## Auftrag
 
 Diese Datei ist die verbindliche Übergabe für die Fortsetzung der FundBlick-Websuche/Product-Intelligence-Arbeit in einem neuen Chat bzw. auf dem Desktop.

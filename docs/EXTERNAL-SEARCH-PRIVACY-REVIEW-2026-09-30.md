@@ -33,3 +33,7 @@ Alternativen: Ein versteckter Techniktext allein im Repository informiert Nutzer
 - Öffentlichen Development-Host, CORS und Zugangsschutz getrennt von Live festlegen und real im Browser abnehmen.
 
 Kosten: keine neuen Dienste oder Suchprovider-Aufrufe für diese Prüfung. Lokale Cache-Gegenprobe mit kontrollierten Antworten bestanden; Browserprüfung des vor dem ersten Abruf sichtbaren Hinweises nach Commit in CI zu kontrollieren.
+
+## Fortschreibung für den ausdrücklich autorisierten Release
+
+Jens hat main/Live nun ausdrücklich freigegeben. Öffentliche datenschutz.html enthält den nachgewiesenen Web-Datenfluss und DE/RU-Hinweise; keine Nullspeicherung, kein bestätigter ZDR-Tarif und keine abgeschlossene Rechtsprüfung werden zugesagt. Der vor Aktivierung sichtbare Link führt auf den öffentlichen Abschnitt #websuche. Diese technische Text-/Linkkorrektur ist erledigt. Die oben genannten Nachweise zu Kontotarif, Logs, Rechtsgrundlage, Rollen und Übermittlung sind weiterhin nicht verfügbar und dürfen nicht als erledigt markiert werden. Live-CORS ist technisch geprüft, die echte öffentliche Browser-Abnahme folgt erst nach einem tatsächlichen Deployment.

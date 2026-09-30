@@ -10,7 +10,7 @@ function next(page){return page.locator('#external-results').getByRole('button',
 test('explicit web opt-in preserves real catalog cards and performs one initial request',async({page})=>{
  const state=await mockSearch(page,()=>({results:[offer(0)],moreResultsAvailable:true}));
  await page.goto(base+'?q=Ahipos%20Flexen&lang=de');await settled(page);
- const local=page.locator('#cards article.product').first();await expect(local).toHaveAttribute('data-real-merchant','true');const before=await local.innerText();await expect(page.locator('.external-search-privacy')).toContainText('Cloudflare an Brave Search');await expect(page.locator('.external-search-privacy a')).toHaveAttribute('href','datenschutz-preview.html#websuche');expect(state.requests).toHaveLength(0);
+ const local=page.locator('#cards article.product').first();await expect(local).toHaveAttribute('data-real-merchant','true');const before=await local.innerText();await expect(page.locator('.external-search-privacy')).toContainText('Cloudflare an Brave Search');await expect(page.locator('.external-search-privacy a')).toHaveAttribute('href','datenschutz.html#websuche');expect(state.requests).toHaveLength(0);
  await page.getByRole('button',{name:'Im Web weitersuchen',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(1);
  await expect(next(page)).toBeEnabled();expect(state.requests).toHaveLength(1);expect(state.requests[0].count).toBe(20);expect(await local.innerText()).toBe(before);expect(state.errors).toEqual([]);
 });
@@ -59,4 +59,10 @@ test('external network failure preserves the real catalog',async({page})=>{
 test('browser dependencies support Unicode classes and explicit fashion constraints',async({page})=>{
  const state=await mockSearch(page,()=>({results:[],moreResultsAvailable:false}));await page.goto(base+'?q=Ahipos%20Flexen&lang=de');await settled(page);
  const analysis=await page.evaluate(()=>({tv:window.FundBlickProductIntelligence.analyze('Samsung телевизор'),fashion:window.FundBlickProductIntelligence.analyze('Adidas Damen Schuhe grün EU 39,5'),model:window.FundBlickProductIntelligence.analyze('Nike Jordan 40 Schuhe')}));expect(analysis.tv.category).toBe('electronics.television');expect(analysis.fashion.attributes.audience.value).toBe('women');expect(analysis.fashion.attributes.color.value).toBe('green');expect(analysis.fashion.attributes.size.value).toBe(39.5);expect(analysis.model.attributes.size).toBeUndefined();expect(state.requests).toHaveLength(0);expect(state.errors).toEqual([]);
+});
+
+test('Hausschuhe structured detail survives generic title while category prices stay excluded',async({page})=>{
+ const detail={title:'Hausschuhe online kaufen | OTTO',description:'UGG Tasman II Hausschuh',url:'https://www.otto.de/p/ugg-tasman-ii-S0EXAMPLE/',image:'https://images.example/tasman.jpg',price:'109.95',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'};
+ const state=await mockSearch(page,()=>({results:[detail,{...detail,url:'https://www.otto.de/category/hausschuhe/'}],moreResultsAvailable:false}));await page.goto(base+'?q=Hausschuhe&lang=de');await settled(page);expect(state.requests).toHaveLength(0);await page.getByRole('button',{name:'Im Web weitersuchen',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('.external-result-price')).toHaveText('109,95 €');expect(state.requests[0].q).toBe('Hausschuhe kaufen -preisvergleich -site:idealo.de -site:geizhals.de');expect(state.errors).toEqual([]);
+ await page.goto('http://127.0.0.1:4173/datenschutz.html#websuche');await expect(page.locator('#websuche')).toContainText('Cloudflare Worker');await expect(page.locator('#websuche')).toContainText('90 Tagen');
 });

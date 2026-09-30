@@ -7,6 +7,16 @@ const client = require('./external-search-client.js');
 assert.equal(client._endpoint('http://example.com'), null);
 assert.equal(client._endpoint('javascript:alert(1)'), null);
 assert.equal(client._endpoint('https://example.com').origin, 'https://example.com');
+global.location=new URL('http://127.0.0.1:4180/search.html');
+assert.equal(client._endpoint('http://127.0.0.1:4180'),null,'HTTP stays disabled without explicit development flag');
+assert.equal(client._endpoint('http://127.0.0.1:4180',true).origin,location.origin);
+assert.equal(client._endpoint('http://127.0.0.1:4181',true),null,'different port is not same origin');
+assert.equal(client._endpoint('http://evil.example',true),null);
+global.location=new URL('http://public.example/search.html');
+assert.equal(client._endpoint('http://public.example',true),null,'public HTTP is never allowed');
+global.location=new URL('https://fundblick.de/search.html');
+assert.equal(client._endpoint('http://127.0.0.1:4180',true),null,'production cannot enable a loopback relay');
+delete global.location;
 
 (async () => {
   const disabled = await client.search({ query: 'Akkuschrauber' });

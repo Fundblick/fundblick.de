@@ -5,7 +5,7 @@ const htmlFiles=['index.html','search.html','impressum.html','datenschutz.html',
 const assetRe=/(?:src|href)=["']([^"']+\.(?:js|css))(?:\?[^"']*)?["']/g;
 const hash=s=>crypto.createHash('sha256').update(s).digest('hex').slice(0,12);
 const assets=new Set();
-for(const file of htmlFiles){if(!fs.existsSync(file))continue;const text=fs.readFileSync(file,'utf8');for(const m of text.matchAll(assetRe)){const rel=m[1].replace(/^\.\//,'');if(!/^https?:|^\/\//.test(rel)&&fs.existsSync(rel))assets.add(rel);}}
+for(const file of htmlFiles){if(!fs.existsSync(file))continue;const text=fs.readFileSync(file,'utf8');for(const m of text.matchAll(assetRe)){const rel=m[1].replace(/^\.\//,'');if(/^https?:|^\/\//.test(rel))continue;if(!fs.existsSync(rel))throw new Error(`Missing source asset in ${file}: ${rel}`);assets.add(rel);}}
 const map=new Map();
 for(const rel of assets){const data=fs.readFileSync(rel);const ext=path.extname(rel),base=rel.slice(0,-ext.length),versioned=`${base}.${hash(data)}${ext}`;map.set(rel,versioned);const out=path.join(site,versioned);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,data);}
 for(const file of htmlFiles){if(!fs.existsSync(file))continue;let text=fs.readFileSync(file,'utf8');text=text.replace(assetRe,(full,raw)=>{const rel=raw.replace(/^\.\//,'');const versioned=map.get(rel);if(!versioned)return full;return full.replace(raw,versioned).replace(/(\.(?:js|css))\?[^"']*/, '$1');});fs.writeFileSync(path.join(site,file),text);}

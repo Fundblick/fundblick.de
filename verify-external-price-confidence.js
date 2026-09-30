@@ -124,3 +124,8 @@ assert.equal(ui.visiblePriceFromText('UVP 99,99 €; jetzt 79,99 €'),'79,99 �
 assert.equal(ui.visiblePriceFromText('Gratisversand ab 50,00 €'),'');
 assert.equal(ui.trustedPrice({...promotion,price:'249.99',priceConfidence:'verified'},promotion.url),'249,99 €','independent different offer price remains usable');
 const aligned=confidence.annotate([{...promotion,description:'Produktpreis 249,99 €',price:'236.81',priceConfidence:'structured'}])[0];assert.equal(aligned.price,'249,99 €','sorting metadata uses the same visible price as the card');
+const detail={title:'Hausschuhe online kaufen | OTTO',description:'UGG Tasman II Hausschuh',url:'https://www.otto.de/p/ugg-tasman-ii-S0EXAMPLE/',image:'https://img.example/tasman.jpg',productCandidate:true,price:'109.95',currency:'EUR',priceConfidence:'structured'};
+assert.equal(confidence.annotate([detail])[0].priceConfidence,'verified','structured product-detail evidence survives a generic provider title');
+for(const change of [{url:'https://www.otto.de/schuhe/hausschuhe/'},{url:'https://www.otto.de/category/hausschuhe/'},{productCandidate:false},{priceConfidence:'unverified'},{image:''},{description:'Große Auswahl neuer Hausschuhe'}]){
+ assert.notEqual(confidence.annotate([{...detail,...change}])[0].priceConfidence,'verified','listing, missing product evidence and blocked context stay excluded: '+JSON.stringify(change));
+}

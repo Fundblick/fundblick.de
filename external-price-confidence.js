@@ -34,7 +34,8 @@
     const title = String(item?.title || '');
     const url = String(item?.url || item?.productUrl || '');
     if (listingUrl.test(url)) return true;
-    if (listingTitle.test(title) && !/\b(?:\d+[.,]?\d*\s*(?:l|ml|kg|g|stück|stk\.?|pack|set)|[a-z]+\s+\d{2,}[a-z0-9-]*)\b/i.test(title)) return true;
+    let directDetail=false;try{directDetail=/\/(?:p|dp|product|produkt)\/[^/]+/i.test(new URL(url).pathname)&&item.productCandidate===true&&String(item.priceConfidence||'').toLowerCase()==='structured'}catch{}
+    if (!directDetail && listingTitle.test(title) && !/\b(?:\d+[.,]?\d*\s*(?:l|ml|kg|g|stück|stk\.?|pack|set)|[a-z]+\s+\d{2,}[a-z0-9-]*)\b/i.test(title)) return true;
     return false;
   }
 

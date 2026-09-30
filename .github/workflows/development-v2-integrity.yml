@@ -16,6 +16,7 @@ jobs:
       - run: node development/verify-publication-apply.js
       - run: node development/verify-seo-preview-apply.js
       - run: node development/verify-preview-indexing.js
+      - run: node development/verify-local-preview.js
       - run: node development/verify-taxonomy-evaluation.js
       - run: node development/verify-delivery-contract.js
       - run: node development/verify-merchant-handoff.js

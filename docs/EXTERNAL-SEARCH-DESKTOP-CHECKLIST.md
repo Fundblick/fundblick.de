@@ -2,6 +2,8 @@
 
 Diese Checkliste beginnt erst, wenn am Desktop gearbeitet wird. `main` bleibt bis zur ausdrücklichen Freigabe unangetastet.
 
+Fortschreibung 30.09.2026: Worker ist bereits erreichbar und Development-Code aktiviert; Schritte 1–6 beschreiben die ursprüngliche Einrichtung und sind kein neuer Deploymentauftrag. Health/Negativverträge geprüft. 1.515 echte Produkte im isolierten Preview; aktueller Code-/CI-Nachweis und offene Abnahmegrenzen im Handoff/Worklog. Lokale Startseite http://127.0.0.1:4180/; tatsächlicher öffentlicher Development-Host und dessen erlaubte Worker-Origin noch nicht belegt. Keine Live-Worker-Konfiguration im Rahmen dieser Arbeitsserie verändert.
+
 ## 1. Cloudflare Worker
 - Worker `fundblick-search` öffnen bzw. anlegen.
 - Inhalt von `cloudflare/brave-search-worker.js` aus Branch `development` als kanonischen Worker-Code verwenden.
@@ -60,11 +62,14 @@ Erst wenn 1–5 erfolgreich sind:
 
 ## 7. E2E-Test
 Mindestens drei Fälle:
-1. Suchbegriff mit eigenem FundBlick-Treffer → eigene Ergebnisse, kein externer Fallback.
-2. Suchbegriff ohne eigenen Treffer → externer Abschnitt erscheint.
+1. Suchbegriff mit eigenem FundBlick-Treffer → eigene Ergebnisse, vor ausdrücklicher Web-Aktion kein externer Abruf; danach zusätzliche getrennte Webresultate möglich.
+2. Suchbegriff ohne eigenen Treffer → Web-Aktivierungsangebot erscheint, vor ausdrücklicher Aktion kein externer Abruf; nach Aktivierung genau ein Erstabruf.
 3. Brave/Worker nicht erreichbar → FundBlick bleibt funktionsfähig und zeigt nur den sauberen Fehlerzustand des externen Abschnitts.
 
 Zusätzlich prüfen:
+- weitere Provider-Seiten nur durch Nutzeraktion; keine automatische Auffüllung dünner Seiten;
+- Erstfehler kann ausdrücklich erneut versucht werden; eigene Katalogkarten bleiben erhalten;
+- Web-Datenfluss vor Aktivierung sichtbar; Vertrags-/Datenschutzfreigabe bleibt gesondert erforderlich;
 - gleiche Query in derselben Sitzung verursacht keinen unnötigen zweiten externen Request;
 - Filter/Sortierung löst keinen unnötigen Brave-Request aus;
 - externe Links öffnen sicher;
@@ -76,3 +81,7 @@ Zusätzlich prüfen:
 - Nachfrageanalyse weiterhin separat behandeln und nicht automatisch mit Brave-Aktivierung einschalten;
 - alle CI-/Regressionstests grün;
 - erst danach Entscheidung über Merge Richtung `main`.
+
+## Release-Fortschreibung
+
+Jens autorisiert main/Live ausdrücklich. Loopback-Vorschau jetzt mit festem lokalem Relay real geprüft (drei Hausschuhe-Angebote). Live-Origin-CORS erfolgreich. Öffentlicher Hinweis und DE/RU-Text liegen in datenschutz.html#websuche; Preview-Link ersetzt. Finales Produktionspaket und Browserregression werden zusätzlich in production-release-check.yml geprüft. Tatsächlicher öffentlicher Browserlauf bleibt nach Deployment erforderlich. Konto-/Vertragsfreigabepunkte nicht durch technische Tests ersetzen.
