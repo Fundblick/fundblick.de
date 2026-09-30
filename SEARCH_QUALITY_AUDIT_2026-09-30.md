@@ -41,3 +41,23 @@ Implemented on development after the runtime correction:
 Replayed the saved real-search responses without additional upstream requests: the OBI URL now yields 1 litre and EUR 9.99/l instead of 5 litres and EUR 1.998/l; it no longer inherits Castrol. The Fortuna tire URL no longer inherits Continental from its snippet. The Bosch candidates retain Bosch.
 
 Added regression coverage in the existing core, extractor, deduper and pipeline tests. All 19 local search/intelligence gates pass. Product-page validation, query improvement and low eligible-offer counts remain open.
+
+## Follow-up: measured query refinement (roadmap block 2)
+
+Compared three variants for each of the three reference queries: existing query, product-aware query plus `kaufen`, and product-aware query plus `kaufen -preisvergleich -site:idealo.de -site:geizhals.de`. Nine requests total; count=20, offset=0, country=DE, lang=de. No additional automatic searches or request limit increases were introduced in the frontend.
+
+Counts below use the current offer filter and attribute reconciliation. “Exact” means all attributes extracted from the user's query are known and agree, with no attribute evidence conflicts. It does not confirm stock, checkout price, every model feature, or successful purchase on the merchant page.
+
+| Query | Existing eligible / exact | Focused eligible / exact | Decision |
+| --- | --- | --- | --- |
+| 10W40 5 Liter | 1 / 0 | 6 / 5 | Enable focused query |
+| Bosch Akkuschrauber 18V | 3 / 3 | 4 / 4 | Enable focused query |
+| Winterreifen 205/55 R16 | 1 / 1 | 0 / 0 | Keep existing query |
+
+The tire variants surfaced a size-selection page (`/winterreifen/groesse/205-55-r16/`), not a direct product offer. Added this listing pattern to the offer filter; it is excluded from the reported focused tire counts.
+
+Implemented `buildOffers` and connected it to Offers in the browser runtime. Focused queries apply only to the two tested product categories in German. Other categories, languages, and information/video/local views retain their existing query behavior. If focus operators exceed the worker's 120-character query budget, retain the existing strategy instead of appending operators that would be truncated.
+
+Added query strategy and runtime regressions for category/language scope, query preservation, request budget, browser dependency wiring, consistent pagination queries and unchanged information search. Updated script versions so the development page loads the corrected modules.
+
+Block 2 remains in progress: tire retrieval, wider reference-query coverage, merchant-page price checks, ranking and model fidelity still need work. Blocks 3–5 and Development acceptance remain open as recorded in the Desktop handoff.

@@ -5,4 +5,12 @@ x=q.build('Winterreifen 205/55 R16','de');assert.equal(x.analysis.category,'auto
 x=q.build('Akkuschrauber 18V','de');assert.equal(x.analysis.category,'tools.cordless_drill');assert.equal((x.query.match(/18V/gi)||[]).length,1);
 x=q.build('Adidas Schuhe EU 39','de');assert.equal(x.analysis.category,'fashion.shoes');assert.equal((x.query.match(/adidas/gi)||[]).length,1);assert.equal((x.query.match(/EU 39/gi)||[]).length,1);
 x=q.build('205/55 R16','de');assert.equal(x.analysis.category,null,'dimensions alone must not invent a category');assert.equal(x.query,'205/55 R16');
+x=q.buildOffers('10W40 5 Liter','de');assert.equal(x.offerMode,'focused');assert.match(x.query,/Motoröl/);assert.match(x.query,/10W-40/);assert.match(x.query,/-preisvergleich -site:idealo.de -site:geizhals.de$/);assert.ok(!x.query.includes('Preis Angebot'));assert.equal((x.query.match(/5 Liter/g)||[]).length,1);
+x=q.buildOffers('Bosch Akkuschrauber 18V','de');assert.equal(x.offerMode,'focused');assert.ok(x.query.startsWith('Bosch Akkuschrauber 18V'));assert.equal((x.query.match(/18V/g)||[]).length,1);
+x=q.buildOffers('Bosch Akkuschrauber 18V kaufen','de');assert.equal((x.query.match(/kaufen/g)||[]).length,1,'existing purchase intent is not duplicated');
+assert.equal(q.buildOffers('Winterreifen 205/55 R16','de').query,'Winterreifen 205/55 R16 kaufen Preis Angebot','tire query retains measured better baseline');
+assert.equal(q.buildOffers('Bleistift','de').query,'Bleistift kaufen Preis Angebot','unvalidated categories keep existing behavior');
+assert.equal(q.buildOffers('Bosch cordless drill 18V','en').offerMode,'default','unvalidated languages do not receive German exclusions');
+x=q.buildOffers('Bosch Akkuschrauber 18V '+('A'.repeat(80)),'de');assert.equal(x.offerMode,'default','do not append focus operators beyond worker query budget');
+assert.equal(q.buildOffers('','de').query,'');
 console.log('Product query strategy: category-aware refinement without duplicate constraints OK');
