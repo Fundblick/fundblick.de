@@ -41,3 +41,4 @@ jobs:
       - run: node verify-product-intelligence-core.js
       - run: node verify-product-facet-engine.js
       - run: node verify-product-unit-normalizer.js
+      - run: node verify-product-result-attribute-extractor.js
