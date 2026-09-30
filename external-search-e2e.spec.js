@@ -10,7 +10,7 @@ function next(page){return page.locator('#external-results').getByRole('button',
 test('explicit web opt-in preserves real catalog cards and performs one initial request',async({page})=>{
  const state=await mockSearch(page,()=>({results:[offer(0)],moreResultsAvailable:true}));
  await page.goto(base+'?q=Ahipos%20Flexen&lang=de');await settled(page);
- const local=page.locator('#cards article.product').first();await expect(local).toHaveAttribute('data-real-merchant','true');const before=await local.innerText();expect(state.requests).toHaveLength(0);
+ const local=page.locator('#cards article.product').first();await expect(local).toHaveAttribute('data-real-merchant','true');const before=await local.innerText();await expect(page.locator('.external-search-privacy')).toContainText('Cloudflare an Brave Search');await expect(page.locator('.external-search-privacy a')).toHaveAttribute('href','datenschutz-preview.html#websuche');expect(state.requests).toHaveLength(0);
  await page.getByRole('button',{name:'Im Web weitersuchen',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(1);
  await expect(next(page)).toBeEnabled();expect(state.requests).toHaveLength(1);expect(state.requests[0].count).toBe(20);expect(await local.innerText()).toBe(before);expect(state.errors).toEqual([]);
 });

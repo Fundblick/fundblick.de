@@ -48,7 +48,7 @@
     const country = String(options.country || 'DE').trim().toUpperCase();
     const count = Math.max(1, Math.min(20, Math.floor(Number(options.count) || 20)));
     const offset = Math.max(0, Math.min(9, Math.floor(Number(options.offset) || 0)));
-    const key = requestKey(query, language, country, count, offset);
+    const key = `${base.origin}:${requestKey(query, language, country, count, offset)}`;
     if (sessionCache.has(key)) return { ...sessionCache.get(key), cached: true };
     if (pending.has(key)) return pending.get(key);
 

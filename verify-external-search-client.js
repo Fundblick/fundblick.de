@@ -110,6 +110,8 @@ assert.equal(client._endpoint('https://example.com').origin, 'https://example.co
   global.fetch=async (_,options)=>{concurrentCalls++;assert.equal(options.credentials,'omit');assert.equal(options.referrerPolicy,'no-referrer');return new Promise(resolve=>{complete=resolve})};
   const concurrentOne=client.search({endpoint:'https://search.example.com',query:'Concurrent Gegenprobe'}),concurrentTwo=client.search({endpoint:'https://search.example.com',query:'Concurrent Gegenprobe'});assert.equal(concurrentCalls,1,'in-flight equal queries share one fetch');complete({ok:true,status:200,async json(){return{results:[],moreResultsAvailable:false}}});assert.ok((await concurrentOne).ok);assert.ok((await concurrentTwo).ok);
 
+  client.clearSessionCache();let providerCalls=0;global.fetch=async url=>{providerCalls++;return{ok:true,status:200,async json(){return{results:[{title:'Provider '+url.host,url:'https://shop.example/'+url.host}],moreResultsAvailable:false}}}};
+  const providerOne=await client.search({endpoint:'https://one.search.example',query:'Provider Gegenprobe'}),providerTwo=await client.search({endpoint:'https://two.search.example',query:'Provider Gegenprobe'});assert.equal(providerCalls,2,'different provider origins cannot reuse one another’s cache');assert.notEqual(providerOne.results[0].title,providerTwo.results[0].title);const providerAgain=await client.search({endpoint:'https://one.search.example',query:'Provider Gegenprobe'});assert.equal(providerAgain.cached,true);assert.equal(providerCalls,2);
   console.log('External search client: pagination, sanitized fields, cache and 429 OK');
 })().catch(error => {
   console.error(error);
