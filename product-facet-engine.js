@@ -2,6 +2,7 @@
 (function(root,factory){const api=factory(root);if(typeof module!=='undefined'&&module.exports)module.exports=api;if(root)root.FundBlickProductFacetEngine=api;})(typeof window!=='undefined'?window:globalThis,function(root){
  const units=typeof require==='function'?require('./product-unit-normalizer.js'):root.FundBlickProductUnitNormalizer;
  const UNIVERSAL=['brand','price'];const PRIORITY={
+ 'computing.memory':['memory_generation','memory_capacity','memory_speed','memory_form_factor','memory_modules','brand','price'],'automotive.spark_plug':['application','vehicle_make','vehicle_model','engine','thread_size','heat_range','electrode_gap','material','brand','price'],
  'automotive.motor_oil':['viscosity','volume','brand','specification','approval','unit_price','price'],'automotive.tires':['width','aspect_ratio','rim_size','season','brand','speed_index','price'],
  'fashion.shoes':['size','audience','color','brand','model','price'],'fashion.clothing':['size','audience','color','brand','material','price'],
  'electronics.television':['screen_size','display_technology','resolution','brand','model','price'],'electronics.smartphone':['storage','brand','model','color','connectivity','price'],'electronics.headphones':['type','connectivity','noise_cancelling','brand','color','price'],
