@@ -66,3 +66,19 @@ test('Hausschuhe structured detail survives generic title while category prices 
  const state=await mockSearch(page,()=>({results:[detail,{...detail,url:'https://www.otto.de/category/hausschuhe/'}],moreResultsAvailable:false}));await page.goto(base+'?q=Hausschuhe&lang=de');await settled(page);expect(state.requests).toHaveLength(0);await page.getByRole('button',{name:'Im Web weitersuchen',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('.external-result-price')).toHaveText('109,95 €');expect(state.requests[0].q).toBe('Hausschuhe kaufen -preisvergleich -site:idealo.de -site:geizhals.de');expect(state.errors).toEqual([]);
  await page.goto('http://127.0.0.1:4173/datenschutz.html#websuche');await expect(page.locator('#websuche')).toContainText('Cloudflare Worker');await expect(page.locator('#websuche')).toContainText('90 Tagen');
 });
+
+
+test('adaptive refinement is optional, clickable and never invents a mandatory constraint',async({page})=>{
+ const shoe=(i,a)=>({title:`Nike Schuhe Edition ${i}`,url:`https://merchant-${i}.example/product/shoe-${i}`,image:'https://images.example/shoe.jpg',price:String(70+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',attributes:{brand:{value:'Nike',confidence:'HIGH'},...a}});
+ const results=[
+  shoe(1,{size:{value:39,confidence:'HIGH'},audience:{value:'women',confidence:'HIGH'},color:{value:'white',confidence:'HIGH'}}),
+  shoe(2,{size:{value:40,confidence:'HIGH'},audience:{value:'men',confidence:'HIGH'},color:{value:'black',confidence:'HIGH'}}),
+  shoe(3,{size:{value:39,confidence:'HIGH'},audience:{value:'women',confidence:'HIGH'},color:{value:'black',confidence:'HIGH'}}),
+  shoe(4,{size:{value:40,confidence:'HIGH'},audience:{value:'men',confidence:'HIGH'},color:{value:'white',confidence:'HIGH'}})
+ ];
+ const state=await mockSearch(page,()=>({results,moreResultsAvailable:false}));
+ await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');
+ const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();await expect(box).toContainText('Möchtest du die Suche genauer machen?');
+ const size=box.locator('fieldset[data-facet="size"]');await expect(size).toBeVisible();await size.getByRole('button',{name:'39',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(2);
+ await box.getByRole('button',{name:'Ohne weitere Auswahl suchen',exact:true}).click();await expect(box).toBeHidden();await expect(page.locator('.external-result-card')).toHaveCount(4);expect(state.errors).toEqual([]);
+});
