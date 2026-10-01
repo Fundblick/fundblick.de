@@ -37,7 +37,7 @@ assert.equal(nike.semanticResolution.category,'fashion.shoes','brand plus generi
 assert.equal(nike.analysis.category,'fashion.shoes');
 assert(nike.facets.primary.some(x=>x.id==='size'));
 assert(nike.facets.primary.some(x=>x.id==='audience'));
-assert(nike.facets.primary.some(x=>x.id==='color'));
+assert(nike.facets.primary.some(x=>x.id==='color')||nike.facets.more.some(x=>x.id==='color'),'color evidence is retained even when the primary facet budget is full');
 
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
