@@ -114,3 +114,23 @@ test('unknown query without usable facet evidence does not fabricate refinement 
  const state=await mockSearch(page,()=>({results:[{title:'Spezialadapter ZXQ-771',url:'https://merchant.example/product/zxq-771',image:'https://images.example/zxq.jpg',price:'19.90',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'}],moreResultsAvailable:false}));
  await page.goto(base+'?q=Spezialadapter%20ZXQ-771&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('#adaptive-refinement')).toBeHidden();expect(state.errors).toEqual([]);
 });
+
+test('sorting and append loading remain stable after adaptive retrieval',async({page})=>{
+ const shoe=(i,size,price)=>({title:`Nike Damen Schuhe EU ${size} Modell ${i}`,url:`https://merchant-${i}.example/product/refined-${i}`,image:'https://images.example/nike.jpg',price:String(price),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
+ const initial=[shoe(1,39,91),shoe(2,40,92),{...shoe(3,39,93),title:'Nike Herren Schuhe EU 39 Modell 3'},{...shoe(4,40,94),title:'Nike Herren Schuhe EU 40 Modell 4'}];
+ const refined=Array.from({length:10},(_,i)=>shoe(20+i,39,120-i));
+ const extra=[shoe(40,39,70),shoe(41,39,71)];
+ const state=await mockSearch(page,req=>/Größe\s+39/i.test(req.q||'')?{results:req.offset===0?refined:extra,moreResultsAvailable:req.offset===0}:{results:initial,moreResultsAvailable:false});
+ await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();await box.locator('fieldset[data-facet="size"]').getByRole('button',{name:'39',exact:true}).click();await box.getByRole('button',{name:'Auswahl anwenden',exact:true}).click();
+ await expect(page.locator('.external-result-card')).toHaveCount(10);const sort=page.locator('#external-results').getByRole('combobox',{name:'Sortierung',exact:true});await sort.selectOption('price-asc');await expect(page.locator('.external-result-card').first().locator('.external-result-price')).toHaveText('111,00 €');
+ await next(page).click();await expect(page.locator('.external-result-card')).toHaveCount(12);await expect(page.locator('.external-result-card').first().locator('.external-result-price')).toHaveText('70,00 €');
+ const refinedRequests=state.requests.filter(r=>/Größe\s+39/i.test(r.q||''));expect(refinedRequests.map(r=>r.offset)).toEqual([0,1]);expect(new Set(refinedRequests.map(r=>r.q)).size).toBe(1);expect(state.errors).toEqual([]);
+});
+
+test('adaptive refinement controls fit a 390px mobile viewport',async({page})=>{
+ await page.setViewportSize({width:390,height:844});const shoe=(i,size,audience)=>({title:`Nike ${audience} Schuhe EU ${size} Modell ${i}`,url:`https://merchant-${i}.example/product/mobile-${i}`,image:'https://images.example/shoe.jpg',price:String(75+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
+ const state=await mockSearch(page,()=>({results:[shoe(1,39,'Damen'),shoe(2,40,'Herren'),shoe(3,39,'Damen'),shoe(4,40,'Herren')],moreResultsAvailable:false}));
+ await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();
+ for(const node of [box,box.getByRole('button',{name:'39',exact:true}),box.getByRole('button',{name:'Auswahl anwenden',exact:true}),box.getByRole('button',{name:'Ohne weitere Auswahl suchen',exact:true})]){const b=await node.boundingBox();expect(b).not.toBeNull();expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(390);if(await node.evaluate(el=>el.matches('button')))expect(b.height).toBeGreaterThanOrEqual(44)}
+ expect(state.errors).toEqual([]);
+});
