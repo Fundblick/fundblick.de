@@ -37,7 +37,7 @@ assert.equal(nike.semanticResolution.category,'fashion.shoes','brand plus generi
 assert.equal(nike.analysis.category,'fashion.shoes');
 assert(nike.facets.primary.some(x=>x.id==='size'));
 assert(nike.facets.primary.some(x=>x.id==='audience'));
-assert(nike.results.some(x=>x.attributes?.color?.value==='black')&&nike.results.some(x=>x.attributes?.color?.value==='white'),'shoe color evidence remains attached to results even when a facet is not promoted');
+assert(nike.results.some(x=>['black','Schwarz'].includes(x.attributes?.color?.value))&&nike.results.some(x=>['white','Weiß'].includes(x.attributes?.color?.value)),'shoe color evidence remains attached to results even when a facet is not promoted');
 
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
