@@ -41,13 +41,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site
-          rsync -a ./ _site/ \
-            --exclude '.git/' \
-            --exclude '.github/' \
-            --exclude '_site/' \
-            --exclude 'build/' \
-            --exclude 'catalog/' \
-            --exclude 'CNAME'
+          tar --exclude='./.git' --exclude='./.github' --exclude='./_site' --exclude='./build' --exclude='./catalog' --exclude='./CNAME' -cf - . | tar -xf - -C _site
           rm -rf _site/catalog
           cp -R build/catalog _site/catalog
           touch _site/.nojekyll
