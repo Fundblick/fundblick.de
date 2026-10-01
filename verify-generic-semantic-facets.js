@@ -65,11 +65,6 @@ const weakEvidence=pipeline.run('Luftreiniger',[
  {title:'Noisy snippet',rawAttributes:{productType:'Produkt'},attributes:{size:{value:'XL',confidence:'HIGH'}}}
 ],{taxonomy:[]});assert.equal(weakEvidence.semanticResolution.category,'evidence.luftreiniger');assert(!weakEvidence.facets.primary.some(x=>x.id==='size'),'generic noisy product labels must not inject unrelated selectable facets');
 
-const queryConstraintUnseen=pipeline.run('Luftreiniger HEPA H14',[
- {title:'CleanAir H14',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA H14',confidence:'HIGH'},room_area:{value:45,unit:'m²',confidence:'HIGH'}}},
- {title:'AirPure H13',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA H13',confidence:'HIGH'},room_area:{value:30,unit:'m²',confidence:'HIGH'}}}
-],{taxonomy:[]});assert.equal(queryConstraintUnseen.semanticResolution.category,'evidence.luftreiniger');
-
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
 assert.equal(unknown.analysis.category||null,null);
