@@ -52,8 +52,8 @@
    const z=number(l,/\b(\d{2,3})\s*(?:zoll|inch|["″])/iu);if(z)a.screen_size={value:z,unit:'in'};
    if(/\boled\b/iu.test(l))a.display_technology='OLED';else if(/\bqled\b/iu.test(l))a.display_technology='QLED';
   }else if(category==='computing.laptop'||category==='electronics.smartphone'){
-   const storage=l.match(/\b(64|128|256|512|1024|2048)\s*(gb|tb)\b/iu);if(storage){let value=Number(storage[1]);if(storage[2].toLowerCase()==='tb')value*=1024;a.storage={value,unit:'GB'}}
    const ram=l.match(/\b(4|8|16|24|32|48|64|96|128)\s*gb\s*(?:ram|arbeitsspeicher|memory)\b/iu);if(ram)a.memory={value:Number(ram[1]),unit:'GB'};
+   const storageMatches=[...l.matchAll(/\b(64|128|256|512|1024|2048)\s*(gb|tb)\b/giu)].filter(m=>!/(?:ram|arbeitsspeicher|memory)\b/iu.test(l.slice(m.index+m[0].length,m.index+m[0].length+20)));const storage=storageMatches[0];if(storage){let value=Number(storage[1]);if(storage[2].toLowerCase()==='tb')value*=1024;a.storage={value,unit:'GB'}}
    const z=number(l,/\b(\d{2}(?:[.,]\d)?)\s*(?:zoll|inch|["″])/iu);if(z)a.screen_size={value:z,unit:'in'};
   }else if(category==='home.washing_machine'){
    const cap=number(l,/\b(\d{1,2}(?:[.,]\d)?)\s*kg\b/iu);if(cap)a.capacity={value:cap,unit:'kg'};
