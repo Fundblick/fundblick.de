@@ -36,28 +36,28 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  assert.ok(result.state.results.every(ui.offerEligible));
  assert.equal(result.container.children.find(child=>child.className==='external-results-list').children.length,21,'real renderer creates all eligible cards without exceptions');
  assert.ok(!JSON.stringify(result.facets).includes('makita'),'excluded listings cannot create facets');
- const controls=result.container.children.at(-1),nav=controls.children.at(-1),next=nav.children.find(child=>child&&typeof child.onclick==='function');
+ const controls=result.container.children.at(-1),next=controls.children.find(child=>child&&typeof child.onclick==='function');
  assert.ok(next,'append pager exposes a load-more button');await next.onclick();
  assert.equal(result.renders.at(-1).results.length,21,'append-style load more preserves the existing offers when the next provider page only duplicates them');
  result=await run([[...Array.from({length:20},()=>listing)],[...Array.from({length:12},(_,i)=>offer(i))]]);
  assert.equal(result.calls,1,'first page never automatically requests more pages for sparse offers');
  assert.equal(result.state.results.length,0);
- await result.container.children.at(-1).children.at(-1).children.find(child=>child&&typeof child.onclick==='function').onclick();
+ await result.container.children.at(-1).children.find(child=>child&&typeof child.onclick==='function').onclick();
  assert.equal(result.requests[0].query,result.requests[1].query,'pagination retains the same refined query');
  assert.equal(result.renders.at(-1).results.length,12);
- assert.ok(result.container.children.at(-1).children.at(-1).children.some(child=>String(child.textContent||'').includes('12 Angebote geladen')),'append pager reports the accumulated offer count');
+ assert.ok(result.container.children.at(-1).children.some(child=>String(child.textContent||'').includes('12 Angebote geladen')),'append pager reports the accumulated offer count');
 
  result=await run([[...Array.from({length:20},()=>offer(0))],[...Array.from({length:12},(_,i)=>offer(i+1))]]);
  assert.equal(result.calls,1,'duplicates do not trigger automatic upstream requests');
  assert.equal(result.state.results.length,1);
- await result.container.children.at(-1).children.at(-1).children.find(child=>child&&typeof child.onclick==='function').onclick();
+ await result.container.children.at(-1).children.find(child=>child&&typeof child.onclick==='function').onclick();
  assert.equal(result.renders.at(-1).results.length,13);
  result=await run([[listing]],'info');assert.equal(result.state.results.length,1,'information view preserves non-offer sources');
  assert.ok(result.requests[0].query.endsWith('Erklärung Ratgeber'));assert.ok(!result.requests[0].query.includes('-site:'),'information search retains comparison sources');
  result=await run([[]],'offers','Winterreifen 205/55 R16');assert.equal(result.requests[0].query,'Winterreifen 205/55 R16 kaufen Preis Angebot','unimproved tire search preserves baseline');
  result=await run([[offer(0)]],'offers','Bosch Akkuschrauber 18V',{optIn:false});assert.equal(result.calls,0,'no web request before explicit opt-in');
  result=await run([[offer(0)],{ok:false,error:'rate-limited'}]);
- const retry=result.container.children.at(-1).children.at(-1).children.find(child=>child&&typeof child.onclick==='function');
+ const retry=result.container.children.at(-1).children.find(child=>child&&typeof child.onclick==='function');
  await retry.onclick();assert.equal(result.renders.at(-1).results.length,1,'failed next-page request preserves existing offers');
 
  await retry.onclick();assert.equal(result.requests.length,3,'temporary failure permits retry');assert.equal(result.requests[1].offset,result.requests[2].offset);
