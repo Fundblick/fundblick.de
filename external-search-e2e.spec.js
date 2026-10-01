@@ -7,12 +7,12 @@ async function mockSearch(page,respond){const requests=[],errors=[];page.on('pag
 async function settled(page){await expect(page.locator('#external-results .external-search-gate-button')).toBeVisible()}
 function next(page){return page.locator('#external-results').getByRole('button',{name:'Weitere Angebote anzeigen',exact:true})}
 
-test('explicit web opt-in preserves real catalog cards and performs one initial request',async({page})=>{
+test('explicit web opt-in preserves real catalog cards and auto-fills sparse offers',async({page})=>{
  const state=await mockSearch(page,()=>({results:[offer(0)],moreResultsAvailable:true}));
  await page.goto(base+'?q=Ahipos%20Flexen&lang=de');await settled(page);
  const local=page.locator('#cards article.product').first();await expect(local).toHaveAttribute('data-real-merchant','true');const before=await local.innerText();await expect(page.locator('.external-search-privacy')).toContainText('Cloudflare an Brave Search');await expect(page.locator('.external-search-privacy a')).toHaveAttribute('href','datenschutz.html#websuche');expect(state.requests).toHaveLength(0);
  await page.getByRole('button',{name:'Im Web weitersuchen',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(1);
- await expect(next(page)).toBeEnabled();expect(state.requests).toHaveLength(1);expect(state.requests[0].count).toBe(20);expect(await local.innerText()).toBe(before);expect(state.errors).toEqual([]);
+ await expect(next(page)).toBeEnabled();expect(state.requests).toHaveLength(3);expect(state.requests.map(r=>r.offset)).toEqual([0,1,2]);expect(state.requests[0].count).toBe(20);expect(await local.innerText()).toBe(before);expect(state.errors).toEqual([]);
 });
 
 test('browser modules filter before paging; sorting and facets do not fetch',async({page})=>{
@@ -33,7 +33,7 @@ test('mixed currencies disable misleading price and unit-price sorting',async({p
 test('429 preserves own catalog results and failed next page can be retried',async({page})=>{
  let fail=true;const state=await mockSearch(page,({offset})=>offset===0?{results:[offer(1)],moreResultsAvailable:true}:fail?{status:429,body:{error:'rate-limited'}}:{results:[offer(2)],moreResultsAvailable:false});
  await page.goto(base+'?q=Ahipos%20Flexen&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('#cards article.product').first()).toHaveAttribute('data-real-merchant','true');
- await next(page).click();await expect.poll(()=>state.requests.length).toBe(2);await expect(next(page)).toBeEnabled();await expect(page.locator('.external-results-pagination span')).toHaveText('1 Angebote geladen');await expect(page.locator('.external-result-card')).toHaveCount(1);
+ expect(state.requests.map(x=>x.offset)).toEqual([0,1]);await expect(next(page)).toBeEnabled();await expect(page.locator('.external-results-pagination span')).toHaveText('1 Angebote geladen');await expect(page.locator('.external-result-card')).toHaveCount(1);
  fail=false;await next(page).click();await expect(page.locator('.external-result-card')).toHaveCount(2);await expect(page.locator('.external-results-pagination span')).toHaveText('2 Angebote geladen');expect(state.requests.map(x=>x.offset)).toEqual([0,1,1]);expect(state.errors).toEqual([]);
 });
 
