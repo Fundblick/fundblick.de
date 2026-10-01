@@ -142,3 +142,14 @@ Append-UX gegen den bestehenden Runtime-Testbestand abgeglichen. Alte Assertions
 Query-first-Abdeckung von den ersten sieben Referenzfamilien auf weitere Kernfamilien erweitert: Laptop/Notebook, Smartphone, Kopfhörer, Staubsauger, Waschmaschine, Mähroboter und Fahrrad. Für jede Familie liefert das Blueprint eine kanonische Kategorie und fachlich passende erwartete Facetten; deutsche UI-Bezeichnungen ergänzt. Unbekannte Spezialprodukte bleiben weiterhin im Semantic-Fallback statt einer erfundenen Kategorie.
 
 CI-Status während der Arbeit: External Search Safety Gate mehrfach erfolgreich nach RAM-/Blueprint-Änderungen. Development Integrity deckte nacheinander einen veralteten Paging-Test und einen minimalen DOM-Mock auf; DOM-Zugriff gehärtet, Paging-Test auf Append-Semantik aktualisiert. Finaler Head nach den letzten Änderungen erneut vollständig durch CI zu prüfen. Keine Änderung an main/live.
+
+
+### Finalisierung der Gate-Migration / Query-Constraints
+
+Der vollständige Zwischen-Head `c520a09d` erreichte erstmals gleichzeitig grün: Development Preview Build, Development V2 Integrity und Production Release Check. Die vorherigen roten Läufe waren vollständig auf veraltete Testannahmen der ersetzten Seiten-Pagination zurückzuführen und wurden auf das neue Append-Verhalten migriert; Browser-E2E bleibt die Instanz für reale Button-/Touch-/Layout-Interaktion.
+
+External Search Safety Gate wurde außerdem für Pull Requests auf alle neuen Query-to-Facet-/Product-Intelligence-Dateien erweitert, damit Änderungen nicht nur bei Push auf development, sondern auch vor Integration in einem PR geprüft werden.
+
+Query-first Constraint Extraction über RAM hinaus erweitert: Laptop/Smartphone erkennen explizit genannten RAM, Speicher und Bildschirmgröße; Waschmaschinen Kapazität und Schleuderdrehzahl; Mähroboter Flächenangabe. Neue Regressionen prüfen `Laptop 16 GB RAM 512 GB 15,6 Zoll`, `Waschmaschine 9 kg 1400 rpm` und `Mähroboter 800 m²`. Ziel bleibt: bereits in der Anfrage vorhandene Angaben werden als Constraints übernommen und dem Nutzer nicht erneut als unbeantwortete Verfeinerungsfrage gestellt.
+
+Main/live weiterhin unverändert.
