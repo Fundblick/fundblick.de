@@ -23,7 +23,7 @@ const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.string
 
 function corsHeaders(request, env) {
   const origin = request.headers.get('Origin') || '';
-  const configured = String(env.ALLOWED_ORIGIN || 'https://fundblick.de').trim();
+  const configured = String(env.ALLOWED_ORIGIN || 'https://fundblick.de,https://fundblick-development.frosty-moon-518b.workers.dev').trim();
   const allowed = configured.split(',').map(v => v.trim()).filter(Boolean);
   const matched = allowed.includes(origin);
   return {
@@ -38,7 +38,7 @@ function corsHeaders(request, env) {
 function originAllowed(request, env) {
   const origin = request.headers.get('Origin');
   if (!origin) return true;
-  const allowed = String(env.ALLOWED_ORIGIN || 'https://fundblick.de').split(',').map(v => v.trim()).filter(Boolean);
+  const allowed = String(env.ALLOWED_ORIGIN || 'https://fundblick.de,https://fundblick-development.frosty-moon-518b.workers.dev').split(',').map(v => v.trim()).filter(Boolean);
   return allowed.includes(origin);
 }
 
