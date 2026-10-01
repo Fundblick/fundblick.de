@@ -79,3 +79,9 @@ jobs:
           path: _site
           retention-days: 7
           if-no-files-found: error
+
+      - name: Preview hosting handoff summary
+        run: |
+          echo 'Preview package validated and ready for an isolated host.'
+          echo 'Planned hostname: dev.fundblick.de'
+          echo 'Production main/fundblick.de are not deployment targets of this workflow.'
