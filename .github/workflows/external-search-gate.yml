@@ -38,6 +38,14 @@ on:
   pull_request:
     paths:
       - 'search.html'
+      - 'verify-query-to-facet-integration.js'
+      - 'verify-query-facet-blueprint.js'
+      - 'external-intelligence-ui.js'
+      - 'product-intelligence-pipeline.js'
+      - 'product-facet-engine.js'
+      - 'product-result-attribute-extractor.js'
+      - 'query-blueprint-ui.js'
+      - 'query-facet-blueprint.js'
       - 'search-render-signal.js'
       - 'search-demand-analytics.js'
       - 'search-intent.js'
