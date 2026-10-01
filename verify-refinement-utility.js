@@ -42,3 +42,6 @@ const specificFacets={primary:[
 ]};
 assert.deepEqual(utility.suggest(specificAnalysis,specificFacets),[],'fully specified query must not trigger redundant refinement questions');
 assert.deepEqual(utility.suggest({attributes:{}},{primary:[]}),[],'no evidence must produce no fabricated refinement questions');
+
+assert(utility.partitionGain(balanced.valueCounts)>.99,'balanced binary split should maximize expected partition gain');
+assert(utility.partitionGain(skewed.valueCounts)<.04,'99/1 split should have very low expected partition gain');
