@@ -53,6 +53,8 @@ const unseen=pipeline.run('Luftreiniger fürs Schlafzimmer',[
 assert.equal(unseen.semanticResolution.category,'evidence.luftreiniger');assert.equal(unseen.semanticResolution.provisional,true);assert(unseen.facets.primary.some(x=>x.id==='room_area'));assert(unseen.facets.primary.some(x=>x.id==='filter_type'));assert(unseen.refinementSuggestions.some(x=>x.id==='room_area'||x.id==='filter_type'),'unprepared evidence-only family can produce generic high-utility refinement');
 const unseenRoom=unseen.facets.primary.find(x=>x.id==='room_area');assert.deepEqual(unseenRoom.values.slice().sort((a,b)=>a-b),[20,30,50],'unseen-family values remain grounded in structured offer evidence');assert(!unseen.facets.primary.some(x=>x.id==='size'),'unseen family must not inherit an unrelated prepared facet');
 
+const stableIdA=require('./semantic-product-resolver.js').stableId('Luftreiniger');const stableIdB=require('./semantic-product-resolver.js').stableId('Luftreiniger');assert.equal(stableIdA,stableIdB);assert.equal(stableIdA,'evidence.luftreiniger');
+
 const ambiguous=pipeline.run('Air fürs Zimmer',[
  {title:'AirPure Gerät',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA',confidence:'HIGH'}}},
  {title:'CoolAir Gerät',rawAttributes:{productType:'Klimagerät'},attributes:{cooling_capacity:{value:2.5,unit:'kW',confidence:'HIGH'}}}
@@ -62,6 +64,11 @@ const weakEvidence=pipeline.run('Luftreiniger',[
  {title:'AirPure Gerät',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA',confidence:'HIGH'}}},
  {title:'Noisy snippet',rawAttributes:{productType:'Produkt'},attributes:{size:{value:'XL',confidence:'HIGH'}}}
 ],{taxonomy:[]});assert.equal(weakEvidence.semanticResolution.category,'evidence.luftreiniger');assert(!weakEvidence.facets.primary.some(x=>x.id==='size'),'generic noisy product labels must not inject unrelated selectable facets');
+
+const queryConstraintUnseen=pipeline.run('Luftreiniger HEPA H14',[
+ {title:'CleanAir H14',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA H14',confidence:'HIGH'},room_area:{value:45,unit:'m²',confidence:'HIGH'}}},
+ {title:'AirPure H13',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA H13',confidence:'HIGH'},room_area:{value:30,unit:'m²',confidence:'HIGH'}}}
+],{taxonomy:[]});assert.equal(queryConstraintUnseen.semanticResolution.category,'evidence.luftreiniger');
 
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
