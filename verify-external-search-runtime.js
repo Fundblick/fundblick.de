@@ -37,7 +37,7 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  assert.equal(result.container.children.find(child=>child.className==='external-results-list').children.length,21,'real renderer creates all eligible cards without exceptions');
  assert.ok(!JSON.stringify(result.facets).includes('makita'),'excluded listings cannot create facets');
  const nav=result.container.children.at(-1).children.at(-1),next=nav.children.at(-1);
- assert.equal(next.disabled,false);await next.onclick();
+ assert.equal(next.textContent,'Weitere Angebote anzeigen');await next.onclick();
  assert.equal(result.renders.at(-1).results.length,21,'append-style load more preserves the existing offers when the next provider page only duplicates them');
  result=await run([[...Array.from({length:20},()=>listing)],[...Array.from({length:12},(_,i)=>offer(i))]]);
  assert.equal(result.calls,1,'first page never automatically requests more pages for sparse offers');
