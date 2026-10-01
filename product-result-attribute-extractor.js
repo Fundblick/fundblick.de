@@ -10,10 +10,10 @@
  if(cat==='automotive.tires'){m=s.match(/\b(\d{3})\/(\d{2})\s*r?(\d{2})\b/i);if(m){put(a,'width',num(m[1]),{unit:'mm'});put(a,'aspect_ratio',num(m[2]),{unit:'%'});put(a,'rim_size',num(m[3]),{unit:'in'})}if(/winter/i.test(l))put(a,'season','winter');else if(/sommer|summer/i.test(l))put(a,'season','summer');else if(/allwetter|allseason|all-season/i.test(l))put(a,'season','all-season')}
  if(cat==='computing.memory'){
   m=s.match(/\bddr\s*([345])\b/i);if(m)put(a,'memory_generation','DDR'+m[1]);
-  m=s.match(/\b(4|8|16|24|32|48|64|96|128|256)\s*gb\b/i);if(m)put(a,'memory_capacity',num(m[1]),{unit:'GB'});
+  const kit=s.match(/\b([1248])\s*[x×]\s*(4|8|16|24|32|48|64)\s*gb\b/i);if(kit){put(a,'memory_modules',num(kit[1]),{unit:'pc'});put(a,'memory_capacity',num(kit[1])*num(kit[2]),{unit:'GB'})}else{m=s.match(/\b(4|8|16|24|32|48|64|96|128|256)\s*gb\b/i);if(m)put(a,'memory_capacity',num(m[1]),{unit:'GB'})}
   m=s.match(/\b(\d{3,5})\s*(?:mhz|mt\/s)\b/i);if(m)put(a,'memory_speed',num(m[1]),{unit:'MHz'});
   if(/\b(?:so[- ]?dimm|sodimm)\b/i.test(l))put(a,'memory_form_factor','SO-DIMM');else if(/\bdimm\b/i.test(l))put(a,'memory_form_factor','DIMM');
-  m=s.match(/\b(?:kit\s*(?:of\s*)?|)([1248])\s*[x×]\s*(?:\d+\s*gb)?\b/i);if(m)put(a,'memory_modules',num(m[1]),{unit:'pc'});
+  
  }
  Object.assign(a,fashion.extract(s,cat).attributes);if(cat==='fashion.clothing'){m=s.match(/\b(XXS|XS|S|M|L|XL|XXL|3XL|4XL)\b/i);if(m)put(a,'size',m[1].toUpperCase(),{},'MEDIUM')}
  if(cat==='electronics.television'||cat==='computing.monitor'){if(/\b(oled)\b/i.test(l))put(a,'display_technology','OLED');else if(/\b(qled)\b/i.test(l))put(a,'display_technology','QLED');else if(/\b(mini[- ]?led)\b/i.test(l))put(a,'display_technology','Mini-LED');if(/\b4k|uhd\b/i.test(l))put(a,'resolution','4K');else if(/\b8k\b/i.test(l))put(a,'resolution','8K');else if(/\bfull[- ]?hd|1080p\b/i.test(l))put(a,'resolution','Full HD')}
