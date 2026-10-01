@@ -5,7 +5,7 @@ const worker='https://fundblick-search.frosty-moon-518b.workers.dev/search*';
 const offer=i=>({title:`${i%2?'Shell':'Castrol'} 10W-40 Motoröl ${i%3?5:1} Liter Edition ${i}`,url:`https://merchant-${i}.example/product/oil-${i}`,image:'https://images.example/oil.jpg',price:String(30+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
 async function mockSearch(page,respond){const requests=[],errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.route(worker,async route=>{const url=new URL(route.request().url());requests.push({offset:Number(url.searchParams.get('offset')),q:url.searchParams.get('q'),count:Number(url.searchParams.get('count'))});const answer=respond(requests.at(-1),requests.length);await route.fulfill({status:answer.status||200,contentType:'application/json',headers:{'access-control-allow-origin':'*'},body:JSON.stringify(answer.body||answer)})});return{requests,errors}}
 async function settled(page){await expect(page.locator('#external-results .external-search-gate-button')).toBeVisible()}
-function next(page){return page.locator('#external-results').getByRole('button',{name:'Weitere 20',exact:true})}
+function next(page){return page.locator('#external-results').getByRole('button',{name:'Weitere Angebote anzeigen',exact:true})}
 
 test('explicit web opt-in preserves real catalog cards and performs one initial request',async({page})=>{
  const state=await mockSearch(page,()=>({results:[offer(0)],moreResultsAvailable:true}));
@@ -21,7 +21,7 @@ test('browser modules filter before paging; sorting and facets do not fetch',asy
  await page.goto(base+'?q=10W40%20Motor%C3%B6l&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(19);expect(state.requests).toHaveLength(1);
  const sort=page.locator('#external-results').getByRole('combobox',{name:'Sortierung',exact:true});await sort.selectOption('price-desc');await expect(page.locator('.external-result-card').first().locator('.external-result-price')).toHaveText('48,00 €');expect(state.requests).toHaveLength(1);
  const volume=page.locator('select[data-facet="volume"]');await expect(volume).toBeVisible();await volume.selectOption('5');await expect(page.locator('.external-result-card')).toHaveCount(12);expect(state.requests).toHaveLength(1);
- await page.locator('select[data-facet="volume"]').selectOption('');await next(page).click();await expect(page.locator('.external-results-pagination span')).toHaveText('Seite 2');await expect(page.locator('.external-result-card')).toHaveCount(2);expect(state.requests.map(x=>x.offset)).toEqual([0,1]);expect(state.requests[0].q).toBe(state.requests[1].q);expect(state.errors).toEqual([]);
+ await page.locator('select[data-facet="volume"]').selectOption('');await next(page).click();await expect(page.locator('.external-results-pagination span')).toHaveText('22 Angebote geladen');await expect(page.locator('.external-result-card')).toHaveCount(22);expect(state.requests.map(x=>x.offset)).toEqual([0,1]);expect(state.requests[0].q).toBe(state.requests[1].q);expect(state.errors).toEqual([]);
 });
 
 test('mixed currencies disable misleading price and unit-price sorting',async({page})=>{
@@ -33,8 +33,8 @@ test('mixed currencies disable misleading price and unit-price sorting',async({p
 test('429 preserves own catalog results and failed next page can be retried',async({page})=>{
  let fail=true;const state=await mockSearch(page,({offset})=>offset===0?{results:[offer(1)],moreResultsAvailable:true}:fail?{status:429,body:{error:'rate-limited'}}:{results:[offer(2)],moreResultsAvailable:false});
  await page.goto(base+'?q=Ahipos%20Flexen&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('#cards article.product').first()).toHaveAttribute('data-real-merchant','true');
- await next(page).click();await expect.poll(()=>state.requests.length).toBe(2);await expect(next(page)).toBeEnabled();await expect(page.locator('.external-results-pagination span')).toHaveText('Seite 1');await expect(page.locator('.external-result-card')).toHaveCount(1);
- fail=false;await next(page).click();await expect(page.locator('.external-result-card')).toHaveCount(2);await expect(page.locator('.external-results-pagination span')).toHaveText('Seite 1');expect(state.requests.map(x=>x.offset)).toEqual([0,1,1]);expect(state.errors).toEqual([]);
+ await next(page).click();await expect.poll(()=>state.requests.length).toBe(2);await expect(next(page)).toBeEnabled();await expect(page.locator('.external-results-pagination span')).toHaveText('1 Angebote geladen');await expect(page.locator('.external-result-card')).toHaveCount(1);
+ fail=false;await next(page).click();await expect(page.locator('.external-result-card')).toHaveCount(2);await expect(page.locator('.external-results-pagination span')).toHaveText('2 Angebote geladen');expect(state.requests.map(x=>x.offset)).toEqual([0,1,1]);expect(state.errors).toEqual([]);
 });
 
 test('initial 429 leaves the existing catalog usable',async({page})=>{
