@@ -92,3 +92,13 @@ test('applied refinement may retrieve additional matching offers instead of only
  const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();const size=box.locator('fieldset[data-facet="size"]');await size.getByRole('button',{name:'39',exact:true}).click();await box.getByRole('button',{name:'Auswahl anwenden',exact:true}).click();
  await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/size\s+39/i);await expect(page.locator('.external-result-card')).toHaveCount(6);expect(state.errors).toEqual([]);
 });
+
+test('skipping adaptive refinement preserves an unrelated normal facet filter',async({page})=>{
+ const shoe=(i,size,audience,color)=>({title:`Nike ${audience} Schuhe EU ${size} ${color} Modell ${i}`,url:`https://merchant-${i}.example/product/skip-${i}`,image:'https://images.example/shoe.jpg',price:String(90+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
+ const results=[shoe(1,39,'Damen','weiß'),shoe(2,40,'Herren','schwarz'),shoe(3,39,'Damen','schwarz'),shoe(4,40,'Herren','weiß')];
+ const state=await mockSearch(page,()=>({results,moreResultsAvailable:false}));await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');
+ const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();
+ const normal=page.locator('#external-results select[data-facet="color"]');await expect(normal).toBeVisible();await normal.selectOption('black');await expect(page.locator('.external-result-card')).toHaveCount(2);
+ const size=box.locator('fieldset[data-facet="size"]');await size.getByRole('button',{name:'39',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(1);
+ await box.getByRole('button',{name:'Ohne weitere Auswahl suchen',exact:true}).click();await expect(box).toBeHidden();await expect(normal).toHaveValue('black');await expect(page.locator('.external-result-card')).toHaveCount(2);expect(state.errors).toEqual([]);
+});
