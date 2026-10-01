@@ -6,6 +6,9 @@ on:
       - development
   workflow_dispatch:
 
+# Public preview publishing is intentionally separate from production GitHub Pages.
+# When an isolated host is connected, it must consume only the validated artifact below.
+
 permissions:
   contents: read
 
@@ -85,3 +88,4 @@ jobs:
           echo 'Preview package validated and ready for an isolated host.'
           echo 'Planned hostname: dev.fundblick.de'
           echo 'Production main/fundblick.de are not deployment targets of this workflow.'
+          echo 'Artifact: fundblick-development-preview (7-day retention, noindex/nofollow).'
