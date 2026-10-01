@@ -43,9 +43,8 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  await result.settleAgain();
 
  result=await run([[...Array.from({length:20},()=>listing)],[...Array.from({length:12},(_,i)=>offer(i))]]);
- assert.equal(result.calls,1,'first page never automatically requests more pages for sparse offers');
- assert.equal(result.state.results.length,0);
- await clickable(result.container).onclick();
+ assert.equal(result.calls,2,'sparse first page automatically requests another page toward ten usable offers');
+ assert.equal(result.state.results.length,12);
  assert.equal(result.requests[0].query,result.requests[1].query,'automatic fill retains the same refined query');
  assert.ok(hasText(result.container,'12 Angebote geladen'),'pager reports the accumulated offer count');
 
