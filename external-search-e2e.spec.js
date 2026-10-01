@@ -82,3 +82,13 @@ test('adaptive refinement changes intent state without assuming result counts mu
  const size=box.locator('fieldset[data-facet="size"]');await expect(size).toBeVisible();await size.getByRole('button',{name:'39',exact:true}).click();await expect(size.getByRole('button',{name:'39',exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.locator('.external-result-card')).toHaveCount(2);
  await box.getByRole('button',{name:'Ohne weitere Auswahl suchen',exact:true}).click();await expect(box).toBeHidden();await expect(page.locator('.external-result-card')).toHaveCount(4);expect(state.errors).toEqual([]);
 });
+
+test('applied refinement may retrieve additional matching offers instead of only filtering the first batch',async({page})=>{
+ const shoe=(i,size)=>({title:`Nike Damen Schuhe Größe ${size} Modell ${i}`,url:`https://merchant-${i}.example/product/nike-${i}`,image:'https://images.example/nike.jpg',price:String(80+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
+ const initial=[shoe(1,39),shoe(2,40),{...shoe(3,39),title:'Nike Herren Schuhe Größe 39 Modell 3'},{...shoe(4,40),title:'Nike Herren Schuhe Größe 40 Modell 4'}];
+ const refined=[shoe(10,39),shoe(11,39),shoe(12,39),shoe(13,39),shoe(14,39),shoe(15,39)];
+ const state=await mockSearch(page,req=>({results:/size\s+39/i.test(req.q||'')?refined:initial,moreResultsAvailable:false}));
+ await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');
+ const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();const size=box.locator('fieldset[data-facet="size"]');await size.getByRole('button',{name:'39',exact:true}).click();await box.getByRole('button',{name:'Auswahl anwenden',exact:true}).click();
+ await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/size\s+39/i);await expect(page.locator('.external-result-card')).toHaveCount(6);expect(state.errors).toEqual([]);
+});
