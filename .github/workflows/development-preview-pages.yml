@@ -8,6 +8,7 @@ on:
 
 # Public preview publishing is intentionally separate from production GitHub Pages.
 # Cloudflare preview host trigger: development branch source verified 2026-10-01.
+# Cloudflare build configuration now creates the isolated _site package before deploy.
 # When an isolated host is connected, it must consume only the validated artifact below.
 
 permissions:
