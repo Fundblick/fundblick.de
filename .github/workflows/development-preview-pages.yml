@@ -92,6 +92,15 @@ jobs:
           ! grep -q 'deploy-pages' .github/workflows/development-preview-pages.yml
           echo 'Development preview is isolated from GitHub Pages production deployment.'
 
+      - name: Verify Cloudflare preview deployment contract
+        run: |
+          set -euo pipefail
+          node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));if(c.name!=='fundblick-development'||c.assets?.directory!=='./_site'||c.assets?.not_found_handling!=='404-page')process.exit(1);console.log('Cloudflare preview contract OK')"
+          test -f _site/index.html
+          test ! -e _site/.git
+          test ! -e _site/.github
+          test ! -e _site/docs
+
       - name: Upload development preview artifact
         uses: actions/upload-artifact@v4
         with:
