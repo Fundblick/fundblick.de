@@ -2,6 +2,7 @@
 const assert=require('assert');
 const adapter=require('./semantic-taxonomy-adapter.js');
 const pipeline=require('./product-intelligence-pipeline.js');
+const extractor=require('./product-result-attribute-extractor.js');
 
 const taxonomy=[
  {id:'kitchen.blender',label:'Standmixer',terms:['Standmixer','Blender'],facets:['power','capacity','material']},
@@ -39,6 +40,10 @@ assert(nike.facets.primary.some(x=>x.id==='size'));
 assert(nike.facets.primary.some(x=>x.id==='audience'));
 assert(nike.results.length>=1,'brand plus type query keeps relevant shoe evidence');
 assert(nike.results.every(x=>x.attributes?.brand?.value),'structured brand evidence remains attached to retained shoe results');
+
+const colorEvidence=extractor.extract({title:'Nike Damen Schuhe weiß Größe 39'}, {category:'fashion.shoes'});
+assert.equal(colorEvidence.attributes.color?.value,'white','explicit shoe color evidence survives lower-level extraction');
+assert.equal(colorEvidence.attributeEvidence.color,'title');
 
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
