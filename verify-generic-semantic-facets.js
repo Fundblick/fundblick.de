@@ -45,6 +45,13 @@ const colorEvidence=extractor.extract({title:'Nike Damen Schuhe weiß Größe 39
 assert.equal(colorEvidence.attributes.color?.value,'white','explicit shoe color evidence survives lower-level extraction');
 assert.equal(colorEvidence.attributeEvidence.color,'title');
 
+const unseen=pipeline.run('Luftreiniger fürs Schlafzimmer',[
+ {title:'AirPure 300 Luftreiniger',rawAttributes:{productType:'Luftreiniger'},attributes:{room_area:{value:30,unit:'m²',confidence:'HIGH'},filter_type:{value:'HEPA H13',confidence:'HIGH'},noise:{value:24,unit:'dB',confidence:'HIGH'}}},
+ {title:'CleanAir 500 Luftreiniger',rawAttributes:{productType:'Luftreiniger'},attributes:{room_area:{value:50,unit:'m²',confidence:'HIGH'},filter_type:{value:'HEPA H14',confidence:'HIGH'},noise:{value:31,unit:'dB',confidence:'HIGH'}}},
+ {title:'SleepAir Luftreiniger',rawAttributes:{productType:'Luftreiniger'},attributes:{room_area:{value:20,unit:'m²',confidence:'HIGH'},filter_type:{value:'HEPA H13',confidence:'HIGH'},noise:{value:18,unit:'dB',confidence:'HIGH'}}}
+],{taxonomy:[],facets:{minCoverage:.35,maxPrimary:8}});
+assert.equal(unseen.semanticResolution.category,'evidence.luftreiniger');assert.equal(unseen.semanticResolution.provisional,true);assert(unseen.facets.primary.some(x=>x.id==='room_area'));assert(unseen.facets.primary.some(x=>x.id==='filter_type'));assert(unseen.refinementSuggestions.some(x=>x.id==='room_area'||x.id==='filter_type'),'unprepared evidence-only family can produce generic high-utility refinement');
+
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
 assert.equal(unknown.analysis.category||null,null);
