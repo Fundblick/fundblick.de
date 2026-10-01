@@ -133,3 +133,12 @@ UX-Recherche erneut gegengeprüft: Baymard Product Finding/Search stützt produk
 Release-Sicherheit nachgezogen: neue Intelligence-/UI-/CSS-Abhängigkeiten werden in Release- und Production-Pages-Paketierung aufgenommen; Query-to-Facet-Prüfungen in den External-Search-Gate aufgenommen. Ein erster CI-Lauf stoppte korrekt an einem Unicode-RegEx-Syntaxfehler im neuen Bildschirmgrößenmuster; behoben. Zweiter Gate-Lauf erreichte die Integration und deckte einen fehlerhaften Testdatensatz auf: Laptop-Constraint SO-DIMM wurde gegen DIMM-Angebote getestet und vom Conflict Filter erwartungsgemäß unterdrückt. Fixture auf kompatible SO-DIMM-Angebote korrigiert; External Search Safety Gate danach erfolgreich. Weitere final-head Gates nach den letzten UI-/Packaging-Commits noch abzuwarten.
 
 Main/Live seit Beginn dieser Phase unverändert; keine Freigabe oder Live-Schaltung dokumentieren, solange finaler Development-Head nicht vollständig geprüft und ausdrücklich abgenommen ist.
+
+
+### Fortsetzung 01.10.2026 – Regressionen und Breitenabdeckung
+
+Append-UX gegen den bestehenden Runtime-Testbestand abgeglichen. Alte Assertions erwarteten absichtlich seitenweise Ersetzung und feste 20 sichtbare Ergebnisse; sie wurden nicht blind beibehalten, sondern auf die neue vertragliche Semantik umgestellt: bereits geeignete Angebote bleiben sichtbar, Nachladen hängt neue eindeutige Angebote an, der Nutzer sieht den kumulierten Angebotsstand und keine technische Seitennummer mehr. Provider kann mehr als 20 Rohresultate liefern; geeignete Treffer werden nicht künstlich auf 20 abgeschnitten.
+
+Query-first-Abdeckung von den ersten sieben Referenzfamilien auf weitere Kernfamilien erweitert: Laptop/Notebook, Smartphone, Kopfhörer, Staubsauger, Waschmaschine, Mähroboter und Fahrrad. Für jede Familie liefert das Blueprint eine kanonische Kategorie und fachlich passende erwartete Facetten; deutsche UI-Bezeichnungen ergänzt. Unbekannte Spezialprodukte bleiben weiterhin im Semantic-Fallback statt einer erfundenen Kategorie.
+
+CI-Status während der Arbeit: External Search Safety Gate mehrfach erfolgreich nach RAM-/Blueprint-Änderungen. Development Integrity deckte nacheinander einen veralteten Paging-Test und einen minimalen DOM-Mock auf; DOM-Zugriff gehärtet, Paging-Test auf Append-Semantik aktualisiert. Finaler Head nach den letzten Änderungen erneut vollständig durch CI zu prüfen. Keine Änderung an main/live.
