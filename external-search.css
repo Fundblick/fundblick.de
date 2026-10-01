@@ -41,9 +41,9 @@
 .adaptive-refinement-options{display:grid;gap:.75rem}
 .adaptive-refinement fieldset{border:0;padding:0;margin:0;display:flex;gap:.45rem;flex-wrap:wrap}
 .adaptive-refinement legend{width:100%;margin:0 0 .35rem;font-size:.84rem;font-weight:700}
-.adaptive-refinement-choice{border:1px solid rgba(24,48,37,.2);border-radius:999px;background:#fff;padding:.45rem .7rem;cursor:pointer}
+.adaptive-refinement-choice{min-height:44px;border:1px solid rgba(24,48,37,.2);border-radius:999px;background:#fff;padding:.55rem .75rem;cursor:pointer}
 .adaptive-refinement-choice[aria-pressed="true"]{background:#183025;color:#fff;border-color:#183025}
 .adaptive-refinement-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.9rem}
-.adaptive-refinement-actions button{min-height:42px;border-radius:10px;padding:.55rem .85rem}
+.adaptive-refinement-actions button{min-height:44px;border-radius:10px;padding:.55rem .85rem}
 .adaptive-refinement-skip{background:transparent;border:1px solid rgba(24,48,37,.25)}
 @media(max-width:640px){.adaptive-refinement{padding:.8rem;border-radius:14px}.adaptive-refinement-actions{display:grid;grid-template-columns:1fr}.adaptive-refinement-actions button{width:100%}}
