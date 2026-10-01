@@ -35,7 +35,7 @@
   }else if(category==='tools.cordless_drill'){
    const v=number(l,/\b(\d+(?:[.,]\d+)?)\s*v\b/iu);if(v)a.voltage={value:v,unit:'V'};
   }else if(category==='electronics.television'){
-   const z=number(l,/\b(\d{2,3})\s*(?:zoll|inch|\")\b/iu);if(z)a.screen_size={value:z,unit:'in'};
+   const z=number(l,/\b(\d{2,3})\s*(?:zoll|inch|["″])/iu);if(z)a.screen_size={value:z,unit:'in'};
    if(/\boled\b/iu.test(l))a.display_technology='OLED';else if(/\bqled\b/iu.test(l))a.display_technology='QLED';
   }else if(category==='fashion.shoes'){
    const sz=number(l,/\b(?:größe|gr\.?|size)\s*(\d{2}(?:[.,]5)?)\b/iu);if(sz)a.size=sz;
