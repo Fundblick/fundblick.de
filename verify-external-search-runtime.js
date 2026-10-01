@@ -59,7 +59,7 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  const retry=clickable(result.container);
  await retry.onclick();assert.equal(result.renders.at(-1).results.length,1,'failed next-page request preserves existing offers');
 
- await retry.onclick();assert.equal(result.requests.length,3,'temporary failure permits retry');assert.equal(result.requests[1].offset,result.requests[2].offset);
+ await retry.onclick();assert.equal(result.requests.length,4,'automatic fill plus explicit retry preserves the failed offset');assert.equal(result.requests[2].offset,result.requests[3].offset);
  result=await run([{ok:false,status:429}]);assert.equal(result.calls,1);await result.settleAgain();await result.settleAgain();assert.equal(result.calls,1,'repeated local completion events cannot automatically retry failed web requests');assert.equal(result.renders.at(-1).error,true);
  result=await run([{ok:false,status:429}],'offers','Bosch Akkuschrauber 18V',{recoverFirst:true});const initialRetry=result.container.children.at(-1);assert.equal(initialRetry.textContent,'Websuche erneut versuchen');initialRetry.onclick();initialRetry.onclick();await result.settleAgain();assert.equal(result.calls,2,'explicit retry shares one scheduled initial request');assert.deepEqual(result.requests.map(r=>r.offset),[0,0]);assert.equal(result.renders.at(-1).results.length,1);await result.settleAgain();assert.equal(result.calls,2,'local completion cannot repeat successful retry');
  console.log('External runtime: opt-in + one initial request + append-style load more + retry + eligible offers OK');
