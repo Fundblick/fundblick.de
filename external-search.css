@@ -14,3 +14,22 @@
 @media(min-width:1100px){.external-results-list{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(min-width:760px) and (max-width:1099px){.external-results-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:640px){.external-results-list{grid-template-columns:1fr}.external-result-card{grid-template-columns:96px minmax(0,1fr);grid-template-rows:auto}.external-result-image{width:96px;height:86px}.external-search-gate-button{width:100%}}
+
+
+/* 2026-10-01: mobile offer controls follow familiar commerce hierarchy */
+@media(max-width:640px){
+ .external-results{padding:.7rem}
+ .external-results-list{gap:.65rem;margin-top:.75rem}
+ .external-result-card{grid-template-columns:82px minmax(0,1fr);gap:.7rem;padding:.75rem}
+ .external-result-image{width:82px;height:78px}
+ .external-result-card h3{font-size:.93rem;line-height:1.28}
+ .external-result-description{font-size:.84rem;line-height:1.35}
+ .external-results-controls{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;align-items:end}
+ .external-results-facets{display:contents}
+ .external-facet{display:flex;min-width:0;width:auto;flex:none}
+ .external-facet:nth-of-type(n+3){grid-column:1/-1}
+ .external-results-controls>select{grid-column:1/-1;width:100%}
+ .external-results-pagination{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:.65rem;width:100%;margin:0;align-items:center}
+ .external-results-pagination span{font-size:.9rem}
+ .external-results-pagination button{width:100%}
+}
