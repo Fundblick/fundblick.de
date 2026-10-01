@@ -14,11 +14,11 @@ assert.equal(bp.attributes.memory_speed.value,6000);
 assert.equal(bp.attributes.memory_form_factor,'SO-DIMM');
 
 const raw=[
- {title:'Kingston Fury 32GB DDR5 6000 MHz DIMM Kit 2x16GB',url:'https://shop.example/a',productUrl:'https://shop.example/a',price:'109,90 €',currency:'EUR',productCandidate:true,attributes:{brand:{value:'Kingston',confidence:'HIGH'}}},
- {title:'Corsair Vengeance 32GB DDR5 6000 MHz DIMM 2x16GB',url:'https://shop2.example/b',productUrl:'https://shop2.example/b',price:'119,90 €',currency:'EUR',productCandidate:true,attributes:{brand:{value:'Corsair',confidence:'HIGH'}}}
+ {title:'Kingston Fury 32GB DDR5 6000 MHz SO-DIMM Kit 2x16GB',url:'https://shop.example/a',productUrl:'https://shop.example/a',price:'109,90 €',currency:'EUR',productCandidate:true,attributes:{brand:{value:'Kingston',confidence:'HIGH'}}},
+ {title:'Corsair Vengeance 32GB DDR5 6000 MHz SO-DIMM 2x16GB',url:'https://shop2.example/b',productUrl:'https://shop2.example/b',price:'119,90 €',currency:'EUR',productCandidate:true,attributes:{brand:{value:'Corsair',confidence:'HIGH'}}}
 ];
 const extracted=extractor.extractAll(raw,{category:'computing.memory'});
-for(const item of extracted){assert.equal(item.attributes.memory_generation.value,'DDR5');assert.equal(item.attributes.memory_capacity.value,32);assert.equal(item.attributes.memory_speed.value,6000);assert.equal(item.attributes.memory_form_factor.value,'DIMM')}
+for(const item of extracted){assert.equal(item.attributes.memory_generation.value,'DDR5');assert.equal(item.attributes.memory_capacity.value,32);assert.equal(item.attributes.memory_speed.value,6000);assert.equal(item.attributes.memory_form_factor.value,'SO-DIMM')}
 const fs=facets.derive({category:bp.category,facets:bp.facets,attributes:bp.attributes},extracted,{minCoverage:.35,maxPrimary:7});
 assert(fs.primary.some(x=>x.id==='memory_generation'));
 assert(fs.primary.some(x=>x.id==='memory_capacity'));
