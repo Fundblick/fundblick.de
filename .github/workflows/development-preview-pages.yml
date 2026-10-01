@@ -57,6 +57,22 @@ jobs:
           test -s _site/catalog/categories.json
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/catalog/manifest.json'));if(Number(m.itemCount)<1000)process.exit(1);console.log('Packaged preview catalog OK',m.itemCount)"
 
+      - name: Remove non-runtime development files from preview package
+        run: |
+          set -euo pipefail
+          find _site -maxdepth 1 -type f \( \
+            -name 'verify-*.js' -o \
+            -name 'build-*.js' -o \
+            -name '*-e2e.spec.js' -o \
+            -name 'DESKTOP_HANDOFF_*.md' \
+          \) -delete
+          rm -rf _site/docs
+          test ! -e _site/.git
+          test ! -e _site/.github
+          test ! -e _site/docs
+          ! find _site -maxdepth 1 -type f -name 'verify-*.js' -print -quit | grep -q .
+          ! find _site -maxdepth 1 -type f -name '*-e2e.spec.js' -print -quit | grep -q .
+
       - name: Protect isolated preview from search indexing
         run: |
           node development/verify-preview-indexing.js
@@ -90,3 +106,4 @@ jobs:
           echo 'Planned hostname: dev.fundblick.de'
           echo 'Production main/fundblick.de are not deployment targets of this workflow.'
           echo 'Artifact: fundblick-development-preview (7-day retention, noindex/nofollow).'
+          echo 'Cloudflare Workers Static Assets must publish _site only, never the repository root.'
