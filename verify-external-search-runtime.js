@@ -46,15 +46,12 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  assert.equal(result.calls,1,'first page never automatically requests more pages for sparse offers');
  assert.equal(result.state.results.length,0);
  await clickable(result.container).onclick();
- assert.equal(result.requests[0].query,result.requests[1].query,'pagination retains the same refined query');
- assert.equal(result.renders.at(-1).results.length,12);
- assert.ok(hasText(result.container,'12 Angebote geladen'),'append pager reports the accumulated offer count');
+ assert.equal(result.requests[0].query,result.requests[1].query,'automatic fill retains the same refined query');
+ assert.ok(hasText(result.container,'12 Angebote geladen'),'pager reports the accumulated offer count');
 
  result=await run([[...Array.from({length:20},()=>offer(0))],[...Array.from({length:12},(_,i)=>offer(i+1))]]);
- assert.equal(result.calls,1,'duplicates do not trigger automatic upstream requests');
- assert.equal(result.state.results.length,1);
- await clickable(result.container).onclick();
- assert.equal(result.renders.at(-1).results.length,13);
+ assert.equal(result.calls,2,'duplicates trigger automatic fill toward ten unique usable offers');
+ assert.equal(result.state.results.length,13);
  result=await run([[listing]],'info');assert.equal(result.state.results.length,1,'information view preserves non-offer sources');
  assert.ok(result.requests[0].query.endsWith('Erklärung Ratgeber'));assert.ok(!result.requests[0].query.includes('-site:'),'information search retains comparison sources');
  result=await run([[]],'offers','Winterreifen 205/55 R16');assert.equal(result.requests[0].query,'Winterreifen 205/55 R16 kaufen Preis Angebot','unimproved tire search preserves baseline');
