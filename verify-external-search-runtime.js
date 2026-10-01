@@ -57,7 +57,7 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  result=await run([[]],'offers','Winterreifen 205/55 R16');assert.equal(result.requests[0].query,'Winterreifen 205/55 R16 kaufen Preis Angebot','unimproved tire search preserves baseline');
  result=await run([[offer(0)]],'offers','Bosch Akkuschrauber 18V',{optIn:false});assert.equal(result.calls,0,'no web request before explicit opt-in');
  result=await run([[offer(0)],{ok:false,error:'rate-limited'}]);
- const retry=result.container.children.at(-1).children.at(-1).children.at(-1);
+ const retry=result.container.children.at(-1).children.at(-1);
  await retry.onclick();assert.equal(result.renders.at(-1).results.length,1,'failed next-page request preserves existing offers');
 
  await retry.onclick();assert.equal(result.requests.length,3,'temporary failure permits retry');assert.equal(result.requests[1].offset,result.requests[2].offset);
