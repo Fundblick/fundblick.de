@@ -17,7 +17,7 @@ for(const file of ['index.html','search.html','impressum.html','datenschutz.html
 }
 const search=read('search.html');assert.match(search,/data-external-search-endpoint="https:\/\/fundblick-search\.frosty-moon-518b\.workers\.dev"/);
 assert.ok(!search.includes('data-external-search-development-relay'),'production never enables local relay');
-for(const asset of ['product-fashion-attributes.js','external-price-evidence.js','external-search-client.js','external-search-runtime.js','product-query-strategy.js'])assert.ok(manifest.assets[asset],asset+' included in production');
+for(const asset of ['product-fashion-attributes.js','external-price-evidence.js','external-search-client.js','external-search-runtime.js','product-query-strategy.js','refinement-utility.js','refinement-query-terms.js','refinement-ui.js'])assert.ok(manifest.assets[asset],asset+' included in production');
 assert.ok(read(manifest.assets['external-search-runtime.js']).includes('datenschutz.html#websuche'),'privacy link resolves to packaged public page');
 assert.match(read('datenschutz.html'),/id="websuche"/);
 const catalog=JSON.parse(read('catalog/manifest.json'));assert.equal(catalog.dataMode,'real');assert.ok(catalog.realCount>=1000);assert.equal(catalog.simulatedCount,0);
