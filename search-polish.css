@@ -37,3 +37,10 @@ html[data-external-zero-local="true"] .mobile-search-tools,
 html[data-external-zero-local="true"] #filter-panel{display:none}
 html[data-external-zero-local="true"] .results-layout{grid-template-columns:1fr}
 @media(max-width:760px){html[data-external-zero-local="true"] .results-heading{margin-bottom:.25rem}}
+
+.query-blueprint{margin:.65rem 0 .9rem;padding:.7rem .85rem;border:1px solid rgba(111,158,122,.34);border-radius:12px;background:rgba(237,247,235,.62)}
+.query-blueprint-title,.query-blueprint-relevant{margin:0;color:var(--ink)}
+.query-blueprint-title{font-weight:800}
+.query-blueprint-relevant{margin-top:.4rem;font-size:.9rem;color:#45634d}
+.query-blueprint-constraints{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.45rem}
+.query-blueprint-constraints span{padding:.28rem .52rem;border-radius:999px;background:#fff;border:1px solid rgba(111,158,122,.36);font-size:.82rem;font-weight:700}
