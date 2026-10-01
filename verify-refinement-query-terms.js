@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('assert');
+const q=require('./refinement-query-terms.js');
+assert.equal(q.term('size',39,'de'),'Größe 39');
+assert.equal(q.term('size',39,'en'),'size 39');
+assert.equal(q.term('size',39,'ru'),'размер 39');
+assert.equal(q.term('screen_size',65,'de-DE'),'Bildschirmgröße 65');
+assert.equal(q.term('unknown_feature','ABC','de'),'unknown feature ABC');
+assert.equal(q.suffix({size:39,color:'schwarz'},'de'),'Größe 39 Farbe schwarz');
+assert.equal(q.suffix({size:null,color:''},'de'),'');
+console.log('localized refinement query term checks passed');
