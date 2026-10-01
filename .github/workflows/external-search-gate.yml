@@ -20,6 +20,9 @@ on:
       - 'verify-query-facet-blueprint.js'
       - 'external-intelligence-ui.js'
       - 'product-intelligence-pipeline.js'
+      - 'semantic-product-resolver.js'
+      - 'semantic-taxonomy-adapter.js'
+      - 'verify-generic-semantic-facets.js'
       - 'product-facet-engine.js'
       - 'product-result-attribute-extractor.js'
       - 'query-blueprint-ui.js'
@@ -42,6 +45,9 @@ on:
       - 'verify-query-facet-blueprint.js'
       - 'external-intelligence-ui.js'
       - 'product-intelligence-pipeline.js'
+      - 'semantic-product-resolver.js'
+      - 'semantic-taxonomy-adapter.js'
+      - 'verify-generic-semantic-facets.js'
       - 'product-facet-engine.js'
       - 'product-result-attribute-extractor.js'
       - 'query-blueprint-ui.js'
@@ -99,6 +105,9 @@ jobs:
           node --check product-result-attribute-extractor.js
           node --check product-facet-engine.js
           node --check product-intelligence-pipeline.js
+          node --check semantic-product-resolver.js
+          node --check semantic-taxonomy-adapter.js
+          node --check verify-generic-semantic-facets.js
           node --check external-intelligence-ui.js
           node --check verify-query-facet-blueprint.js
           node --check verify-query-to-facet-integration.js
@@ -111,7 +120,9 @@ jobs:
         run: |
           node verify-query-facet-blueprint.js
           node verify-semantic-product-resolver.js
+          node verify-generic-semantic-facets.js
           node verify-query-to-facet-integration.js
+          grep -q 'semantic-taxonomy-adapter.js' search.html
           grep -q 'query-facet-blueprint.js' search.html
           grep -q 'query-blueprint-ui.js' search.html
       - name: Verify local completion signal wiring
