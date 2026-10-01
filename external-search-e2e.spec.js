@@ -69,7 +69,7 @@ test('Hausschuhe structured detail survives generic title while category prices 
 
 
 test('adaptive refinement changes intent state without assuming result counts must shrink',async({page})=>{
- const shoe=(i,a)=>({title:`Nike Schuhe Edition ${i} ${a.size.value} ${a.audience.value==='women'?'Damen':'Herren'} ${a.color.value}`,url:`https://merchant-${i}.example/product/shoe-${i}`,image:'https://images.example/shoe.jpg',price:String(70+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',attributes:{brand:{value:'Nike',confidence:'HIGH'},...a}});
+ const shoe=(i,a)=>({title:`Nike Schuhe Edition ${i} EU ${a.size.value} ${a.audience.value==='women'?'Damen':'Herren'} ${a.color.value}`,url:`https://merchant-${i}.example/product/shoe-${i}`,image:'https://images.example/shoe.jpg',price:String(70+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',attributes:{brand:{value:'Nike',confidence:'HIGH'},...a}});
  const results=[
   shoe(1,{size:{value:39,confidence:'HIGH'},audience:{value:'women',confidence:'HIGH'},color:{value:'white',confidence:'HIGH'}}),
   shoe(2,{size:{value:40,confidence:'HIGH'},audience:{value:'men',confidence:'HIGH'},color:{value:'black',confidence:'HIGH'}}),
@@ -84,7 +84,7 @@ test('adaptive refinement changes intent state without assuming result counts mu
 });
 
 test('applied refinement may retrieve additional matching offers instead of only filtering the first batch',async({page})=>{
- const shoe=(i,size)=>({title:`Nike Damen Schuhe Größe ${size} Modell ${i}`,url:`https://merchant-${i}.example/product/nike-${i}`,image:'https://images.example/nike.jpg',price:String(80+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
+ const shoe=(i,size)=>({title:`Nike Damen Schuhe EU ${size} Modell ${i}`,url:`https://merchant-${i}.example/product/nike-${i}`,image:'https://images.example/nike.jpg',price:String(80+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
  const initial=[shoe(1,39),shoe(2,40),{...shoe(3,39),title:'Nike Herren Schuhe Größe 39 Modell 3'},{...shoe(4,40),title:'Nike Herren Schuhe Größe 40 Modell 4'}];
  const refined=[shoe(10,39),shoe(11,39),shoe(12,39),shoe(13,39),shoe(14,39),shoe(15,39)];
  const state=await mockSearch(page,req=>({results:/size\s+39/i.test(req.q||'')?refined:initial,moreResultsAvailable:false}));
