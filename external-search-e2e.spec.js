@@ -79,7 +79,7 @@ test('adaptive refinement changes intent state without assuming result counts mu
  const state=await mockSearch(page,()=>({results,moreResultsAvailable:false}));
  await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');
  const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();await expect(box).toContainText('Möchtest du die Suche genauer machen?');await expect(box.getByRole('button',{name:'Auswahl anwenden',exact:true})).toBeDisabled();
- const size=box.locator('fieldset[data-facet="size"]');await expect(size).toBeVisible();await size.getByRole('button',{name:'39',exact:true}).click();await expect(size.getByRole('button',{name:'39',exact:true})).toHaveAttribute('aria-pressed','true');await expect(box.getByRole('button',{name:'Auswahl anwenden',exact:true})).toBeEnabled();await expect(page.locator('.external-result-card')).toHaveCount(2);
+ const size=box.locator('fieldset[data-facet="size"]');await expect(size).toBeVisible();await expect(size.locator('legend')).toHaveText('Größe');await size.getByRole('button',{name:'39',exact:true}).click();await expect(size.getByRole('button',{name:'39',exact:true})).toHaveAttribute('aria-pressed','true');await expect(box.getByRole('button',{name:'Auswahl anwenden',exact:true})).toBeEnabled();await expect(page.locator('.external-result-card')).toHaveCount(2);
  await box.getByRole('button',{name:'Ohne weitere Auswahl suchen',exact:true}).click();await expect(box).toBeHidden();await expect(page.locator('.external-result-card')).toHaveCount(4);expect(state.errors).toEqual([]);
 });
 
