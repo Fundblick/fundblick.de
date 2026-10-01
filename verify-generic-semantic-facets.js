@@ -51,7 +51,7 @@ const unseen=pipeline.run('Luftreiniger fürs Schlafzimmer',[
  {title:'SleepAir Luftreiniger',rawAttributes:{productType:'Luftreiniger'},attributes:{room_area:{value:20,unit:'m²',confidence:'HIGH'},filter_type:{value:'HEPA H13',confidence:'HIGH'},noise:{value:18,unit:'dB',confidence:'HIGH'}}}
 ],{taxonomy:[],facets:{minCoverage:.35,maxPrimary:8}});
 assert.equal(unseen.semanticResolution.category,'evidence.luftreiniger');assert.equal(unseen.semanticResolution.provisional,true);assert(unseen.facets.primary.some(x=>x.id==='room_area'));assert(unseen.facets.primary.some(x=>x.id==='filter_type'));assert(unseen.refinementSuggestions.some(x=>x.id==='room_area'||x.id==='filter_type'),'unprepared evidence-only family can produce generic high-utility refinement');
-const unseenRoom=unseen.facets.primary.find(x=>x.id==='room_area');assert.deepEqual(unseenRoom.values.sort(),['20 m²','30 m²','50 m²'].sort(),'unseen-family values remain grounded in structured offer evidence');assert(!unseen.facets.primary.some(x=>x.id==='size'),'unseen family must not inherit an unrelated prepared facet');
+const unseenRoom=unseen.facets.primary.find(x=>x.id==='room_area');assert.deepEqual(unseenRoom.values.slice().sort((a,b)=>a-b),[20,30,50],'unseen-family values remain grounded in structured offer evidence');assert(!unseen.facets.primary.some(x=>x.id==='size'),'unseen family must not inherit an unrelated prepared facet');
 
 const ambiguous=pipeline.run('Air fürs Zimmer',[
  {title:'AirPure Gerät',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA',confidence:'HIGH'}}},
