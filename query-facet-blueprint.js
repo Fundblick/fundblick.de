@@ -7,7 +7,14 @@
   'tools.cordless_drill':{label:{de:'Akku-Bohrschrauber',en:'Cordless drill'},facets:['voltage','battery_capacity','torque','brand','model','price']},
   'electronics.television':{label:{de:'Fernseher',en:'Television'},facets:['screen_size','display_technology','resolution','brand','model','price']},
   'fashion.shoes':{label:{de:'Schuhe',en:'Shoes'},facets:['size','audience','color','brand','model','price']},
-  'baby.stroller':{label:{de:'Kinderwagen',en:'Stroller'},facets:['type','age_group','weight','color','brand','price']}
+  'baby.stroller':{label:{de:'Kinderwagen',en:'Stroller'},facets:['type','age_group','weight','color','brand','price']},
+  'computing.laptop':{label:{de:'Laptop / Notebook',en:'Laptop / notebook'},facets:['processor','memory','storage','screen_size','brand','price']},
+  'electronics.smartphone':{label:{de:'Smartphone',en:'Smartphone'},facets:['storage','memory','screen_size','brand','model','price']},
+  'electronics.headphones':{label:{de:'Kopfhörer',en:'Headphones'},facets:['type','connectivity','noise_cancelling','color','brand','price']},
+  'home.vacuum':{label:{de:'Staubsauger',en:'Vacuum cleaner'},facets:['type','power','capacity','brand','price']},
+  'home.washing_machine':{label:{de:'Waschmaschine',en:'Washing machine'},facets:['capacity','spin_speed','energy_class','brand','price']},
+  'garden.robot_mower':{label:{de:'Mähroboter',en:'Robot mower'},facets:['max_area','max_slope','cutting_width','brand','price']},
+  'cycling.bicycle':{label:{de:'Fahrrad',en:'Bicycle'},facets:['frame_size','wheel_size','gears','brand','price']}
  };
  function clean(v){return String(v||'').normalize('NFKC').replace(/\s+/g,' ').trim()}
  function number(text,re){const m=text.match(re);return m?Number(String(m[1]).replace(',','.')):null}
@@ -20,6 +27,13 @@
   if(/\b(?:fernseher|tv|television|oled|qled)\b/iu.test(l))return'electronics.television';
   if(/\b(?:laufschuh|laufschuhe|running shoes?|sneaker|schuhe)\b/iu.test(l))return'fashion.shoes';
   if(/\b(?:kinderwagen|buggy|stroller)\b/iu.test(l))return'baby.stroller';
+  if(/\b(?:laptop|notebook)\b/iu.test(l))return'computing.laptop';
+  if(/\b(?:smartphone|handy|iphone)\b/iu.test(l))return'electronics.smartphone';
+  if(/\b(?:kopfhörer|headphones?|earbuds?)\b/iu.test(l))return'electronics.headphones';
+  if(/\b(?:staubsauger|vacuum cleaner)\b/iu.test(l))return'home.vacuum';
+  if(/\b(?:waschmaschine|washing machine)\b/iu.test(l))return'home.washing_machine';
+  if(/\b(?:mähroboter|rasenroboter|robot mower)\b/iu.test(l))return'garden.robot_mower';
+  if(/\b(?:fahrrad|bike|bicycle)\b/iu.test(l))return'cycling.bicycle';
   return null;
  }
  function constraints(q,category){
