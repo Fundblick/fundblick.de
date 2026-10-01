@@ -87,13 +87,19 @@ test('applied refinement may retrieve additional matching offers instead of only
  const shoe=(i,size)=>({title:`Nike Damen Schuhe EU ${size} Modell ${i}`,url:`https://merchant-${i}.example/product/nike-${i}`,image:'https://images.example/nike.jpg',price:String(80+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
  const initial=[shoe(1,39),shoe(2,40),{...shoe(3,39),title:'Nike Herren Schuhe Größe 39 Modell 3'},{...shoe(4,40),title:'Nike Herren Schuhe Größe 40 Modell 4'}];
  const refined=[shoe(10,39),shoe(11,39),shoe(12,39),shoe(13,39),shoe(14,39),shoe(15,39)];
- const state=await mockSearch(page,req=>({results:/size\s+39/i.test(req.q||'')?refined:initial,moreResultsAvailable:false}));
+ const state=await mockSearch(page,req=>({results:/Größe\s+39/i.test(req.q||'')?refined:initial,moreResultsAvailable:false}));
  await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');
  const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();const size=box.locator('fieldset[data-facet="size"]');await size.getByRole('button',{name:'39',exact:true}).click();await box.getByRole('button',{name:'Auswahl anwenden',exact:true}).click();
- await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/size\s+39/i);await expect(page.locator('.external-result-card')).toHaveCount(6);expect(state.errors).toEqual([]);
+ await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/Größe\s+39/i);await expect(page.locator('.external-result-card')).toHaveCount(6);expect(state.errors).toEqual([]);
 });
 
-test('refinement retrieval terms follow the active search language',async({page})=>{\n await page.goto(base+'?q=Nike%20Schuhe&lang=de');await settled(page);\n const terms=await page.evaluate(()=>{const runtime=window.FundBlickExternalSearchRuntime;return runtime?.__test?.refinementTerm?{de:runtime.__test.refinementTerm('size',39,'de'),en:runtime.__test.refinementTerm('size',39,'en'),ru:runtime.__test.refinementTerm('size',39,'ru')}:null});\n if(terms){expect(terms.de).toContain('Größe 39');expect(terms.en).toContain('size 39');expect(terms.ru).toContain('размер 39')}\n});\n\ntest('skipping adaptive refinement preserves an unrelated normal facet filter',async({page})=>{
+test('refinement retrieval terms follow the active search language',async({page})=>{
+ await page.goto(base+'?q=Nike%20Schuhe&lang=de');await settled(page);
+ const terms=await page.evaluate(()=>{const runtime=window.FundBlickExternalSearchRuntime;return runtime?.__test?.refinementTerm?{de:runtime.__test.refinementTerm('size',39,'de'),en:runtime.__test.refinementTerm('size',39,'en'),ru:runtime.__test.refinementTerm('size',39,'ru')}:null});
+ if(terms){expect(terms.de).toContain('Größe 39');expect(terms.en).toContain('size 39');expect(terms.ru).toContain('размер 39')}
+});
+
+test('skipping adaptive refinement preserves an unrelated normal facet filter',async({page})=>{
  const shoe=(i,size,audience,color)=>({title:`Nike ${audience} Schuhe EU ${size} ${color} Modell ${i}`,url:`https://merchant-${i}.example/product/skip-${i}`,image:'https://images.example/shoe.jpg',price:String(90+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
  const results=[shoe(1,39,'Damen','weiß'),shoe(2,40,'Herren','schwarz'),shoe(3,39,'Damen','schwarz'),shoe(4,40,'Herren','weiß')];
  const state=await mockSearch(page,()=>({results,moreResultsAvailable:false}));await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');
