@@ -51,6 +51,15 @@
   }else if(category==='electronics.television'){
    const z=number(l,/\b(\d{2,3})\s*(?:zoll|inch|["″])/iu);if(z)a.screen_size={value:z,unit:'in'};
    if(/\boled\b/iu.test(l))a.display_technology='OLED';else if(/\bqled\b/iu.test(l))a.display_technology='QLED';
+  }else if(category==='computing.laptop'||category==='electronics.smartphone'){
+   const storage=l.match(/\b(64|128|256|512|1024|2048)\s*(gb|tb)\b/iu);if(storage){let value=Number(storage[1]);if(storage[2].toLowerCase()==='tb')value*=1024;a.storage={value,unit:'GB'}}
+   const ram=l.match(/\b(4|8|16|24|32|48|64|96|128)\s*gb\s*(?:ram|arbeitsspeicher|memory)\b/iu);if(ram)a.memory={value:Number(ram[1]),unit:'GB'};
+   const z=number(l,/\b(\d{2}(?:[.,]\d)?)\s*(?:zoll|inch|["″])/iu);if(z)a.screen_size={value:z,unit:'in'};
+  }else if(category==='home.washing_machine'){
+   const cap=number(l,/\b(\d{1,2}(?:[.,]\d)?)\s*kg\b/iu);if(cap)a.capacity={value:cap,unit:'kg'};
+   const rpm=number(l,/\b(\d{3,4})\s*(?:u\/min|rpm)\b/iu);if(rpm)a.spin_speed={value:rpm,unit:'rpm'};
+  }else if(category==='garden.robot_mower'){
+   const area=number(l,/\b(\d{2,5})\s*(?:m²|m2|qm)\b/iu);if(area)a.max_area={value:area,unit:'m²'};
   }else if(category==='fashion.shoes'){
    const sz=number(l,/\b(?:größe|gr\.?|size)\s*(\d{2}(?:[.,]5)?)\b/iu);if(sz)a.size=sz;
    if(/\b(?:damen|women|woman)\b/iu.test(l))a.audience='women';else if(/\b(?:herren|men|man)\b/iu.test(l))a.audience='men';
