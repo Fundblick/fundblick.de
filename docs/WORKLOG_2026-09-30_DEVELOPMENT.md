@@ -153,3 +153,11 @@ External Search Safety Gate wurde außerdem für Pull Requests auf alle neuen Qu
 Query-first Constraint Extraction über RAM hinaus erweitert: Laptop/Smartphone erkennen explizit genannten RAM, Speicher und Bildschirmgröße; Waschmaschinen Kapazität und Schleuderdrehzahl; Mähroboter Flächenangabe. Neue Regressionen prüfen `Laptop 16 GB RAM 512 GB 15,6 Zoll`, `Waschmaschine 9 kg 1400 rpm` und `Mähroboter 800 m²`. Ziel bleibt: bereits in der Anfrage vorhandene Angaben werden als Constraints übernommen und dem Nutzer nicht erneut als unbeantwortete Verfeinerungsfrage gestellt.
 
 Main/live weiterhin unverändert.
+
+
+### 2026-10-01 – Preview-Infrastruktur und Query-Intent-Härtung
+- Development Preview bleibt strikt von GitHub Pages Production isoliert; Zielhost `dev.fundblick.de` vorbereitet, DNS/Hosting-Aktivierung als separater Einmalschritt.
+- Preview-Build erzeugt weiterhin ein noindex/nofollow-Paket und deployt nicht auf `main`/fundblick.de.
+- Query-Blueprint-Regressionsfall entdeckt: `Laptop 16 GB RAM 512 GB 15,6 Zoll` kollidierte mit der RAM-Produktfamilie.
+- Intent-Priorisierung gehärtet: explizites Laptop/Smartphone als Hauptprodukt wird vor Zubehörtoken erkannt; `32GB DDR5 RAM ... für Laptop` bleibt Arbeitsspeicher.
+- RAM und Storage werden als getrennte Constraints behandelt; CI-Gates erneut angestoßen.
