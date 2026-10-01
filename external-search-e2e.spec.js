@@ -68,7 +68,7 @@ test('Hausschuhe structured detail survives generic title while category prices 
 });
 
 
-test('adaptive refinement is optional, clickable and never invents a mandatory constraint',async({page})=>{
+test('adaptive refinement changes intent state without assuming result counts must shrink',async({page})=>{
  const shoe=(i,a)=>({title:`Nike Schuhe Edition ${i}`,url:`https://merchant-${i}.example/product/shoe-${i}`,image:'https://images.example/shoe.jpg',price:String(70+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',attributes:{brand:{value:'Nike',confidence:'HIGH'},...a}});
  const results=[
   shoe(1,{size:{value:39,confidence:'HIGH'},audience:{value:'women',confidence:'HIGH'},color:{value:'white',confidence:'HIGH'}}),
@@ -79,6 +79,6 @@ test('adaptive refinement is optional, clickable and never invents a mandatory c
  const state=await mockSearch(page,()=>({results,moreResultsAvailable:false}));
  await page.goto(base+'?q=Nike%20Schuhe&lang=de&web=1');
  const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();await expect(box).toContainText('Möchtest du die Suche genauer machen?');
- const size=box.locator('fieldset[data-facet="size"]');await expect(size).toBeVisible();await size.getByRole('button',{name:'39',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(2);
+ const size=box.locator('fieldset[data-facet="size"]');await expect(size).toBeVisible();await size.getByRole('button',{name:'39',exact:true}).click();await expect(size.getByRole('button',{name:'39',exact:true})).toHaveAttribute('aria-pressed','true');await expect(page.locator('.external-result-card')).toHaveCount(2);
  await box.getByRole('button',{name:'Ohne weitere Auswahl suchen',exact:true}).click();await expect(box).toBeHidden();await expect(page.locator('.external-result-card')).toHaveCount(4);expect(state.errors).toEqual([]);
 });
