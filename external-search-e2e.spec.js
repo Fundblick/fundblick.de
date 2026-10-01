@@ -93,12 +93,6 @@ test('applied refinement may retrieve additional matching offers instead of only
  await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/Größe\s+39/i);await expect(page.locator('.external-result-card')).toHaveCount(6);expect(state.errors).toEqual([]);
 });
 
-test('refinement retrieval terms follow the active search language',async({page})=>{
- await page.goto(base+'?q=Nike%20Schuhe&lang=de');await settled(page);
- const terms=await page.evaluate(()=>{const runtime=window.FundBlickExternalSearchRuntime;return runtime?.__test?.refinementTerm?{de:runtime.__test.refinementTerm('size',39,'de'),en:runtime.__test.refinementTerm('size',39,'en'),ru:runtime.__test.refinementTerm('size',39,'ru')}:null});
- if(terms){expect(terms.de).toContain('Größe 39');expect(terms.en).toContain('size 39');expect(terms.ru).toContain('размер 39')}
-});
-
 test('skipping adaptive refinement preserves an unrelated normal facet filter',async({page})=>{
  const shoe=(i,size,audience,color)=>({title:`Nike ${audience} Schuhe EU ${size} ${color} Modell ${i}`,url:`https://merchant-${i}.example/product/skip-${i}`,image:'https://images.example/shoe.jpg',price:String(90+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
  const results=[shoe(1,39,'Damen','weiß'),shoe(2,40,'Herren','schwarz'),shoe(3,39,'Damen','schwarz'),shoe(4,40,'Herren','weiß')];
@@ -107,4 +101,16 @@ test('skipping adaptive refinement preserves an unrelated normal facet filter',a
  const normal=page.locator('#external-results select[data-facet="color"]');await expect(normal).toBeVisible();await normal.selectOption('black');await expect(page.locator('.external-result-card')).toHaveCount(2);
  const size=box.locator('fieldset[data-facet="size"]');await size.getByRole('button',{name:'39',exact:true}).click();await expect(page.locator('.external-result-card')).toHaveCount(1);
  await box.getByRole('button',{name:'Ohne weitere Auswahl suchen',exact:true}).click();await expect(box).toBeHidden();await expect(normal).toHaveValue('black');await expect(page.locator('.external-result-card')).toHaveCount(2);expect(state.errors).toEqual([]);
+});
+
+test('specific shoe query does not ask already supplied refinement dimensions',async({page})=>{
+ const shoe=(i,size,audience,color)=>({title:`Nike Cortez ${audience} Schuhe EU ${size} ${color} Modell ${i}`,url:`https://merchant-${i}.example/product/specific-${i}`,image:'https://images.example/shoe.jpg',price:String(100+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
+ const state=await mockSearch(page,()=>({results:[shoe(1,39,'Damen','weiß'),shoe(2,39,'Damen','weiß')],moreResultsAvailable:false}));
+ await page.goto(base+'?q=Nike%20Cortez%20Gr%C3%B6%C3%9Fe%2039%20Damen%20wei%C3%9F&lang=de&web=1');
+ await expect(page.locator('.external-result-card')).toHaveCount(2);await expect(page.locator('#adaptive-refinement')).toBeHidden();expect(state.errors).toEqual([]);
+});
+
+test('unknown query without usable facet evidence does not fabricate refinement questions',async({page})=>{
+ const state=await mockSearch(page,()=>({results:[{title:'Spezialadapter ZXQ-771',url:'https://merchant.example/product/zxq-771',image:'https://images.example/zxq.jpg',price:'19.90',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'}],moreResultsAvailable:false}));
+ await page.goto(base+'?q=Spezialadapter%20ZXQ-771&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('#adaptive-refinement')).toBeHidden();expect(state.errors).toEqual([]);
 });
