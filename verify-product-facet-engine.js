@@ -15,3 +15,6 @@ const volumes=[{attributes:{volume:{value:5,unit:'l'}}},{attributes:{volume:{val
 const confidenceMix=[{attributes:{size:{value:39,confidence:'HIGH'}}},{attributes:{size:{value:40,confidence:'LOW'}}},{attributes:{size:{value:41,confidence:'MEDIUM'}}}];
 const visibleSize=facets.derive({category:'fashion.shoes',facets:['size']},confidenceMix).primary[0];assert.deepEqual(visibleSize.values,[39,41],'low-confidence guesses cannot enter a visible facet via higher average confidence');assert.equal(visibleSize.count,2);assert.equal(visibleSize.coverage,.667);
 assert.deepEqual(facets.derive({category:'fashion.shoes',facets:['size']},[{attributes:{size:{value:40,confidence:'LOW'}}}]).primary,[]);
+
+const nonDiscriminative=facets.derive({category:'tools.cordless_drill',facets:['voltage','brand']},[{attributes:{voltage:{value:18,confidence:'HIGH'},brand:'bosch'}},{attributes:{voltage:{value:18,confidence:'HIGH'},brand:'bosch'}}]);assert.deepEqual(nonDiscriminative.primary,[],'single-value facets must stay hidden until they can actually refine results');
+console.log('Dynamic facet engine: discriminative-value gate OK');
