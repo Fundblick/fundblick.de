@@ -36,21 +36,21 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  assert.ok(result.state.results.every(ui.offerEligible));
  assert.equal(result.container.children.find(child=>child.className==='external-results-list').children.length,21,'real renderer creates all eligible cards without exceptions');
  assert.ok(!JSON.stringify(result.facets).includes('makita'),'excluded listings cannot create facets');
- const nav=result.container.children.at(-1).children.at(-1),next=nav.children.at(-1);
+ const nav=result.container.children.at(-1),next=nav.children.at(-1);
  assert.equal(next.textContent,'Weitere Angebote anzeigen');await next.onclick();
  assert.equal(result.renders.at(-1).results.length,21,'append-style load more preserves the existing offers when the next provider page only duplicates them');
  result=await run([[...Array.from({length:20},()=>listing)],[...Array.from({length:12},(_,i)=>offer(i))]]);
  assert.equal(result.calls,1,'first page never automatically requests more pages for sparse offers');
  assert.equal(result.state.results.length,0);
- await result.container.children.at(-1).children.at(-1).children.at(-1).onclick();
+ await result.container.children.at(-1).children.at(-1).onclick();
  assert.equal(result.requests[0].query,result.requests[1].query,'pagination retains the same refined query');
  assert.equal(result.renders.at(-1).results.length,12);
- assert.ok(result.container.children.at(-1).children.at(-1).textContent.includes('12 Angebote geladen'),'append pager reports the accumulated offer count');
+ assert.ok(result.container.children.at(-1).textContent.includes('12 Angebote geladen'),'append pager reports the accumulated offer count');
 
  result=await run([[...Array.from({length:20},()=>offer(0))],[...Array.from({length:12},(_,i)=>offer(i+1))]]);
  assert.equal(result.calls,1,'duplicates do not trigger automatic upstream requests');
  assert.equal(result.state.results.length,1);
- await result.container.children.at(-1).children.at(-1).children.at(-1).onclick();
+ await result.container.children.at(-1).children.at(-1).onclick();
  assert.equal(result.renders.at(-1).results.length,13);
  result=await run([[listing]],'info');assert.equal(result.state.results.length,1,'information view preserves non-offer sources');
  assert.ok(result.requests[0].query.endsWith('Erklärung Ratgeber'));assert.ok(!result.requests[0].query.includes('-site:'),'information search retains comparison sources');
