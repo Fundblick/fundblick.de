@@ -31,21 +31,22 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
 }
 (async()=>{
  let result=await run([[...Array.from({length:20},()=>listing),...Array.from({length:21},(_,i)=>offer(i))]]);
- assert.equal(result.state.results.length,20,'filter before paging so twenty eligible offers fill the first page');
+ assert.equal(result.state.results.length,21,'all eligible offers returned by the provider page remain visible');
  assert.equal(result.requests[0].query,'Bosch Akkuschrauber 18V kaufen -preisvergleich -site:idealo.de -site:geizhals.de','browser runtime sends validated focused offer query');
  assert.ok(result.state.results.every(ui.offerEligible));
- assert.equal(result.container.children.find(child=>child.className==='external-results-list').children.length,20,'real renderer creates twenty cards without exceptions');
+ assert.equal(result.container.children.find(child=>child.className==='external-results-list').children.length,21,'real renderer creates all eligible cards without exceptions');
  assert.ok(!JSON.stringify(result.facets).includes('makita'),'excluded listings cannot create facets');
  const nav=result.container.children.at(-1).children.at(-1),next=nav.children.at(-1);
  assert.equal(next.disabled,false);await next.onclick();
- assert.equal(result.renders.at(-1).results.length,1,'next page contains the remaining eligible offer');
+ assert.equal(result.renders.at(-1).results.length,21,'append-style load more preserves the existing offers when the next provider page only duplicates them');
  result=await run([[...Array.from({length:20},()=>listing)],[...Array.from({length:12},(_,i)=>offer(i))]]);
  assert.equal(result.calls,1,'first page never automatically requests more pages for sparse offers');
  assert.equal(result.state.results.length,0);
  await result.container.children.at(-1).children.at(-1).children.at(-1).onclick();
  assert.equal(result.requests[0].query,result.requests[1].query,'pagination retains the same refined query');
  assert.equal(result.renders.at(-1).results.length,12);
- assert.equal(result.container.children.at(-1).children.at(-1).children[1].textContent,'Seite 1','sparse first-page refill does not display a nonexistent page');
+ assert.ok(result.container.children.at(-1).children.at(-1).textContent.includes('12 Angebote geladen'),'append pager reports the accumulated offer count');
+
  result=await run([[...Array.from({length:20},()=>offer(0))],[...Array.from({length:12},(_,i)=>offer(i+1))]]);
  assert.equal(result.calls,1,'duplicates do not trigger automatic upstream requests');
  assert.equal(result.state.results.length,1);
@@ -58,9 +59,9 @@ async function run(pages,view='offers',query='Bosch Akkuschrauber 18V',options={
  result=await run([[offer(0)],{ok:false,error:'rate-limited'}]);
  const retry=result.container.children.at(-1).children.at(-1).children.at(-1);
  await retry.onclick();assert.equal(result.renders.at(-1).results.length,1,'failed next-page request preserves existing offers');
- assert.equal(result.container.children.at(-1).children.at(-1).children[1].textContent,'Seite 1','failed request cannot advance page');
+
  await retry.onclick();assert.equal(result.requests.length,3,'temporary failure permits retry');assert.equal(result.requests[1].offset,result.requests[2].offset);
  result=await run([{ok:false,status:429}]);assert.equal(result.calls,1);await result.settleAgain();await result.settleAgain();assert.equal(result.calls,1,'repeated local completion events cannot automatically retry failed web requests');assert.equal(result.renders.at(-1).error,true);
  result=await run([{ok:false,status:429}],'offers','Bosch Akkuschrauber 18V',{recoverFirst:true});const initialRetry=result.container.children.at(-1);assert.equal(initialRetry.textContent,'Websuche erneut versuchen');initialRetry.onclick();initialRetry.onclick();await result.settleAgain();assert.equal(result.calls,2,'explicit retry shares one scheduled initial request');assert.deepEqual(result.requests.map(r=>r.offset),[0,0]);assert.equal(result.renders.at(-1).results.length,1);await result.settleAgain();assert.equal(result.calls,2,'local completion cannot repeat successful retry');
- console.log('External runtime: opt-in + one initial request + explicit pagination + retry + eligible offers OK');
+ console.log('External runtime: opt-in + one initial request + append-style load more + retry + eligible offers OK');
 })().catch(error=>{console.error(error);process.exitCode=1});
