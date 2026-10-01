@@ -5,7 +5,8 @@ const pipeline=require('./product-intelligence-pipeline.js');
 
 const taxonomy=[
  {id:'kitchen.blender',label:'Standmixer',terms:['Standmixer','Blender'],facets:['power','capacity','material']},
- {id:'home.furniture',label:'Möbel',terms:['Tisch','Stuhl'],facets:['material','color']}
+ {id:'home.furniture',label:'Möbel',terms:['Tisch','Stuhl'],facets:['material','color']},
+ {id:'fashion.shoes',label:'Schuhe',terms:['Schuhe','Sneaker','Laufschuhe'],facets:['size','audience','color','brand']}
 ];
 const raw=[
  {title:'ProMix Standmixer 1200 W Glas 1,5 Liter',url:'https://shop.example/mix1',productCandidate:true,attributes:{power:{value:1200,unit:'W',confidence:'HIGH'},capacity:{value:1.5,unit:'l',confidence:'HIGH'},material:{value:'Glas',confidence:'HIGH'},brand:{value:'ProMix',confidence:'HIGH'}}},
@@ -27,6 +28,16 @@ const evidenceOnly=pipeline.run('Pferde Zusatzfutter',[
  {title:'Pferde Zusatzfutter Kräuter',category:'pet.equestrian',rawAttributes:{productType:'Pferde Zusatzfutter'},attributes:{brand:{value:'Horse',confidence:'HIGH'}}}
 ],{taxonomy:[]});
 assert.equal(evidenceOnly.semanticResolution.category,'pet.equestrian');
+
+const nike=pipeline.run('Nike Schuhe',[
+ {title:'Nike Air Max Schuhe Herren Größe 42 schwarz',category:'fashion.shoes',rawAttributes:{productType:'Schuhe'},attributes:{brand:{value:'Nike',confidence:'HIGH'},size:{value:42,confidence:'HIGH'},audience:{value:'men',confidence:'HIGH'},color:{value:'Schwarz',confidence:'HIGH'}}},
+ {title:'Nike Revolution Schuhe Damen Größe 39 weiß',category:'fashion.shoes',rawAttributes:{productType:'Schuhe'},attributes:{brand:{value:'Nike',confidence:'HIGH'},size:{value:39,confidence:'HIGH'},audience:{value:'women',confidence:'HIGH'},color:{value:'Weiß',confidence:'HIGH'}}}
+],{taxonomy,facets:{minCoverage:.35,maxPrimary:8}});
+assert.equal(nike.semanticResolution.category,'fashion.shoes','brand plus generic product type resolves to the product category, not a brand category');
+assert.equal(nike.analysis.category,'fashion.shoes');
+assert(nike.facets.primary.some(x=>x.id==='size'));
+assert(nike.facets.primary.some(x=>x.id==='audience'));
+assert(nike.facets.primary.some(x=>x.id==='color'));
 
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
