@@ -110,6 +110,7 @@ jobs:
       - name: Verify query-to-facet intelligence
         run: |
           node verify-query-facet-blueprint.js
+          node verify-semantic-product-resolver.js
           node verify-query-to-facet-integration.js
           grep -q 'query-facet-blueprint.js' search.html
           grep -q 'query-blueprint-ui.js' search.html
