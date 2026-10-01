@@ -27,3 +27,9 @@ const unseenFacets={primary:[
 ]};
 const unseen=utility.suggest(unseenAnalysis,unseenFacets,{limit:4});
 assert.deepEqual(unseen.map(x=>x.id),['room_area','filter_type'],'unprepared product families use evidence quality rather than product-specific rules');
+
+const balanced={id:'balanced',coverage:1,confidence:1,distinctValues:2,refinable:true,values:['a','b'],valueCounts:[{value:'a',count:50},{value:'b',count:50}]};
+const skewed={id:'skewed',coverage:1,confidence:1,distinctValues:2,refinable:true,values:['a','b'],valueCounts:[{value:'a',count:99},{value:'b',count:1}]};
+assert(utility.score(balanced)>utility.score(skewed),'balanced observed partitions must have higher information utility than highly skewed ones');
+assert(utility.entropy(balanced.valueCounts)>.99,'balanced binary distribution should have near-max normalized entropy');
+assert(utility.entropy(skewed.valueCounts)<.1,'99/1 distribution should have low normalized entropy');
