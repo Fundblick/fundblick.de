@@ -20,9 +20,11 @@
  function number(text,re){const m=text.match(re);return m?Number(String(m[1]).replace(',','.')):null}
  function classify(q){
   const s=clean(q),l=s.toLocaleLowerCase();
+  if(/^\s*(?:laptop|notebook)\b/iu.test(l))return'computing.laptop';
+  if(/^\s*(?:smartphone|handy|iphone)\b/iu.test(l))return'electronics.smartphone';
+  if(/\b(?:ram|arbeitsspeicher|ddr[345]?|sodimm|so-dimm|dimm)\b/iu.test(l))return'computing.memory';
   if(/\b(?:laptop|notebook)\b/iu.test(l))return'computing.laptop';
   if(/\b(?:smartphone|handy|iphone)\b/iu.test(l))return'electronics.smartphone';
-  if(/\b(?:ram|arbeitsspeicher|ddr[345]?|sodimm|so-dimm|dimm)\b/iu.test(l))return'computing.memory';
   if(/\b(?:zündkerz(?:e|en)|spark\s*plug(?:s)?)\b/iu.test(l))return'automotive.spark_plug';
   if(/\b(?:motoröl|motor oil|engine oil|\d{1,2}w[- ]?\d{2})\b/iu.test(l))return'automotive.motor_oil';
   if(/\b(?:akkuschrauber|akku[- ]?bohrschrauber|cordless drill)\b/iu.test(l))return'tools.cordless_drill';
