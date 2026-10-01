@@ -26,6 +26,10 @@ assert.ok(worker && typeof worker.fetch === 'function');
   assert.match(response.headers.get('content-security-policy') || '', /default-src 'none'/);
   assert.match(response.headers.get('permissions-policy') || '', /geolocation=\(\)/);
 
+  response = await worker.fetch(new Request('https://worker.example/health', { headers:{ Origin:'https://fundblick-development.frosty-moon-518b.workers.dev' } }), {});
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get('access-control-allow-origin'), 'https://fundblick-development.frosty-moon-518b.workers.dev');
+
   response = await worker.fetch(new Request('https://worker.example/health', { headers:{ Origin:'https://evil.example' } }), {});
   assert.equal(response.status, 403);
   assert.equal(response.headers.get('access-control-allow-origin'), null);
