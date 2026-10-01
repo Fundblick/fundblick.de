@@ -33,3 +33,12 @@ const skewed={id:'skewed',coverage:1,confidence:1,distinctValues:2,refinable:tru
 assert(utility.score(balanced)>utility.score(skewed),'balanced observed partitions must have higher information utility than highly skewed ones');
 assert(utility.entropy(balanced.valueCounts)>.99,'balanced binary distribution should have near-max normalized entropy');
 assert(utility.entropy(skewed.valueCounts)<.1,'99/1 distribution should have low normalized entropy');
+
+const specificAnalysis={attributes:{brand:{value:'Nike'},size:{value:39},audience:{value:'women'},color:{value:'white'}}};
+const specificFacets={primary:[
+ {id:'size',coverage:1,confidence:1,distinctValues:4,refinable:true,values:[38,39,40,41]},
+ {id:'audience',coverage:1,confidence:1,distinctValues:2,refinable:true,values:['women','men']},
+ {id:'color',coverage:1,confidence:1,distinctValues:3,refinable:true,values:['white','black','blue']}
+]};
+assert.deepEqual(utility.suggest(specificAnalysis,specificFacets),[],'fully specified query must not trigger redundant refinement questions');
+assert.deepEqual(utility.suggest({attributes:{}},{primary:[]}),[],'no evidence must produce no fabricated refinement questions');
