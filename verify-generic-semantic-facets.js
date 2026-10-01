@@ -51,6 +51,17 @@ const unseen=pipeline.run('Luftreiniger fürs Schlafzimmer',[
  {title:'SleepAir Luftreiniger',rawAttributes:{productType:'Luftreiniger'},attributes:{room_area:{value:20,unit:'m²',confidence:'HIGH'},filter_type:{value:'HEPA H13',confidence:'HIGH'},noise:{value:18,unit:'dB',confidence:'HIGH'}}}
 ],{taxonomy:[],facets:{minCoverage:.35,maxPrimary:8}});
 assert.equal(unseen.semanticResolution.category,'evidence.luftreiniger');assert.equal(unseen.semanticResolution.provisional,true);assert(unseen.facets.primary.some(x=>x.id==='room_area'));assert(unseen.facets.primary.some(x=>x.id==='filter_type'));assert(unseen.refinementSuggestions.some(x=>x.id==='room_area'||x.id==='filter_type'),'unprepared evidence-only family can produce generic high-utility refinement');
+const unseenRoom=unseen.facets.primary.find(x=>x.id==='room_area');assert.deepEqual(unseenRoom.values.sort(),['20 m²','30 m²','50 m²'].sort(),'unseen-family values remain grounded in structured offer evidence');assert(!unseen.facets.primary.some(x=>x.id==='size'),'unseen family must not inherit an unrelated prepared facet');
+
+const ambiguous=pipeline.run('Air fürs Zimmer',[
+ {title:'AirPure Gerät',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA',confidence:'HIGH'}}},
+ {title:'CoolAir Gerät',rawAttributes:{productType:'Klimagerät'},attributes:{cooling_capacity:{value:2.5,unit:'kW',confidence:'HIGH'}}}
+],{taxonomy:[]});assert.equal(ambiguous.analysis.category||null,null,'ambiguous low-confidence evidence must not become an active product family');assert.equal(ambiguous.semanticResolution.needsRemoteFallback,true);
+
+const weakEvidence=pipeline.run('Luftreiniger',[
+ {title:'AirPure Gerät',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA',confidence:'HIGH'}}},
+ {title:'Noisy snippet',rawAttributes:{productType:'Produkt'},attributes:{size:{value:'XL',confidence:'HIGH'}}}
+],{taxonomy:[]});assert.equal(weakEvidence.semanticResolution.category,'evidence.luftreiniger');assert(!weakEvidence.facets.primary.some(x=>x.id==='size'),'generic noisy product labels must not inject unrelated selectable facets');
 
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
