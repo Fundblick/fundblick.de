@@ -4,11 +4,15 @@
  const tokens=v=>new Set(norm(v).split(/\s+/).filter(x=>x.length>1));
  const GENERIC=new Set(['fur','mit','ohne','und','oder','der','die','das','ein','eine','von','in','auf','neu','kaufen','angebot','angebote','produkt']);
  function meaningful(v){return [...tokens(v)].filter(x=>!GENERIC.has(x))}
+ function grams(v){const s='  '+norm(v)+'  ',g=new Set();for(let i=0;i<s.length-2;i++)g.add(s.slice(i,i+3));return g}
+ function similarity(a,b){const x=grams(a),y=grams(b);if(!x.size||!y.size)return 0;let hit=0;for(const g of x)if(y.has(g))hit++;return 2*hit/(x.size+y.size)}
+ function fuzzyTokenScore(q,c){let best=0;for(const a of q)for(const b of c){if(a.length<4||b.length<4)continue;best=Math.max(best,similarity(a,b))}return best}
  function score(query,candidate){
   const q=meaningful(query),c=meaningful(candidate);if(!q.length||!c.length)return 0;
   const cs=new Set(c);let hit=0;for(const x of q)if(cs.has(x))hit++;
-  const exact=norm(query)===norm(candidate)?1:0,contained=norm(query).includes(norm(candidate))||norm(candidate).includes(norm(query))?1:0;
-  return Math.min(1,(hit/Math.max(1,Math.min(q.length,c.length)))*0.72+contained*0.18+exact*0.1);
+  const exact=norm(query)===norm(candidate)?1:0,contained=norm(query).includes(norm(candidate))||norm(candidate).includes(norm(query))?1:0,fuzzy=fuzzyTokenScore(q,c);
+  const lexical=(hit/Math.max(1,Math.min(q.length,c.length)))*0.72+contained*0.18+exact*0.1;
+  return Math.min(1,Math.max(lexical,fuzzy>=.72?fuzzy*.82:0));
  }
  function evidenceFromResults(results=[]){
   const map=new Map();
@@ -22,5 +26,5 @@
   const confidence=!top?'unknown':top.score>=.82&&margin>=.08?'high':top.score>=.58&&margin>=.04?'medium':'low';
   return Object.freeze({query:String(query||''),category:confidence==='unknown'?null:top?.id||null,label:top?.label||'',confidence,score:top?.score||0,margin,candidates:Object.freeze(candidates.slice(0,5)),needsRemoteFallback:!top||confidence==='low'});
  }
- return Object.freeze({resolve,score,evidenceFromResults});
+ return Object.freeze({resolve,score,similarity,evidenceFromResults});
 });
