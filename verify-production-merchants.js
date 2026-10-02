@@ -37,7 +37,19 @@ const productionSources=JSON.parse(fs.readFileSync('production-catalog-sources.j
 const amazgiftsSourceCount=productionSources.filter(source=>/amazgifts/i.test(String(source))).length;
 if(!amazgiftsApproval?.approved&&amazgiftsSourceCount!==0)throw new Error(`Blocked Amazgifts source leaked into production configuration: ${amazgiftsSourceCount}`);
 if(!amazgiftsApproval?.approved&&amazgifts!==0)throw new Error(`Blocked Amazgifts merchant leaked into production: ${amazgifts} products`);
-if(amazgiftsApproval?.approved)throw new Error('Amazgifts production approval requires an explicit production-gate implementation before activation');
+if(amazgiftsApproval?.approved){
+  if(amazgiftsSourceCount!==1)throw new Error(`Approved Amazgifts production requires exactly one explicit source, got ${amazgiftsSourceCount}`);
+  if(amazgifts!==2964)throw new Error(`Amazgifts production count must be 2964, got ${amazgifts}`);
+  const amazgiftsProducts=products.filter(product=>(product?.bestOffer?.merchant||product?.merchant)==='Amazgifts DE');
+  if(new Set(amazgiftsProducts.map(product=>product.id)).size!==2964)throw new Error('Amazgifts production ids are not unique');
+  if(!amazgiftsProducts.every(product=>String(product?.bestOffer?.network||product?.source?.network||'').toLowerCase()==='awin'))throw new Error('Every Amazgifts production offer must use AWIN');
+  if(!amazgiftsProducts.every(product=>{try{const u=new URL(String(product?.bestOffer?.affiliateUrl||''));return /(^|\.)awin1\.com$/i.test(u.hostname)&&u.searchParams.get('a')==='3106259'&&u.searchParams.get('m')==='87569';}catch{return false;}}))throw new Error('Every Amazgifts production offer must preserve the verified AWIN publisher and advertiser ids');
+  if(!amazgiftsProducts.every(product=>{try{return /(^|\.)amazgifts\.de$/i.test(new URL(String(product?.bestOffer?.directUrl||'')).hostname);}catch{return false;}}))throw new Error('Every Amazgifts production offer must have an Amazgifts direct URL');
+  const allowed=new Set(['gifts.personalized.jewelry','gifts.personalized.keychains','gifts.personalized.photo-gifts','craft.jewelry-making.supplies','gifts.personalized.other']);
+  if(!amazgiftsProducts.every(product=>allowed.has(product.category)))throw new Error('Amazgifts production contains an unexpected category');
+  if(amazgiftsProducts.some(product=>product.inStock===true||product.availability==='IN_STOCK'))throw new Error('Amazgifts production must not fabricate confirmed stock from this feed');
+  if(amazgiftsProducts.some(product=>product.shippingCost!==null&&product.shippingCost!==undefined))throw new Error('Amazgifts production must not fabricate shipping cost from this feed');
+}
 
 const anthbotApproval=approvals?.merchants?.anthbot;
 if(!anthbotApproval)throw new Error('ANTHBOT production approval record missing');
