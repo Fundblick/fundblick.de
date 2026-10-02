@@ -12,7 +12,7 @@ const merchants={
     inputPattern:/datafeed_3106259.*\.csv(?:\.gz)?$/i,
     normalizer:'./amazgifts-feed-normalizer.js',
     expected:{products:2964},
-    catalogCategories:['gifts.personalized.jewelry','gifts.personalized.keychains','gifts.personalized.photo-gifts','gifts.personalized.other']
+    catalogCategories:['gifts.personalized.jewelry','gifts.personalized.keychains','gifts.personalized.photo-gifts','craft.jewelry-making.supplies','gifts.personalized.other']
   },
   anthbot:{
     key:'anthbot',
