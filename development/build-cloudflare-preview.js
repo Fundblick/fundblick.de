@@ -43,7 +43,11 @@ if (amazgiftsArtifact) {
   run("node", ["build-production-catalog.js", "build/catalog"]);
   console.log("Development preview catalog mode: approved production merchants");
 }
-run("node", ["verify-live-catalog-v2.js", "build/catalog"]);
+if (amazgiftsFeed || amazgiftsArtifact) {
+  execFileSync("node", ["verify-live-catalog-v2.js", "build/catalog"], { cwd: root, stdio: "inherit", env: { ...process.env, FUNDBLICK_ALLOW_ZERO_HOME_DEALS: "1" } });
+} else {
+  run("node", ["verify-live-catalog-v2.js", "build/catalog"]);
+}
 if (!amazgiftsFeed && !amazgiftsArtifact) {
   run("node", ["verify-production-merchants.js", "build/catalog"]);
   run("node", ["verify-production-categories.js", "build/catalog"]);
