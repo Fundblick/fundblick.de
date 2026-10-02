@@ -25,3 +25,9 @@ assert.equal(gift.attrs.productType,'Schmuck','feed-backed rawAttributes.product
 assert.deepStrictEqual(engine.availableValues([gift],'productType',['Schmuck']),[{value:'Schmuck',count:1}]);
 assert(engine.matches(gift,'productType',new Set(['Schmuck'])));
 console.log('Facet engine v2 OK: category-URL schema fallback, data-driven options, counts and matching.');
+
+// Amazgifts routed category aliases must also be recognized by facet schemas so search intent is not left as mandatory free-text noise.
+const giftSchemas=global.window?.FB_CATEGORY_SCHEMAS||{};
+for(const [id,term] of [['gifts.personalized.keychains','foto schlüsselanhänger'],['gifts.personalized.jewelry','halskette mit foto'],['gifts.personalized.photo-gifts','geschenk mit foto'],['craft.jewelry-making.supplies','perlenkettenzubehör']]){
+  assert.ok(giftSchemas[id]?.terms?.includes(term),id+' missing routed alias '+term);
+}
