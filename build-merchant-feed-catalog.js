@@ -9,17 +9,17 @@ if(!merchantKey||!input)throw new Error('Usage: node build-merchant-feed-catalog
 const config=getMerchant(merchantKey);
 assertInput(config,input);
 const outputRoot=outputArg||path.join('build',`${config.key}-catalog`);
+const expected=config.expected||{};
+if(expected.rawFeedSha256){
+  const rawFeedDigest=crypto.createHash('sha256').update(fs.readFileSync(input)).digest('hex');
+  if(rawFeedDigest!==expected.rawFeedSha256)throw new Error(`${config.merchant} raw feed digest mismatch: expected ${expected.rawFeedSha256}, got ${rawFeedDigest}`);
+}
 const normalizer=require(config.normalizer);
 const source=normalizer.readCsv(input);
 const selection=normalizer.selectRows(source);
 const extras=normalizer.normalize(source);
 const errors=normalizer.validate(extras);
 if(errors.length)throw new Error(`${config.merchant} source rejected:\n- ${errors.join('\n- ')}`);
-const expected=config.expected||{};
-if(expected.rawFeedSha256){
-  const rawFeedDigest=crypto.createHash('sha256').update(fs.readFileSync(input)).digest('hex');
-  if(rawFeedDigest!==expected.rawFeedSha256)throw new Error(`${config.merchant} raw feed digest mismatch: expected ${expected.rawFeedSha256}, got ${rawFeedDigest}`);
-}
 if(Number.isInteger(expected.advertiserRows)&&selection.advertiser.length!==expected.advertiserRows)throw new Error(`${config.merchant} feed contract changed: expected ${expected.advertiserRows} advertiser rows, got ${selection.advertiser.length}`);
 if(Number.isInteger(expected.products)&&extras.length!==expected.products)throw new Error(`${config.merchant} merchandise contract changed: expected ${expected.products} products, got ${extras.length}`);
 if(Number.isInteger(expected.inStock)&&extras.filter(p=>p.inStock).length!==expected.inStock)throw new Error(`${config.merchant} stock contract changed: expected ${expected.inStock} in-stock products, got ${extras.filter(p=>p.inStock).length}`);
