@@ -3,6 +3,7 @@ on:
   push:
     branches: [development]
     paths:
+      - 'result-card.css'
       - 'verify-live-catalog-ui.js'
       - 'live-catalog-ui.js'
       - 'verify-amazgifts-live-readiness.js'
