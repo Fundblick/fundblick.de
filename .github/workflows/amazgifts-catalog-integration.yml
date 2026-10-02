@@ -16,9 +16,13 @@ on:
   workflow_dispatch:
     inputs:
       feed_path:
-        description: 'Path to Amazgifts Awin CSV/CSV.GZ already available in workspace'
-        required: true
-        default: 'datafeed_3106259.csv.gz'
+        description: 'Optional path to Amazgifts Awin CSV/CSV.GZ already available in workspace'
+        required: false
+        default: ''
+      artifact_path:
+        description: 'Optional path to normalized Amazgifts .json.gz.b64 already available in workspace'
+        required: false
+        default: ''
 jobs:
   verify-code:
     runs-on: ubuntu-latest
@@ -41,6 +45,20 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
-      - name: Require explicitly supplied feed file
-        run: test -f "${{ inputs.feed_path }}" || { echo 'Amazgifts feed is intentionally not committed; supply it to the workflow workspace before this gate.'; exit 1; }
-      - run: node build-amazgifts-development-catalog.js "${{ inputs.feed_path }}" build/amazgifts-catalog
+      - name: Build explicitly supplied Amazgifts source
+        env:
+          FEED_PATH: ${{ inputs.feed_path }}
+          ARTIFACT_PATH: ${{ inputs.artifact_path }}
+        run: |
+          set -euo pipefail
+          if [ -n "$FEED_PATH" ] && [ -n "$ARTIFACT_PATH" ]; then echo 'Choose feed_path or artifact_path, not both.'; exit 1; fi
+          if [ -n "$ARTIFACT_PATH" ]; then
+            test -f "$ARTIFACT_PATH" || { echo 'Requested Amazgifts artifact is not present in workspace.'; exit 1; }
+            node build-normalized-merchant-artifact-catalog.js amazgifts "$ARTIFACT_PATH" build/amazgifts-catalog
+          elif [ -n "$FEED_PATH" ]; then
+            test -f "$FEED_PATH" || { echo 'Requested Amazgifts feed is not present in workspace.'; exit 1; }
+            node build-amazgifts-development-catalog.js "$FEED_PATH" build/amazgifts-catalog
+          else
+            echo 'Supply feed_path or artifact_path explicitly.'; exit 1
+          fi
+          node verify-live-catalog-v2.js build/amazgifts-catalog
