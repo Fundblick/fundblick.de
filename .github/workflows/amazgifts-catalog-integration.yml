@@ -1,0 +1,38 @@
+name: Amazgifts catalog integration gate
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'amazgifts-feed-normalizer.js'
+      - 'merchant-feed-registry.js'
+      - 'build-merchant-feed-catalog.js'
+      - 'verify-amazgifts-normalizer.js'
+      - '.github/workflows/amazgifts-catalog-integration.yml'
+  workflow_dispatch:
+    inputs:
+      feed_path:
+        description: 'Path to Amazgifts Awin CSV/CSV.GZ already available in workspace'
+        required: true
+        default: 'datafeed_3106259.csv.gz'
+jobs:
+  verify-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check amazgifts-feed-normalizer.js
+      - run: node --check merchant-feed-registry.js
+      - run: node --check build-merchant-feed-catalog.js
+      - run: node verify-amazgifts-normalizer.js
+      - run: node verify-merchant-feed-registry.js
+  build-with-feed:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Require explicitly supplied feed file
+        run: test -f "${{ inputs.feed_path }}" || { echo 'Amazgifts feed is intentionally not committed; supply it to the workflow workspace before this gate.'; exit 1; }
+      - run: node build-merchant-feed-catalog.js amazgifts "${{ inputs.feed_path }}" build/amazgifts-catalog
