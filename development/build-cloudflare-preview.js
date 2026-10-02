@@ -56,6 +56,9 @@ if (manifest.dataMode !== "real" || Number(manifest.realCount) < 1000 || Number(
 if ((amazgiftsFeed || amazgiftsArtifact) && Number(manifest.realCount) < 2964) {
   throw new Error("Amazgifts development preview is incomplete");
 }
+if ((amazgiftsFeed || amazgiftsArtifact) && Number(manifest.homeDealCount) !== 0) {
+  throw new Error("Amazgifts products with UNKNOWN availability must not enter homepage deal candidates");
+}
 
 copyTree(root, site, true);
 copyTree(catalog, path.join(site, "catalog"), false);
