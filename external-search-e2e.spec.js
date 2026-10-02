@@ -156,7 +156,7 @@ test('credible merchant product pages survive incomplete Brave metadata',async({
  await page.goto(base+'?q=Asus%20notebook&lang=de&web=1');
  await expect(page.locator('.external-result-card')).toHaveCount(2);
  await expect(page.locator('.external-results-pagination span')).toHaveText('2 Angebote geladen');
- await expect(page.locator('.external-result-card').filter({hasText:'ohne Brave-Bild'})).toHaveCount(1);
+ await expect(page.locator('.external-result-card').filter({hasText:'ohne Brave-Bild'})).toHaveCount(0);
  await expect(page.locator('.external-result-card').filter({hasText:'ASUS V16 64 GB 16 Zoll Notebook'})).toHaveCount(0);
  await expect(page.locator('.external-result-card').filter({hasText:'ohne Angebotsdaten'})).toHaveCount(0);
 });
