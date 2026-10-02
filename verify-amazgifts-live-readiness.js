@@ -12,6 +12,10 @@ assert.deepEqual(approval.sources,['development/amazgifts-products.json.gz.b64']
 assert.equal(registry.expected.products,2964);
 assert.equal(registry.expected.rawFeedSha256,'9dadbc32d81303f38a4d8a92520d9ac29abf5aea3ac8c10d89393e8fd43822bf');
 assert.equal(registry.expected.artifactSha256,'32ca063fc6d02a7ba6407175100e7da84f0c75731f097033b6096aff55b2d65a');
+const productionBuilder=fs.readFileSync('build-production-catalog.js','utf8');
+assert.match(productionBuilder,/merchantKey==='amazgifts'/,'production builder must recognize Amazgifts source');
+assert.match(productionBuilder,/canonicalProductDigest\(data\)/,'production builder must verify canonical Amazgifts digest');
+assert.match(productionBuilder,/Amazgifts production artifact digest mismatch/,'production builder must reject mutated Amazgifts artifact');
 const source='development/amazgifts-products.json.gz.b64';
 if(approval.approved===true){
   assert(sources.includes(source),'approved Amazgifts source missing from production manifest');
