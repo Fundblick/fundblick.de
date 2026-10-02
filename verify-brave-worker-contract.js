@@ -76,6 +76,8 @@ assert.ok(worker && typeof worker.fetch === 'function');
         family_friendly:true
       },
       { title:'Snippet Preis', url:'https://shop.example/p/2', description:'Jetzt kaufen', extra_snippets:['Angebot 89,90 EUR sofort lieferbar'], family_friendly:true },
+      { title:'Direkte Produktseite ohne Brave-Preis', url:'https://shop.example/product/asus-v16', description:'ASUS V16 64 GB RAM 16 Zoll Notebook', thumbnail:{src:'https://img.example/asus-v16.jpg'}, family_friendly:true },
+      { title:'Kategorie ohne Produktdaten', url:'https://shop.example/category/notebooks', description:'Alle Notebooks im Überblick', thumbnail:{src:'https://img.example/notebooks.jpg'}, family_friendly:true },
       {
         title:'Mercedes GL350 gebraucht kaufen | Ab 11.205 € · 161 im Vergleich',
         url:'https://www.autouncle.de/de/gebrauchtwagen/Mercedes/GL350',
@@ -91,7 +93,7 @@ assert.ok(worker && typeof worker.fetch === 'function');
   body = await response.json();
   assert.equal(response.status, 200);
   assert.equal(body.query.length, 120);
-  assert.equal(body.count, 4);
+  assert.equal(body.count, 6);
   assert.equal(body.offset, 3);
   assert.equal(body.moreResultsAvailable, true);
 
@@ -117,11 +119,15 @@ assert.ok(worker && typeof worker.fetch === 'function');
   assert.equal(body.results[2].priceConfidence, 'visible');
   assert.equal(body.results[2].currency, 'EUR');
   assert.equal(body.results[2].productStatus, 'unknown');
+  assert.equal(body.results[3].productCandidate, true);
+  assert.equal(body.results[5].price, '');
+  assert.equal(body.results[3].image, 'https://img.example/asus-v16.jpg');
+  assert.equal(body.results[4].productCandidate, false);
 
-  assert.equal(body.results[3].price, '11.205 €');
-  assert.equal(body.results[3].priceConfidence, 'visible');
-  assert.equal(body.results[3].currency, 'EUR');
-  assert.notEqual(body.results[3].price, '112050');
+  assert.equal(body.results[5].price, '11.205 €');
+  assert.equal(body.results[5].priceConfidence, 'visible');
+  assert.equal(body.results[5].currency, 'EUR');
+  assert.notEqual(body.results[5].price, '112050');
 
   assert.equal(upstreamUrl.hostname, 'api.search.brave.com');
   assert.equal(upstreamUrl.searchParams.get('count'), '20');
