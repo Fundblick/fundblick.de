@@ -149,7 +149,7 @@ test('applying adaptive refinement preserves an unrelated normal filter',async({
 test('credible merchant product pages survive incomplete Brave metadata',async({page})=>{
  const complete={...offer(1),title:'ASUS V16 64 GB 16 Zoll'};
  const noImage={...offer(2),title:'ASUS V16 64 GB 16 Zoll ohne Brave-Bild',image:''};
- const noPrice={...offer(3),title:'ASUS V16 64 GB 16 Zoll Notebook',description:'ASUS V16 64 GB RAM 16 Zoll Notebook',url:'https://merchant-3.example/product/asus-v16',image:'https://images.example/asus-v16.jpg',price:'',priceConfidence:'unknown'};
+ const noPrice={...offer(3),title:'ASUS V16 64 GB 16 Zoll Notebook',description:'ASUS V16 64 GB RAM 16 Zoll Notebook',url:'https://merchant-3.example/product/asus-v16',image:'https://images.example/asus-v16.jpg',price:'',priceConfidence:'unknown',currency:''};
  const neither={...offer(4),title:'ASUS V16 64 GB 16 Zoll ohne Angebotsdaten',image:'',price:'',priceConfidence:'unknown'};
  const listing={...offer(5),title:'ASUS Notebooks',url:'https://merchant.example/category/asus',image:'',price:'',priceConfidence:'unknown'};
  await mockSearch(page,()=>({results:[complete,noImage,noPrice,neither,listing],moreResultsAvailable:false}));
