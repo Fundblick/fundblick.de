@@ -22,4 +22,5 @@ assert.match(search,/taxonomy=String\(raw\.category\|\|''\)/,'search must read c
 assert.match(search,/for\(const \[id,schema\] of Object\.entries\(SCHEMAS\)\)/,'search must infer schema family');
 assert.match(search,/deliveryDays,rawAttributes\}/,'search product must retain rawAttributes');
 assert.match(search,/p\.affiliateUrl=affiliateUrl;p\.directUrl=directUrl/,'search product must retain outbound URLs for live decorator');
+assert.match(search,/const tokens=routedSchema\?\[\]:interpret\(translated\)/,'canonical routed category must not be narrowed again by alias literals');
 console.log('Amazgifts search runtime taxonomy, facets and outbound data wiring OK');
