@@ -11,6 +11,8 @@ const out=n.normalize(rows);assert.equal(out.length,2);assert.equal(out[0].categ
 assert.equal(out[0].rawAttributes.taxonomyFamily,'gifts');
 assert.equal(out[0].rawAttributes.productType,'Schmuck');
 assert.equal(out[1].rawAttributes.productType,'Schmuckzubehör');
+assert.equal(out[0].shippingCost,null,'blank delivery_cost must remain unknown, not free shipping');
+assert.equal(out[1].shippingCost,null,'blank delivery_cost must remain unknown, not free shipping');
 assert.equal(n.validAffiliate('https://www.awin1.com/pclick.php?p=38392705049&a=3106259&m=87569'),true);
 assert.equal(n.validAffiliate('https://www.awin1.com/cread.php?awinmid=87569&awinaffid=3106259'),true);
 assert.equal(n.validDirect('https://evil.example/products/x'),false);assert.equal(n.validAffiliate('https://www.awin1.com/cread.php?awinmid=87569&awinaffid=999'),false);
