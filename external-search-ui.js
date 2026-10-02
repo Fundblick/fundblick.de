@@ -13,6 +13,7 @@
  const signal=item?.productCandidate===true||String(item?.resultType||'')==='product';if(!signal)return{eligible:false,reason:'missing-product-signal'};
  const combined=`${String(item?.title||'')} ${String(item?.description||'')}`;if(EDITORIAL_TEXT.test(combined)||MARKET_NOISE.test(combined))return{eligible:false,reason:'editorial-or-noise'};
  const image=!!safeHttpUrl(item?.image),price=!!trustedPrice(item,href);
+ if(item?.priceIssue==='non-offer-amount')return{eligible:false,reason:'non-offer-price'};
  if(!image&&!price)return{eligible:false,reason:'missing-image-and-price'};
  return{eligible:true,reason:image&&price?'complete-offer':image?'image-only':'price-only',partial:!(image&&price)};
 }
