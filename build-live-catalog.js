@@ -138,7 +138,7 @@ function homeCandidatePool(items){
   const ranked=items.map(product=>({product,score:dealCandidateScore(product)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.product.id.localeCompare(b.product.id));
   const selected=[],seen=new Set();
   for(const {product} of ranked){if(selected.length>=homeDealLimit)break;selected.push(product);seen.add(product.id);}
-  const fallback=items.filter(product=>product.testData===false&&product.inStock!==false&&numeric(product.price)>0&&String(product.image||'').trim()&&!seen.has(product.id)).sort((a,b)=>a.id.localeCompare(b.id));
+  const fallback=items.filter(product=>product.testData===false&&product.inStock===true&&numeric(product.price)>0&&String(product.image||'').trim()&&!seen.has(product.id)).sort((a,b)=>a.id.localeCompare(b.id));
   const groups=new Map();
   for(const product of fallback){
     const key=String(product.category||'uncategorized');
