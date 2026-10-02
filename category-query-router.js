@@ -31,10 +31,10 @@
     'home.decor':['dekoration','deko','decor'],
     'home.living':['wohnen','haushalt','living'],
     'pet.equestrian':['pferd','pferde','reitsport','equestrian','horse care'],
-    'gifts.personalized.keychains':['schlüsselanhänger','schluesselanhaenger','personalisierte schlüsselanhänger'],
-    'gifts.personalized.jewelry':['personalisierter schmuck','personalisierte schmuckstücke'],
-    'gifts.personalized.photo-gifts':['fotogeschenk','fotogeschenke'],
-    'craft.jewelry-making.supplies':['schmuckzubehör','schmuckzubehoer'],
+    'gifts.personalized.keychains':['schlüsselanhänger','schluesselanhaenger','personalisierte schlüsselanhänger','personalisierter schlüsselanhänger','foto schlüsselanhänger','foto schluesselanhaenger'],
+    'gifts.personalized.jewelry':['personalisierter schmuck','personalisierte schmuckstücke','fotokette','projektionskette','halskette mit foto','armband personalisiert'],
+    'gifts.personalized.photo-gifts':['fotogeschenk','fotogeschenke','geschenk mit foto','personalisiertes fotogeschenk'],
+    'craft.jewelry-making.supplies':['schmuckzubehör','schmuckzubehoer','perlenkettenzubehör','perlenkettenzubehoer','schmuck bastelzubehör'],
     'gifts.personalized.other':['personalisiertes geschenk','personalisierte geschenke']
   };
   let matched='';
