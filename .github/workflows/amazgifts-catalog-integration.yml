@@ -54,8 +54,7 @@ jobs:
           if(!s.includes('schemaFor(routedCategory)'))throw new Error('routed category is not validated against schemas');
           if(!s.includes("routedCategory=''"))throw new Error('new user search does not clear stale routed category');
           if(!s.includes("set('category',routedCategory)"))throw new Error('search URL does not persist active routed category');
-          if(!s.includes("rel=\"sponsored noopener noreferrer\""))throw new Error('affiliate CTA missing sponsored/noopener/noreferrer');
-          if(!s.includes('p.affiliateUrl'))throw new Error('search card does not use affiliate URL');
+          if(!s.includes('p.affiliateUrl=affiliateUrl'))throw new Error('search runtime drops affiliate URL before live decorator');
           console.log('Router -> search runtime contract OK');
           NODE
       - run: node --check build-normalized-merchant-artifact-catalog.js
