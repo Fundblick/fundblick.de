@@ -33,6 +33,8 @@ jobs:
           node verify-external-intelligence-ui.js
       - name: Build and validate production catalog
         run: |
+          node verify-merchant-feed-registry.js
+          node verify-merchant-artifact-integrity.js
           node verify-deal-of-day.js
           node verify-merchant-offers.js
           node build-production-catalog.js build/catalog
