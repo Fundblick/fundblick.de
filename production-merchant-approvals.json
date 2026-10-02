@@ -24,8 +24,8 @@
       "advertiserId": "87569",
       "publisherId": "3106259",
       "sources": [],
-      "reason": "Pending explicit production activation after isolated QA and advertiser automation/deeplink clarification",
-      "termsCleared": false
+      "reason": "Terms reviewed for FundBlick use of publisher-authorized Awin feed links; pending verified artifact promotion into production",
+      "termsCleared": true
     }
   }
 }
