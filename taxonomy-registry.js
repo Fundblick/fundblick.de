@@ -9,7 +9,8 @@
       decor:{label:'Dekoration',types:['Vase / Blumentopf','Figur','Spiegel','Kissen / Sitzkissen','Schale / Tablett','Wanddekoration','Haken / Hakenleiste','Korb','Teppich','Fliese','Kerze / Kerzenhalter','Dose / Box / Schmuckkasten']},
       living:{label:'Wohnen / Haushalt',types:['Blumentopf / Pflanzgefäß','Korb / Aufbewahrung','Waschbecken','Brunnen','Teppich','Badaccessoire','Küchenaccessoire','Textilie','Wohnaccessoire','Organizer / Stiftehalter']},
       equestrian:{label:'Pferd & Reitsport',types:['Ergänzungsfutter','Pferdepflege','Bundle']},
-      'robot-mowers':{label:'Mähroboter',types:['Mähroboter','Mähroboter-Zubehör']}
+      'robot-mowers':{label:'Mähroboter',types:['Mähroboter','Mähroboter-Zubehör']},
+      gifts:{label:'Personalisierte Geschenke',types:['Schlüsselanhänger','Schmuck','Fotogeschenk','Schmuckzubehör','Sonstiges personalisiertes Geschenk']}
     },
     facets:{
       material:['Holz','Metall','Mosaik','Keramik','Rattan','Textil','Leder','Messing','Kupfer','Silber / Metalloptik','Glas','Stein','Naturfaser'],
