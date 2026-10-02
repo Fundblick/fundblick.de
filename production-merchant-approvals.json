@@ -5,13 +5,28 @@
       "approved": true,
       "network": "awin",
       "advertiserId": "120341",
-      "sources": ["development/ahipos-products-1.json", "development/ahipos-products-2.json"]
+      "sources": [
+        "development/ahipos-products-1.json",
+        "development/ahipos-products-2.json"
+      ]
     },
     "anthbot": {
       "approved": true,
       "network": "awin",
       "advertiserId": "125144",
-      "sources": ["development/anthbot-products.json.gz.b64"]
+      "sources": [
+        "development/anthbot-products.json.gz.b64"
+      ]
+    },
+    "amazgifts": {
+      "approved": false,
+      "network": "awin",
+      "advertiserId": "87569",
+      "publisherId": "3106259",
+      "sources": [
+        "development/amazgifts-products.json.gz.b64"
+      ],
+      "reason": "Pending explicit production activation after isolated QA and advertiser automation/deeplink clarification"
     }
   }
 }
