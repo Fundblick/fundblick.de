@@ -55,7 +55,8 @@
 
   const filtersEl=document.querySelector('#filters'),cardsEl=document.querySelector('#cards'),summaryEl=document.querySelector('#summary'),chipsEl=document.querySelector('#chips'),sortEl=document.querySelector('#sort');
   const params=new URLSearchParams(location.search);
-  const state={query:params.get('q')||'',min:asNumber(params.get('min')),max:asNumber(params.get('max')),brands:new Set((params.get('brand')||'').split(',').filter(Boolean)),facets:{},sort:params.get('sort')||'relevance'};
+  const routedCategory=String(params.get('category')||'').trim(),routedRawQuery=String(params.get('rawq')||'').trim();
+  const state={query:params.get('q')||routedRawQuery||'',min:asNumber(params.get('min')),max:asNumber(params.get('max')),brands:new Set((params.get('brand')||'').split(',').filter(Boolean)),facets:{},sort:params.get('sort')||'relevance'};
   let products=[],category=null,base=[];
   try{const saved=JSON.parse(params.get('facets')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))for(const [k,v] of Object.entries(saved))if(Array.isArray(v))state.facets[k]=new Set(v.map(String));}catch{}
   qEl.value=state.query;if([...sortEl.options].some(x=>x.value===state.sort))sortEl.value=state.sort;
@@ -177,7 +178,7 @@
   document.querySelector('.search-form').addEventListener('submit',e=>{e.preventDefault();state.query=qEl.value.trim();state.brands.clear();state.facets={};state.min=null;state.max=null;runSearch()});
   document.querySelector('#reset').addEventListener('click',()=>{state.min=state.max=null;state.brands.clear();state.facets={};render()});
   sortEl.addEventListener('change',()=>{state.sort=sortEl.value;render()});
-  function runSearch(){const translated=queryAliases.reduce((q,[pattern,value])=>q.replace(pattern,value),state.query);category=detect(translated);const tokens=interpret(translated);base=products.filter(p=>queryMatch(p,tokens));render()}
+  function runSearch(){const translated=queryAliases.reduce((q,[pattern,value])=>q.replace(pattern,value),state.query);const routedSchema=routedCategory&&schemaFor(routedCategory);category=routedSchema?{id:routedCategory,label:routedSchema.label||routedCategory}:detect(translated);const tokens=interpret(translated);base=products.filter(p=>queryMatch(p,tokens));render()}
   const readProducts=url=>fetch(url).then(r=>{if(!r.ok)throw Error('Product data unavailable: '+url);return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Invalid product data');return data});
   Promise.all([readProducts('products.json'),cardsEl.dataset.catalogUrl?readProducts(cardsEl.dataset.catalogUrl):Promise.resolve([])]).then(groups=>{products=groups.flat().map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent=tx('loadError');cardsEl.innerHTML=''});
 })();
