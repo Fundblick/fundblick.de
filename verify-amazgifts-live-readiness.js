@@ -16,6 +16,7 @@ const productionBuilder=fs.readFileSync('build-production-catalog.js','utf8');
 assert.match(productionBuilder,/merchantKey==='amazgifts'/,'production builder must recognize Amazgifts source');
 assert.match(productionBuilder,/canonicalProductDigest\(data\)/,'production builder must verify canonical Amazgifts digest');
 assert.match(productionBuilder,/Amazgifts production artifact digest mismatch/,'production builder must reject mutated Amazgifts artifact');
+for(const required of ['export-amazgifts-artifact.js','verify-amazgifts-activation-dry-run.js','verify-amazgifts-future-production.js','verify-amazgifts-artifact-rejection.js']) assert(fs.existsSync(required),'Amazgifts promotion tool missing: '+required);
 const activator=fs.readFileSync('activate-amazgifts-production.js','utf8');
 assert.match(activator,/FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION/,'activation must require an explicit operator confirmation');
 const source='development/amazgifts-products.json.gz.b64';
