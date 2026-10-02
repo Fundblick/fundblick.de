@@ -21,7 +21,7 @@ test('browser modules filter before paging; sorting stays local while facets ret
  await page.goto(base+'?q=10W40%20Motor%C3%B6l&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(19);expect(state.requests).toHaveLength(1);
  const sort=page.locator('#external-results').getByRole('combobox',{name:'Sortierung',exact:true});await sort.selectOption('price-desc');await expect(page.locator('.external-result-card').first().locator('.external-result-price')).toHaveText('48,00 €');expect(state.requests).toHaveLength(1);
  const volume=page.locator('select[data-facet="volume"]');await expect(volume).toBeVisible();await volume.selectOption('5');await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/5\s+(?:Liter|litre)/i);
- await page.locator('select[data-facet="volume"]').selectOption('');await expect.poll(()=>state.requests.length).toBeGreaterThan(2);const unconstrained=state.requests.at(-1);expect(unconstrained.offset).toBe(0);expect(unconstrained.q).toBe(state.requests[0].q);expect(state.errors).toEqual([]);
+ await page.locator('select[data-facet="volume"]').selectOption('');await expect(page.locator('.external-result-card')).toHaveCount(19);expect(state.requests).toHaveLength(2);expect(state.errors).toEqual([]);
 });
 
 test('mixed currencies disable misleading price and unit-price sorting',async({page})=>{
@@ -149,7 +149,7 @@ test('applying adaptive refinement preserves an unrelated normal filter',async({
 test('credible merchant product pages survive incomplete Brave metadata',async({page})=>{
  const complete={...offer(1),title:'ASUS V16 64 GB 16 Zoll'};
  const noImage={...offer(2),title:'ASUS V16 64 GB 16 Zoll ohne Brave-Bild',image:''};
- const noPrice={...offer(3),title:'ASUS V16 64 GB 16 Zoll Notebook',description:'ASUS V16 64 GB RAM 16 Zoll Notebook',url:'https://merchant-3.example/product/asus-v16-no-price',image:'https://images.example/asus-no-price.jpg',price:'',priceConfidence:'unknown'};
+ const noPrice={...offer(3),title:'ASUS V16 64 GB 16 Zoll Notebook',description:'ASUS V16 64 GB RAM 16 Zoll Notebook',url:'https://merchant-3.example/product/asus-v16',image:'https://images.example/asus-v16.jpg',price:'',priceConfidence:'unknown'};
  const neither={...offer(4),title:'ASUS V16 64 GB 16 Zoll ohne Angebotsdaten',image:'',price:'',priceConfidence:'unknown'};
  const listing={...offer(5),title:'ASUS Notebooks',url:'https://merchant.example/category/asus',image:'',price:'',priceConfidence:'unknown'};
  await mockSearch(page,()=>({results:[complete,noImage,noPrice,neither,listing],moreResultsAvailable:false}));
