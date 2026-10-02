@@ -30,7 +30,12 @@
     'home.lighting':['lampen','beleuchtung','lighting'],
     'home.decor':['dekoration','deko','decor'],
     'home.living':['wohnen','haushalt','living'],
-    'pet.equestrian':['pferd','pferde','reitsport','equestrian','horse care']
+    'pet.equestrian':['pferd','pferde','reitsport','equestrian','horse care'],
+    'gifts.personalized.keychains':['schlüsselanhänger','schluesselanhaenger','personalisierte schlüsselanhänger'],
+    'gifts.personalized.jewelry':['personalisierter schmuck','personalisierte schmuckstücke'],
+    'gifts.personalized.photo-gifts':['fotogeschenk','fotogeschenke'],
+    'craft.jewelry-making.supplies':['schmuckzubehör','schmuckzubehoer'],
+    'gifts.personalized.other':['personalisiertes geschenk','personalisierte geschenke']
   };
   let matched='';
   let matchedLength=0;
