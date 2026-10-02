@@ -127,3 +127,11 @@ jobs:
           fi
           FUNDBLICK_ALLOW_ZERO_HOME_DEALS=1 node verify-live-catalog-v2.js build/amazgifts-catalog
           test "$(node -p "require('./build/amazgifts-catalog/manifest.json').homeDealCount")" = "0" || { echo 'Amazgifts UNKNOWN stock leaked into homepage candidates'; exit 1; }
+      - name: Upload verified normalized Amazgifts artifact
+        if: ${{ inputs.feed_path != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: amazgifts-products-verified
+          path: build/amazgifts-products.json.gz.b64
+          if-no-files-found: error
+          retention-days: 7
