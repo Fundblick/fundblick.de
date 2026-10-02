@@ -33,6 +33,9 @@ if(!ahiposProducts.every(product=>String(product?.bestOffer?.directUrl||'').incl
 if(!ahiposProducts.some(product=>product.category==='pet.equestrian'))throw new Error('AHIPOS equestrian category missing from production');
 
 const amazgiftsApproval=approvals?.merchants?.amazgifts;
+if(!amazgiftsApproval)throw new Error('Amazgifts production approval record missing');
+if(amazgiftsApproval.network!=='awin'||amazgiftsApproval.advertiserId!=='87569'||amazgiftsApproval.publisherId!=='3106259')throw new Error('Amazgifts production approval identity contract changed');
+if(!Array.isArray(amazgiftsApproval.sources)||amazgiftsApproval.sources.length!==1||amazgiftsApproval.sources[0]!=='development/amazgifts-products.json.gz.b64')throw new Error('Amazgifts production approval source contract changed');
 const productionSources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 const amazgiftsSourceCount=productionSources.filter(source=>/amazgifts/i.test(String(source))).length;
 if(!amazgiftsApproval?.approved&&amazgiftsSourceCount!==0)throw new Error(`Blocked Amazgifts source leaked into production configuration: ${amazgiftsSourceCount}`);
