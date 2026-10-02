@@ -28,7 +28,15 @@ remove(site);
 remove(catalog);
 fs.mkdirSync(catalog, { recursive: true });
 
-run("node", ["build-production-catalog.js", "build/catalog"]);
+const amazgiftsFeed = String(process.env.FUNDBLICK_AMAZGIFTS_FEED || "").trim();
+if (amazgiftsFeed) {
+  if (!fs.existsSync(path.resolve(root, amazgiftsFeed))) throw new Error("Amazgifts development feed not found: " + amazgiftsFeed);
+  run("node", ["build-amazgifts-development-catalog.js", amazgiftsFeed, "build/catalog"]);
+  console.log("Development preview catalog mode: Amazgifts isolated feed");
+} else {
+  run("node", ["build-production-catalog.js", "build/catalog"]);
+  console.log("Development preview catalog mode: approved production merchants");
+}
 run("node", ["verify-live-catalog-v2.js", "build/catalog"]);
 run("node", ["verify-production-merchants.js", "build/catalog"]);
 run("node", ["verify-production-categories.js", "build/catalog"]);
