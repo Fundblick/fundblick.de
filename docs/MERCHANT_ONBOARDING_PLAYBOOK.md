@@ -58,3 +58,12 @@ FundBlick besitzt die Taxonomie. Der Händler liefert Rohdaten und Begriffe. Hä
 
 - Development-Preview und Production-Freigabe bleiben getrennte Schritte.
 - Gepinnte Händler-Snapshots werden vor dem Parsen bytegenau per SHA-256 geprüft. Ein neuer Awin-Feed ist deshalb zunächst ein neuer, ungeprüfter Snapshot und darf den bisherigen Digest nicht automatisch ersetzen; erst Datenqualitätsprüfung, Normalisierung und Freigabe erzeugen einen neuen erwarteten Digest.
+
+## Amazgifts DE – Live-Promotion Runbook
+1. Ausgangsfeed muss bytegenau SHA-256 `9dadbc32d81303f38a4d8a92520d9ac29abf5aea3ac8c10d89393e8fd43822bf` besitzen.
+2. `node export-amazgifts-artifact.js <feed.csv.gz> development/amazgifts-products.json.gz.b64` erzeugt ausschließlich nach erfolgreicher Node-Normalisierung das Promotion-Artefakt.
+3. Das Artefakt muss 2.964 Produkte und kanonisch SHA-256 `32ca063fc6d02a7ba6407175100e7da84f0c75731f097033b6096aff55b2d65a` ergeben.
+4. Vor Aktivierung bleibt `approved:false`, `termsCleared:false` und die Quelle außerhalb von `production-catalog-sources.json`.
+5. Erst nach dokumentierter Klärung der Advertiser-Regel zu Deeplinks/automatisierten Systemen darf `termsCleared:true` gesetzt werden.
+6. Aktivierung ausschließlich mit `FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION=YES node activate-amazgifts-production.js`.
+7. Danach vollständige Production-, Development-, Amazgifts- und Browser-Gates ausführen. Erst bei vollständig grünem Stand PR/Merge nach `main`.
