@@ -13,6 +13,7 @@ on:
       - 'verify-category-query-router.js'
       - 'search-facet-engine-v2.js'
       - 'search.js'
+      - 'verify-amazgifts-search-runtime.js'
       - 'verify-facet-engine-v2.js'
       - 'build-normalized-merchant-artifact-catalog.js'
       - '.github/workflows/amazgifts-catalog-integration.yml'
@@ -42,6 +43,7 @@ jobs:
       - run: node verify-facet-engine-v2.js
       - run: node verify-category-query-router.js
       - run: node --check search.js
+      - run: node verify-amazgifts-search-runtime.js
       - name: Verify routed category reaches search runtime
         run: |
           node - <<'NODE'
