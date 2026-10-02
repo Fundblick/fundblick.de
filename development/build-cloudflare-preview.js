@@ -38,12 +38,17 @@ if (amazgiftsFeed) {
   console.log("Development preview catalog mode: approved production merchants");
 }
 run("node", ["verify-live-catalog-v2.js", "build/catalog"]);
-run("node", ["verify-production-merchants.js", "build/catalog"]);
-run("node", ["verify-production-categories.js", "build/catalog"]);
+if (!amazgiftsFeed) {
+  run("node", ["verify-production-merchants.js", "build/catalog"]);
+  run("node", ["verify-production-categories.js", "build/catalog"]);
+}
 
 const manifest = JSON.parse(fs.readFileSync(path.join(catalog, "manifest.json"), "utf8"));
 if (manifest.dataMode !== "real" || Number(manifest.realCount) < 1000 || Number(manifest.simulatedCount) !== 0) {
   throw new Error("Preview catalog safety gate failed");
+}
+if (amazgiftsFeed && Number(manifest.realCount) < 2964) {
+  throw new Error("Amazgifts development preview is incomplete");
 }
 
 copyTree(root, site, true);
