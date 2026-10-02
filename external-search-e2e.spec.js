@@ -144,3 +144,19 @@ test('applying adaptive refinement preserves an unrelated normal filter',async({
  const box=page.locator('#adaptive-refinement');await box.locator('fieldset[data-facet="size"]').getByRole('button',{name:'39',exact:true}).click();await box.getByRole('button',{name:'Auswahl anwenden',exact:true}).click();
  await expect.poll(()=>state.requests.length).toBeGreaterThan(1);await expect(page.locator('#external-results select[data-facet="color"]')).toHaveValue('black');await expect(page.locator('.external-result-card')).toHaveCount(2);expect(state.errors).toEqual([]);
 });
+
+
+test('credible merchant product pages survive incomplete Brave metadata',async({page})=>{
+ const complete={...offer(1),title:'ASUS V16 64 GB 16 Zoll'};
+ const noImage={...offer(2),title:'ASUS V16 64 GB 16 Zoll ohne Brave-Bild',image:''};
+ const noPrice={...offer(3),title:'ASUS V16 64 GB 16 Zoll ohne Brave-Preis',description:'ASUS V16 64 GB RAM 16 Zoll Notebook',price:'',priceConfidence:'unknown'};
+ const neither={...offer(4),title:'ASUS V16 64 GB 16 Zoll ohne Angebotsdaten',image:'',price:'',priceConfidence:'unknown'};
+ const listing={...offer(5),title:'ASUS Notebooks',url:'https://merchant.example/category/asus',image:'',price:'',priceConfidence:'unknown'};
+ await mockSearch(page,()=>({results:[complete,noImage,noPrice,neither,listing],moreResultsAvailable:false}));
+ await page.goto(base+'?q=Asus%20notebook&lang=de&web=1');
+ await expect(page.locator('.external-result-card')).toHaveCount(3);
+ await expect(page.locator('.external-results-pagination span')).toHaveText('3 Angebote geladen');
+ await expect(page.locator('.external-result-card').filter({hasText:'ohne Brave-Bild'})).toHaveCount(1);
+ await expect(page.locator('.external-result-card').filter({hasText:'ohne Brave-Preis'})).toHaveCount(1);
+ await expect(page.locator('.external-result-card').filter({hasText:'ohne Angebotsdaten'})).toHaveCount(0);
+});
