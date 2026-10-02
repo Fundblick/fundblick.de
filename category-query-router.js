@@ -19,7 +19,7 @@
   const schemas=root.FB_CATEGORY_SCHEMAS||{};
   const canonicalFor=(key,schema)=>{
     const terms=Array.isArray(schema?.terms)?schema.terms:[];
-    const canonical=terms.find(term=>/^(?:home|pet|health|electronics|fashion)\./i.test(String(term||'')));
+    const canonical=terms.find(term=>/^(?:home|pet|health|electronics|fashion|gifts|craft)\./i.test(String(term||'')));
     if(canonical)return String(canonical);
     if(String(key).includes('.'))return String(key);
     return '';
