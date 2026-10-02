@@ -11,7 +11,7 @@ const merchants={
     preferredFeedId:'95497',
     inputPattern:/datafeed_3106259.*\.csv(?:\.gz)?$/i,
     normalizer:'./amazgifts-feed-normalizer.js',
-    expected:{products:2964,artifactSha256:'1525723cff8652b1822d522a9fe7b7443d0dbf77ca4ba28300b860da642fb9e8'},
+    expected:{products:2964,rawFeedSha256:'9dadbc32d81303f38a4d8a92520d9ac29abf5aea3ac8c10d89393e8fd43822bf',artifactSha256:'1525723cff8652b1822d522a9fe7b7443d0dbf77ca4ba28300b860da642fb9e8'},
     catalogCategories:['gifts.personalized.jewelry','gifts.personalized.keychains','gifts.personalized.photo-gifts','craft.jewelry-making.supplies','gifts.personalized.other']
   },
   anthbot:{
