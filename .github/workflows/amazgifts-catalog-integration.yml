@@ -3,6 +3,8 @@ on:
   push:
     branches: [development]
     paths:
+      - 'development/build-cloudflare-preview.js'
+      - 'verify-live-catalog-v2.js'
       - 'verify-merchant-artifact-integrity.js'
       - 'merchant-artifact-integrity.js'
       - 'verify-merchant-feed-registry.js'
@@ -106,4 +108,5 @@ jobs:
           else
             echo 'Supply feed_path or artifact_path explicitly.'; exit 1
           fi
-          node verify-live-catalog-v2.js build/amazgifts-catalog
+          FUNDBLICK_ALLOW_ZERO_HOME_DEALS=1 node verify-live-catalog-v2.js build/amazgifts-catalog
+          test "$(node -p "require('./build/amazgifts-catalog/manifest.json').homeDealCount")" = "0" || { echo 'Amazgifts UNKNOWN stock leaked into homepage candidates'; exit 1; }
