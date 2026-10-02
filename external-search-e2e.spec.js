@@ -15,12 +15,12 @@ test('explicit web opt-in preserves real catalog cards and auto-fills sparse off
  await expect(next(page)).toBeEnabled();expect(state.requests).toHaveLength(3);expect(state.requests.map(r=>r.offset)).toEqual([0,1,2]);expect(state.requests[0].count).toBe(20);expect(await local.innerText()).toBe(before);expect(state.errors).toEqual([]);
 });
 
-test('browser modules filter before paging; sorting and facets do not fetch',async({page})=>{
+test('browser modules filter before paging; sorting stays local while facets retrieve constrained offers',async({page})=>{
  const listing={...offer(99),title:'Motoröl Auswahl',url:'https://merchant.example/category/oil'};
  const state=await mockSearch(page,({offset})=>({results:offset===0?[listing,...Array.from({length:19},(_,i)=>offer(i))]:[offer(20),offer(21),offer(22)],moreResultsAvailable:offset===0}));
  await page.goto(base+'?q=10W40%20Motor%C3%B6l&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(19);expect(state.requests).toHaveLength(1);
  const sort=page.locator('#external-results').getByRole('combobox',{name:'Sortierung',exact:true});await sort.selectOption('price-desc');await expect(page.locator('.external-result-card').first().locator('.external-result-price')).toHaveText('48,00 €');expect(state.requests).toHaveLength(1);
- const volume=page.locator('select[data-facet="volume"]');await expect(volume).toBeVisible();await volume.selectOption('5');await expect(page.locator('.external-result-card')).toHaveCount(12);expect(state.requests).toHaveLength(1);
+ const volume=page.locator('select[data-facet="volume"]');await expect(volume).toBeVisible();await volume.selectOption('5');await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/5\s+(?:Liter|litre)/i);
  await page.locator('select[data-facet="volume"]').selectOption('');await next(page).click();await expect(page.locator('.external-results-pagination span')).toHaveText('22 Angebote geladen');await expect(page.locator('.external-result-card')).toHaveCount(22);expect(state.requests.map(x=>x.offset)).toEqual([0,1]);expect(state.requests[0].q).toBe(state.requests[1].q);expect(state.errors).toEqual([]);
 });
 
@@ -149,7 +149,7 @@ test('applying adaptive refinement preserves an unrelated normal filter',async({
 test('credible merchant product pages survive incomplete Brave metadata',async({page})=>{
  const complete={...offer(1),title:'ASUS V16 64 GB 16 Zoll'};
  const noImage={...offer(2),title:'ASUS V16 64 GB 16 Zoll ohne Brave-Bild',image:''};
- const noPrice={...offer(3),title:'ASUS V16 64 GB 16 Zoll ohne Brave-Preis',description:'ASUS V16 64 GB RAM 16 Zoll Notebook',price:'',priceConfidence:'unknown'};
+ const noPrice={...offer(3),title:'ASUS V16 64 GB 16 Zoll ohne Brave-Preis',description:'ASUS V16 64 GB RAM 16 Zoll Notebook',image:'https://images.example/asus-no-price.jpg',price:'',priceConfidence:'unknown'};
  const neither={...offer(4),title:'ASUS V16 64 GB 16 Zoll ohne Angebotsdaten',image:'',price:'',priceConfidence:'unknown'};
  const listing={...offer(5),title:'ASUS Notebooks',url:'https://merchant.example/category/asus',image:'',price:'',priceConfidence:'unknown'};
  await mockSearch(page,()=>({results:[complete,noImage,noPrice,neither,listing],moreResultsAvailable:false}));
