@@ -28,4 +28,5 @@ assert.match(categoryI18n,/Personalisierte Schlüsselanhänger/,'German gift cat
 assert.match(categoryI18n,/Personalized keychains/,'English gift category fallback missing');
 assert.match(categoryI18n,/Персонализированные брелоки/,'Russian gift category label missing');
 assert.match(categoryI18n,/Object\.assign\(\{\},labels\.en,labels\[lang\]\|\|\{\}\)/,'missing translations must fall back to English');
-console.log('Amazgifts search runtime taxonomy, facets and outbound data wiring OK');
+for(const [id,term] of [['gifts.personalized.keychains','foto schlüsselanhänger'],['gifts.personalized.jewelry','halskette mit foto'],['gifts.personalized.photo-gifts','geschenk mit foto'],['craft.jewelry-making.supplies','perlenkettenzubehör']]) assert.ok(window.FB_CATEGORY_SCHEMAS[id]?.terms?.includes(term),id+' missing routed alias '+term);
+console.log('Amazgifts search runtime taxonomy, facets, routed aliases and outbound data wiring OK');
