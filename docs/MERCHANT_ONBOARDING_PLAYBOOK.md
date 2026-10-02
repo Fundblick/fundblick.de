@@ -39,3 +39,17 @@ Das Ziel über mehrere Händler ist eine steigende Wiederverwendungsquote und ei
 
 ## Architekturregel
 FundBlick besitzt die Taxonomie. Der Händler liefert Rohdaten und Begriffe. Händlerkategorien sind Evidenz für die Klassifikation, aber nicht die öffentliche Informationsarchitektur von FundBlick.
+
+
+## Amazgifts DE – Development-Stand 2026-10-02
+- Awin Advertiser-ID: `87569`; Publisher-ID: `3106259`; bevorzugter Feed: `95497`.
+- Vollfeed geprüft: 5.922 Rohzeilen; 2.964 Produkte im bevorzugten Feed; 2.964 eindeutige Händler-Produkt-IDs.
+- Der Händler-Feedwert `Women's Accessories` wird nicht als FundBlick-Taxonomie übernommen.
+- Aktuelle belegte Zuordnung aus Titel/Beschreibung: 2.271 Schlüsselanhänger, 605 Schmuck, 74 Fotogeschenke, 14 Schmuckzubehör.
+- Alle 2.964 Produkte erhalten `rawAttributes.productType`; die Suchfacette verwendet denselben kanonischen Schlüssel `productType`.
+- Affiliate-Ziel bleibt der vom Awin-Feed gelieferte `aw_deep_link`; Direktziel bleibt `merchant_deep_link`.
+- Fehlende Lieferkosten und Verfügbarkeit werden nicht erfunden; unbekannte Lieferkosten bleiben unbekannt, Availability bleibt `UNKNOWN`.
+- Ohne belastbaren Referenz-/Vergleichspreis werden keine Rabatte konstruiert. Der Homepage-Fallback wird deterministisch über Kategorien diversifiziert.
+- Normaler Development-Preview-Build bleibt beim production-approved Katalog. Amazgifts kann nur explizit über `FUNDBLICK_AMAZGIFTS_FEED` oder `FUNDBLICK_AMAZGIFTS_ARTIFACT` zugeschaltet werden.
+- Amazgifts bleibt aus `production-catalog-sources.json` und `production-merchant-approvals.json` ausgeschlossen, bis eine ausdrückliche Production-Freigabe erfolgt.
+- Vor Production-Aktivierung muss die Awin/Amazgifts-Vertragsformulierung zur Nutzung automatisierter Systeme bzw. Deeplinks schriftlich geklärt werden.
