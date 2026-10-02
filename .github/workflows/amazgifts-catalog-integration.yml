@@ -14,6 +14,9 @@ on:
       - 'search-facet-engine-v2.js'
       - 'search.js'
       - 'verify-amazgifts-search-runtime.js'
+      - 'affiliate-link-policy.js'
+      - 'affiliate-config.js'
+      - 'verify-affiliate-routing.js'
       - 'verify-facet-engine-v2.js'
       - 'build-normalized-merchant-artifact-catalog.js'
       - '.github/workflows/amazgifts-catalog-integration.yml'
@@ -44,6 +47,7 @@ jobs:
       - run: node verify-category-query-router.js
       - run: node --check search.js
       - run: node verify-amazgifts-search-runtime.js
+      - run: node verify-affiliate-routing.js
       - name: Verify routed category reaches search runtime
         run: |
           node - <<'NODE'
