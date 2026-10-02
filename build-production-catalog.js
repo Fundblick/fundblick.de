@@ -2,6 +2,8 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const zlib=require('node:zlib');
+const {getMerchant}=require('./merchant-feed-registry.js');
+const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
 const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceManifest=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 if(!Array.isArray(sourceManifest)||!sourceManifest.length)throw new Error('production-catalog-sources.json must contain at least one source file');
@@ -13,6 +15,13 @@ const coreFile=normalize('development/core-products.json');const normalizedManif
 for(const source of normalizedManifest){if(blockedMerchantSources.has(source))throw new Error(`Production source ${source} belongs to blocked merchant ${blockedMerchantSources.get(source)}`);if(source!==coreFile&&!approvedMerchantSources.has(source))throw new Error(`Production merchant source ${source} has no explicit approval`);}for(const [source,key] of approvedMerchantSources){if(!normalizedManifest.includes(source))throw new Error(`Approved merchant source ${source} for ${key} is missing from production-catalog-sources.json`);}
 const originalRead=fs.readFileSync.bind(fs);
 function readSource(file){let raw=originalRead(file);const name=String(file);if(name.endsWith('.b64'))raw=Buffer.from(raw.toString('utf8').trim(),'base64');if(name.endsWith('.gz')||name.endsWith('.gz.b64'))raw=zlib.gunzipSync(raw);return JSON.parse(raw.toString('utf8'));}
-const combined=[];const seenIds=new Map();for(const file of sourceManifest){const normalizedFile=normalize(file);const data=readSource(normalizedFile);if(!Array.isArray(data))throw new Error(`${file} must contain an array`);for(const product of data){const id=String(product?.id||'').trim();if(!id)throw new Error(`${file} contains product without id`);if(seenIds.has(id))throw new Error(`Duplicate production product id ${id} in ${seenIds.get(id)} and ${file}`);seenIds.set(id,file);combined.push(product);}}
+const combined=[];const seenIds=new Map();for(const file of sourceManifest){const normalizedFile=normalize(file);const data=readSource(normalizedFile);if(!Array.isArray(data))throw new Error(`${file} must contain an array`);
+const merchantKey=approvedMerchantSources.get(normalizedFile);
+if(merchantKey==='amazgifts'){
+  const cfg=getMerchant('amazgifts'),digest=canonicalProductDigest(data);
+  if(data.length!==cfg.expected.products)throw new Error(`Amazgifts production artifact count mismatch: expected ${cfg.expected.products}, got ${data.length}`);
+  if(digest!==cfg.expected.artifactSha256)throw new Error(`Amazgifts production artifact digest mismatch: expected ${cfg.expected.artifactSha256}, got ${digest}`);
+}
+for(const product of data){const id=String(product?.id||'').trim();if(!id)throw new Error(`${file} contains product without id`);if(seenIds.has(id))throw new Error(`Duplicate production product id ${id} in ${seenIds.get(id)} and ${file}`);seenIds.set(id,file);combined.push(product);}}
 fs.readFileSync=function(file,...args){if(normalize(file)===coreFile)return JSON.stringify(combined);return originalRead(file,...args);};process.argv[2]=outputRoot;require('./build-live-catalog.js');
 const preferred=['home.living','home.furniture','home.lighting','home.decor','pet.equestrian','pet.dog','health.supplements','home.garden.robot-mowers','home.garden.robot-mower-accessories'];const counts=new Map();for(const product of combined){if(!product||product.active===false)continue;const category=String(product.category||'').trim();const price=Number(product.price);if(!category||!product.id||!product.name||!Number.isFinite(price)||price<=0)continue;counts.set(category,(counts.get(category)||0)+1);}const rank=id=>{const index=preferred.indexOf(id);return index>=0?index:preferred.length;};const categories=[...counts.entries()].map(([id,count])=>({id,count})).sort((a,b)=>rank(a.id)-rank(b.id)||b.count-a.count||a.id.localeCompare(b.id,'de'));fs.writeFileSync(path.join(outputRoot,'categories.json'),JSON.stringify({version:1,categories})+'\n');console.log(`production categories built: ${categories.length} categories`);
