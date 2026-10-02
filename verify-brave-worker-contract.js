@@ -120,7 +120,7 @@ assert.ok(worker && typeof worker.fetch === 'function');
   assert.equal(body.results[2].currency, 'EUR');
   assert.equal(body.results[2].productStatus, 'unknown');
   assert.equal(body.results[3].productCandidate, true);
-  assert.equal(body.results[5].price, '');
+  assert.equal(body.results[3].price, '');
   assert.equal(body.results[3].image, 'https://img.example/asus-v16.jpg');
   assert.equal(body.results[4].productCandidate, false);
 
