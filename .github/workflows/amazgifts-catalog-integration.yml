@@ -3,6 +3,11 @@ on:
   push:
     branches: [development]
     paths:
+      - 'verify-amazgifts-live-readiness.js'
+      - 'verify-production-categories.js'
+      - 'verify-production-merchants.js'
+      - 'production-catalog-sources.json'
+      - 'production-merchant-approvals.json'
       - 'development/build-cloudflare-preview.js'
       - 'verify-live-catalog-v2.js'
       - 'verify-merchant-artifact-integrity.js'
@@ -49,6 +54,7 @@ jobs:
       - run: node verify-amazgifts-normalizer.js
       - run: node verify-merchant-feed-registry.js
       - run: node verify-merchant-artifact-integrity.js
+      - run: node verify-amazgifts-live-readiness.js
       - run: node verify-facet-engine-v2.js
       - run: node verify-category-query-router.js
       - run: node --check search.js
