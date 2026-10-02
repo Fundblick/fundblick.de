@@ -3,6 +3,7 @@ on:
   push:
     branches: [development]
     paths:
+      - 'build-production-catalog.js'
       - 'result-card.css'
       - 'verify-live-catalog-ui.js'
       - 'live-catalog-ui.js'
