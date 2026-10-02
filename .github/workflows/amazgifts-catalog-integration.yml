@@ -3,6 +3,8 @@ on:
   push:
     branches: [development]
     paths:
+      - 'verify-live-catalog-ui.js'
+      - 'live-catalog-ui.js'
       - 'verify-amazgifts-live-readiness.js'
       - 'verify-production-categories.js'
       - 'verify-production-merchants.js'
@@ -59,6 +61,7 @@ jobs:
       - run: node verify-category-query-router.js
       - run: node --check search.js
       - run: node verify-amazgifts-search-runtime.js
+      - run: node verify-live-catalog-ui.js
       - run: node verify-affiliate-routing.js
       - name: Verify routed category reaches search runtime
         run: |
