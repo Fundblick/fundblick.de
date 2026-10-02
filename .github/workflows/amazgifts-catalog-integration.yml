@@ -6,6 +6,7 @@ on:
       - 'activate-amazgifts-production.js'
       - 'verify-amazgifts-activation-dry-run.js'
       - 'verify-amazgifts-future-production.js'
+      - 'verify-amazgifts-artifact-rejection.js'
       - 'category-display-i18n.js'
       - 'build-production-catalog.js'
       - 'result-card.css'
@@ -64,6 +65,7 @@ jobs:
       - run: node --check activate-amazgifts-production.js
       - run: node --check verify-amazgifts-activation-dry-run.js
       - run: node --check verify-amazgifts-future-production.js
+      - run: node --check verify-amazgifts-artifact-rejection.js
       - run: node verify-amazgifts-normalizer.js
       - run: node verify-merchant-feed-registry.js
       - run: node verify-merchant-artifact-integrity.js
@@ -128,6 +130,7 @@ jobs:
             node build-normalized-merchant-artifact-catalog.js amazgifts build/amazgifts-products.json.gz.b64 build/amazgifts-catalog
             node verify-amazgifts-activation-dry-run.js build/amazgifts-products.json.gz.b64
             node verify-amazgifts-future-production.js build/amazgifts-products.json.gz.b64 build/amazgifts-future-production
+            node verify-amazgifts-artifact-rejection.js build/amazgifts-products.json.gz.b64
           else
             echo 'Supply feed_path or artifact_path explicitly.'; exit 1
           fi
