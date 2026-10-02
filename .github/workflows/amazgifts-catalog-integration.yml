@@ -9,6 +9,8 @@ on:
       - 'build-amazgifts-development-catalog.js'
       - 'verify-amazgifts-normalizer.js'
       - 'facet-schemas.js'
+      - 'category-query-router.js'
+      - 'verify-category-query-router.js'
       - 'search-facet-engine-v2.js'
       - 'verify-facet-engine-v2.js'
       - 'build-normalized-merchant-artifact-catalog.js'
@@ -37,6 +39,7 @@ jobs:
       - run: node verify-amazgifts-normalizer.js
       - run: node verify-merchant-feed-registry.js
       - run: node verify-facet-engine-v2.js
+      - run: node verify-category-query-router.js
       - run: node --check build-normalized-merchant-artifact-catalog.js
       - name: Verify snapshot guard contracts
         run: |
