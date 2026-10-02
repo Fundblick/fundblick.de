@@ -27,6 +27,25 @@ assert.equal(new URL(awinDenied.url).searchParams.get('cons'),'0','Awin rejected
 const awinDeniedAffiliateOnly=policy.resolve({affiliateUrl:'https://tracking.example/click',network:'awin'},awinActive,{decision:'denied'});
 assert.equal(awinDeniedAffiliateOnly.allowed,true,'Awin consent-zero link must remain navigable even without a direct merchant URL');
 assert.equal(new URL(awinDeniedAffiliateOnly.url).searchParams.get('cons'),'0');
+const amazgiftsOffer={
+  directUrl:'https://amazgifts.de/products/personalisiertes-fotogeschenk',
+  affiliateUrl:'https://www.awin1.com/pclick.php?p=123456789&a=3106259&m=87569',
+  network:'awin'
+};
+const amazgiftsGranted=policy.resolve(amazgiftsOffer,awinActive,{decision:'granted'});
+assert.equal(amazgiftsGranted.allowed,true,'Amazgifts Awin offer must remain navigable with consent');
+assert.equal(amazgiftsGranted.mode,'affiliate');
+assert.equal(new URL(amazgiftsGranted.url).hostname,'www.awin1.com');
+assert.equal(new URL(amazgiftsGranted.url).searchParams.get('a'),'3106259','Amazgifts link must preserve FundBlick publisher id');
+assert.equal(new URL(amazgiftsGranted.url).searchParams.get('m'),'87569','Amazgifts link must preserve advertiser id');
+assert.equal(new URL(amazgiftsGranted.url).searchParams.get('cons'),'1');
+const amazgiftsDenied=policy.resolve(amazgiftsOffer,awinActive,{decision:'denied'});
+assert.equal(amazgiftsDenied.allowed,true,'Amazgifts journey must remain available after tracking rejection');
+assert.equal(amazgiftsDenied.mode,'affiliate-no-track');
+assert.equal(new URL(amazgiftsDenied.url).hostname,'www.awin1.com');
+assert.equal(new URL(amazgiftsDenied.url).searchParams.get('a'),'3106259');
+assert.equal(new URL(amazgiftsDenied.url).searchParams.get('m'),'87569');
+assert.equal(new URL(amazgiftsDenied.url).searchParams.get('cons'),'0');
 const awinUnknown=policy.resolve({affiliateUrl:'https://tracking.example/click',network:'awin'},awinActive,{decision:null});
 assert.equal(awinUnknown.reason,'consent-required','unknown Awin consent must never silently inherit Awin default consent');
 assert.equal(policy.resolve({directUrl:'javascript:alert(1)',network:'awin'},awinActive,{decision:'denied'}).allowed,false);
