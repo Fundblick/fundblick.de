@@ -68,7 +68,9 @@ for(const row of index){
 }
 const homeDeals=JSON.parse(fs.readFileSync(path.join(root,manifest.homeDealFile),'utf8'));
 assert.ok(Array.isArray(homeDeals));assert.equal(homeDeals.length,manifest.homeDealCount);assert.ok(homeDeals.length<=60);
-if(manifest.dataMode==='real')assert.ok(homeDeals.length>=1,'real production catalog needs homepage daily-offer candidates');
+const allowZeroHomeDeals=process.env.FUNDBLICK_ALLOW_ZERO_HOME_DEALS==='1';
+if(manifest.dataMode==='real'&&!allowZeroHomeDeals)assert.ok(homeDeals.length>=1,'real production catalog needs homepage daily-offer candidates');
+if(allowZeroHomeDeals)assert.equal(homeDeals.length,0,'isolated merchant QA explicitly requires zero homepage candidates');
 if(manifest.dataMode==='real'&&manifest.qualifiedHomeDealCount===0&&homeDeals.length>1){
   const eligibleCategories=new Set();
   for(const [key,meta] of Object.entries(manifest.shards)){
