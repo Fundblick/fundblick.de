@@ -69,10 +69,13 @@ function realOffers(raw){
   const totalPrice=shippingKnown?money(price+shippingCost):null;
   const network=String(raw?.source?.network||raw.network||'awin').toLowerCase();
   const merchant=String(raw.merchant||raw.advertiserName||'Händler');
+  const explicitAvailability=String(raw.availability||'').trim().toUpperCase();
+  const inStock=typeof raw.inStock==='boolean'?raw.inStock:(explicitAvailability==='IN_STOCK'?true:explicitAvailability==='OUT_OF_STOCK'?false:null);
+  const availability=explicitAvailability||(inStock===true?'IN_STOCK':inStock===false?'OUT_OF_STOCK':'UNKNOWN');
   return [{
     id:`${raw.id}-offer-1`,merchantId:String(raw?.source?.advertiserId||raw.merchantId||merchant),merchant,
     price,shippingCost,shippingKnown,totalPrice,totalPriceKnown:shippingKnown,effectiveTotal:totalPrice,
-    currency:String(raw.currency||'EUR'),deliveryDays:numeric(raw.deliveryDays),availability:String(raw.availability||'').toUpperCase()||(raw.inStock===false?'OUT_OF_STOCK':'IN_STOCK'),inStock:raw.inStock!==false,
+    currency:String(raw.currency||'EUR'),deliveryDays:numeric(raw.deliveryDays),availability,inStock,
     simulated:false,promotions:[],network,directUrl:String(raw.directUrl||''),affiliateUrl:String(raw.affiliateUrl||''),updatedAt:raw.updatedAt||null
   }];
 }
