@@ -18,6 +18,8 @@ if(!approval)throw new Error('Cannot activate Amazgifts: approval record missing
 if(approval.termsCleared!==true&&!dryRun)throw new Error('Cannot activate Amazgifts: advertiser deeplink/automation terms are not explicitly cleared');
 if(approval.network!=='awin'||approval.advertiserId!=='87569'||approval.publisherId!=='3106259')throw new Error('Cannot activate Amazgifts: approval identity mismatch');
 approval.approved=true;
+approval.termsCleared=true;
+approval.sources=[source];
 delete approval.reason;
 const sources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 if(!sources.includes(source))sources.push(source);
