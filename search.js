@@ -21,7 +21,7 @@
   ];
 
   const qEl=typeof document!=='undefined'?document.querySelector('#query'):null;
-  if(!qEl){if(typeof module!=='undefined')module.exports={detect,normalize,features};return;}
+  if(!qEl){if(typeof module!=='undefined')module.exports={detect,normalize,features,inferFamily};return;}
 
   const language=window.FundBlickLanguage||{lang:'de',config:{locale:'de-DE'},t:{},translate:key=>key};
   const tx=key=>language.translate(key);
