@@ -12,6 +12,7 @@ on:
       - 'category-query-router.js'
       - 'verify-category-query-router.js'
       - 'search-facet-engine-v2.js'
+      - 'search.js'
       - 'verify-facet-engine-v2.js'
       - 'build-normalized-merchant-artifact-catalog.js'
       - '.github/workflows/amazgifts-catalog-integration.yml'
@@ -40,6 +41,17 @@ jobs:
       - run: node verify-merchant-feed-registry.js
       - run: node verify-facet-engine-v2.js
       - run: node verify-category-query-router.js
+      - run: node --check search.js
+      - name: Verify routed category reaches search runtime
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const s=fs.readFileSync('search.js','utf8');
+          if(!s.includes("params.get('category')"))throw new Error('search runtime does not read routed category');
+          if(!s.includes("params.get('rawq')"))throw new Error('search runtime does not preserve routed raw query');
+          if(!s.includes('schemaFor(routedCategory)'))throw new Error('routed category is not validated against schemas');
+          console.log('Router -> search runtime contract OK');
+          NODE
       - run: node --check build-normalized-merchant-artifact-catalog.js
       - name: Verify snapshot guard contracts
         run: |
