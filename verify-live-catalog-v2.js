@@ -73,7 +73,7 @@ if(manifest.dataMode==='real'&&manifest.qualifiedHomeDealCount===0&&homeDeals.le
   const eligibleCategories=new Set();
   for(const [key,meta] of Object.entries(manifest.shards)){
     const payload=JSON.parse(fs.readFileSync(path.join(root,meta.file),'utf8'));
-    for(const product of payload)if(product.testData===false&&product.inStock!==false&&Number(product.price)>0&&String(product.image||'').trim())eligibleCategories.add(String(product.category||'uncategorized'));
+    for(const product of payload)if(product.testData===false&&product.inStock===true&&Number(product.price)>0&&String(product.image||'').trim())eligibleCategories.add(String(product.category||'uncategorized'));
   }
   if(eligibleCategories.size>1)assert.ok(new Set(homeDeals.map(product=>String(product.category||'uncategorized'))).size>1,'homepage fallback must not collapse to one category');
 }
@@ -82,7 +82,7 @@ for(const product of homeDeals){
   assert.ok(Array.isArray(product.offers)&&product.offers.length>=1,`homepage candidate needs at least one offer ${product.id}`);
   if(manifest.dataMode==='real'){
     assert.equal(product.testData,false,`homepage candidate must be real ${product.id}`);
-    assert.notEqual(product.inStock,false,`homepage candidate must be in stock ${product.id}`);
+    assert.equal(product.inStock,true,`homepage candidate requires confirmed stock ${product.id}`);
     assert.ok(String(product.image||'').trim(),`homepage candidate needs image ${product.id}`);
     assert.ok(product.offers.every(offer=>offer.simulated===false),`homepage candidate cannot use simulated offers ${product.id}`);
   }
