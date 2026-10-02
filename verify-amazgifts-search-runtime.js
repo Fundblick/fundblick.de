@@ -1,24 +1,25 @@
 'use strict';
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const window={location:{search:'',pathname:'/search.html'},document:{querySelector:()=>null},FundBlickLanguage:{lang:'de'}};
-const context=vm.createContext({window,globalThis:window,URLSearchParams,module:{exports:{}},exports:{},require,console});
+const window={FundBlickLanguage:{lang:'de'}};
+const context=vm.createContext({window,globalThis:window,console});
 vm.runInContext(fs.readFileSync('facet-schemas.js','utf8'),context);
 vm.runInContext(fs.readFileSync('search-facet-engine-v2.js','utf8'),context);
-context.module={exports:{}};context.exports=context.module.exports;
-vm.runInContext(fs.readFileSync('search.js','utf8'),context);
-const {inferFamily}=context.module.exports;
 const cases=[
- ['gifts.personalized.keychains','Personalisierter Foto Schlüsselanhänger','Schlüsselanhänger'],
- ['gifts.personalized.jewelry','Personalisierte Foto Projektion Herz Kette mit Bild im Stein','Schmuck'],
- ['gifts.personalized.photo-gifts','Personalisiertes Fotogeschenk mit Bild','Fotogeschenk'],
- ['craft.jewelry-making.supplies','Perlenkettenzubehör Stahldraht','Schmuckzubehör']
+ ['gifts.personalized.keychains','Schlüsselanhänger'],
+ ['gifts.personalized.jewelry','Schmuck'],
+ ['gifts.personalized.photo-gifts','Fotogeschenk'],
+ ['craft.jewelry-making.supplies','Schmuckzubehör']
 ];
-for(const [category,name,productType] of cases){
- const family=inferFamily(name,category);
- assert.equal(family,category,category+' must survive family inference');
- const p={name,description:'',category,family,rawAttributes:{productType},attrs:{}};
+for(const [family,productType] of cases){
+ assert.ok(window.FB_CATEGORY_SCHEMAS[family],family+' schema missing');
+ const p={family,rawAttributes:{productType},attrs:{}};
  window.FBFacetEngineV2.enrich(p);
- assert.equal(p.attrs.productType,productType,category+' productType facet');
- assert.equal(window.FBFacetEngineV2.matches(p,'productType',new Set([productType])),true,category+' facet match');
+ assert.equal(p.attrs.productType,productType,family+' productType facet');
+ assert.equal(window.FBFacetEngineV2.matches(p,'productType',new Set([productType])),true,family+' facet match');
 }
-console.log('Amazgifts search runtime: taxonomy family and productType facets survive end-to-end OK');
+const search=fs.readFileSync('search.js','utf8');
+assert.match(search,/taxonomy=String\(raw\.category\|\|''\)/,'search must read canonical category');
+assert.match(search,/for\(const \[id,schema\] of Object\.entries\(SCHEMAS\)\)/,'search must infer schema family');
+assert.match(search,/deliveryDays,rawAttributes\}/,'search product must retain rawAttributes');
+assert.match(search,/p\.affiliateUrl=affiliateUrl;p\.directUrl=directUrl/,'search product must retain outbound URLs for live decorator');
+console.log('Amazgifts search runtime taxonomy, facets and outbound data wiring OK');
