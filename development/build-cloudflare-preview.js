@@ -29,7 +29,13 @@ remove(catalog);
 fs.mkdirSync(catalog, { recursive: true });
 
 const amazgiftsFeed = String(process.env.FUNDBLICK_AMAZGIFTS_FEED || "").trim();
-if (amazgiftsFeed) {
+const amazgiftsArtifact = String(process.env.FUNDBLICK_AMAZGIFTS_ARTIFACT || "").trim();
+if (amazgiftsFeed && amazgiftsArtifact) throw new Error("Choose either Amazgifts raw feed or normalized artifact, not both");
+if (amazgiftsArtifact) {
+  if (!fs.existsSync(path.resolve(root, amazgiftsArtifact))) throw new Error("Amazgifts development artifact not found: " + amazgiftsArtifact);
+  run("node", ["build-normalized-merchant-artifact-catalog.js", "amazgifts", amazgiftsArtifact, "build/catalog"]);
+  console.log("Development preview catalog mode: Amazgifts normalized artifact");
+} else if (amazgiftsFeed) {
   if (!fs.existsSync(path.resolve(root, amazgiftsFeed))) throw new Error("Amazgifts development feed not found: " + amazgiftsFeed);
   run("node", ["build-amazgifts-development-catalog.js", amazgiftsFeed, "build/catalog"]);
   console.log("Development preview catalog mode: Amazgifts isolated feed");
@@ -38,7 +44,7 @@ if (amazgiftsFeed) {
   console.log("Development preview catalog mode: approved production merchants");
 }
 run("node", ["verify-live-catalog-v2.js", "build/catalog"]);
-if (!amazgiftsFeed) {
+if (!amazgiftsFeed && !amazgiftsArtifact) {
   run("node", ["verify-production-merchants.js", "build/catalog"]);
   run("node", ["verify-production-categories.js", "build/catalog"]);
 }
@@ -47,7 +53,7 @@ const manifest = JSON.parse(fs.readFileSync(path.join(catalog, "manifest.json"),
 if (manifest.dataMode !== "real" || Number(manifest.realCount) < 1000 || Number(manifest.simulatedCount) !== 0) {
   throw new Error("Preview catalog safety gate failed");
 }
-if (amazgiftsFeed && Number(manifest.realCount) < 2964) {
+if ((amazgiftsFeed || amazgiftsArtifact) && Number(manifest.realCount) < 2964) {
   throw new Error("Amazgifts development preview is incomplete");
 }
 
