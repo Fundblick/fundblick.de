@@ -8,6 +8,10 @@ on:
       - 'build-merchant-feed-catalog.js'
       - 'build-amazgifts-development-catalog.js'
       - 'verify-amazgifts-normalizer.js'
+      - 'facet-schemas.js'
+      - 'search-facet-engine-v2.js'
+      - 'verify-facet-engine-v2.js'
+      - 'build-normalized-merchant-artifact-catalog.js'
       - '.github/workflows/amazgifts-catalog-integration.yml'
   workflow_dispatch:
     inputs:
@@ -28,6 +32,8 @@ jobs:
       - run: node --check build-amazgifts-development-catalog.js
       - run: node verify-amazgifts-normalizer.js
       - run: node verify-merchant-feed-registry.js
+      - run: node verify-facet-engine-v2.js
+      - run: node --check build-normalized-merchant-artifact-catalog.js
   build-with-feed:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
