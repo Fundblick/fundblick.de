@@ -21,6 +21,7 @@ for(const product of products){
 const casa=counts.get('Casa Moro DE')||0;
 const ahipos=counts.get('Ahipos Horses DE')||0;
 const anthbot=counts.get('ANTHBOT DE')||0;
+const amazgifts=counts.get('Amazgifts DE')||0;
 if(casa<1000)throw new Error(`Casa Moro production count unexpectedly low: ${casa}`);
 if(ahipos!==31)throw new Error(`AHIPOS production count must be 31, got ${ahipos}`);
 
@@ -30,6 +31,10 @@ if(!ahiposProducts.every(product=>String(product?.bestOffer?.network||product?.s
 if(!ahiposProducts.every(product=>String(product?.bestOffer?.affiliateUrl||'').includes('awin1.com')))throw new Error('Every AHIPOS production offer must have an AWIN affiliate URL');
 if(!ahiposProducts.every(product=>String(product?.bestOffer?.directUrl||'').includes('ahipos-horses.de')))throw new Error('Every AHIPOS production offer must have an AHIPOS direct URL');
 if(!ahiposProducts.some(product=>product.category==='pet.equestrian'))throw new Error('AHIPOS equestrian category missing from production');
+
+const amazgiftsApproval=approvals?.merchants?.amazgifts;
+if(!amazgiftsApproval?.approved&&amazgifts!==0)throw new Error(`Blocked Amazgifts merchant leaked into production: ${amazgifts} products`);
+if(amazgiftsApproval?.approved)throw new Error('Amazgifts production approval requires an explicit production-gate implementation before activation');
 
 const anthbotApproval=approvals?.merchants?.anthbot;
 if(!anthbotApproval)throw new Error('ANTHBOT production approval record missing');
@@ -50,4 +55,4 @@ if(anthbotApproval.approved!==true){
   if(inStock!==34)throw new Error(`ANTHBOT production in-stock count must match current verified feed contract (34), got ${inStock}`);
 }
 
-console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, total ${products.length}`);
+console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, Amazgifts ${amazgifts}, total ${products.length}`);
