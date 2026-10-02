@@ -54,3 +54,7 @@ FundBlick besitzt die Taxonomie. Der Händler liefert Rohdaten und Begriffe. Hä
 - Normaler Development-Preview-Build bleibt beim production-approved Katalog. Amazgifts kann nur explizit über `FUNDBLICK_AMAZGIFTS_FEED` oder `FUNDBLICK_AMAZGIFTS_ARTIFACT` zugeschaltet werden.
 - Amazgifts bleibt aus `production-catalog-sources.json` und `production-merchant-approvals.json` ausgeschlossen, bis eine ausdrückliche Production-Freigabe erfolgt.
 - Vor Production-Aktivierung muss die Awin/Amazgifts-Vertragsformulierung zur Nutzung automatisierter Systeme bzw. Deeplinks schriftlich geklärt werden.
+
+
+- Development-Preview und Production-Freigabe bleiben getrennte Schritte.
+- Gepinnte Händler-Snapshots werden vor dem Parsen bytegenau per SHA-256 geprüft. Ein neuer Awin-Feed ist deshalb zunächst ein neuer, ungeprüfter Snapshot und darf den bisherigen Digest nicht automatisch ersetzen; erst Datenqualitätsprüfung, Normalisierung und Freigabe erzeugen einen neuen erwarteten Digest.
