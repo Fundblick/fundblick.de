@@ -18,9 +18,11 @@ assert.match(productionBuilder,/canonicalProductDigest\(data\)/,'production buil
 assert.match(productionBuilder,/Amazgifts production artifact digest mismatch/,'production builder must reject mutated Amazgifts artifact');
 const source='development/amazgifts-products.json.gz.b64';
 if(approval.approved===true){
+  assert.equal(approval.termsCleared,true,'approved Amazgifts requires explicit advertiser terms clearance');
   assert(sources.includes(source),'approved Amazgifts source missing from production manifest');
   assert(fs.existsSync(source),'approved Amazgifts artifact missing from repository');
 }else{
+  assert.equal(approval.termsCleared,false,'blocked Amazgifts should retain unresolved terms state');
   assert(!sources.includes(source),'blocked Amazgifts source must not be in production manifest');
 }
 console.log(`Amazgifts live-readiness configuration gate passed: approved=${approval.approved}`);
