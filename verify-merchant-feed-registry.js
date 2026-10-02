@@ -15,6 +15,8 @@ for(const [key,config] of Object.entries(merchants)){
 }
 const amazgifts=getMerchant('amazgifts');
 assert.equal(amazgifts.expected.products,2964);
+assert.match(amazgifts.expected.rawFeedSha256,/^[a-f0-9]{64}$/);
+assert.equal(amazgifts.expected.rawFeedSha256,'9dadbc32d81303f38a4d8a92520d9ac29abf5aea3ac8c10d89393e8fd43822bf');
 assert.match(amazgifts.expected.artifactSha256,/^[a-f0-9]{64}$/);
 assert.equal(amazgifts.expected.artifactSha256,'1525723cff8652b1822d522a9fe7b7443d0dbf77ca4ba28300b860da642fb9e8');
 const anthbot=getMerchant('anthbot');
