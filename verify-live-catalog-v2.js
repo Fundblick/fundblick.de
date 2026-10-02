@@ -69,6 +69,14 @@ for(const row of index){
 const homeDeals=JSON.parse(fs.readFileSync(path.join(root,manifest.homeDealFile),'utf8'));
 assert.ok(Array.isArray(homeDeals));assert.equal(homeDeals.length,manifest.homeDealCount);assert.ok(homeDeals.length<=60);
 if(manifest.dataMode==='real')assert.ok(homeDeals.length>=1,'real production catalog needs homepage daily-offer candidates');
+if(manifest.dataMode==='real'&&manifest.qualifiedHomeDealCount===0&&homeDeals.length>1){
+  const eligibleCategories=new Set();
+  for(const [key,meta] of Object.entries(manifest.shards)){
+    const payload=JSON.parse(fs.readFileSync(path.join(root,meta.file),'utf8'));
+    for(const product of payload)if(product.testData===false&&product.inStock!==false&&Number(product.price)>0&&String(product.image||'').trim())eligibleCategories.add(String(product.category||'uncategorized'));
+  }
+  if(eligibleCategories.size>1)assert.ok(new Set(homeDeals.map(product=>String(product.category||'uncategorized'))).size>1,'homepage fallback must not collapse to one category');
+}
 for(const product of homeDeals){
   assert.ok(seen.has(product.id),`homepage candidate missing from catalog ${product.id}`);
   assert.ok(Array.isArray(product.offers)&&product.offers.length>=1,`homepage candidate needs at least one offer ${product.id}`);
