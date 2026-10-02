@@ -118,7 +118,7 @@ test('unprepared product family renders evidence-backed adaptive facets without 
 
 test('unprepared family ignores generic product-type noise in rendered facets',async({page})=>{
  const state=await mockSearch(page,()=>({results:[{title:'AirPure Luftreiniger',url:'https://merchant.example/p/air',image:'https://images.example/air.jpg',price:'99',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA H13',confidence:'HIGH'}}},{title:'Noisy Produkt XL',url:'https://merchant.example/p/noise',image:'https://images.example/noise.jpg',price:'12',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',rawAttributes:{productType:'Produkt'},attributes:{size:{value:'XL',confidence:'HIGH'}}}],moreResultsAvailable:false}));
- await page.goto(base+'?q=Luftreiniger&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(2);await expect(page.locator('#external-results .external-results-facets')).not.toContainText('Größe');expect(state.errors).toEqual([]);
+ await page.goto(base+'?q=Luftreiniger&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('#external-results')).not.toContainText('Größe');await expect(page.locator('.external-result-card')).not.toContainText('Noisy Produkt XL');expect(state.errors).toEqual([]);
 });
 
 test('unknown query without usable facet evidence does not fabricate refinement questions',async({page})=>{
