@@ -35,6 +35,7 @@ jobs:
         run: |
           node verify-merchant-feed-registry.js
           node verify-merchant-artifact-integrity.js
+          node verify-amazgifts-live-readiness.js
           node verify-deal-of-day.js
           node verify-merchant-offers.js
           node build-production-catalog.js build/catalog
