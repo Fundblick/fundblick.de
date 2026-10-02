@@ -4,6 +4,7 @@ on:
     branches: [development]
     paths:
       - 'activate-amazgifts-production.js'
+      - 'verify-amazgifts-activation-dry-run.js'
       - 'category-display-i18n.js'
       - 'build-production-catalog.js'
       - 'result-card.css'
@@ -60,6 +61,7 @@ jobs:
       - run: node --check build-merchant-feed-catalog.js
       - run: node --check build-amazgifts-development-catalog.js
       - run: node --check activate-amazgifts-production.js
+      - run: node --check verify-amazgifts-activation-dry-run.js
       - run: node verify-amazgifts-normalizer.js
       - run: node verify-merchant-feed-registry.js
       - run: node verify-merchant-artifact-integrity.js
@@ -122,6 +124,7 @@ jobs:
             test -f "$FEED_PATH" || { echo 'Requested Amazgifts feed is not present in workspace.'; exit 1; }
             node export-amazgifts-artifact.js "$FEED_PATH" build/amazgifts-products.json.gz.b64
             node build-normalized-merchant-artifact-catalog.js amazgifts build/amazgifts-products.json.gz.b64 build/amazgifts-catalog
+            node verify-amazgifts-activation-dry-run.js build/amazgifts-products.json.gz.b64
           else
             echo 'Supply feed_path or artifact_path explicitly.'; exit 1
           fi
