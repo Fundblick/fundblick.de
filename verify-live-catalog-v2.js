@@ -18,7 +18,7 @@ assert.ok(manifest.homeDealCount<=manifest.homeDealLimit&&manifest.homeDealLimit
 
 const index=JSON.parse(fs.readFileSync(path.join(root,manifest.searchFile),'utf8'));
 assert.equal(index.length,manifest.itemCount);
-const seen=new Set();let counted=0,realProducts=0,simulatedProducts=0,realWithImage=0,realWithAffiliate=0;
+const seen=new Set();let counted=0,realProducts=0,simulatedProducts=0,realWithImage=0,realWithAffiliate=0,confirmedInStock=0;
 for(const [key,meta] of Object.entries(manifest.shards)){
   assert.equal(Number(key)>=0,true);
   const payload=JSON.parse(fs.readFileSync(path.join(root,meta.file),'utf8'));
@@ -29,7 +29,7 @@ for(const [key,meta] of Object.entries(manifest.shards)){
     assert.ok(Array.isArray(product.offers)&&product.offers.length>=1,`offers missing ${product.id}`);
     assert.equal(product.merchantCount,product.offers.length,`merchant count mismatch ${product.id}`);
     const real=product.testData===false;
-    if(real){realProducts++;if(product.image)realWithImage++;if(product.affiliateUrl||product.offers.some(o=>o.affiliateUrl))realWithAffiliate++;}
+    if(real){realProducts++;if(product.image)realWithImage++;if(product.affiliateUrl||product.offers.some(o=>o.affiliateUrl))realWithAffiliate++;if(product.inStock===true||product.availability==='IN_STOCK')confirmedInStock++;}
     else simulatedProducts++;
     for(const offer of product.offers){
       assert.ok(offer.merchant&&offer.id,`invalid offer ${product.id}`);
@@ -70,7 +70,7 @@ const homeDeals=JSON.parse(fs.readFileSync(path.join(root,manifest.homeDealFile)
 assert.ok(Array.isArray(homeDeals));assert.equal(homeDeals.length,manifest.homeDealCount);assert.ok(homeDeals.length<=60);
 const allowZeroHomeDeals=process.env.FUNDBLICK_ALLOW_ZERO_HOME_DEALS==='1';
 if(manifest.dataMode==='real'&&!allowZeroHomeDeals)assert.ok(homeDeals.length>=1,'real production catalog needs homepage daily-offer candidates');
-if(allowZeroHomeDeals)assert.equal(homeDeals.length,0,'isolated merchant QA explicitly requires zero homepage candidates');
+if(allowZeroHomeDeals){assert.equal(homeDeals.length,0,'isolated merchant QA explicitly requires zero homepage candidates');assert.equal(confirmedInStock,0,'zero-home-deal QA mode is only valid when the isolated catalog has no confirmed in-stock products');}
 if(manifest.dataMode==='real'&&manifest.qualifiedHomeDealCount===0&&homeDeals.length>1){
   const eligibleCategories=new Set();
   for(const [key,meta] of Object.entries(manifest.shards)){
