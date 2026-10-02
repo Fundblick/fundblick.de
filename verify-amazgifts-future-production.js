@@ -14,6 +14,11 @@ try{
  for(const script of ['verify-live-catalog-v2.js','verify-production-merchants.js','verify-production-categories.js'])cp.execFileSync(process.execPath,[script,out],{stdio:'inherit'});
  const manifest=JSON.parse(fs.readFileSync(path.join(out,'manifest.json'),'utf8'));
  if(manifest.realCount!==4479)throw new Error(`Future production realCount must be 4479, got ${manifest.realCount}`);
+ const products=JSON.parse(fs.readFileSync(path.join(out,'products.json'),'utf8')),list=Array.isArray(products)?products:(products.products||[]);
+ const amaz=list.filter(p=>(p?.bestOffer?.merchant||p?.merchant)==='Amazgifts DE');
+ if(amaz.length!==2964)throw new Error(`Future production must expose 2964 Amazgifts products, got ${amaz.length}`);
+ if(amaz.some(p=>p.inStock===true||p.availability==='IN_STOCK'))throw new Error('Future production fabricated Amazgifts stock');
+ if(amaz.some(p=>p.shippingCost!==null&&p.shippingCost!==undefined))throw new Error('Future production fabricated Amazgifts shipping');
  console.log('Amazgifts future production simulation passed: realCount=4479');
 }finally{
  fs.writeFileSync(approvalFile,approvalBefore);fs.writeFileSync(sourcesFile,sourcesBefore);
