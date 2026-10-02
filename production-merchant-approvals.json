@@ -23,9 +23,7 @@
       "network": "awin",
       "advertiserId": "87569",
       "publisherId": "3106259",
-      "sources": [
-        "development/amazgifts-products.json.gz.b64"
-      ],
+      "sources": [],
       "reason": "Pending explicit production activation after isolated QA and advertiser automation/deeplink clarification",
       "termsCleared": false
     }
