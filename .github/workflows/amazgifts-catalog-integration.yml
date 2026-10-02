@@ -20,6 +20,7 @@ on:
       - 'merchant-artifact-integrity.js'
       - 'verify-merchant-feed-registry.js'
       - 'amazgifts-feed-normalizer.js'
+      - 'export-amazgifts-artifact.js'
       - 'merchant-feed-registry.js'
       - 'build-merchant-feed-catalog.js'
       - 'build-amazgifts-development-catalog.js'
@@ -54,6 +55,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - run: node --check amazgifts-feed-normalizer.js
+      - run: node --check export-amazgifts-artifact.js
       - run: node --check merchant-feed-registry.js
       - run: node --check build-merchant-feed-catalog.js
       - run: node --check build-amazgifts-development-catalog.js
@@ -118,7 +120,8 @@ jobs:
             node build-normalized-merchant-artifact-catalog.js amazgifts "$ARTIFACT_PATH" build/amazgifts-catalog
           elif [ -n "$FEED_PATH" ]; then
             test -f "$FEED_PATH" || { echo 'Requested Amazgifts feed is not present in workspace.'; exit 1; }
-            node build-amazgifts-development-catalog.js "$FEED_PATH" build/amazgifts-catalog
+            node export-amazgifts-artifact.js "$FEED_PATH" build/amazgifts-products.json.gz.b64
+            node build-normalized-merchant-artifact-catalog.js amazgifts build/amazgifts-products.json.gz.b64 build/amazgifts-catalog
           else
             echo 'Supply feed_path or artifact_path explicitly.'; exit 1
           fi
