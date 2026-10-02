@@ -33,6 +33,9 @@ if(!ahiposProducts.every(product=>String(product?.bestOffer?.directUrl||'').incl
 if(!ahiposProducts.some(product=>product.category==='pet.equestrian'))throw new Error('AHIPOS equestrian category missing from production');
 
 const amazgiftsApproval=approvals?.merchants?.amazgifts;
+const productionSources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
+const amazgiftsSourceCount=productionSources.filter(source=>/amazgifts/i.test(String(source))).length;
+if(!amazgiftsApproval?.approved&&amazgiftsSourceCount!==0)throw new Error(`Blocked Amazgifts source leaked into production configuration: ${amazgiftsSourceCount}`);
 if(!amazgiftsApproval?.approved&&amazgifts!==0)throw new Error(`Blocked Amazgifts merchant leaked into production: ${amazgifts} products`);
 if(amazgiftsApproval?.approved)throw new Error('Amazgifts production approval requires an explicit production-gate implementation before activation');
 
