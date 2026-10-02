@@ -3,6 +3,9 @@ on:
   push:
     branches: [development]
     paths:
+      - 'verify-merchant-artifact-integrity.js'
+      - 'merchant-artifact-integrity.js'
+      - 'verify-merchant-feed-registry.js'
       - 'amazgifts-feed-normalizer.js'
       - 'merchant-feed-registry.js'
       - 'build-merchant-feed-catalog.js'
@@ -43,6 +46,7 @@ jobs:
       - run: node --check build-amazgifts-development-catalog.js
       - run: node verify-amazgifts-normalizer.js
       - run: node verify-merchant-feed-registry.js
+      - run: node verify-merchant-artifact-integrity.js
       - run: node verify-facet-engine-v2.js
       - run: node verify-category-query-router.js
       - run: node --check search.js
