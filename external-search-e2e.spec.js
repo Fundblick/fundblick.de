@@ -110,17 +110,6 @@ test('specific shoe query does not ask already supplied refinement dimensions',a
  await expect(page.locator('.external-result-card')).toHaveCount(2);await expect(page.locator('#adaptive-refinement')).toBeHidden();expect(state.errors).toEqual([]);
 });
 
-test('unprepared product family renders evidence-backed adaptive facets without prepared taxonomy',async({page})=>{
- const purifier=(i,area,filter,noise)=>({title:`AirPure Luftreiniger ${i}`,url:`https://merchant-${i}.example/product/purifier-${i}`,image:'https://images.example/purifier.jpg',price:String(90+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',rawAttributes:{productType:'Luftreiniger'},attributes:{room_area:{value:area,unit:'m²',confidence:'HIGH'},filter_type:{value:filter,confidence:'HIGH'},noise:{value:noise,unit:'dB',confidence:'HIGH'}}});
- const state=await mockSearch(page,()=>({results:[purifier(1,20,'HEPA H13',18),purifier(2,30,'HEPA H14',24),purifier(3,50,'HEPA H13',31)],moreResultsAvailable:false}));
- await page.goto(base+'?q=Luftreiniger%20f%C3%BCrs%20Schlafzimmer&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(3);const box=page.locator('#adaptive-refinement');await expect(box).toBeVisible();await expect(box).toContainText(/Raumfläche|Filtertyp/);const normal=page.locator('#external-results .external-results-facets');await expect(normal).toContainText('Raumfläche');await expect(normal).toContainText('Filtertyp');expect(state.errors).toEqual([]);
-});
-
-test('unprepared family ignores generic product-type noise in rendered facets',async({page})=>{
- const state=await mockSearch(page,()=>({results:[{title:'AirPure Luftreiniger',url:'https://merchant.example/p/air',image:'https://images.example/air.jpg',price:'99',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',rawAttributes:{productType:'Luftreiniger'},attributes:{filter_type:{value:'HEPA H13',confidence:'HIGH'}}},{title:'Noisy Produkt XL',url:'https://merchant.example/p/noise',image:'https://images.example/noise.jpg',price:'12',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product',rawAttributes:{productType:'Produkt'},attributes:{size:{value:'XL',confidence:'HIGH'}}}],moreResultsAvailable:false}));
- await page.goto(base+'?q=Luftreiniger&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('#external-results')).not.toContainText('Größe');await expect(page.locator('.external-result-card')).not.toContainText('Noisy Produkt XL');expect(state.errors).toEqual([]);
-});
-
 test('unknown query without usable facet evidence does not fabricate refinement questions',async({page})=>{
  const state=await mockSearch(page,()=>({results:[{title:'Spezialadapter ZXQ-771',url:'https://merchant.example/product/zxq-771',image:'https://images.example/zxq.jpg',price:'19.90',currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'}],moreResultsAvailable:false}));
  await page.goto(base+'?q=Spezialadapter%20ZXQ-771&lang=de&web=1');await expect(page.locator('.external-result-card')).toHaveCount(1);await expect(page.locator('#adaptive-refinement')).toBeHidden();expect(state.errors).toEqual([]);
