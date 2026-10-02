@@ -3,6 +3,7 @@ const fs=require('node:fs'),zlib=require('node:zlib');
 const {getMerchant}=require('./merchant-feed-registry.js');
 const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
 const source='development/amazgifts-products.json.gz.b64';
+if(process.env.FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION!=='YES')throw new Error('Cannot activate Amazgifts: set FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION=YES for an explicit production activation');
 if(!fs.existsSync(source))throw new Error('Cannot activate Amazgifts: verified artifact is missing: '+source);
 const packed=fs.readFileSync(source,'utf8').replace(/\s+/g,'');
 const products=JSON.parse(zlib.gunzipSync(Buffer.from(packed,'base64')).toString('utf8'));
