@@ -136,7 +136,23 @@ function homeCandidatePool(items){
   const selected=[],seen=new Set();
   for(const {product} of ranked){if(selected.length>=homeDealLimit)break;selected.push(product);seen.add(product.id);}
   const fallback=items.filter(product=>product.testData===false&&product.inStock!==false&&numeric(product.price)>0&&String(product.image||'').trim()&&!seen.has(product.id)).sort((a,b)=>a.id.localeCompare(b.id));
-  for(const product of fallback){if(selected.length>=homeDealLimit)break;selected.push(product);seen.add(product.id);}
+  const groups=new Map();
+  for(const product of fallback){
+    const key=String(product.category||'uncategorized');
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(product);
+  }
+  const queues=[...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([,products])=>products);
+  let added=true;
+  while(selected.length<homeDealLimit&&added){
+    added=false;
+    for(const queue of queues){
+      const product=queue.shift();
+      if(!product)continue;
+      selected.push(product);seen.add(product.id);added=true;
+      if(selected.length>=homeDealLimit)break;
+    }
+  }
   return selected;
 }
 
