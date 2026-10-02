@@ -3,6 +3,7 @@ on:
   push:
     branches: [development]
     paths:
+      - 'activate-amazgifts-production.js'
       - 'category-display-i18n.js'
       - 'build-production-catalog.js'
       - 'result-card.css'
@@ -56,6 +57,7 @@ jobs:
       - run: node --check merchant-feed-registry.js
       - run: node --check build-merchant-feed-catalog.js
       - run: node --check build-amazgifts-development-catalog.js
+      - run: node --check activate-amazgifts-production.js
       - run: node verify-amazgifts-normalizer.js
       - run: node verify-merchant-feed-registry.js
       - run: node verify-merchant-artifact-integrity.js
