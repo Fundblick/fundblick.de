@@ -30,6 +30,7 @@ jobs:
           node verify-refinement-utility.js
           node verify-refinement-query-terms.js
           node verify-product-facet-frequency.js
+          node verify-external-intelligence-ui.js
       - name: Build and validate production catalog
         run: |
           node verify-deal-of-day.js
