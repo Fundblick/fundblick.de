@@ -50,6 +50,8 @@ jobs:
           if(!s.includes("params.get('category')"))throw new Error('search runtime does not read routed category');
           if(!s.includes("params.get('rawq')"))throw new Error('search runtime does not preserve routed raw query');
           if(!s.includes('schemaFor(routedCategory)'))throw new Error('routed category is not validated against schemas');
+          if(!s.includes("routedCategory=''"))throw new Error('new user search does not clear stale routed category');
+          if(!s.includes("set('category',routedCategory)"))throw new Error('search URL does not persist active routed category');
           console.log('Router -> search runtime contract OK');
           NODE
       - run: node --check build-normalized-merchant-artifact-catalog.js
