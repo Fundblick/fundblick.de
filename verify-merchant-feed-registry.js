@@ -13,6 +13,10 @@ for(const [key,config] of Object.entries(merchants)){
   assert(Array.isArray(config.catalogCategories)&&config.catalogCategories.length,`${key}: catalog categories required`);
   assert.equal(getMerchant(key),config,`${key}: lookup must be stable`);
 }
+const amazgifts=getMerchant('amazgifts');
+assert.equal(amazgifts.expected.products,2964);
+assert.match(amazgifts.expected.artifactSha256,/^[a-f0-9]{64}$/);
+assert.equal(amazgifts.expected.artifactSha256,'1525723cff8652b1822d522a9fe7b7443d0dbf77ca4ba28300b860da642fb9e8');
 const anthbot=getMerchant('anthbot');
 assert.equal(anthbot.network,'awin');
 assert.equal(anthbot.advertiserId,'125144');
