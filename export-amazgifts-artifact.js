@@ -1,0 +1,17 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
+const {getMerchant,assertInput}=require('./merchant-feed-registry.js');
+const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
+const normalizer=require('./amazgifts-feed-normalizer.js');
+const input=process.argv[2],output=process.argv[3]||path.join('build','amazgifts-products.json.gz.b64');
+if(!input)throw new Error('Usage: node export-amazgifts-artifact.js <datafeed.csv[.gz]> [output]');
+const cfg=getMerchant('amazgifts');assertInput(cfg,input);
+const crypto=require('node:crypto'),raw=fs.readFileSync(input),rawDigest=crypto.createHash('sha256').update(raw).digest('hex');
+if(rawDigest!==cfg.expected.rawFeedSha256)throw new Error(`Amazgifts DE raw feed digest mismatch: expected ${cfg.expected.rawFeedSha256}, got ${rawDigest}`);
+const products=normalizer.normalize(normalizer.readCsv(input));
+const errors=normalizer.validate(products);if(errors.length)throw new Error('Amazgifts normalized artifact rejected:\n- '+errors.join('\n- '));
+if(products.length!==cfg.expected.products)throw new Error(`Expected ${cfg.expected.products} products, got ${products.length}`);
+const digest=canonicalProductDigest(products);if(digest!==cfg.expected.artifactSha256)throw new Error(`Amazgifts canonical artifact digest mismatch: expected ${cfg.expected.artifactSha256}, got ${digest}`);
+const json=Buffer.from(JSON.stringify(products),'utf8'),packed=zlib.gzipSync(json,{level:9});
+fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,packed.toString('base64')+'\n');
+console.log(`Amazgifts artifact exported: products=${products.length}, canonicalSha256=${digest}, output=${output}`);

@@ -69,10 +69,13 @@ function realOffers(raw){
   const totalPrice=shippingKnown?money(price+shippingCost):null;
   const network=String(raw?.source?.network||raw.network||'awin').toLowerCase();
   const merchant=String(raw.merchant||raw.advertiserName||'Händler');
+  const explicitAvailability=String(raw.availability||'').trim().toUpperCase();
+  const inStock=typeof raw.inStock==='boolean'?raw.inStock:(explicitAvailability==='IN_STOCK'?true:explicitAvailability==='OUT_OF_STOCK'?false:null);
+  const availability=explicitAvailability||(inStock===true?'IN_STOCK':inStock===false?'OUT_OF_STOCK':'UNKNOWN');
   return [{
     id:`${raw.id}-offer-1`,merchantId:String(raw?.source?.advertiserId||raw.merchantId||merchant),merchant,
     price,shippingCost,shippingKnown,totalPrice,totalPriceKnown:shippingKnown,effectiveTotal:totalPrice,
-    currency:String(raw.currency||'EUR'),deliveryDays:numeric(raw.deliveryDays),availability:String(raw.availability||'').toUpperCase()||(raw.inStock===false?'OUT_OF_STOCK':'IN_STOCK'),inStock:raw.inStock!==false,
+    currency:String(raw.currency||'EUR'),deliveryDays:numeric(raw.deliveryDays),availability,inStock,
     simulated:false,promotions:[],network,directUrl:String(raw.directUrl||''),affiliateUrl:String(raw.affiliateUrl||''),updatedAt:raw.updatedAt||null
   }];
 }
@@ -135,8 +138,24 @@ function homeCandidatePool(items){
   const ranked=items.map(product=>({product,score:dealCandidateScore(product)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score||a.product.id.localeCompare(b.product.id));
   const selected=[],seen=new Set();
   for(const {product} of ranked){if(selected.length>=homeDealLimit)break;selected.push(product);seen.add(product.id);}
-  const fallback=items.filter(product=>product.testData===false&&product.inStock!==false&&numeric(product.price)>0&&String(product.image||'').trim()&&!seen.has(product.id)).sort((a,b)=>a.id.localeCompare(b.id));
-  for(const product of fallback){if(selected.length>=homeDealLimit)break;selected.push(product);seen.add(product.id);}
+  const fallback=items.filter(product=>product.testData===false&&product.inStock===true&&numeric(product.price)>0&&String(product.image||'').trim()&&!seen.has(product.id)).sort((a,b)=>a.id.localeCompare(b.id));
+  const groups=new Map();
+  for(const product of fallback){
+    const key=String(product.category||'uncategorized');
+    if(!groups.has(key))groups.set(key,[]);
+    groups.get(key).push(product);
+  }
+  const queues=[...groups.entries()].sort((a,b)=>a[0].localeCompare(b[0])).map(([,products])=>products);
+  let added=true;
+  while(selected.length<homeDealLimit&&added){
+    added=false;
+    for(const queue of queues){
+      const product=queue.shift();
+      if(!product)continue;
+      selected.push(product);seen.add(product.id);added=true;
+      if(selected.length>=homeDealLimit)break;
+    }
+  }
   return selected;
 }
 

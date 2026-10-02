@@ -1,0 +1,146 @@
+name: Amazgifts catalog integration gate
+on:
+  push:
+    branches: [development]
+    paths:
+      - 'activate-amazgifts-production.js'
+      - 'verify-amazgifts-activation-dry-run.js'
+      - 'verify-amazgifts-future-production.js'
+      - 'verify-amazgifts-artifact-rejection.js'
+      - 'category-display-i18n.js'
+      - 'build-production-catalog.js'
+      - 'result-card.css'
+      - 'verify-live-catalog-ui.js'
+      - 'live-catalog-ui.js'
+      - 'verify-amazgifts-live-readiness.js'
+      - 'verify-production-categories.js'
+      - 'verify-production-merchants.js'
+      - 'production-catalog-sources.json'
+      - 'production-merchant-approvals.json'
+      - 'development/build-cloudflare-preview.js'
+      - 'verify-live-catalog-v2.js'
+      - 'verify-merchant-artifact-integrity.js'
+      - 'merchant-artifact-integrity.js'
+      - 'verify-merchant-feed-registry.js'
+      - 'amazgifts-feed-normalizer.js'
+      - 'export-amazgifts-artifact.js'
+      - 'merchant-feed-registry.js'
+      - 'build-merchant-feed-catalog.js'
+      - 'build-amazgifts-development-catalog.js'
+      - 'verify-amazgifts-normalizer.js'
+      - 'facet-schemas.js'
+      - 'category-query-router.js'
+      - 'verify-category-query-router.js'
+      - 'search-facet-engine-v2.js'
+      - 'search.js'
+      - 'verify-amazgifts-search-runtime.js'
+      - 'affiliate-link-policy.js'
+      - 'affiliate-config.js'
+      - 'verify-affiliate-routing.js'
+      - 'verify-facet-engine-v2.js'
+      - 'build-normalized-merchant-artifact-catalog.js'
+      - '.github/workflows/amazgifts-catalog-integration.yml'
+  workflow_dispatch:
+    inputs:
+      feed_path:
+        description: 'Optional path to Amazgifts Awin CSV/CSV.GZ already available in workspace'
+        required: false
+        default: ''
+      artifact_path:
+        description: 'Optional path to normalized Amazgifts .json.gz.b64 already available in workspace'
+        required: false
+        default: ''
+jobs:
+  verify-code:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check amazgifts-feed-normalizer.js
+      - run: node --check export-amazgifts-artifact.js
+      - run: node --check merchant-feed-registry.js
+      - run: node --check build-merchant-feed-catalog.js
+      - run: node --check build-amazgifts-development-catalog.js
+      - run: node --check activate-amazgifts-production.js
+      - run: node --check verify-amazgifts-activation-dry-run.js
+      - run: node --check verify-amazgifts-future-production.js
+      - run: node --check verify-amazgifts-artifact-rejection.js
+      - run: node verify-amazgifts-normalizer.js
+      - run: node verify-merchant-feed-registry.js
+      - run: node verify-merchant-artifact-integrity.js
+      - run: node verify-amazgifts-live-readiness.js
+      - run: node verify-facet-engine-v2.js
+      - run: node verify-category-query-router.js
+      - run: node --check search.js
+      - run: node verify-amazgifts-search-runtime.js
+      - run: node verify-live-catalog-ui.js
+      - run: node verify-affiliate-routing.js
+      - name: Verify routed category reaches search runtime
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs');
+          const s=fs.readFileSync('search.js','utf8');
+          if(!s.includes("params.get('category')"))throw new Error('search runtime does not read routed category');
+          if(!s.includes("params.get('rawq')"))throw new Error('search runtime does not preserve routed raw query');
+          if(!s.includes('schemaFor(routedCategory)'))throw new Error('routed category is not validated against schemas');
+          if(!s.includes("routedCategory=''"))throw new Error('new user search does not clear stale routed category');
+          if(!s.includes("set('category',routedCategory)"))throw new Error('search URL does not persist active routed category');
+          if(!s.includes('p.affiliateUrl=affiliateUrl'))throw new Error('search runtime drops affiliate URL before live decorator');
+          console.log('Router -> search runtime contract OK');
+          NODE
+      - run: node --check build-normalized-merchant-artifact-catalog.js
+      - name: Verify snapshot guard contracts
+        run: |
+          node - <<'NODE'
+          const fs=require('node:fs'),crypto=require('node:crypto');
+          const {getMerchant}=require('./merchant-feed-registry.js');
+          const cfg=getMerchant('amazgifts');
+          if(!/^[a-f0-9]{64}$/.test(cfg.expected.rawFeedSha256||''))throw new Error('raw feed digest missing');
+          if(!/^[a-f0-9]{64}$/.test(cfg.expected.artifactSha256||''))throw new Error('artifact digest missing');
+          const rawBuilder=fs.readFileSync('build-merchant-feed-catalog.js','utf8');
+          const artifactBuilder=fs.readFileSync('build-normalized-merchant-artifact-catalog.js','utf8');
+          if(!rawBuilder.includes('raw feed digest mismatch'))throw new Error('raw feed rejection guard missing');
+          if(!artifactBuilder.includes('artifact digest mismatch'))throw new Error('artifact rejection guard missing');
+          const sample=Buffer.from('fundblick-amazgifts-snapshot');
+          const changed=Buffer.from('fundblick-amazgifts-snapshot!');
+          if(crypto.createHash('sha256').update(sample).digest('hex')===crypto.createHash('sha256').update(changed).digest('hex'))throw new Error('digest mutation test failed');
+          console.log('Snapshot guard contracts OK');
+          NODE
+  build-with-feed:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Build explicitly supplied Amazgifts source
+        env:
+          FEED_PATH: ${{ inputs.feed_path }}
+          ARTIFACT_PATH: ${{ inputs.artifact_path }}
+        run: |
+          set -euo pipefail
+          if [ -n "$FEED_PATH" ] && [ -n "$ARTIFACT_PATH" ]; then echo 'Choose feed_path or artifact_path, not both.'; exit 1; fi
+          if [ -n "$ARTIFACT_PATH" ]; then
+            test -f "$ARTIFACT_PATH" || { echo 'Requested Amazgifts artifact is not present in workspace.'; exit 1; }
+            node build-normalized-merchant-artifact-catalog.js amazgifts "$ARTIFACT_PATH" build/amazgifts-catalog
+          elif [ -n "$FEED_PATH" ]; then
+            test -f "$FEED_PATH" || { echo 'Requested Amazgifts feed is not present in workspace.'; exit 1; }
+            node export-amazgifts-artifact.js "$FEED_PATH" build/amazgifts-products.json.gz.b64
+            node build-normalized-merchant-artifact-catalog.js amazgifts build/amazgifts-products.json.gz.b64 build/amazgifts-catalog
+            node verify-amazgifts-activation-dry-run.js build/amazgifts-products.json.gz.b64
+            node verify-amazgifts-future-production.js build/amazgifts-products.json.gz.b64 build/amazgifts-future-production
+            node verify-amazgifts-artifact-rejection.js build/amazgifts-products.json.gz.b64
+          else
+            echo 'Supply feed_path or artifact_path explicitly.'; exit 1
+          fi
+          FUNDBLICK_ALLOW_ZERO_HOME_DEALS=1 node verify-live-catalog-v2.js build/amazgifts-catalog
+          test "$(node -p "require('./build/amazgifts-catalog/manifest.json').homeDealCount")" = "0" || { echo 'Amazgifts UNKNOWN stock leaked into homepage candidates'; exit 1; }
+      - name: Upload verified normalized Amazgifts artifact
+        if: ${{ inputs.feed_path != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: amazgifts-products-verified
+          path: build/amazgifts-products.json.gz.b64
+          if-no-files-found: error
+          retention-days: 7

@@ -2,14 +2,14 @@
 (function(){
   const lang=window.FundBlickLanguage?.lang||'de';
   const labels={
-    de:{headphones:'Kopfhörer',tv:'Fernseher',shoes:'Schuhe',heatgun:'Heißluftfön',smartphone:'Smartphones',coffee:'Kaffeemaschinen'},
+    de:{headphones:'Kopfhörer',tv:'Fernseher',shoes:'Schuhe',heatgun:'Heißluftfön',smartphone:'Smartphones',coffee:'Kaffeemaschinen','gifts.personalized.keychains':'Personalisierte Schlüsselanhänger','gifts.personalized.jewelry':'Personalisierter Schmuck','gifts.personalized.photo-gifts':'Fotogeschenke','craft.jewelry-making.supplies':'Schmuckzubehör'},
     tr:{headphones:'Kulaklık',tv:'Televizyon',shoes:'Ayakkabı',heatgun:'Sıcak hava tabancası',smartphone:'Akıllı telefonlar',coffee:'Kahve makineleri'},
-    ru:{headphones:'Наушники',tv:'Телевизоры',shoes:'Обувь',heatgun:'Термопистолеты',smartphone:'Смартфоны',coffee:'Кофемашины'},
+    ru:{headphones:'Наушники',tv:'Телевизоры',shoes:'Обувь',heatgun:'Термопистолеты',smartphone:'Смартфоны',coffee:'Кофемашины','gifts.personalized.keychains':'Персонализированные брелоки','gifts.personalized.jewelry':'Персонализированные украшения','gifts.personalized.photo-gifts':'Фотоподарки','craft.jewelry-making.supplies':'Фурнитура для украшений'},
     ar:{headphones:'سماعات',tv:'تلفزيونات',shoes:'أحذية',heatgun:'مسدسات هواء ساخن',smartphone:'هواتف ذكية',coffee:'آلات قهوة'},
     pl:{headphones:'Słuchawki',tv:'Telewizory',shoes:'Buty',heatgun:'Opalarki',smartphone:'Smartfony',coffee:'Ekspresy do kawy'},
     ro:{headphones:'Căști',tv:'Televizoare',shoes:'Pantofi',heatgun:'Pistoale cu aer cald',smartphone:'Smartphone-uri',coffee:'Aparate de cafea'},
     uk:{headphones:'Навушники',tv:'Телевізори',shoes:'Взуття',heatgun:'Термопістолети',smartphone:'Смартфони',coffee:'Кавомашини'},
-    en:{headphones:'Headphones',tv:'Televisions',shoes:'Shoes',heatgun:'Heat guns',smartphone:'Smartphones',coffee:'Coffee machines'},
+    en:{headphones:'Headphones',tv:'Televisions',shoes:'Shoes',heatgun:'Heat guns',smartphone:'Smartphones',coffee:'Coffee machines','gifts.personalized.keychains':'Personalized keychains','gifts.personalized.jewelry':'Personalized jewelry','gifts.personalized.photo-gifts':'Photo gifts','craft.jewelry-making.supplies':'Jewelry-making supplies'},
     it:{headphones:'Cuffie',tv:'Televisori',shoes:'Scarpe',heatgun:'Pistole termiche',smartphone:'Smartphone',coffee:'Macchine da caffè'},
     bg:{headphones:'Слушалки',tv:'Телевизори',shoes:'Обувки',heatgun:'Пистолети за горещ въздух',smartphone:'Смартфони',coffee:'Кафемашини'},
     hr:{headphones:'Slušalice',tv:'Televizori',shoes:'Cipele',heatgun:'Pištolji na vrući zrak',smartphone:'Pametni telefoni',coffee:'Aparati za kavu'},
@@ -23,7 +23,7 @@
     'zh-Hans':{headphones:'耳机',tv:'电视',shoes:'鞋',heatgun:'热风枪',smartphone:'智能手机',coffee:'咖啡机'},
     ku:{headphones:'Guhdar',tv:'Televîzyon',shoes:'Pêlav',heatgun:'Tabancên hewaya germ',smartphone:'Telefonên jîr',coffee:'Makîneyên qehweyê'}
   };
-  const selected=labels[lang]||labels.en;
+  const selected=Object.assign({},labels.en,labels[lang]||{});
   const schemas=window.FB_CATEGORY_SCHEMAS||{};
   for(const [id,label] of Object.entries(selected))if(schemas[id])schemas[id].label=label;
   window.FB_CATEGORY_DISPLAY_LABELS=selected;

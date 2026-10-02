@@ -21,7 +21,7 @@
   ];
 
   const qEl=typeof document!=='undefined'?document.querySelector('#query'):null;
-  if(!qEl){if(typeof module!=='undefined')module.exports={detect,normalize,features};return;}
+  if(!qEl){if(typeof module!=='undefined')module.exports={detect};return;}
 
   const language=window.FundBlickLanguage||{lang:'de',config:{locale:'de-DE'},t:{},translate:key=>key};
   const tx=key=>language.translate(key);
@@ -55,7 +55,8 @@
 
   const filtersEl=document.querySelector('#filters'),cardsEl=document.querySelector('#cards'),summaryEl=document.querySelector('#summary'),chipsEl=document.querySelector('#chips'),sortEl=document.querySelector('#sort');
   const params=new URLSearchParams(location.search);
-  const state={query:params.get('q')||'',min:asNumber(params.get('min')),max:asNumber(params.get('max')),brands:new Set((params.get('brand')||'').split(',').filter(Boolean)),facets:{},sort:params.get('sort')||'relevance'};
+  let routedCategory=String(params.get('category')||'').trim();const routedRawQuery=String(params.get('rawq')||'').trim();
+  const state={query:params.get('q')||routedRawQuery||'',min:asNumber(params.get('min')),max:asNumber(params.get('max')),brands:new Set((params.get('brand')||'').split(',').filter(Boolean)),facets:{},sort:params.get('sort')||'relevance'};
   let products=[],category=null,base=[];
   try{const saved=JSON.parse(params.get('facets')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))for(const [k,v] of Object.entries(saved))if(Array.isArray(v))state.facets[k]=new Set(v.map(String));}catch{}
   qEl.value=state.query;if([...sortEl.options].some(x=>x.value===state.sort))sortEl.value=state.sort;
@@ -121,7 +122,10 @@
     const merchant=normalizeMerchant(raw.merchant||raw.bestOffer?.merchant||raw.offers?.[0]?.merchant||raw.advertiserName||'');
     const brand=normalizeBrand(raw.brand,merchant);
     const rawAttributes=raw.rawAttributes&&typeof raw.rawAttributes==='object'&&!Array.isArray(raw.rawAttributes)?raw.rawAttributes:{};
+    const affiliateUrl=String(raw.affiliateUrl||raw.bestOffer?.affiliateUrl||raw.offers?.[0]?.affiliateUrl||'').trim();
+    const directUrl=String(raw.directUrl||raw.bestOffer?.directUrl||raw.offers?.[0]?.directUrl||'').trim();
     const p={name:String(raw.name),brand,merchant,description:String(raw.description||''),category:String(raw.category||''),price,shippingCost,totalPrice,totalPriceKnown,image:String(raw.image||''),family,rating,merchantCount,inStock:raw.inStock===true,deliveryDays,rawAttributes};
+    p.affiliateUrl=affiliateUrl;p.directUrl=directUrl;
     p.attrs=features(p);
     if(window.FBFacetEngineV2?.enrich)window.FBFacetEngineV2.enrich(p);
     if(rating!==null)p.attrs.rating=rating;
@@ -169,15 +173,15 @@
   }
 
   function renderChips(){const chips=[];if(state.min!==null)chips.push(['min',`${tx('from')} ${money(state.min)}`]);if(state.max!==null)chips.push(['max',`${tx('to')} ${money(state.max)}`]);for(const brand of state.brands)chips.push(['brand:'+brand,`${tx('manufacturer')}: ${brand}`]);for(const [key,values] of Object.entries(state.facets))for(const value of values){const facet=facetDef(key)||{key,type:'multi',label:key};chips.push([key+':'+value,`${facetTitle(facet)}: ${optionLabel(facet,value)}`])}chipsEl.innerHTML=chips.map(([key,label])=>`<button type="button" data-remove="${esc(key)}" aria-label="${esc(removeWord[language.lang]||removeWord.en)}: ${esc(label)}">${esc(label)} ×</button>`).join('');chipsEl.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{const [key,...rest]=b.dataset.remove.split(':'),value=rest.join(':');if(key==='min'||key==='max')state[key]=null;else if(key==='brand')state.brands.delete(value);else state.facets[key]?.delete(value);render()}))}
-  function writeUrl(){const url=new URL(location.href),set=(key,value)=>value==null||value===''?url.searchParams.delete(key):url.searchParams.set(key,String(value));set('q',state.query);set('lang',language.lang);set('min',state.min);set('max',state.max);set('brand',[...state.brands].join(','));const facetData=Object.fromEntries(Object.entries(state.facets).filter(([,s])=>s.size).map(([k,s])=>[k,[...s]]));set('facets',Object.keys(facetData).length?JSON.stringify(facetData):'');set('sort',state.sort==='relevance'?'':state.sort);history.replaceState(null,'',url)}
+  function writeUrl(){const url=new URL(location.href),set=(key,value)=>value==null||value===''?url.searchParams.delete(key):url.searchParams.set(key,String(value));set('q',state.query);set('category',routedCategory);set('rawq',routedCategory?state.query:'');set('lang',language.lang);set('min',state.min);set('max',state.max);set('brand',[...state.brands].join(','));const facetData=Object.fromEntries(Object.entries(state.facets).filter(([,s])=>s.size).map(([k,s])=>[k,[...s]]));set('facets',Object.keys(facetData).length?JSON.stringify(facetData):'');set('sort',state.sort==='relevance'?'':state.sort);history.replaceState(null,'',url)}
   function comparePrice(a,b,direction){if(a.totalPriceKnown&&b.totalPriceKnown)return direction*(a.totalPrice-b.totalPrice);if(a.totalPriceKnown)return -1;if(b.totalPriceKnown)return 1;return 0}
   function card(p){const tags=Object.entries(p.attrs).filter(([key])=>!['rating','merchant','merchants','shipping'].includes(key)).flatMap(([,v])=>valuesOf(v)).slice(0,4).map(x=>`<span>${esc(displayValue(x))}</span>`).join(''),offerMeta=[p.rating!==null?`★ ${p.rating.toLocaleString(locale,{maximumFractionDigits:1})}`:'',p.merchantCount!==null?`🏪 ${p.merchantCount}`:''].filter(Boolean).join(' · '),shownPrice=p.totalPriceKnown?p.totalPrice:p.price,priceDetail=p.totalPriceKnown?`${money(p.price)} + ${money(p.shippingCost)} 🚚`:tx('testPrice');return `<article class="product">${p.image?`<img src="${esc(p.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:`<div class="no-image" aria-hidden="true">${esc(tx('results'))}</div>`}<div><p><bdi>${esc(p.brand||p.category)}</bdi> · ${esc(tx('testData'))}</p><h2 dir="auto">${esc(p.name)}</h2><p dir="auto">${esc(p.description.slice(0,150))}</p>${offerMeta?`<p>${esc(offerMeta)}</p>`:''}<div class="tags">${tags}</div></div><div class="price"><strong>${money(shownPrice)}</strong><small>${esc(priceDetail)}</small><span class="unavailable">${esc(tx('noOffer'))}</span></div></article>`}
   function render(){renderFilters();renderChips();let list=filtered();if(state.sort==='price-asc')list.sort((a,b)=>comparePrice(a,b,1));else if(state.sort==='price-desc')list.sort((a,b)=>comparePrice(a,b,-1));else if(state.sort==='brand')list.sort((a,b)=>a.brand.localeCompare(b.brand,locale));const categoryText=categoryLabels[category?.id]?tx(categoryLabels[category.id]).replace(/^[^\p{L}\p{N}]+/u,''):(category?.label||'');summaryEl.textContent=`${list.length} ${list.length===1?tx('oneFound'):tx('found')}${categoryText?' · '+categoryText:''}`;cardsEl.innerHTML=list.length?list.slice(0,100).map(card).join(''):`<div class="empty"><h2>${esc(tx('noResults'))}</h2><p>${esc(tx('noResultsHelp'))}</p></div>`;writeUrl()}
 
-  document.querySelector('.search-form').addEventListener('submit',e=>{e.preventDefault();state.query=qEl.value.trim();state.brands.clear();state.facets={};state.min=null;state.max=null;runSearch()});
+  document.querySelector('.search-form').addEventListener('submit',e=>{e.preventDefault();state.query=qEl.value.trim();routedCategory='';state.brands.clear();state.facets={};state.min=null;state.max=null;runSearch()});
   document.querySelector('#reset').addEventListener('click',()=>{state.min=state.max=null;state.brands.clear();state.facets={};render()});
   sortEl.addEventListener('change',()=>{state.sort=sortEl.value;render()});
-  function runSearch(){const translated=queryAliases.reduce((q,[pattern,value])=>q.replace(pattern,value),state.query);category=detect(translated);const tokens=interpret(translated);base=products.filter(p=>queryMatch(p,tokens));render()}
+  function runSearch(){const translated=queryAliases.reduce((q,[pattern,value])=>q.replace(pattern,value),state.query);const routedSchema=routedCategory&&schemaFor(routedCategory);category=routedSchema?{id:routedCategory,label:routedSchema.label||routedCategory}:detect(translated);const tokens=routedSchema?[]:interpret(translated);base=products.filter(p=>queryMatch(p,tokens));render()}
   const readProducts=url=>fetch(url).then(r=>{if(!r.ok)throw Error('Product data unavailable: '+url);return r.json()}).then(data=>{if(!Array.isArray(data))throw Error('Invalid product data');return data});
   Promise.all([readProducts('products.json'),cardsEl.dataset.catalogUrl?readProducts(cardsEl.dataset.catalogUrl):Promise.resolve([])]).then(groups=>{products=groups.flat().map(normalize).filter(Boolean);runSearch()}).catch(()=>{summaryEl.textContent=tx('loadError');cardsEl.innerHTML=''});
 })();

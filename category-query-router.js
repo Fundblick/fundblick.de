@@ -19,7 +19,7 @@
   const schemas=root.FB_CATEGORY_SCHEMAS||{};
   const canonicalFor=(key,schema)=>{
     const terms=Array.isArray(schema?.terms)?schema.terms:[];
-    const canonical=terms.find(term=>/^(?:home|pet|health|electronics|fashion)\./i.test(String(term||'')));
+    const canonical=terms.find(term=>/^(?:home|pet|health|electronics|fashion|gifts|craft)\./i.test(String(term||'')));
     if(canonical)return String(canonical);
     if(String(key).includes('.'))return String(key);
     return '';
@@ -30,7 +30,12 @@
     'home.lighting':['lampen','beleuchtung','lighting'],
     'home.decor':['dekoration','deko','decor'],
     'home.living':['wohnen','haushalt','living'],
-    'pet.equestrian':['pferd','pferde','reitsport','equestrian','horse care']
+    'pet.equestrian':['pferd','pferde','reitsport','equestrian','horse care'],
+    'gifts.personalized.keychains':['schlüsselanhänger','schluesselanhaenger','personalisierte schlüsselanhänger','personalisierter schlüsselanhänger','foto schlüsselanhänger','foto schluesselanhaenger'],
+    'gifts.personalized.jewelry':['personalisierter schmuck','personalisierte schmuckstücke','fotokette','projektionskette','halskette mit foto','armband personalisiert'],
+    'gifts.personalized.photo-gifts':['fotogeschenk','fotogeschenke','geschenk mit foto','personalisiertes fotogeschenk'],
+    'craft.jewelry-making.supplies':['schmuckzubehör','schmuckzubehoer','perlenkettenzubehör','perlenkettenzubehoer','schmuck bastelzubehör'],
+    'gifts.personalized.other':['personalisiertes geschenk','personalisierte geschenke']
   };
   let matched='';
   let matchedLength=0;

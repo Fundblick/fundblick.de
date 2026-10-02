@@ -2,6 +2,8 @@
 const assert=require('assert');
 const {registry}=require('./taxonomy-registry.js');
 const classifier=require('./home-facet-classifier.js');
+assert(registry.families.gifts,'Personalized gifts family missing');
+for(const type of ['Schlüsselanhänger','Schmuck','Fotogeschenk','Schmuckzubehör','Sonstiges personalisiertes Geschenk'])assert(registry.families.gifts.types.includes(type),`Missing gifts type: ${type}`);
 const allowed={type:new Set(),material:new Set(registry.facets.material),style:new Set(registry.facets.style),room:new Set(registry.facets.room)};
 for(const f of Object.values(registry.families))for(const t of f.types)allowed.type.add(t);
 for(const [family,rules] of Object.entries(classifier.rules)){

@@ -13,6 +13,12 @@ for(const [key,config] of Object.entries(merchants)){
   assert(Array.isArray(config.catalogCategories)&&config.catalogCategories.length,`${key}: catalog categories required`);
   assert.equal(getMerchant(key),config,`${key}: lookup must be stable`);
 }
+const amazgifts=getMerchant('amazgifts');
+assert.equal(amazgifts.expected.products,2964);
+assert.match(amazgifts.expected.rawFeedSha256,/^[a-f0-9]{64}$/);
+assert.equal(amazgifts.expected.rawFeedSha256,'9dadbc32d81303f38a4d8a92520d9ac29abf5aea3ac8c10d89393e8fd43822bf');
+assert.match(amazgifts.expected.artifactSha256,/^[a-f0-9]{64}$/);
+assert.equal(amazgifts.expected.artifactSha256,'32ca063fc6d02a7ba6407175100e7da84f0c75731f097033b6096aff55b2d65a');
 const anthbot=getMerchant('anthbot');
 assert.equal(anthbot.network,'awin');
 assert.equal(anthbot.advertiserId,'125144');

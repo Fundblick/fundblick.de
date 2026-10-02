@@ -14,6 +14,7 @@
     if(Number.isFinite(Number(facets.lawnAreaM2)))out.lawnAreaM2=Number(facets.lawnAreaM2);
     if(facets.connectivity4G===true)out.connectivity4G='4G';
     if(facets.model)out.model=String(facets.model);
+    if(raw.productType)out.productType=String(raw.productType);
     if(raw.refurbished===true||raw.condition==='refurbished')out.condition='Generalüberholt';
     else if(raw.condition==='new'||raw.feedCondition==='new')out.condition='Neu';
     return out;

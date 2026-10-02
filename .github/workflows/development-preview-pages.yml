@@ -5,6 +5,11 @@ on:
     branches:
       - development
   workflow_dispatch:
+    inputs:
+      amazgifts_artifact_path:
+        description: 'Optional normalized Amazgifts .json.gz.b64 path already available in workspace'
+        required: false
+        default: ''
 
 # Public preview publishing is intentionally separate from production GitHub Pages.
 # Cloudflare preview host trigger: development branch source verified 2026-10-01.
@@ -29,7 +34,13 @@ jobs:
           ref: development
 
       - name: Build portable isolated development preview
-        run: node development/build-cloudflare-preview.js
+        env:
+          FUNDBLICK_AMAZGIFTS_ARTIFACT: ${{ github.event_name == 'workflow_dispatch' && inputs.amazgifts_artifact_path || '' }}
+        run: |
+          if [ -n "$FUNDBLICK_AMAZGIFTS_ARTIFACT" ]; then
+            test -f "$FUNDBLICK_AMAZGIFTS_ARTIFACT" || { echo "Requested Amazgifts artifact is not present in the checked-out workspace."; exit 1; }
+          fi
+          node development/build-cloudflare-preview.js
 
       - name: Protect isolated preview from search indexing
         run: |

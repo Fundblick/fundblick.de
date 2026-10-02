@@ -2,8 +2,8 @@
 const assert=require('node:assert/strict');const ui=require('./external-search-ui.js');
 const good={url:'https://shop.example/product/bosch-gsr',title:'Bosch GSR 18V-55 – 129,99 €',image:'https://cdn.example/bosch.jpg',productCandidate:true,price:'129,99 €',priceConfidence:'visible'};
 assert.equal(ui.offerEligible(good),true,'real product with image and visible price must pass');
-assert.equal(ui.offerEligible({...good,image:''}),false,'offer without image must be rejected');
-assert.equal(ui.offerEligible({...good,price:'',title:'Bosch GSR 18V-55',description:''}),false,'offer without trusted/visible price must be rejected');
+assert.equal(ui.offerEligible({...good,image:''}),true,'direct product with trusted price may survive missing provider image');
+assert.equal(ui.offerEligible({...good,price:'',title:'Bosch GSR 18V-55',description:''}),true,'direct product with image may survive missing provider price');
 assert.equal(ui.offerEligible({...good,productCandidate:false,resultType:'guide'}),false,'guide must not leak into offers');
 for(const url of ['https://example.com/news/new-bosch-gsr','https://example.com/search/bosch-gsr','https://example.com/category/akkuschrauber','https://example.com/products','https://example.com/shop','https://example.com/product/bosch?q=gsr','https://example.com/angebote'])assert.equal(ui.offerEligible({...good,url}),false,`listing/editorial URL must fail: ${url}`);
 for(const title of ['Bosch GSR Test & Vergleich – 129,99 €','Bosch GSR Neuheit – 129,99 €','Bosch GSR gebraucht – 129,99 €','Bosch GSR Datenblatt – 129,99 €','Bosch GSR Bedienungsanleitung – 129,99 €'])assert.equal(ui.offerEligible({...good,title}),false,`non-shop content must fail: ${title}`);

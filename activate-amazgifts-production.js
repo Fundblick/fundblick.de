@@ -1,0 +1,32 @@
+'use strict';
+const fs=require('node:fs'),zlib=require('node:zlib');
+const {getMerchant}=require('./merchant-feed-registry.js');
+const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
+const source='development/amazgifts-products.json.gz.b64';
+const dryRun=process.env.FUNDBLICK_AMAZGIFTS_DRY_RUN==='1';
+if(!dryRun&&process.env.FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION!=='YES')throw new Error('Cannot activate Amazgifts: set FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION=YES for an explicit production activation');
+if(!fs.existsSync(source))throw new Error('Cannot activate Amazgifts: verified artifact is missing: '+source);
+const packed=fs.readFileSync(source,'utf8').replace(/\s+/g,'');
+const products=JSON.parse(zlib.gunzipSync(Buffer.from(packed,'base64')).toString('utf8'));
+const cfg=getMerchant('amazgifts');
+if(!Array.isArray(products)||products.length!==cfg.expected.products)throw new Error(`Cannot activate Amazgifts: expected ${cfg.expected.products} products`);
+const digest=canonicalProductDigest(products);
+if(digest!==cfg.expected.artifactSha256)throw new Error(`Cannot activate Amazgifts: digest mismatch: expected ${cfg.expected.artifactSha256}, got ${digest}`);
+const approvals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
+const approval=approvals?.merchants?.amazgifts;
+if(!approval)throw new Error('Cannot activate Amazgifts: approval record missing');
+if(approval.termsCleared!==true&&!dryRun)throw new Error('Cannot activate Amazgifts: advertiser deeplink/automation terms are not explicitly cleared');
+if(approval.network!=='awin'||approval.advertiserId!=='87569'||approval.publisherId!=='3106259')throw new Error('Cannot activate Amazgifts: approval identity mismatch');
+approval.approved=true;
+approval.termsCleared=true;
+approval.sources=[source];
+delete approval.reason;
+const sources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
+if(!sources.includes(source))sources.push(source);
+if(dryRun){
+  console.log(JSON.stringify({dryRun:true,products:products.length,digest,approval:{...approval,termsCleared:true},sources},null,2));
+}else{
+  fs.writeFileSync('production-merchant-approvals.json',JSON.stringify(approvals,null,2)+'\n');
+  fs.writeFileSync('production-catalog-sources.json',JSON.stringify(sources,null,2)+'\n');
+  console.log(`Amazgifts production configuration activated safely: products=${products.length}, digest=${digest}`);
+}

@@ -218,10 +218,23 @@ function explicitProductStatus(item) {
   return normalizeAvailability(value);
 }
 
+function likelyDirectProductPage(value) {
+  let url;
+  try { url = new URL(String(value || '')); } catch { return false; }
+  const path = url.pathname.toLowerCase();
+  const query = url.search.toLowerCase();
+  if (/\/(?:category|categories|kategorie|kategorien|search|suche|s|collections?|brands?|marken|c)\//.test(path)) return false;
+  if (/[?&](?:q|query|search|keyword)=/.test(query)) return false;
+  if (/\/(?:product|products|produkt|produkte|p|dp|item|artikel)\//.test(path)) return true;
+  if (/[?&](?:sku|product|product_id|article|article_id|item|item_id|pid)=/.test(query)) return true;
+  return false;
+}
+
 function normalizeResult(item) {
   const price = explicitPrice(item);
   const productUrl = explicitProductUrl(item);
   const hasStructuredProduct = Boolean(item?.product || item?.product_cluster || structuredCandidates(item).length);
+  const directProductPage = likelyDirectProductPage(productUrl);
   return {
     title: cleanText(item?.title, 300),
     url: productUrl,
@@ -233,7 +246,7 @@ function normalizeResult(item) {
     priceConfidence: priceConfidence(item, price),
     merchant: explicitMerchant(item),
     productStatus: explicitProductStatus(item),
-    productCandidate: hasStructuredProduct || Boolean(price),
+    productCandidate: hasStructuredProduct || Boolean(price) || directProductPage,
     age: item?.age || null,
     language: item?.language || null,
     familyFriendly: item?.family_friendly !== false

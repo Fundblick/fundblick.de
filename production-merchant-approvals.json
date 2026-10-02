@@ -5,13 +5,27 @@
       "approved": true,
       "network": "awin",
       "advertiserId": "120341",
-      "sources": ["development/ahipos-products-1.json", "development/ahipos-products-2.json"]
+      "sources": [
+        "development/ahipos-products-1.json",
+        "development/ahipos-products-2.json"
+      ]
     },
     "anthbot": {
       "approved": true,
       "network": "awin",
       "advertiserId": "125144",
-      "sources": ["development/anthbot-products.json.gz.b64"]
+      "sources": [
+        "development/anthbot-products.json.gz.b64"
+      ]
+    },
+    "amazgifts": {
+      "approved": false,
+      "network": "awin",
+      "advertiserId": "87569",
+      "publisherId": "3106259",
+      "sources": [],
+      "reason": "Terms reviewed for FundBlick use of publisher-authorized Awin feed links; pending verified artifact promotion into production",
+      "termsCleared": true
     }
   }
 }

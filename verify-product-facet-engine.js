@@ -18,3 +18,17 @@ assert.deepEqual(facets.derive({category:'fashion.shoes',facets:['size']},[{attr
 
 const nonDiscriminative=facets.derive({category:'tools.cordless_drill',facets:['voltage','brand']},[{attributes:{voltage:{value:18,confidence:'HIGH'},brand:'bosch'}},{attributes:{voltage:{value:18,confidence:'HIGH'},brand:'bosch'}}]);assert.ok(nonDiscriminative.primary.length>0);assert.ok(nonDiscriminative.primary.every(x=>x.refinable===false),'single-value evidence remains available to the pipeline but cannot become an interactive choice');
 console.log('Dynamic facet engine: discriminative-value gate OK');
+
+
+const sparseGeneric=[
+ {attributes:{memory:{value:8,unit:'GB',confidence:'HIGH'}}},
+ {attributes:{memory:{value:16,unit:'GB',confidence:'HIGH'}}},
+ {attributes:{memory:{value:32,unit:'GB',confidence:'HIGH'}}},
+ ...Array.from({length:17},()=>({attributes:{}}))
+];
+const sparseFacet=facets.derive({category:'computing.laptop',facets:['memory']},sparseGeneric,{minCoverage:.35}).primary.find(x=>x.id==='memory');
+assert.ok(sparseFacet,'repeated high-confidence evidence survives low percentage coverage without a category exception');
+assert.deepEqual(sparseFacet.values,[8,16,32]);
+const weakSparse=facets.derive({category:null,facets:['memory']},[{attributes:{memory:{value:8,confidence:'HIGH'}}},...Array.from({length:19},()=>({attributes:{}}))],{minCoverage:.35});
+assert.equal(weakSparse.primary.length,0,'one isolated value cannot manufacture a facet');
+console.log('Dynamic facet engine: generic sparse-evidence gate OK');
