@@ -2,6 +2,18 @@
 const path=require('node:path');
 
 const merchants={
+  amazgifts:{
+    key:'amazgifts',
+    merchant:'Amazgifts DE',
+    network:'awin',
+    advertiserId:'87569',
+    publisherId:'3106259',
+    preferredFeedId:'95497',
+    inputPattern:/datafeed_3106259.*\.csv(?:\.gz)?$/i,
+    normalizer:'./amazgifts-feed-normalizer.js',
+    expected:{products:2964},
+    catalogCategories:['gifts.personalized.jewelry','gifts.personalized.keychains','gifts.personalized.photo-gifts','gifts.personalized.other']
+  },
   anthbot:{
     key:'anthbot',
     merchant:'ANTHBOT DE',
