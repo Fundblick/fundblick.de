@@ -104,3 +104,60 @@ Neue Release-CI baut denselben Katalog-/SEO-/Assetpfad wie die Produktion, prüf
 Releasecommit 12fcd917: alle sechs Development-Läufe erfolgreich; im PR-Mergestand zusätzliche Relevanzprüfung fehlgeschlagen. Ursache: category-query-router verwendete auch enge Produkttypen/Modelle als vollständige Kategorieanfrage und löschte q. Mosaiktisch landete bei home.furniture, eigene passende Mosaiktische entfielen. Router beschränkt auf Kategorienamen/-IDs und dokumentierte breite Aliase; enge Typen/Modelle behalten q. Explizite Mähroboter-Zubehörbegriffe werden vor Vergleich ebenfalls normalisiert. VM-Gegenproben und tatsächlicher lokaler Browser bestanden: Mosaiktisch Rund, Gartentisch zuerst, q erhalten. Bestehender Browsergate nicht gelockert; erweitert um URL-Gegenprobe und in Release-Paket-CI aufgenommen. Neuer finaler CI-Lauf erforderlich.
 
 Datenschutzentscheidung: Jens kennt die Tarif-/Kontoeinstellungen nicht; Nachfrage beendet. Deshalb keine tarifabhängigen Zusagen, kein ZDR-Versprechen und kein bestätigter Vertragsnachweis. Öffentlicher Text beschreibt nachgewiesenen Datenfluss konservativ mit Brave-Aufbewahrung bis 90 Tage und möglichen Cloudflare-Protokollen. Keine Dienste/Verträge neu eingerichtet oder angenommen. Kontobelege und externe rechtliche Prüfung bleiben ausdrücklich nicht nachgewiesene Folgepunkte, kein vorgetäuschtes Prüfergebnis. Der technische Release erfolgt im ausdrücklich autorisierten Umfang, sobald sämtliche technischen Merge-Gates grün sind.
+
+## Live-Abschluss am 30.09.2026
+
+Release-Code: a627acbbabdb0659e11c882551900d5068bca68a. Alle 16 Läufe am finalen Head erfolgreich (13 PR-Gates und drei Development-Läufe); 24 Browserfälle gegen das finale Produktionspaket. Der vorher hängende Taxonomie-Browserlauf wartete über acht Minuten in der Installation. Installationslimit drei Minuten und Abbruch überholter Läufe ergänzt; unveränderte Tests auf frischem Runner erfolgreich. Keine Prüfung entfernt oder Ergebnisanforderung gelockert.
+
+[PR #40](https://github.com/Fundblick/fundblick.de/pull/40) erfolgreich nach main gemergt. Merge: f3f053d42c26e8e4c0b32a50e1bd50a18a1ed3e6. [Production-Pages-Lauf 36773699853](https://github.com/Fundblick/fundblick.de/actions/runs/36773699853) erfolgreich, Deploymentjob 110086188927 erfolgreich. Backup unverändert.
+
+Öffentliche HTTP-Abnahme auf https://fundblick.de: Such-HTML und fünf zentrale veröffentlichte Module stimmen SHA-256-genau mit dem Release überein; öffentlicher Datenschutzanker vorhanden; Katalogmanifest 1.515 echte Produkte, keine Simulationen. Echter Browser direkt auf fundblick.de ohne Relay oder abgefangene Antwort: Hausschuhe erst nach ausdrücklich betätigtem Web-Button drei Angebote mit Bildern, Links und Preisen (69,90 / 109,95 / 29,99 EUR). Preis aufsteigend zeigt 29,99 EUR zuerst; keine Browser-Fehlerlogs. Eigene Mosaiktisch-Suche zeigt Mosaiktisch Rund, Gartentisch zuerst. Screenshot und HTTP-Bericht lokal im Arbeitsordner gespeichert. Keine zusätzliche Behauptung über aktuelle Händler-Checkoutpreise oder vollständige Markt-/Sprach-/Variantenabdeckung.
+
+Live-Adresse: https://fundblick.de/. Die größeren dokumentierten Folgephasen (Taxonomie-Runtime, vollständige Sprach-/Modelltreue, weitere echte Händlerfamilien, betriebliche/rechtliche Kontobelege) bleiben offen. Der aktuelle technische Release ist tatsächlich veröffentlicht; nicht alle langfristigen Fahrplanpunkte sind abgeschlossen.
+
+
+## 01.10.2026 – Search-UX / Query-to-Facet Phase
+
+Auslöser war die reale mobile Abnahme der Live-Suche: redundanter Nulltrefferzustand, Sortier-/Filterbedienung ohne lokale Treffer, Websuche zu weit unten, externe Desktop-Angebote einspaltig und technische Hybrid-Pagination. Zusätzlich zeigte `RAM ddr`, dass die vorhandene Product Intelligence zwar Trefferattribute auswertet, aber die Produkttyp-/Facettenlogik nicht konsequent bereits aus der Nutzeranfrage vor den Treffern ableitet.
+
+Verbindliches Zielbild in `docs/FUNDBLICK-WEBSUCHE-SEARCH-UX-ZIELBILD-2026-10-01.md` dokumentiert. Neue Query-first-Schicht `query-facet-blueprint.js`: freie Anfrage wird vor der Trefferanalyse einer kanonischen Produktfamilie zugeordnet; erkannte Constraints werden übernommen; das Blueprint liefert erwartete Facetten. Erste heterogene Referenzfamilien: RAM/Arbeitsspeicher, Zündkerze, Motoröl, Akku-Bohrschrauber, Fernseher, Schuhe und Kinderwagen. Unbekannte Produkte bleiben ausdrücklich als Semantic-Fallback offen; keine Behauptung, bereits beliebige Produktarten semantisch zu verstehen.
+
+RAM vertikal durchgezogen: DDR-Generation, Gesamtkapazität, Geschwindigkeit, DIMM/SO-DIMM, Modulanzahl, Marke und Preis. Trefferextraktion erkennt DDR, GB, MHz/MT/s, Formfaktor und Kits; `2x16 GB` wird als zwei Module und 32 GB Gesamtkapazität normalisiert. Query `32GB DDR5 RAM 6000 MHz für Laptop` setzt DDR5, 32 GB, 6000 MHz und SO-DIMM als Nutzerconstraints. Pipeline übernimmt das Query-Blueprint vor Ranking/Facettenableitung. Eigene Integrationsprüfungen ergänzen Query → Blueprint → Trefferattribute → Facetten.
+
+Sichtbare UX: `query-blueprint-ui.js` zeigt erkannte Produktfamilie, bereits verstandene Constraints und relevante Merkmalsgruppen kompakt vor den Ergebnissen und aktualisiert sich bei weiteren Suchen. Null lokale Treffer blenden wirkungslose alte Filter-/Sortierbedienung und die doppelte lokale Leerzustandskarte aus; die Websuche wird zur primären nächsten Aktion, ohne die bestehende explizite Web-Aktivierung/Datenschutzhürde zu umgehen.
+
+Externe Angebotsdarstellung: Desktop responsives Raster (ab großer Breite vier, mittlere Breite drei Karten), Mobile eine kompakte Spalte. Der bisherige Mix aus Zurück/Seite/Weitere 20 wurde auf append-artiges `Weitere Angebote anzeigen` umgestellt; bereits geladene Angebote bleiben sichtbar. Sortierung und evidenzbasierte externe Facetten bleiben oberhalb der Angebote.
+
+UX-Recherche erneut gegengeprüft: Baymard Product Finding/Search stützt produkttypbezogene Kategorie-/Scope-Hinweise, category-specific filtering, sichtbare angewandte Filter und Load-More als belastbares Produktlisten-Muster. Entscheidungen werden nicht allein aus einer einzelnen Quelle abgeleitet; reale FundBlick-Abnahme bleibt erforderlich.
+
+Release-Sicherheit nachgezogen: neue Intelligence-/UI-/CSS-Abhängigkeiten werden in Release- und Production-Pages-Paketierung aufgenommen; Query-to-Facet-Prüfungen in den External-Search-Gate aufgenommen. Ein erster CI-Lauf stoppte korrekt an einem Unicode-RegEx-Syntaxfehler im neuen Bildschirmgrößenmuster; behoben. Zweiter Gate-Lauf erreichte die Integration und deckte einen fehlerhaften Testdatensatz auf: Laptop-Constraint SO-DIMM wurde gegen DIMM-Angebote getestet und vom Conflict Filter erwartungsgemäß unterdrückt. Fixture auf kompatible SO-DIMM-Angebote korrigiert; External Search Safety Gate danach erfolgreich. Weitere final-head Gates nach den letzten UI-/Packaging-Commits noch abzuwarten.
+
+Main/Live seit Beginn dieser Phase unverändert; keine Freigabe oder Live-Schaltung dokumentieren, solange finaler Development-Head nicht vollständig geprüft und ausdrücklich abgenommen ist.
+
+
+### Fortsetzung 01.10.2026 – Regressionen und Breitenabdeckung
+
+Append-UX gegen den bestehenden Runtime-Testbestand abgeglichen. Alte Assertions erwarteten absichtlich seitenweise Ersetzung und feste 20 sichtbare Ergebnisse; sie wurden nicht blind beibehalten, sondern auf die neue vertragliche Semantik umgestellt: bereits geeignete Angebote bleiben sichtbar, Nachladen hängt neue eindeutige Angebote an, der Nutzer sieht den kumulierten Angebotsstand und keine technische Seitennummer mehr. Provider kann mehr als 20 Rohresultate liefern; geeignete Treffer werden nicht künstlich auf 20 abgeschnitten.
+
+Query-first-Abdeckung von den ersten sieben Referenzfamilien auf weitere Kernfamilien erweitert: Laptop/Notebook, Smartphone, Kopfhörer, Staubsauger, Waschmaschine, Mähroboter und Fahrrad. Für jede Familie liefert das Blueprint eine kanonische Kategorie und fachlich passende erwartete Facetten; deutsche UI-Bezeichnungen ergänzt. Unbekannte Spezialprodukte bleiben weiterhin im Semantic-Fallback statt einer erfundenen Kategorie.
+
+CI-Status während der Arbeit: External Search Safety Gate mehrfach erfolgreich nach RAM-/Blueprint-Änderungen. Development Integrity deckte nacheinander einen veralteten Paging-Test und einen minimalen DOM-Mock auf; DOM-Zugriff gehärtet, Paging-Test auf Append-Semantik aktualisiert. Finaler Head nach den letzten Änderungen erneut vollständig durch CI zu prüfen. Keine Änderung an main/live.
+
+
+### Finalisierung der Gate-Migration / Query-Constraints
+
+Der vollständige Zwischen-Head `c520a09d` erreichte erstmals gleichzeitig grün: Development Preview Build, Development V2 Integrity und Production Release Check. Die vorherigen roten Läufe waren vollständig auf veraltete Testannahmen der ersetzten Seiten-Pagination zurückzuführen und wurden auf das neue Append-Verhalten migriert; Browser-E2E bleibt die Instanz für reale Button-/Touch-/Layout-Interaktion.
+
+External Search Safety Gate wurde außerdem für Pull Requests auf alle neuen Query-to-Facet-/Product-Intelligence-Dateien erweitert, damit Änderungen nicht nur bei Push auf development, sondern auch vor Integration in einem PR geprüft werden.
+
+Query-first Constraint Extraction über RAM hinaus erweitert: Laptop/Smartphone erkennen explizit genannten RAM, Speicher und Bildschirmgröße; Waschmaschinen Kapazität und Schleuderdrehzahl; Mähroboter Flächenangabe. Neue Regressionen prüfen `Laptop 16 GB RAM 512 GB 15,6 Zoll`, `Waschmaschine 9 kg 1400 rpm` und `Mähroboter 800 m²`. Ziel bleibt: bereits in der Anfrage vorhandene Angaben werden als Constraints übernommen und dem Nutzer nicht erneut als unbeantwortete Verfeinerungsfrage gestellt.
+
+Main/live weiterhin unverändert.
+
+
+### 2026-10-01 – Preview-Infrastruktur und Query-Intent-Härtung
+- Development Preview bleibt strikt von GitHub Pages Production isoliert; Zielhost `dev.fundblick.de` vorbereitet, DNS/Hosting-Aktivierung als separater Einmalschritt.
+- Preview-Build erzeugt weiterhin ein noindex/nofollow-Paket und deployt nicht auf `main`/fundblick.de.
+- Query-Blueprint-Regressionsfall entdeckt: `Laptop 16 GB RAM 512 GB 15,6 Zoll` kollidierte mit der RAM-Produktfamilie.
+- Intent-Priorisierung gehärtet: explizites Laptop/Smartphone als Hauptprodukt wird vor Zubehörtoken erkannt; `32GB DDR5 RAM ... für Laptop` bleibt Arbeitsspeicher.
+- RAM und Storage werden als getrennte Constraints behandelt; CI-Gates erneut angestoßen.

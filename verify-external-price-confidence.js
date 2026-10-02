@@ -113,6 +113,14 @@ item = confidence.annotate([{
 }])[0];
 assert.equal(ui.trustedPrice(item, item.url), '24,90 €', 'worker-verified price remains renderable');
 
+
+const voucher=confidence.annotate([{title:'Nike Cortez Damensneaker online kaufen | OTTO',description:'Nike Sportswear Cortez Sneaker. 10 € Gutschein für deine erste Bestellung',url:'https://www.otto.de/p/nike-cortez-S0TEST/',image:'https://img.example/cortez.jpg',productCandidate:true,price:'10,00 €',currency:'EUR',priceConfidence:'visible'}])[0];
+assert.equal(voucher.priceIssue,'non-offer-amount','voucher amount must not become the Cortez product price');
+assert.equal(ui.trustedPrice(voucher,voucher.url),'');
+assert.equal(ui.visiblePriceFromText('10 € Gutschein für deine erste Bestellung'),'','voucher label after amount is not an offer price');
+assert.equal(ui.visiblePriceFromText('10 € · Gutschein für deine erste Bestellung'),'','voucher label after separator is not an offer price');
+assert.equal(ui.visiblePriceFromText('Produktpreis 44,99 €'),'44,99 €','legitimate visible product price remains usable');
+
 console.log('External price confidence: visible precedence + decimal parser + listing-price isolation OK');
 
 const promotion={title:'Akku-Bohrschrauber Bosch GSR 18V-65',description:'Kaufen Sie Bosch Professional Produkte für mindestens 236,81 € inkl. MwSt. und erhalten Sie eine Zugabe.',url:'https://shop.example/product/bosch',image:'https://img.example/drill.jpg',productCandidate:true,price:'236,81 €',currency:'EUR',priceConfidence:'visible'};

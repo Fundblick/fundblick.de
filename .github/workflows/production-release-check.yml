@@ -22,6 +22,15 @@ jobs:
       - name: Validate production JavaScript
         run: |
           for f in app.js i18n.js home-i18n.js deal-of-day.js home-deal.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js merchant-offers.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-seo-landings.js audit-seo-landing-candidates.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-merchant-offers.js verify-affiliate-routing.js verify-user-flows.js verify-google-indexability.js; do node --check "$f"; done
+          for f in search-static-i18n.js taxonomy-value-i18n.js category-query-router.js universal-search-intent.js search-intent-query.js search-intent-ui.js search-facet-engine-v2.js search-render-signal.js search-sort-runtime.js external-search-policy.js external-search-client.js external-search-i18n.js external-price-evidence.js external-search-ui.js external-price-confidence.js product-storage-parser.js product-fashion-attributes.js product-intelligence-core.js semantic-product-resolver.js semantic-taxonomy-adapter.js query-facet-blueprint.js query-blueprint-ui.js product-query-strategy.js product-unit-normalizer.js product-result-attribute-extractor.js product-result-deduper.js product-facet-engine.js product-constraint-ranker.js product-conflict-filter.js refinement-utility.js refinement-query-terms.js refinement-ui.js product-intelligence-pipeline.js external-intelligence-ui.js external-result-page.js external-search-runtime.js verify-query-facet-blueprint.js verify-query-to-facet-integration.js verify-generic-semantic-facets.js verify-product-facet-frequency.js verify-refinement-query-terms.js; do node --check "$f"; done
+          node verify-query-facet-blueprint.js
+          node verify-semantic-product-resolver.js
+          node verify-generic-semantic-facets.js
+          node verify-query-to-facet-integration.js
+          node verify-refinement-utility.js
+          node verify-refinement-query-terms.js
+          node verify-product-facet-frequency.js
+          node verify-external-intelligence-ui.js
       - name: Build and validate production catalog
         run: |
           node verify-deal-of-day.js
@@ -47,6 +56,11 @@ jobs:
           grep -q 'merchant-offers.js' search.html
           grep -q 'live-catalog-ui.js' search.html
           grep -q 'result-card.css' search.html
+          grep -q 'semantic-taxonomy-adapter.js' search.html
+          grep -q 'query-facet-blueprint.js' search.html
+          grep -q 'query-blueprint-ui.js' search.html
+          grep -q 'external-search-runtime.js' search.html
+          grep -q 'refinement-query-terms.js' search.html
           grep -q 'equestrian-search-extension.js' search.html
           grep -q 'equestrian-taxonomy-i18n.js' search.html
           grep -q 'search.html?category=home.living' index.html
@@ -81,6 +95,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html deal-of-day.js home-deal.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js coupon-engine.js merchant-offers.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css results-paging.js results-paging.css result-card.css page-meta-i18n.js live-health.js language-links.js live-catalog-ui.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js affiliate-consent.css i18n.js app.js styles.css home.css impressum.html datenschutz.html robots.txt CNAME 404.html _site/
+          cp search-static-i18n.js category-query-router.js universal-search-intent.js search-intent-query.js search-intent-ui.js search-facet-engine-v2.js search-render-signal.js search-sort-runtime.js external-search-policy.js external-search-client.js external-search-i18n.js external-price-evidence.js external-search-ui.js external-price-confidence.js product-storage-parser.js product-fashion-attributes.js product-intelligence-core.js semantic-product-resolver.js semantic-taxonomy-adapter.js query-facet-blueprint.js query-blueprint-ui.js product-query-strategy.js product-unit-normalizer.js product-result-attribute-extractor.js product-result-deduper.js product-facet-engine.js product-constraint-ranker.js product-conflict-filter.js refinement-utility.js refinement-query-terms.js refinement-ui.js product-intelligence-pipeline.js external-intelligence-ui.js external-result-page.js external-search-runtime.js search-polish.css external-search.css _site/
           cp -R build/catalog _site/catalog
           cp -R build/seo/themen _site/themen
           cp build/seo/sitemap.xml _site/sitemap.xml

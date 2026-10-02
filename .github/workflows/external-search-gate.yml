@@ -16,6 +16,17 @@ on:
       - 'external-price-confidence.js'
       - 'external-price-evidence.js'
       - 'external-search-runtime.js'
+      - 'verify-query-to-facet-integration.js'
+      - 'verify-query-facet-blueprint.js'
+      - 'external-intelligence-ui.js'
+      - 'product-intelligence-pipeline.js'
+      - 'semantic-product-resolver.js'
+      - 'semantic-taxonomy-adapter.js'
+      - 'verify-generic-semantic-facets.js'
+      - 'product-facet-engine.js'
+      - 'product-result-attribute-extractor.js'
+      - 'query-blueprint-ui.js'
+      - 'query-facet-blueprint.js'
       - 'external-search.css'
       - 'verify-search-demand-analytics.js'
       - 'verify-universal-search-intent.js'
@@ -30,6 +41,17 @@ on:
   pull_request:
     paths:
       - 'search.html'
+      - 'verify-query-to-facet-integration.js'
+      - 'verify-query-facet-blueprint.js'
+      - 'external-intelligence-ui.js'
+      - 'product-intelligence-pipeline.js'
+      - 'semantic-product-resolver.js'
+      - 'semantic-taxonomy-adapter.js'
+      - 'verify-generic-semantic-facets.js'
+      - 'product-facet-engine.js'
+      - 'product-result-attribute-extractor.js'
+      - 'query-blueprint-ui.js'
+      - 'query-facet-blueprint.js'
       - 'search-render-signal.js'
       - 'search-demand-analytics.js'
       - 'search-intent.js'
@@ -78,11 +100,31 @@ jobs:
           node --check external-search-ui.js
           node --check external-price-confidence.js
           node --check external-search-runtime.js
+          node --check query-facet-blueprint.js
+          node --check query-blueprint-ui.js
+          node --check product-result-attribute-extractor.js
+          node --check product-facet-engine.js
+          node --check product-intelligence-pipeline.js
+          node --check semantic-product-resolver.js
+          node --check semantic-taxonomy-adapter.js
+          node --check verify-generic-semantic-facets.js
+          node --check external-intelligence-ui.js
+          node --check verify-query-facet-blueprint.js
+          node --check verify-query-to-facet-integration.js
           node --check cloudflare/brave-search-worker.js
           node --check verify-search-demand-analytics.js
           node --check verify-universal-search-intent.js
           node --check verify-external-price-confidence.js
           node --check verify-brave-worker-contract.js
+      - name: Verify query-to-facet intelligence
+        run: |
+          node verify-query-facet-blueprint.js
+          node verify-semantic-product-resolver.js
+          node verify-generic-semantic-facets.js
+          node verify-query-to-facet-integration.js
+          grep -q 'semantic-taxonomy-adapter.js' search.html
+          grep -q 'query-facet-blueprint.js' search.html
+          grep -q 'query-blueprint-ui.js' search.html
       - name: Verify local completion signal wiring
         shell: bash
         run: |

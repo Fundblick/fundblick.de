@@ -6,6 +6,12 @@ on:
       - development
   workflow_dispatch:
 
+# Public preview publishing is intentionally separate from production GitHub Pages.
+# Cloudflare preview host trigger: development branch source verified 2026-10-01.
+# Cloudflare build configuration now creates the isolated _site package before deploy.
+# Dashboard build command verified: node development/build-cloudflare-preview.js.
+# When an isolated host is connected, it must consume only the validated artifact below.
+
 permissions:
   contents: read
 
@@ -22,36 +28,8 @@ jobs:
         with:
           ref: development
 
-      - name: Build full real merchant catalog
-        run: |
-          set -euo pipefail
-          node build-production-catalog.js build/catalog
-          node verify-live-catalog-v2.js build/catalog
-          node verify-production-merchants.js build/catalog
-          node verify-production-categories.js build/catalog
-          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Development merchant catalog OK',m.realCount)"
-          test -s build/catalog/categories.json
-
-      - name: Build isolated development preview
-        run: |
-          set -euo pipefail
-          mkdir -p _site
-          rsync -a ./ _site/ \
-            --exclude '.git/' \
-            --exclude '.github/' \
-            --exclude '_site/' \
-            --exclude 'build/' \
-            --exclude 'catalog/' \
-            --exclude 'CNAME'
-          rm -rf _site/catalog
-          cp -R build/catalog _site/catalog
-          touch _site/.nojekyll
-          test -f _site/index.html
-          grep -Fq 'Suchen. Angebote vergleichen. Fertig.' _site/index.html
-          grep -Fq 'action="search.html"' _site/index.html
-          grep -Fq 'external-search-runtime.js' _site/search.html
-          test -s _site/catalog/categories.json
-          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/catalog/manifest.json'));if(Number(m.itemCount)<1000)process.exit(1);console.log('Packaged preview catalog OK',m.itemCount)"
+      - name: Build portable isolated development preview
+        run: node development/build-cloudflare-preview.js
 
       - name: Protect isolated preview from search indexing
         run: |
@@ -72,6 +50,22 @@ jobs:
           ! grep -q 'deploy-pages' .github/workflows/development-preview-pages.yml
           echo 'Development preview is isolated from GitHub Pages production deployment.'
 
+      - name: Verify Cloudflare preview deployment contract
+        run: |
+          set -euo pipefail
+          node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync('wrangler.jsonc','utf8'));if(c.name!=='fundblick-development'||c.assets?.directory!=='./_site'||c.assets?.not_found_handling!=='404-page')process.exit(1);console.log('Cloudflare preview contract OK')"
+          test -f _site/index.html
+          test ! -e _site/.git
+          test ! -e _site/.github
+          test ! -e _site/docs
+
+      - name: Deploy isolated preview to Cloudflare
+        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler@4.145.0 deploy
+
       - name: Upload development preview artifact
         uses: actions/upload-artifact@v4
         with:
@@ -79,3 +73,11 @@ jobs:
           path: _site
           retention-days: 7
           if-no-files-found: error
+
+      - name: Preview hosting handoff summary
+        run: |
+          echo 'Preview package validated and ready for an isolated host.'
+          echo 'Planned hostname: dev.fundblick.de'
+          echo 'Production main/fundblick.de are not deployment targets of this workflow.'
+          echo 'Artifact: fundblick-development-preview (7-day retention, noindex/nofollow).'
+          echo 'Cloudflare Workers Static Assets must publish _site only, never the repository root.'

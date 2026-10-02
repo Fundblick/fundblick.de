@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert');
+const facets=require('./product-facet-engine.js');
+const analysis={category:'fashion.shoes',facets:['size','color'],attributes:{}};
+const item=(size,color)=>({attributes:{size:{value:size,confidence:'HIGH'},color:{value:color,confidence:'HIGH'}}});
+const state=facets.derive(analysis,[item(39,'black'),item(39,'white'),item(40,'black'),item(39,'black')]);
+const size=state.primary.find(x=>x.id==='size'),color=state.primary.find(x=>x.id==='color');
+assert(size&&color,'expected evidence-backed facets');
+assert.deepEqual(size.valueCounts,[{value:39,count:3},{value:40,count:1}]);
+assert.deepEqual(color.valueCounts,[{value:'black',count:3},{value:'white',count:1}]);
+assert.equal(size.count,4);assert.equal(size.distinctValues,2);assert.equal(size.refinable,true);
+console.log('facet value frequency checks passed');

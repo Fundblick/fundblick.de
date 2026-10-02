@@ -21,11 +21,18 @@ const json = (body, status = 200, extraHeaders = {}) => new Response(JSON.string
   }
 });
 
+function allowedOrigins(env) {
+  const required = [
+    'https://fundblick.de',
+    'https://fundblick-development.frosty-moon-518b.workers.dev'
+  ];
+  const configured = String(env.ALLOWED_ORIGIN || '').split(',').map(v => v.trim()).filter(Boolean);
+  return [...new Set([...required, ...configured])];
+}
+
 function corsHeaders(request, env) {
   const origin = request.headers.get('Origin') || '';
-  const configured = String(env.ALLOWED_ORIGIN || 'https://fundblick.de').trim();
-  const allowed = configured.split(',').map(v => v.trim()).filter(Boolean);
-  const matched = allowed.includes(origin);
+  const matched = allowedOrigins(env).includes(origin);
   return {
     ...(matched ? { 'access-control-allow-origin': origin } : {}),
     'access-control-allow-methods': 'GET, OPTIONS',
@@ -38,8 +45,7 @@ function corsHeaders(request, env) {
 function originAllowed(request, env) {
   const origin = request.headers.get('Origin');
   if (!origin) return true;
-  const allowed = String(env.ALLOWED_ORIGIN || 'https://fundblick.de').split(',').map(v => v.trim()).filter(Boolean);
-  return allowed.includes(origin);
+  return allowedOrigins(env).includes(origin);
 }
 
 function cleanQuery(value) {
