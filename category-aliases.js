@@ -18,6 +18,14 @@
     'home.decor':{label:'Dekoration',icon:'🪴',terms:['home.decor','dekoration','deko','kissen','korb','teppich','schale','vase'],facets:standardHomeFacets}
   };
   for(const [key,schema] of Object.entries(home))schemas[key]={...(schemas[key]||{}),...schema};
+  const gifts={
+    'gifts.personalized.keychains':{label:'Personalisierte Schlüsselanhänger',icon:'🔑',terms:['gifts.personalized.keychains','schlüsselanhänger','schluesselanhaenger','personalisierter schlüsselanhänger','foto schlüsselanhänger'],facets:[{key:'productType',label:'Produkttyp',type:'multi'}]},
+    'gifts.personalized.jewelry':{label:'Personalisierter Schmuck',icon:'💎',terms:['gifts.personalized.jewelry','personalisierter schmuck','fotokette','projektionskette','halskette mit foto','armband personalisiert'],facets:[{key:'productType',label:'Produkttyp',type:'multi'}]},
+    'gifts.personalized.photo-gifts':{label:'Fotogeschenke',icon:'🎁',terms:['gifts.personalized.photo-gifts','fotogeschenk','fotogeschenke','geschenk mit foto','personalisiertes fotogeschenk'],facets:[{key:'productType',label:'Produkttyp',type:'multi'}]},
+    'craft.jewelry-making.supplies':{label:'Schmuckzubehör',icon:'📿',terms:['craft.jewelry-making.supplies','schmuckzubehör','schmuckzubehoer','perlenkettenzubehör','perlenkettenzubehoer','schmuck bastelzubehör'],facets:[{key:'productType',label:'Produkttyp',type:'multi'}]},
+    'gifts.personalized.other':{label:'Personalisierte Geschenke',icon:'🎁',terms:['gifts.personalized.other','personalisiertes geschenk','personalisierte geschenke','geschenk personalisiert'],facets:[{key:'productType',label:'Produkttyp',type:'multi'}]}
+  };
+  for(const [key,schema] of Object.entries(gifts))schemas[key]={...(schemas[key]||{}),...schema};
   window.FB_detectCategory=function(query){const q=String(query||'').toLocaleLowerCase('de');let best=null,bestLen=0;for(const [key,s] of Object.entries(schemas)){for(const term of s.terms||[]){const token=String(term).toLocaleLowerCase('de');if(q.includes(token)&&token.length>bestLen){best={id:key,key,...s};bestLen=token.length}}}return best;};
 
   const typeRules={
