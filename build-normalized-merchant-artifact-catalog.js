@@ -16,7 +16,8 @@ const extras=JSON.parse(raw.toString('utf8'));
 if(!Array.isArray(extras))throw new Error('Normalized merchant artifact must contain an array');
 const expected=config.expected||{};
 if(Number.isInteger(expected.products)&&extras.length!==expected.products)throw new Error(`${config.merchant} artifact contract changed: expected ${expected.products} products, got ${extras.length}`);
-const digest=crypto.createHash('sha256').update(raw).digest('hex');
+const canonical=Buffer.from(JSON.stringify(extras),'utf8');
+const digest=crypto.createHash('sha256').update(canonical).digest('hex');
 if(expected.artifactSha256&&digest!==expected.artifactSha256)throw new Error(`${config.merchant} artifact digest mismatch: expected ${expected.artifactSha256}, got ${digest}`);
 if(extras.some(p=>p.testData!==false||p.source?.network!==config.network||p.source?.advertiserId!==config.advertiserId))throw new Error(`${config.merchant} artifact provenance contract broken`);
 if(extras.some(p=>!config.catalogCategories.includes(p.category)))throw new Error(`${config.merchant} artifact contains an unregistered catalog category`);
@@ -32,6 +33,6 @@ fs.readFileSync=function(file,...args){
   }
   return originalRead(file,...args);
 };
-console.log(`Normalized artifact accepted: merchant=${config.key}, products=${extras.length}, sha256=${digest}`);
+console.log(`Normalized artifact accepted: merchant=${config.key}, products=${extras.length}, canonicalSha256=${digest}`);
 process.argv[2]=outputRoot;
 require('./build-live-catalog.js');
