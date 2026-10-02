@@ -8,6 +8,9 @@ const rows=[
 ];
 const s=n.selectRows(rows);assert.equal(s.advertiser.length,3);assert.equal(s.preferred.length,2);
 const out=n.normalize(rows);assert.equal(out.length,2);assert.equal(out[0].category,'gifts.personalized.jewelry');assert.equal(out[1].category,'craft.jewelry-making.supplies');assert.equal(out[0].affiliateUrl,rows[0].aw_deep_link);assert.equal(n.validate(out).length,0);
+assert.equal(out[0].rawAttributes.taxonomyFamily,'gifts');
+assert.equal(out[0].rawAttributes.productType,'Schmuck');
+assert.equal(out[1].rawAttributes.productType,'Schmuckzubehör');
 assert.equal(n.validAffiliate('https://www.awin1.com/pclick.php?p=38392705049&a=3106259&m=87569'),true);
 assert.equal(n.validAffiliate('https://www.awin1.com/cread.php?awinmid=87569&awinaffid=3106259'),true);
 assert.equal(n.validDirect('https://evil.example/products/x'),false);assert.equal(n.validAffiliate('https://www.awin1.com/cread.php?awinmid=87569&awinaffid=999'),false);
