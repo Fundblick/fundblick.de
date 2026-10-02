@@ -65,6 +65,24 @@ const weakEvidence=pipeline.run('Luftreiniger',[
  {title:'Noisy snippet',rawAttributes:{productType:'Produkt'},attributes:{size:{value:'XL',confidence:'HIGH'}}}
 ],{taxonomy:[]});assert.equal(weakEvidence.semanticResolution.category,'evidence.luftreiniger');assert(!weakEvidence.facets.primary.some(x=>x.id==='size'),'generic noisy product labels must not inject unrelated selectable facets');
 
+const coffee=pipeline.run('Kaffeemühle für Espresso',[
+ {title:'Barista Grind 40',rawAttributes:{productType:'Kaffeemühle'},attributes:{grinder_type:{value:'Kegelmahlwerk',confidence:'HIGH'},grind_settings:{value:40,confidence:'HIGH'},hopper_capacity:{value:300,unit:'g',confidence:'HIGH'}}},
+ {title:'Espresso Mill 60',rawAttributes:{productType:'Kaffeemühle'},attributes:{grinder_type:{value:'Scheibenmahlwerk',confidence:'HIGH'},grind_settings:{value:60,confidence:'HIGH'},hopper_capacity:{value:250,unit:'g',confidence:'HIGH'}}},
+ {title:'Quiet Grind 30',rawAttributes:{productType:'Kaffeemühle'},attributes:{grinder_type:{value:'Kegelmahlwerk',confidence:'HIGH'},grind_settings:{value:30,confidence:'HIGH'},hopper_capacity:{value:200,unit:'g',confidence:'HIGH'}}}
+],{taxonomy:[],facets:{minCoverage:.35,maxPrimary:8}});assert.equal(coffee.semanticResolution.category,'evidence.kaffeemuhle');assert.equal(coffee.semanticResolution.provisional,true);assert(coffee.facets.primary.some(x=>x.id==='grinder_type'));assert(coffee.refinementSuggestions.some(x=>x.id==='grinder_type'||x.id==='grind_settings'));
+
+const helmet=pipeline.run('Fahrradhelm',[
+ {title:'RoadSafe Helm M',rawAttributes:{productType:'Fahrradhelm'},attributes:{helmet_size:{value:'M',confidence:'HIGH'},usage:{value:'Road',confidence:'HIGH'},mips:{value:'Ja',confidence:'HIGH'}}},
+ {title:'TrailSafe Helm L',rawAttributes:{productType:'Fahrradhelm'},attributes:{helmet_size:{value:'L',confidence:'HIGH'},usage:{value:'MTB',confidence:'HIGH'},mips:{value:'Ja',confidence:'HIGH'}}},
+ {title:'CitySafe Helm S',rawAttributes:{productType:'Fahrradhelm'},attributes:{helmet_size:{value:'S',confidence:'HIGH'},usage:{value:'City',confidence:'HIGH'},mips:{value:'Nein',confidence:'HIGH'}}}
+],{taxonomy:[],facets:{minCoverage:.35,maxPrimary:8}});assert.equal(helmet.semanticResolution.category,'evidence.fahrradhelm');assert(helmet.facets.primary.some(x=>x.id==='helmet_size'));assert(helmet.refinementSuggestions.some(x=>x.id==='helmet_size'||x.id==='usage'||x.id==='mips'));
+
+const monitor=pipeline.run('Ultrawide Monitor',[
+ {title:'WideView 34',rawAttributes:{productType:'Ultrawide Monitor'},attributes:{screen_size:{value:34,unit:'inch',confidence:'HIGH'},resolution:{value:'3440x1440',confidence:'HIGH'},refresh_rate:{value:144,unit:'Hz',confidence:'HIGH'}}},
+ {title:'OfficeWide 29',rawAttributes:{productType:'Ultrawide Monitor'},attributes:{screen_size:{value:29,unit:'inch',confidence:'HIGH'},resolution:{value:'2560x1080',confidence:'HIGH'},refresh_rate:{value:100,unit:'Hz',confidence:'HIGH'}}},
+ {title:'GameWide 49',rawAttributes:{productType:'Ultrawide Monitor'},attributes:{screen_size:{value:49,unit:'inch',confidence:'HIGH'},resolution:{value:'5120x1440',confidence:'HIGH'},refresh_rate:{value:240,unit:'Hz',confidence:'HIGH'}}}
+],{taxonomy:[],facets:{minCoverage:.35,maxPrimary:8}});assert.equal(monitor.semanticResolution.category,'evidence.ultrawide_monitor');assert(monitor.facets.primary.some(x=>x.id==='resolution'));assert(monitor.refinementSuggestions.length>0);
+
 const unknown=pipeline.run('QXZ Spezialadapter 4711',[],{taxonomy});
 assert.equal(unknown.semanticResolution.needsRemoteFallback,true);
 assert.equal(unknown.analysis.category||null,null);
