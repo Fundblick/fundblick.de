@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const src=fs.readFileSync('live-catalog-ui.js','utf8');
+assert.match(src,/availabilityUnknown:'Verfügbarkeit beim Händler prüfen'/,'German UNKNOWN availability disclosure missing');
+assert.match(src,/availabilityUnknown:'Check availability with merchant'/,'English UNKNOWN availability disclosure missing');
+assert.match(src,/availabilityUnknown:'Уточните наличие у продавца'/,'Russian UNKNOWN availability disclosure missing');
+assert.match(src,/return'unknown'/,'UNKNOWN availability state must remain explicit');
+assert.match(src,/is-unknown-stock/,'UNKNOWN availability must have a dedicated UI state');
+assert.match(src,/t\.availabilityUnknown/,'UNKNOWN availability copy must be rendered');
+console.log('Live catalog UNKNOWN availability disclosure gate passed');
