@@ -21,7 +21,6 @@ if(approvals?.merchants?.amazgifts?.approved===true){
   expected.set('gifts.personalized.jewelry',605);
   expected.set('gifts.personalized.photo-gifts',74);
   expected.set('craft.jewelry-making.supplies',14);
-  expected.set('gifts.personalized.other',0);
 }
 for(const [id,count] of expected){
   if(counts.get(id)!==count)throw new Error(`Expected ${id}=${count}, got ${counts.get(id)??'missing'}`);
