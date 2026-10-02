@@ -23,4 +23,9 @@ assert.match(search,/for\(const \[id,schema\] of Object\.entries\(SCHEMAS\)\)/,'
 assert.match(search,/deliveryDays,rawAttributes\}/,'search product must retain rawAttributes');
 assert.match(search,/p\.affiliateUrl=affiliateUrl;p\.directUrl=directUrl/,'search product must retain outbound URLs for live decorator');
 assert.match(search,/const tokens=routedSchema\?\[\]:interpret\(translated\)/,'canonical routed category must not be narrowed again by alias literals');
+const categoryI18n=fs.readFileSync('category-display-i18n.js','utf8');
+assert.match(categoryI18n,/Personalisierte Schlüsselanhänger/,'German gift category label missing');
+assert.match(categoryI18n,/Personalized keychains/,'English gift category fallback missing');
+assert.match(categoryI18n,/Персонализированные брелоки/,'Russian gift category label missing');
+assert.match(categoryI18n,/Object\.assign\(\{\},labels\.en,labels\[lang\]\|\|\{\}\)/,'missing translations must fall back to English');
 console.log('Amazgifts search runtime taxonomy, facets and outbound data wiring OK');
