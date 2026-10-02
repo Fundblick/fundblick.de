@@ -23,6 +23,7 @@ if(approval.approved===true){
   assert(fs.existsSync(source),'approved Amazgifts artifact missing from repository');
 }else{
   assert.equal(approval.termsCleared,false,'blocked Amazgifts should retain unresolved terms state');
+  assert.match(String(approval.reason||''),/deeplink|automation/i,'blocked Amazgifts must document the unresolved advertiser terms reason');
   assert(!sources.includes(source),'blocked Amazgifts source must not be in production manifest');
 }
 console.log(`Amazgifts live-readiness configuration gate passed: approved=${approval.approved}`);
