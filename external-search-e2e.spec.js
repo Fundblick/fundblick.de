@@ -166,8 +166,8 @@ test('normal laptop facets drive a new constrained web retrieval instead of only
  const laptop=(i,memory,screen)=>({title:`ASUS Notebook Modell ${i} ${memory} GB RAM ${screen} Zoll`,url:`https://merchant-${i}.example/product/asus-${i}`,image:'https://images.example/asus.jpg',price:String(700+i),currency:'EUR',priceConfidence:'structured',productCandidate:true,resultType:'product'});
  const initial=[laptop(1,8,15.6),laptop(2,16,16),laptop(3,32,16),laptop(4,64,16)];
  const refined=[laptop(10,64,16),laptop(11,64,16),laptop(12,64,16),laptop(13,64,16),laptop(14,64,16)];
- const state=await mockSearch(page,req=>({results:/memory\s+64/i.test(req.q||'')?refined:initial,moreResultsAvailable:false}));
+ const state=await mockSearch(page,req=>({results:/64\s+GB\s+RAM/i.test(req.q||'')?refined:initial,moreResultsAvailable:false}));
  await page.goto(base+'?q=Asus%20Notebook&lang=de&web=1');
  const ram=page.locator('#external-results select[data-facet="memory"]');await expect(ram).toBeVisible();await ram.selectOption('64');
- await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/memory\s+64/i);await expect(page.locator('.external-result-card')).toHaveCount(5);expect(state.errors).toEqual([]);
+ await expect.poll(()=>state.requests.length).toBeGreaterThan(1);expect(state.requests.at(-1).q).toMatch(/64\s+GB\s+RAM/i);await expect(page.locator('.external-result-card')).toHaveCount(5);expect(state.errors).toEqual([]);
 });
