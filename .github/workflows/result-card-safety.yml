@@ -44,6 +44,7 @@ jobs:
         run: |
           node build-production-catalog.js build/catalog
           node verify-live-catalog-v2.js build/catalog
+          node prepare-amazgifts-e2e.js
           rm -rf catalog
           cp -R build/catalog catalog
       - name: Verify card production wiring

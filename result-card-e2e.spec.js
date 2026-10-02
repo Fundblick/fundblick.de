@@ -23,6 +23,12 @@ test('approved Amazgifts production card preserves unknown evidence and affiliat
   await expect(card.locator('.availability-status')).not.toContainText('Lieferbar');
   await expect(card.locator('.price small').first()).toContainText('Versandkosten beim Händler prüfen');
   await expect(card.locator('.merchant-link')).toBeVisible();
-  await expect(card.locator('.merchant-link')).toHaveAttribute('rel',/sponsored/);
+  const link=card.locator('.merchant-link');
+  await expect(link).toHaveAttribute('data-offer-network','awin');
+  await expect(link).toHaveAttribute('data-offer-affiliate-url',/^https:\/\/www\.awin1\.com\/pclick\.php/);
+  await expect(link).toHaveAttribute('data-link-mode','direct');
+  await expect(link).toHaveAttribute('data-link-reason','tracking-not-consented');
+  await expect(link).toHaveAttribute('rel',/noopener/);
+  await expect(link).not.toHaveAttribute('rel',/sponsored/);
   expect(errors).toEqual([]);
 });

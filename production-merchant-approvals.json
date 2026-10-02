@@ -19,12 +19,13 @@
       ]
     },
     "amazgifts": {
-      "approved": false,
+      "approved": true,
       "network": "awin",
       "advertiserId": "87569",
       "publisherId": "3106259",
-      "sources": [],
-      "reason": "Terms reviewed for FundBlick use of publisher-authorized Awin feed links; pending verified artifact promotion into production",
+      "sources": [
+        "development/amazgifts-products.json.gz.b64"
+      ],
       "termsCleared": true
     }
   }
