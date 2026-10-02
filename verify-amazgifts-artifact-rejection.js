@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('node:fs'),zlib=require('node:zlib'),os=require('node:os'),path=require('node:path'),cp=require('node:child_process');
+const input=process.argv[2];if(!input)throw new Error('Usage: node verify-amazgifts-artifact-rejection.js <artifact.json.gz.b64>');
+const products=JSON.parse(zlib.gunzipSync(Buffer.from(fs.readFileSync(input,'utf8').replace(/\s+/g,''),'base64')).toString('utf8'));
+if(!Array.isArray(products)||!products.length)throw new Error('Artifact contains no products');
+products[0]={...products[0],name:String(products[0].name)+' [mutation-test]'};
+const mutated=path.join(os.tmpdir(),'amazgifts-mutated.json.gz.b64');
+fs.writeFileSync(mutated,zlib.gzipSync(Buffer.from(JSON.stringify(products),'utf8'),{level:9}).toString('base64')+'\n');
+const run=cp.spawnSync(process.execPath,['build-normalized-merchant-artifact-catalog.js','amazgifts',mutated,path.join(os.tmpdir(),'amazgifts-mutated-build')],{encoding:'utf8'});
+if(run.status===0)throw new Error('Mutated Amazgifts artifact was incorrectly accepted');
+const output=(run.stdout||'')+(run.stderr||'');
+if(!/artifact digest mismatch/i.test(output))throw new Error('Mutated artifact failed for an unexpected reason:\n'+output);
+console.log('Mutated Amazgifts artifact correctly rejected by canonical digest gate');
