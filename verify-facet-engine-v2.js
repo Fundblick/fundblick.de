@@ -20,4 +20,8 @@ assert.deepStrictEqual(categoryUrlFacets.map(x=>x.key),['type','material','style
 assert.equal(engine.dominantSchema(products,null),global.FB_CATEGORY_SCHEMAS.furniture);
 assert(engine.matches(products[0],'type',new Set(['Hocker'])));
 assert(!engine.matches(products[2],'type',new Set(['Hocker'])));
+const gift=engine.enrich({family:'gifts.personalized.jewelry',name:'Personalisierte Fotokette',rawAttributes:{productType:'Schmuck'},attrs:{}});
+assert.equal(gift.attrs.productType,'Schmuck','feed-backed rawAttributes.productType must reach facet attrs');
+assert.deepStrictEqual(engine.availableValues([gift],'productType',['Schmuck']),[{value:'Schmuck',count:1}]);
+assert(engine.matches(gift,'productType',new Set(['Schmuck'])));
 console.log('Facet engine v2 OK: category-URL schema fallback, data-driven options, counts and matching.');
