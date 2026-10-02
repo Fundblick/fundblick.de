@@ -32,8 +32,8 @@ Bei Aktivierung verlangt verify-production-merchants.js exakt 2.964 eindeutige P
 1. Das verifizierte Artefakt als development/amazgifts-products.json.gz.b64 in den Development-Branch übernehmen.
 2. Isolierten Development-Build und Preview mit diesem Artefakt ausführen.
 3. Suche, Produktkarten, mobile Darstellung und Affiliate-Outbound im Browser prüfen.
-4. Die Advertiser-Regel zu Deeplinks/automatisierten Systemen vor Produktionsaktivierung schriftlich klären. Der Feed enthält Awin-aw_deep_link, dennoch wird aus den Advertiser-Bedingungen keine automatische Produktionsfreigabe abgeleitet.
-5. Erst nach erfolgreicher QA approved auf true setzen und dieselbe Quelle in production-catalog-sources.json aufnehmen.
+4. Die Advertiser-Regel zu Deeplinks/automatisierten Systemen vor Produktionsaktivierung schriftlich klären. Der Feed enthält Awin-aw_deep_link, dennoch wird aus den Advertiser-Bedingungen keine automatische Produktionsfreigabe abgeleitet. Nach dokumentierter Klärung termsCleared auf true setzen.
+5. Danach node activate-amazgifts-production.js ausführen. Das Skript verweigert die Aktivierung bei fehlendem Artefakt, falscher Produktzahl, falschem Digest, falschen Awin-IDs oder ungeklärten Advertiser-Bedingungen und aktualisiert erst danach approved sowie production-catalog-sources.json.
 6. Production release check vollständig grün abwarten.
 7. Erst danach Merge/Live-Freigabe.
 
