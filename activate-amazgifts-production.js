@@ -13,6 +13,7 @@ if(digest!==cfg.expected.artifactSha256)throw new Error(`Cannot activate Amazgif
 const approvals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
 const approval=approvals?.merchants?.amazgifts;
 if(!approval)throw new Error('Cannot activate Amazgifts: approval record missing');
+if(approval.termsCleared!==true)throw new Error('Cannot activate Amazgifts: advertiser deeplink/automation terms are not explicitly cleared');
 if(approval.network!=='awin'||approval.advertiserId!=='87569'||approval.publisherId!=='3106259')throw new Error('Cannot activate Amazgifts: approval identity mismatch');
 approval.approved=true;
 delete approval.reason;
