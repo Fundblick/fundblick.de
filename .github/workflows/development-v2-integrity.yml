@@ -35,6 +35,9 @@ jobs:
       - run: node verify-merchant-feed-registry.js
       - run: node verify-anthbot-feed.js
       - run: node verify-anthbot-search-facets.js
+      - run: node verify-amazgifts-normalizer.js
+      - run: node verify-facet-engine-v2.js
+      - run: node --check build-normalized-merchant-artifact-catalog.js
       - run: node verify-robot-mower-classifier.js
       - run: node verify-external-search-client.js
       - run: node verify-external-search-policy.js
