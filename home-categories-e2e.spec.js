@@ -9,7 +9,7 @@ test('homepage categories follow the production taxonomy manifest',async({page})
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
   const categoryNav=page.getByRole('navigation',{name:'Produktkategorien'});
   const links=categoryNav.locator('a[data-live-category="true"]');
-  await expect(links).toHaveCount(9);
+  await expect(links).toHaveCount(13);
   await expect(categoryNav).toContainText('Pferd & Reitsport');
   await expect(categoryNav).toContainText('Hund');
   await expect(categoryNav).toContainText('Gesundheit & Nahrungsergänzung');
