@@ -15,6 +15,9 @@ assert.equal(out[0].shippingCost,null,'blank delivery_cost must remain unknown, 
 assert.equal(out[1].shippingCost,null,'blank delivery_cost must remain unknown, not free shipping');
 assert.equal(out[0].availability,'UNKNOWN');
 assert.equal(out[0].inStock,null,'missing stock evidence must remain unknown');
+assert.equal(out[0].shippingCost,null);
+assert.notEqual(out[0].shippingCost,0,'unknown shipping must never become free shipping');
+assert.notEqual(out[0].inStock,true,'unknown availability must never become confirmed stock');
 assert.equal(n.validAffiliate('https://www.awin1.com/pclick.php?p=38392705049&a=3106259&m=87569'),true);
 assert.equal(n.validAffiliate('https://www.awin1.com/cread.php?awinmid=87569&awinaffid=3106259'),true);
 assert.equal(n.validDirect('https://evil.example/products/x'),false);assert.equal(n.validAffiliate('https://www.awin1.com/cread.php?awinmid=87569&awinaffid=999'),false);
