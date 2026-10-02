@@ -48,7 +48,8 @@ FundBlick besitzt die Taxonomie. Der Händler liefert Rohdaten und Begriffe. Hä
 - Aktuelle belegte Zuordnung aus Titel/Beschreibung: 2.271 Schlüsselanhänger, 605 Schmuck, 74 Fotogeschenke, 14 Schmuckzubehör.
 - Alle 2.964 Produkte erhalten `rawAttributes.productType`; die Suchfacette verwendet denselben kanonischen Schlüssel `productType`.
 - Affiliate-Ziel bleibt der vom Awin-Feed gelieferte `aw_deep_link`; Direktziel bleibt `merchant_deep_link`.
-- Fehlende Lieferkosten und Verfügbarkeit werden nicht erfunden; unbekannte Lieferkosten bleiben unbekannt, Availability bleibt `UNKNOWN`.
+- Fehlende Lieferkosten und Verfügbarkeit werden nicht erfunden: im geprüften Vollfeed sind bei 2.964/2.964 Produkten die Lieferkosten unbekannt und bei 2.964/2.964 Produkten der Lagerstatus unbekannt. `shippingCost` und `inStock` bleiben daher `null`, Availability bleibt `UNKNOWN`.
+- Reproduzierbarer normalisierter Development-Bestand nach diesen Evidence-Regeln: 2.964 Produkte; SHA-256 des entpackten JSON: `1525723cff8652b1822d522a9fe7b7443d0dbf77ca4ba28300b860da642fb9e8`.
 - Ohne belastbaren Referenz-/Vergleichspreis werden keine Rabatte konstruiert. Der Homepage-Fallback wird deterministisch über Kategorien diversifiziert.
 - Normaler Development-Preview-Build bleibt beim production-approved Katalog. Amazgifts kann nur explizit über `FUNDBLICK_AMAZGIFTS_FEED` oder `FUNDBLICK_AMAZGIFTS_ARTIFACT` zugeschaltet werden.
 - Amazgifts bleibt aus `production-catalog-sources.json` und `production-merchant-approvals.json` ausgeschlossen, bis eine ausdrückliche Production-Freigabe erfolgt.
