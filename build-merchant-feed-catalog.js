@@ -25,7 +25,7 @@ const coreFile=path.normalize(path.join('development','core-products.json'));
 const originalRead=fs.readFileSync.bind(fs);
 fs.readFileSync=function(file,...args){
   if(path.normalize(String(file))===coreFile){
-    const core=JSON.parse(originalRead(file,'utf8'));
+    const core=fs.existsSync(coreFile)?JSON.parse(originalRead(file,'utf8')):[];
     if(!Array.isArray(core))throw new Error(`${coreFile} must contain an array`);
     return JSON.stringify([...core,...extras]);
   }
