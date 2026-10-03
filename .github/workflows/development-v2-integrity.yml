@@ -4,6 +4,20 @@ on:
     branches: [development]
   pull_request:
     branches: [main]
+    paths:
+      - 'development/**'
+      - 'verify-category-query-router.js'
+      - 'search-sort-runtime.test.js'
+      - 'verify-public-catalog-boundary.js'
+      - 'verify-affiliate-consent.js'
+      - 'verify-merchant-offers.js'
+      - 'verify-merchant-feed-registry.js'
+      - 'verify-anthbot-feed.js'
+      - 'verify-anthbot-search-facets.js'
+      - 'verify-amazgifts-normalizer.js'
+      - 'verify-facet-engine-v2.js'
+      - 'build-normalized-merchant-artifact-catalog.js'
+      - '.github/workflows/development-v2-integrity.yml'
 jobs:
   verify:
     runs-on: ubuntu-latest
