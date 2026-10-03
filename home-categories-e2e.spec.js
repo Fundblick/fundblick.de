@@ -3,6 +3,25 @@ const {test,expect}=require('@playwright/test');
 
 const base='http://127.0.0.1:4173/';
 
+test('every homepage production category opens with results',async({page})=>{
+  await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
+  const links=page.getByRole('navigation',{name:'Produktkategorien'}).locator('a[data-live-category="true"]');
+  const categories=await links.evaluateAll(nodes=>nodes.map(node=>({
+    id:node.getAttribute('data-catalog-category'),
+    href:node.getAttribute('href'),
+    expected:Number((node.getAttribute('title')||'').match(/\d+/)?.[0]||0)
+  })));
+  expect(categories).toHaveLength(13);
+  for(const item of categories){
+    expect(item.id).toBeTruthy();
+    expect(item.expected).toBeGreaterThan(0);
+    await page.goto(new URL(item.href,base).href,{waitUntil:'networkidle'});
+    const count=Number((await page.locator('#summary').textContent()).match(/\d+/)?.[0]||0);
+    expect(count, item.id+' must return products').toBeGreaterThan(0);
+    await expect(page.locator('#cards article.product').first(),item.id+' must render a product card').toBeVisible();
+  }
+});
+
 test('homepage categories follow the production taxonomy manifest',async({page})=>{
   const errors=[];
   page.on('pageerror',e=>errors.push(String(e)));
