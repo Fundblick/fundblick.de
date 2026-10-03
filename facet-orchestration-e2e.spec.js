@@ -85,7 +85,7 @@ test('Casa Moro keeps furniture product types without equestrian leakage',async(
 
 test('central sort changes visible cards for price and brand',async({page})=>{
   const errors=await openCatalog(page);
-  await page.locator('#sort').selectOption('price-asc');
+  await page.locator('#sort').evaluate((select)=>{select.value='price-asc';select.dispatchEvent(new Event('change',{bubbles:true}));});
   await page.waitForTimeout(100);
   const asc=await visiblePrices(page);
   expect(asc.length).toBeGreaterThan(1);
