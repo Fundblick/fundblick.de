@@ -12,6 +12,7 @@ on:
       - 'facet-schemas.js'
       - 'category-*.js'
       - 'search.js'
+      - 'styles.css'
       - 'verify-blazevideo-selection.js'
       - 'blazevideo-e2e.spec.js'
       - 'home-categories-e2e.spec.js'

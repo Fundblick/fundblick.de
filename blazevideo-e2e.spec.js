@@ -1,7 +1,7 @@
 'use strict';
 const {test,expect}=require('@playwright/test');
 const base='http://127.0.0.1:4173/';
-for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
+for(const viewport of [{width:1440,height:1000},{width:390,height:844},{width:320,height:740}]){
  test('BlazeVideo categories, images and affiliate consent '+viewport.width,async({page})=>{
   await page.setViewportSize(viewport);
   const errors=[];page.on('pageerror',e=>errors.push(String(e)));
@@ -37,6 +37,7 @@ for(const viewport of [{width:1440,height:1000},{width:390,height:844}]){
   await expect(page.locator('#summary')).toContainText('Аксессуары для фотоловушек');
   await expect(page.locator('#cards article.product')).toHaveCount(2);
   expect(errors).toEqual([]);
-  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+  const overflow=await page.evaluate(()=>({width:document.documentElement.scrollWidth,viewport:window.innerWidth,elements:[...document.querySelectorAll('body *')].filter(el=>el.getBoundingClientRect().right>window.innerWidth+1).map(el=>({tag:el.tagName,class:el.className,text:el.textContent?.slice(0,80),right:el.getBoundingClientRect().right})).slice(0,20)}));
+  expect(overflow.width,JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.viewport);
  });
 }
