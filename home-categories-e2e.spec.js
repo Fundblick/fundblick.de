@@ -12,6 +12,7 @@ test('every homepage production category opens with results',async({page})=>{
   const categories=await links.evaluateAll(nodes=>nodes.map(node=>({
     id:node.getAttribute('data-catalog-category'),
     href:node.getAttribute('href'),
+    label:node.textContent,
     expected:Number((node.getAttribute('title')||'').match(/\d+/)?.[0]||0)
   })));
   expect(categories).toHaveLength(Object.keys(expectedCategories).length);
@@ -22,6 +23,7 @@ test('every homepage production category opens with results',async({page})=>{
     expect(item.expected).toBe(expectedCategories[item.id]);
     await page.goto(new URL(item.href,base).href,{waitUntil:'networkidle'});
     const count=Number((await page.locator('#summary').textContent()).match(/\d+/)?.[0]||0);
+    await expect(page.locator('#summary')).toContainText(item.label);
     expect(count, item.id+' must return every indexed product').toBe(item.expected);
     await expect(page.locator('#cards article.product')).toHaveCount(item.expected);
     await expect(page.locator('html')).toHaveAttribute('data-search-health','ok');
@@ -84,4 +86,13 @@ test('new search loads products outside the previous category',async({page})=>{
  await expect(page.locator('#cards')).toContainText('Casa Moro');
  await expect(page).toHaveURL(/q=Mosaiktisch/);
  expect(new URL(page.url()).searchParams.has('category')).toBe(false);
+});
+
+test('category summary follows a language change without changing its products',async({page})=>{
+ await page.goto(base+'search.html?category=home.living&lang=de',{waitUntil:'networkidle'});
+ await expect(page.locator('#summary')).toContainText('Wohnen & Haushalt');
+ await page.locator('#language').selectOption('ru');
+ await expect(page.locator('#summary')).toContainText('Дом и быт');
+ await expect(page.locator('#cards article.product')).toHaveCount(516);
+ await expect(page.locator('html')).toHaveAttribute('data-search-health','ok');
 });

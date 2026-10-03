@@ -13,7 +13,7 @@ function packageSite(mode='production'){
   assert.ok(/^[a-z0-9][a-z0-9.-]*$/i.test(file),'Only explicitly reviewed root files may be published');
   if(mode==='preview'&&file==='CNAME')continue;
   const source=path.join(root,file);assert.ok(fs.lstatSync(source).isFile(),'Missing public file: '+file);
-  fs.copyFileSync(source,path.join(site,file));
+  fs.writeFileSync(path.join(site,file),fs.readFileSync(source,'utf8').replace(/\r\n/g,'\n'));
  }
  fs.cpSync(path.join(root,'build/catalog'),path.join(site,'catalog'),{recursive:true});
  // Use the same generated category landing pages in both environments.

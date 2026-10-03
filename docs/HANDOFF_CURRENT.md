@@ -4,8 +4,8 @@
 **Repository:** `Fundblick/fundblick.de`  
 **Purpose:** authoritative short-form handoff for a new ChatGPT Work/Desktop session. Read this before changing code.
 
-**Newest verified production baseline:** PR #52 merged at
-`3c8cf86b2ac37ba97b725e56ce19f825e54d02d1`, Pages run `37140189810` succeeded,
+**Newest verified production baseline:** PR #53 merged at
+`9bb198b1bf0d50571d1188fd1b4a40d39fd9d530`, Pages run `37143643489` succeeded,
 public edge verified: 1,795 real products, four merchants, 11 categories, including
 only the 280 separately qualified Amazgifts products. Earlier quarantine-only
 numbers below are historical. Read `SITE_STRUCTURE_AUDIT_2026-10-03.md` for the
