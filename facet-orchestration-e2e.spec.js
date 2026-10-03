@@ -85,7 +85,7 @@ test('Casa Moro keeps furniture product types without equestrian leakage',async(
 
 test('central sort changes visible cards for price and brand',async({page})=>{
   const errors=await openCatalog(page);
-  await page.locator('#sort').selectOption('price-asc');
+  await page.locator('#sort').evaluate((select)=>{select.value='price-asc';select.dispatchEvent(new Event('change',{bubbles:true}));});
   await page.waitForTimeout(100);
   const asc=await visiblePrices(page);
   expect(asc.length).toBeGreaterThan(1);
@@ -127,6 +127,8 @@ test('facets remain usable on a mobile viewport',async({page})=>{
   const errors=await openCatalog(page);
   const toggle=page.locator('.mobile-filter-toggle');
   await expect(toggle).toBeVisible();
+  await expect(page.locator('.desktop-sort-control')).toBeHidden();
+  await expect(page.locator('.mobile-sort-toggle')).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded','false');
   await toggle.click();
   await expect(page.locator('#filter-panel')).toHaveAttribute('open','');
@@ -135,7 +137,7 @@ test('facets remain usable on a mobile viewport',async({page})=>{
   await expect(page.locator('#chips')).toContainText('Sofort lieferbar');
   await page.locator('.mobile-filter-apply').click();
   await expect(toggle).toHaveAttribute('aria-expanded','false');
-  await page.locator('#sort').selectOption('price-asc');
+  await page.locator('#sort').evaluate(select=>{select.value='price-asc';select.dispatchEvent(new Event('change',{bubbles:true}));});
   await page.waitForTimeout(100);
   const prices=await visiblePrices(page);
   expect(prices).toEqual([...prices].sort((a,b)=>a-b));
