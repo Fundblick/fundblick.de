@@ -3,11 +3,14 @@
 // or deploy. Failed/missing image, metadata or either consent route is excluded.
 const fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
-const {policyFor,policyDigest,validateReport,readProducts}=require('./destination-link-health.js');
+const {policyFor,policyDigest,validateReport,readProducts,linkTargets}=require('./destination-link-health.js');
 const {validateQualityReport}=require('./merchant-product-quality.js');
 const auditDir=path.resolve(process.argv[2]||'build/amazgifts-audit');
 const load=name=>JSON.parse(fs.readFileSync(path.join(auditDir,name),'utf8'));
 const candidates=load('production-candidates.json'),decoded=load('decoded-images.json'),whitelist=load('whitelist-products.json');
+const runtime=load('runtime-consent.json');
+if(runtime.status!=='complete'||new Set(runtime.results.map(r=>r.url)).size!==runtime.results.length)throw new Error('Incomplete/duplicate runtime consent evidence');
+const runtimeByUrl=new Map(runtime.results.map(r=>[r.url,r]));
 if(candidates.status!=='complete'||candidates.results.length!==whitelist.length||new Set(candidates.results.map(r=>r.id)).size!==whitelist.length||whitelist.some(p=>!candidates.results.some(r=>r.id===p.id&&r.shopifyProductId===p.shopifyProductId)))throw new Error('Incomplete canonical candidate coverage');
 const original=readProducts('development/amazgifts-products.json.gz.b64');
 const originalDigest=canonicalProductDigest(original);
@@ -18,6 +21,8 @@ function category(title,type){const s=(title+' '+type).toLowerCase();if(/schlüs
 for(const r of candidates.results){
  const image=images.get(r.id);
  if(r.status!=='pass'||image?.status!=='pass'){rejected.push({id:r.id,merchantProductId:r.shopifyProductId,finalProductUrl:r.finalProductUrl,reason:r.reason||image?.reason||'missing-decoded-image'});continue;}
+ const runtimeTargets=linkTargets([r.product]).filter(t=>new URL(t.url).searchParams.has('cons'));
+ if(runtimeTargets.some(t=>runtimeByUrl.get(t.url)?.status!=='pass')){rejected.push({id:r.id,merchantProductId:r.shopifyProductId,finalProductUrl:r.finalProductUrl,reason:'failed-or-missing-runtime-consent-route'});continue;}
  const source=original.find(p=>p.merchantVariantId===r.source.merchant_product_id);
  if(!source||r.product.directUrl!==source.directUrl||r.product.affiliateUrl!==source.affiliateUrl||r.source.aw_deep_link!==source.affiliateUrl)throw new Error('Source identity/link mapping changed: '+r.id);
  if(image.url!==r.product.image||image.bodySha256!==r.image.bodySha256)throw new Error('Decoded image does not match selected artifact');
@@ -32,7 +37,9 @@ for(const r of candidates.results){
 selected.sort((a,b)=>a.product.id.localeCompare(b.product.id));
 if(!selected.length)throw new Error('No fully verified eligible products');
 const products=selected.map(r=>r.product),digest=canonicalProductDigest(products),completedAt=new Date().toISOString();
-const health={version:1,auditorVersion:1,merchant:'amazgifts',scope:'full',status:'pass',artifactSha256:digest,policySha256:policyDigest(policyFor('amazgifts')),productCount:products.length,expectedTargets:products.length*2,startedAt:candidates.startedAt,completedAt,results:selected.flatMap(r=>[r.direct,r.affiliate]),failedTargets:0};
+const originalResults=new Map(selected.flatMap(r=>[r.direct,r.affiliate]).map(r=>[r.mode+':'+r.url,r]));
+const targets=linkTargets(products);
+const health={version:1,auditorVersion:1,merchant:'amazgifts',scope:'full',status:'pass',artifactSha256:digest,policySha256:policyDigest(policyFor('amazgifts')),productCount:products.length,expectedTargets:targets.length,startedAt:candidates.startedAt,completedAt,results:targets.map(t=>originalResults.get(t.mode+':'+t.url)||runtimeByUrl.get(t.url)),failedTargets:0};
 validateReport(health,{key:'amazgifts',products});
 const quality={version:1,merchant:'amazgifts',scope:'full',status:'pass',artifactSha256:digest,productCount:products.length,startedAt:candidates.startedAt,completedAt,decoder:decoded.decoder,results:selected.map(r=>({status:'pass',productId:r.product.id,merchantProductId:r.shopifyProductId,variantId:r.variant.id,available:r.variant.available,price:r.product.price,currency:r.product.currency,finalProductUrl:r.finalProductUrl,metadataSha256:r.metadataSha256,checkedAt:images.get(r.id).checkedAt,image:{...r.image,...images.get(r.id)}}))};
 validateQualityReport(quality,{key:'amazgifts',products});

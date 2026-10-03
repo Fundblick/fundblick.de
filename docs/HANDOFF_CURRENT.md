@@ -220,3 +220,11 @@ No safety exemption was added. Candidate baseline is 1,795 real products and 11
 categories. Confirm merge, release and edge before claiming live; the dedicated
 branch is `codex/amazgifts-verified-catalog`. Preserve branch/PR discipline and the
 documented quarantine rollback; re-audit before the seven-day evidence expiry.
+
+Browser acceptance exposed additional actual Awin routes: before a decision the
+merchant direct URL is used; explicit grant/denial emits `cons=1`/`cons=0`. Coverage
+now derives those routes using the shared production policy/config. The final
+passing report contains 1,128 individually fetched targets: 560 original paths,
+560 consent-signal paths and eight browser-encoded Unicode direct representations.
+Every route matches the selected real merchant product and variant. Never reduce
+coverage back to the original affiliate URL alone.

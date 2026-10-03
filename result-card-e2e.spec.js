@@ -36,7 +36,13 @@ test('approved Amazgifts card loads its verified image and switches both consent
   await expect(link).not.toHaveAttribute('rel',/sponsored/);
   await page.locator('#fbConsent [data-consent="granted"]').click();
   await expect(link).toHaveAttribute('data-link-mode','affiliate');
-  await expect(link).toHaveAttribute('href',fixture.affiliateUrl);
+  const granted=new URL(fixture.affiliateUrl);granted.searchParams.set('cons','1');
+  await expect(link).toHaveAttribute('href',granted.href);
   await expect(link).toHaveAttribute('rel',/sponsored/);
+  await page.locator('[data-affiliate-settings]').first().click();
+  await page.locator('#fbConsent [data-consent="denied"]').click();
+  const denied=new URL(fixture.affiliateUrl);denied.searchParams.set('cons','0');
+  await expect(link).toHaveAttribute('data-link-mode','affiliate-no-track');
+  await expect(link).toHaveAttribute('href',denied.href);
   expect(errors).toEqual([]);
 });

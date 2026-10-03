@@ -35,6 +35,13 @@ and variant identity were also checked against both final HTML destinations.
 - **280 eligible unique products**; eight have no currently available feed variant.
 - **560 verified consent routes**: 280 original merchant deep links and 280 original
   Awin `pclick.php` links. Both resolve to the same correct current product/variant.
+- The browser uses direct links before a decision, Awin `cons=1` after granting
+  consent, and Awin `cons=0` after explicit denial. All **560 additional actual
+  consent-signal URLs** are also individually fetched and verified. The existing
+  gate now derives those routes using the actual shared outbound policy/config,
+  requiring **1,128 targets** including original feed links and eight browser-normalized
+  Unicode direct URLs; every variant matches. The eight encoded representations
+  were additionally fetched, retaining the original source strings separately.
 - **280 real current product images**, downloaded with HTTP 200/image MIME, SHA-256
   checked, fully decoded by Pillow 12.3.0, at least 200×200 and nonblank. All images
   were additionally inspected in four contact sheets; no error-page placeholders.
@@ -70,6 +77,7 @@ Reproduction with the saved exhaustive whitelist:
 
 ```text
 node audit-amazgifts-production-candidates.js <audit-directory>
+node audit-amazgifts-runtime-consent.js <audit-directory>
 python decode-merchant-product-images.py <audit-directory>
 node prepare-verified-amazgifts.js <audit-directory>
 node verify-amazgifts-activation-dry-run.js development/amazgifts-verified-products.json.gz.b64

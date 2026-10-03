@@ -27,6 +27,12 @@ additional conservative signal, not a complete browser/checkout/price guarantee.
 JavaScript-only redirects and pages without readable product metadata cannot pass
 this auditor; investigate them explicitly rather than relaxing the gate silently.
 
+Coverage includes raw retained affiliate URLs and the actual links derived by
+`affiliate-link-policy.js`/`affiliate-config.js` for no decision, granted and denied
+consent. In current Awin production this means direct, `cons=1`, and `cons=0` routes.
+Omitting either consent-signal target is incomplete coverage, even if raw feed URLs
+pass. All resulting merchant product paths/variants must agree.
+
 The JSON report binds merchant key, canonical `JSON.stringify(products)` SHA-256,
 the host-policy SHA-256, auditor version, product count and complete URL coverage.
 Each result records timestamp, redirect statuses, final URL and body digest/size.

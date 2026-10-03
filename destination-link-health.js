@@ -3,6 +3,8 @@ const fs = require('node:fs');
 const zlib = require('node:zlib');
 const crypto = require('node:crypto');
 const {canonicalProductDigest} = require('./merchant-artifact-integrity.js');
+const outboundPolicy=require('./affiliate-link-policy.js');
+const outboundConfig=require('./affiliate-config.js');
 const AUDITOR_VERSION = 1;
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 // Migration ONLY: the three unchanged pre-gate artifacts on main at 9bffca9.
@@ -27,6 +29,10 @@ function policyFor(key) {
   return config;
 }
 function policyDigest(policy) { return crypto.createHash('sha256').update(JSON.stringify(policy)).digest('hex'); }
+function consentTargets(product,offer){
+ const network=offer.network||offer.affiliateNetwork||product.source?.network||product.network||outboundConfig.defaultNetwork;
+ return [null,'denied','granted'].map(decision=>outboundPolicy.resolve({...offer,network},outboundConfig,decision)).filter(r=>r.allowed&&r.url).map(r=>({mode:r.mode==='direct'?'direct':'affiliate',url:r.url}));
+}
 function linkTargets(products) {
   const targets = new Map();
   for (const product of products) {
@@ -38,6 +44,7 @@ function linkTargets(products) {
         const url = String(offer?.[`${mode}Url`] || '');
         if (url) targets.set(`${mode}:${url}`, {mode, url});
       }
+      for(const target of consentTargets(product,offer))targets.set(`${target.mode}:${target.url}`,target);
     }
     if (!routes.some(offer => offer?.directUrl)) throw new Error(`Missing direct consent route: ${product.id}`);
     if (!routes.some(offer => offer?.affiliateUrl)) throw new Error(`Missing affiliate consent route: ${product.id}`);
@@ -59,6 +66,7 @@ function validateReport(report, {key, products, policy = policyFor(key), now = D
   if (report.productCount !== products.length || report.results?.length !== targets.length || report.expectedTargets !== targets.length || !targets.length) fail('incomplete coverage');
   const results = new Map();
   for (const result of report.results) {
+    if(!result||typeof result!=='object')fail('failed or missing destination');
     const id = `${result.mode}:${result.url}`;
     if (results.has(id)) fail('duplicate result');
     results.set(id, result);
@@ -82,11 +90,14 @@ function validateReport(report, {key, products, policy = policyFor(key), now = D
     const offers = [product, ...(Array.isArray(product.offers) ? product.offers : [product.bestOffer || product])];
     for (const offer of offers) {
       if (!offer.directUrl || !offer.affiliateUrl) continue;
-      const direct = results.get(`direct:${offer.directUrl}`), affiliate = results.get(`affiliate:${offer.affiliateUrl}`);
+      const direct = results.get(`direct:${offer.directUrl}`);
+      for(const target of [{mode:'affiliate',url:offer.affiliateUrl},...consentTargets(product,offer).filter(t=>t.mode==='affiliate')]){
+      const affiliate=results.get(`affiliate:${target.url}`);
       const d = new URL(direct.finalUrl), a = new URL(affiliate.finalUrl);
       // Tracking queries can differ; another product or homepage cannot pass.
       if (d.hostname.replace(/^www\./, '') !== a.hostname.replace(/^www\./, '') || d.pathname.replace(/\/$/, '') !== a.pathname.replace(/\/$/, '')) fail('consent destination mismatch');
       if (d.searchParams.has('variant') && d.searchParams.get('variant') !== a.searchParams.get('variant')) fail('consent variant mismatch');
+      }
     }
   }
   return report;
@@ -103,4 +114,4 @@ function requireHealth(key, products, approval, {allowLegacy = false} = {}) {
   }
   throw new Error(`Destination health ${key}: recent full passing report required for artifact ${digest}`);
 }
-module.exports = {AUDITOR_VERSION, MAX_AGE_MS, readProducts, policyFor, policyDigest, linkTargets, allowedUrl, validateReport, requireHealth};
+module.exports = {AUDITOR_VERSION, MAX_AGE_MS, readProducts, policyFor, policyDigest, linkTargets, consentTargets, allowedUrl, validateReport, requireHealth};
