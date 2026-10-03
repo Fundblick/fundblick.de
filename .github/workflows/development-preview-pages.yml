@@ -4,6 +4,17 @@ on:
   push:
     branches:
       - development
+  pull_request:
+    branches: [main]
+    paths:
+      - 'development/build-cloudflare-preview.js'
+      - 'development/protect-preview-indexing.js'
+      - 'package-site.js'
+      - 'public-site-files.json'
+      - 'verify-site-*.js'
+      - 'build-versioned-site.js'
+      - 'wrangler.jsonc'
+      - '.github/workflows/development-preview-pages.yml'
   workflow_dispatch:
     inputs:
       amazgifts_artifact_path:
@@ -21,7 +32,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: development-preview-build
+  group: development-preview-build-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -30,8 +41,6 @@ jobs:
     steps:
       - name: Checkout development
         uses: actions/checkout@v6
-        with:
-          ref: development
 
       - name: Build portable isolated development preview
         env:
@@ -71,7 +80,7 @@ jobs:
           test ! -e _site/docs
 
       - name: Deploy isolated preview to Cloudflare
-        if: ${{ env.CLOUDFLARE_API_TOKEN != '' }}
+        if: ${{ github.event_name != 'pull_request' && env.CLOUDFLARE_API_TOKEN != '' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

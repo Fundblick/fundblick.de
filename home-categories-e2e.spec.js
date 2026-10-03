@@ -22,7 +22,9 @@ test('every homepage production category opens with results',async({page})=>{
     expect(item.expected).toBe(expectedCategories[item.id]);
     await page.goto(new URL(item.href,base).href,{waitUntil:'networkidle'});
     const count=Number((await page.locator('#summary').textContent()).match(/\d+/)?.[0]||0);
-    expect(count, item.id+' must return products').toBeGreaterThan(0);
+    expect(count, item.id+' must return every indexed product').toBe(item.expected);
+    await expect(page.locator('#cards article.product')).toHaveCount(item.expected);
+    await expect(page.locator('html')).toHaveAttribute('data-search-health','ok');
     await expect(page.locator('#cards article.product').first(),item.id+' must render a product card').toBeVisible();
   }
 });
@@ -63,4 +65,23 @@ test('homepage categories follow the production taxonomy manifest',async({page})
   await expect(page.locator('#cards article.product')).toHaveCount(29);
   await expect(page.locator('#cards')).toContainText('Ahipos');
   expect(errors).toEqual([]);
+});
+
+test('large category can reveal every result beyond the previous 100-card ceiling',async({page})=>{
+ await page.goto(base+'search.html?category=home.living&lang=de',{waitUntil:'networkidle'});
+ await expect(page.locator('#cards article.product')).toHaveCount(516);
+ await expect(page.locator('#cards article.product:visible')).toHaveCount(24);
+ while(await page.locator('.results-pager-button').isVisible())await page.locator('.results-pager-button').click();
+ await expect(page.locator('#cards article.product:visible')).toHaveCount(516);
+ await expect(page.locator('.results-pager-status')).toContainText('516 von 516');
+});
+
+test('new search loads products outside the previous category',async({page})=>{
+ await page.goto(base+'search.html?category=gifts.personalized.jewelry&lang=de',{waitUntil:'networkidle'});
+ await page.locator('#query').fill('Mosaiktisch');
+ await page.locator('.search-form button[type="submit"]').click();
+ await expect(page.locator('#cards')).toContainText('Mosaiktisch');
+ await expect(page.locator('#cards')).toContainText('Casa Moro');
+ await expect(page).toHaveURL(/q=Mosaiktisch/);
+ expect(new URL(page.url()).searchParams.has('category')).toBe(false);
 });

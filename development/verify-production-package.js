@@ -1,11 +1,18 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const site=path.resolve(process.argv[2]||'_site');
+require('../verify-site-contents.js').verify(site,'production');
 const read=file=>fs.readFileSync(path.join(site,file),'utf8');
 const manifest=JSON.parse(read('asset-manifest.json'));
 for(const [source,target]of Object.entries(manifest.assets)){
  const data=fs.readFileSync(path.join(site,target));
  assert.ok(target.includes('.'+crypto.createHash('sha256').update(data).digest('hex').slice(0,12)+'.'),'hash matches packaged bytes: '+source);
+}
+const languageLoader=read(manifest.assets['language-links.js']);
+for(const asset of ['affiliate-config.js','affiliate-consent-version.js','affiliate-consent.js','affiliate-link-policy.js','affiliate-outbound.js','affiliate-consent.css']){
+ assert.ok(manifest.assets[asset],'dynamic consent asset is hashed: '+asset);
+ assert.ok(languageLoader.includes(manifest.assets[asset]),'loader uses current content hash: '+asset);
+ assert.ok(!fs.existsSync(path.join(site,asset)),'redundant consent source alias removed: '+asset);
 }
 for(const file of ['index.html','search.html','impressum.html','datenschutz.html','404.html']){
  const html=read(file);

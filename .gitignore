@@ -1,0 +1,12 @@
+# Reproducible output and locally installed test dependencies.
+/build/
+/_site/
+/node_modules/
+/package-lock.json
+/playwright-report/
+/test-results/
+/audits/
+*.log
+.env
+.env.*
+!.env.example

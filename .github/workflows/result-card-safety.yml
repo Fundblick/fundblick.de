@@ -73,8 +73,8 @@ jobs:
           grep -q 'result-card.css' search.html
           grep -q 'merchant-offers.js' search.html
           grep -q 'live-catalog-ui.js' search.html
-          grep -q 'merchant-offers.js' .github/workflows/production-pages.yml
-          grep -q 'result-card.css' .github/workflows/production-pages.yml
+          grep -q 'merchant-offers.js' public-site-files.json
+          grep -q 'result-card.css' public-site-files.json
       - name: Install Playwright
         run: |
           npm install --no-save @playwright/test@1.55.0
