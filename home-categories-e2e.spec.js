@@ -1,5 +1,8 @@
 'use strict';
 const {test,expect}=require('@playwright/test');
+const approvals=JSON.parse(require('node:fs').readFileSync('production-merchant-approvals.json','utf8'));
+const expectedCategories={'home.living':516,'home.furniture':394,'home.lighting':268,'home.decor':250,'pet.equestrian':29,'pet.dog':1,'health.supplements':1,'home.garden.robot-mowers':33,'home.garden.robot-mower-accessories':23};
+if(approvals.merchants.amazgifts.approved===true)Object.assign(expectedCategories,require('./merchant-production-artifact.js').productionArtifactFor('amazgifts').categoryCounts);
 
 const base='http://127.0.0.1:4173/';
 
@@ -11,10 +14,12 @@ test('every homepage production category opens with results',async({page})=>{
     href:node.getAttribute('href'),
     expected:Number((node.getAttribute('title')||'').match(/\d+/)?.[0]||0)
   })));
-  expect(categories).toHaveLength(9);
+  expect(categories).toHaveLength(Object.keys(expectedCategories).length);
+  expect(categories.map(item=>item.id).sort()).toEqual(Object.keys(expectedCategories).sort());
   for(const item of categories){
     expect(item.id).toBeTruthy();
     expect(item.expected).toBeGreaterThan(0);
+    expect(item.expected).toBe(expectedCategories[item.id]);
     await page.goto(new URL(item.href,base).href,{waitUntil:'networkidle'});
     const count=Number((await page.locator('#summary').textContent()).match(/\d+/)?.[0]||0);
     expect(count, item.id+' must return products').toBeGreaterThan(0);
@@ -28,7 +33,8 @@ test('homepage categories follow the production taxonomy manifest',async({page})
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
   const categoryNav=page.getByRole('navigation',{name:'Produktkategorien'});
   const links=categoryNav.locator('a[data-live-category="true"]');
-  await expect(links).toHaveCount(9);
+  await expect(links).toHaveCount(Object.keys(expectedCategories).length);
+  for(const [id,count] of Object.entries(expectedCategories))await expect(categoryNav.locator(`a[data-catalog-category="${id}"]`)).toHaveAttribute('title',`${count} ${count===1?'Produkt':'Produkte'}`);
   await expect(categoryNav).toContainText('Pferd & Reitsport');
   await expect(categoryNav).toContainText('Hund');
   await expect(categoryNav).toContainText('Gesundheit & Nahrungsergänzung');
