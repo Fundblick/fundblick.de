@@ -25,7 +25,8 @@
       "publisherId": "3106259",
       "sources": [],
       "termsCleared": true,
-      "quarantined": true
+      "quarantined": true,
+      "reason": "destination-link health quarantine: production product targets fail; artifact retained for later verified promotion"
     }
   }
 }
