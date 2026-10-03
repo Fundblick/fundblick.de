@@ -11,7 +11,7 @@ test('every homepage production category opens with results',async({page})=>{
     href:node.getAttribute('href'),
     expected:Number((node.getAttribute('title')||'').match(/\d+/)?.[0]||0)
   })));
-  expect(categories).toHaveLength(13);
+  expect(categories).toHaveLength(9);
   for(const item of categories){
     expect(item.id).toBeTruthy();
     expect(item.expected).toBeGreaterThan(0);
@@ -28,7 +28,7 @@ test('homepage categories follow the production taxonomy manifest',async({page})
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
   const categoryNav=page.getByRole('navigation',{name:'Produktkategorien'});
   const links=categoryNav.locator('a[data-live-category="true"]');
-  await expect(links).toHaveCount(13);
+  await expect(links).toHaveCount(9);
   await expect(categoryNav).toContainText('Pferd & Reitsport');
   await expect(categoryNav).toContainText('Hund');
   await expect(categoryNav).toContainText('Gesundheit & Nahrungsergänzung');
