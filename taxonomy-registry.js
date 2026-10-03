@@ -1,7 +1,7 @@
 'use strict';
 (function(root){
   const registry={
-    version:3,
+    version:4,
     principle:'canonical-product-type-plus-facets',
     families:{
       furniture:{label:'Möbel',types:['Hocker','Mosaiktisch','Beistelltisch','Bistrotisch','Couchtisch','Esstisch / Gartentisch','Stuhl','Bank','Sessel / Sofa','Kommode / Schrank','Regal','Paravent / Raumteiler']},
@@ -10,7 +10,8 @@
       living:{label:'Wohnen / Haushalt',types:['Blumentopf / Pflanzgefäß','Korb / Aufbewahrung','Waschbecken','Brunnen','Teppich','Badaccessoire','Küchenaccessoire','Textilie','Wohnaccessoire','Organizer / Stiftehalter']},
       equestrian:{label:'Pferd & Reitsport',types:['Ergänzungsfutter','Pferdepflege','Bundle']},
       'robot-mowers':{label:'Mähroboter',types:['Mähroboter','Mähroboter-Zubehör']},
-      gifts:{label:'Personalisierte Geschenke',types:['Schlüsselanhänger','Schmuck','Fotogeschenk','Schmuckzubehör','Sonstiges personalisiertes Geschenk']}
+      gifts:{label:'Personalisierte Geschenke',types:['Schlüsselanhänger','Schmuck','Fotogeschenk','Schmuckzubehör','Sonstiges personalisiertes Geschenk']},
+      'trail-cameras':{label:'Wildkameras & Zubehör',types:['Wildkamera','Solarpanel für Wildkameras','Kamerahalterung']}
     },
     facets:{
       material:['Holz','Metall','Mosaik','Keramik','Rattan','Textil','Leder','Messing','Kupfer','Silber / Metalloptik','Glas','Stein','Naturfaser'],

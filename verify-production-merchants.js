@@ -78,4 +78,15 @@ if(anthbotApproval.approved!==true){
   if(inStock!==34)throw new Error(`ANTHBOT production in-stock count must match current verified feed contract (34), got ${inStock}`);
 }
 
-console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, Amazgifts ${amazgifts}, total ${products.length}`);
+const blazeApproval=approvals?.merchants?.blazevideo;
+const blaze=counts.get('BlazeVideo DE')||0;
+if(blazeApproval?.approved===true){
+ const contract=productionArtifactFor('blazevideo'),selected=products.filter(p=>(p.bestOffer?.merchant||p.merchant)==='BlazeVideo DE');
+ if(blaze!==contract.productCount||new Set(selected.map(p=>p.rawAttributes?.productFamilyId)).size!==blaze)throw new Error('BlazeVideo production count/family contract mismatch');
+ for(const p of selected){
+  const direct=new URL(p.bestOffer.directUrl),affiliate=new URL(p.bestOffer.affiliateUrl);
+  if(direct.hostname!=='www.blazevideos.de'||!direct.pathname.startsWith('/products/')||affiliate.hostname!=='www.awin1.com'||affiliate.searchParams.get('m')!=='25962'||affiliate.searchParams.get('a')!=='3106259'||p.bestOffer.network!=='awin')throw new Error('BlazeVideo production link/provenance mismatch');
+  if(p.inStock!==null||p.bestOffer.availability!=='UNKNOWN'||p.shippingCost!==null||p.bestOffer.promotions.length)throw new Error('BlazeVideo production must preserve unknown logistics and omit unverified coupons');
+ }
+}else if(blaze)throw new Error('Unapproved BlazeVideo products leaked into production');
+console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, Amazgifts ${amazgifts}, BlazeVideo ${blaze}, total ${products.length}`);

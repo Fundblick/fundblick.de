@@ -7,7 +7,7 @@ on:
       merchant:
         description: 'Merchant to audit (full real HTTP audit, no activation)'
         type: choice
-        options: [amazgifts, casaMoro, ahipos, anthbot]
+        options: [amazgifts, casaMoro, ahipos, anthbot, blazevideo]
         required: true
 permissions:
   contents: read
@@ -48,6 +48,7 @@ jobs:
             amazgifts) sources=(development/amazgifts-verified-products.json.gz.b64) ;;
             casaMoro) sources=(development/core-products.json) ;;
             ahipos) sources=(development/ahipos-products-1.json development/ahipos-products-2.json) ;;
+            blazevideo) sources=(development/blazevideo-verified-products.json.gz.b64) ;;
             anthbot) sources=(development/anthbot-products.json.gz.b64) ;;
             *) exit 1 ;;
           esac

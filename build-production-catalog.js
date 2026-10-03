@@ -9,6 +9,7 @@ const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceManifest=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 if(!Array.isArray(sourceManifest)||!sourceManifest.length)throw new Error('production-catalog-sources.json must contain at least one source file');
 const approvals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
+const pinnedMerchants=JSON.parse(fs.readFileSync('production-merchant-artifacts.json','utf8')).merchants||{};
 if(approvals?.version!==1||!approvals?.merchants||typeof approvals.merchants!=='object')throw new Error('production-merchant-approvals.json must contain version 1 merchant approvals');
 const normalize=file=>path.normalize(String(file));const approvedMerchantSources=new Map();const blockedMerchantSources=new Map();
 for(const [key,merchant] of Object.entries(approvals.merchants)){if(!merchant||typeof merchant!=='object')throw new Error(`Invalid production merchant approval: ${key}`);if(!merchant.network||!merchant.advertiserId)throw new Error(`Production merchant approval ${key} needs network and advertiserId`);if(!Array.isArray(merchant.sources))throw new Error(`Production merchant approval ${key} needs a sources array`);for(const source of merchant.sources){const target=merchant.approved===true?approvedMerchantSources:blockedMerchantSources;const normalized=normalize(source);if(approvedMerchantSources.has(normalized)||blockedMerchantSources.has(normalized))throw new Error(`Merchant source ${source} is assigned more than once`);target.set(normalized,key);}}
@@ -24,12 +25,15 @@ for(const [key,products] of healthArtifacts){
   if(approval?.approved!==true)throw new Error(`Merchant ${key} has no explicit production approval`);
   if(approval?.quarantined===true)throw new Error(`Quarantined merchant ${key} cannot enter production`);
   requireHealth(key,products,approval,{allowLegacy:true});
-  if(key==='amazgifts'||approval.productQualityReport)requireProductQuality(key,products,approval);
+  if(key==='amazgifts'||pinnedMerchants[key]){
+    if(approval.termsCleared!==true)throw new Error(`Merchant ${key}: reviewed terms required`);
+    requireProductQuality(key,products,approval);
+  }else if(approval.productQualityReport)requireProductQuality(key,products,approval);
 }
 const combined=[];const seenIds=new Map();for(const file of sourceManifest){const normalizedFile=normalize(file);const data=readSource(normalizedFile);if(!Array.isArray(data))throw new Error(`${file} must contain an array`);
 const merchantKey=approvedMerchantSources.get(normalizedFile);
-if(merchantKey==='amazgifts'){
-  assertProductionArtifact('amazgifts',data,file);
+if(merchantKey==='amazgifts'||pinnedMerchants[merchantKey]){
+  assertProductionArtifact(merchantKey,data,file);
 }
 for(const product of data){const id=String(product?.id||'').trim();if(!id)throw new Error(`${file} contains product without id`);if(seenIds.has(id))throw new Error(`Duplicate production product id ${id} in ${seenIds.get(id)} and ${file}`);seenIds.set(id,file);combined.push(product);}}
 fs.readFileSync=function(file,...args){if(normalize(file)===coreFile)return JSON.stringify(combined);return originalRead(file,...args);};process.argv[2]=outputRoot;require('./build-live-catalog.js');

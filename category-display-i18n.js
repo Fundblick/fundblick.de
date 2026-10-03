@@ -26,5 +26,6 @@
   const selected=Object.assign({},labels.en,labels[lang]||{});
   const schemas=window.FB_CATEGORY_SCHEMAS||{};
   for(const [id,label] of Object.entries(selected))if(schemas[id])schemas[id].label=label;
+  for(const [id,schema] of Object.entries(schemas)){const label=window.FundBlickCategoryLabels?.getLabel(id,lang);if(label)schema.label=label;}
   window.FB_CATEGORY_DISPLAY_LABELS=selected;
 })();

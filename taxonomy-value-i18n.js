@@ -5,6 +5,9 @@
   // Stable FundBlick taxonomy IDs. Merchant/source values are aliases only;
   // filtering continues to use the untouched source value from the checkbox/input.
   const aliases={
+    Wildkamera:'trail_camera',
+    'Solarpanel für Wildkameras':'trail_camera_solar',
+    Kamerahalterung:'camera_mount',
     Hocker:'stool_low',
     Mosaiktisch:'mosaic_table',
     Beistelltisch:'side_table',
@@ -37,7 +40,9 @@
 
   // Add languages here without touching merchant data, filter values or URLs.
   const labels={
+    en:{trail_camera:'Trail camera',trail_camera_solar:'Solar panel for trail cameras',camera_mount:'Camera mount'},
     ru:{
+      trail_camera:'Фотоловушка',trail_camera_solar:'Солнечная панель для фотоловушек',camera_mount:'Крепление для камеры',
       stool_low:'Пуф / табурет',
       mosaic_table:'Мозаичный стол',
       side_table:'Приставной столик',

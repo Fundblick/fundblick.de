@@ -17,7 +17,7 @@ assert.equal(registry.expected.rawFeedSha256,'9dadbc32d81303f38a4d8a92520d9ac29a
 assert.equal(registry.expected.artifactSha256,'32ca063fc6d02a7ba6407175100e7da84f0c75731f097033b6096aff55b2d65a');
 const productionBuilder=fs.readFileSync('build-production-catalog.js','utf8');
 assert.match(productionBuilder,/merchantKey==='amazgifts'/,'production builder must recognize Amazgifts source');
-assert.match(productionBuilder,/assertProductionArtifact\('amazgifts',data,file\)/,'production builder must verify pinned cleaned artifact');
+assert.match(productionBuilder,/assertProductionArtifact\(merchantKey,data,file\)/,'production builder must verify the pinned artifact for its registered merchant key');
 assert.match(productionBuilder,/requireProductQuality/,'production builder must require decoded image and metadata evidence');
 for(const required of ['export-amazgifts-artifact.js','verify-amazgifts-activation-dry-run.js','verify-amazgifts-future-production.js','verify-amazgifts-artifact-rejection.js']) assert(fs.existsSync(required),'Amazgifts promotion tool missing: '+required);
 const activator=fs.readFileSync('activate-amazgifts-production.js','utf8');
