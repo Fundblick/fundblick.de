@@ -127,6 +127,8 @@ test('facets remain usable on a mobile viewport',async({page})=>{
   const errors=await openCatalog(page);
   const toggle=page.locator('.mobile-filter-toggle');
   await expect(toggle).toBeVisible();
+  await expect(page.locator('.results-heading>label[for="sort"]')).toBeHidden();
+  await expect(page.locator('.mobile-sort-toggle')).toBeVisible();
   await expect(toggle).toHaveAttribute('aria-expanded','false');
   await toggle.click();
   await expect(page.locator('#filter-panel')).toHaveAttribute('open','');
