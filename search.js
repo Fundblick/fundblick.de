@@ -78,6 +78,7 @@
   function schemaFor(id){return SCHEMAS[id]||null}
   function categoryTermsRegex(cat){const terms=(schemaFor(cat?.id)?.terms||[]).filter(Boolean);return terms.length?new RegExp(terms.sort((a,b)=>b.length-a.length).map(escapeRegExp).join('|'),'ig'):FALLBACK_RULES.find(x=>x.id===cat?.id)?.query||null}
   function inferFamily(text,taxonomy){
+    if(taxonomy==='electronics.cameras.trail-cameras'||taxonomy==='electronics.cameras.trail-camera-accessories')return taxonomy;
     if(taxonomy.startsWith('fashion.shoes'))return 'shoes';
     if(taxonomy.startsWith('electronics.televisions'))return 'tv';
     for(const [id,schema] of Object.entries(SCHEMAS))if((schema.terms||[]).some(term=>norm(text).includes(norm(term))))return id;

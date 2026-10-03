@@ -1,0 +1,52 @@
+name: BlazeVideo catalog integration gate
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'development/blazevideo-verified-products*'
+      - 'destination-health/**'
+      - 'production-*.json'
+      - 'build-production-catalog.js'
+      - '*taxonomy*.js'
+      - 'home-facet-classifier.js'
+      - 'facet-schemas.js'
+      - 'category-*.js'
+      - 'search.js'
+      - 'verify-blazevideo-selection.js'
+      - 'blazevideo-e2e.spec.js'
+      - 'home-categories-e2e.spec.js'
+      - '.github/workflows/blazevideo-catalog-integration.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Verified selection and existing safety gates
+        run: |
+          node verify-blazevideo-selection.js
+          node verify-destination-link-health.js
+          node verify-merchant-product-quality.js
+          node verify-taxonomy-registry.js
+          node verify-taxonomy-i18n.js
+          node verify-facet-engine-v2.js
+          node verify-category-query-router.js
+          node build-production-catalog.js build/catalog
+          node verify-production-merchants.js build/catalog
+          node verify-production-categories.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          node verify-user-flows.js build/catalog
+          node package-site.js production
+      - name: Browser runtime
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Rendered desktop and mobile category acceptance
+        run: |
+          python3 -m http.server 4173 --directory _site >/tmp/fundblick-blaze-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4173/search.html >/dev/null && break; sleep 1; done
+          npx playwright test blazevideo-e2e.spec.js home-categories-e2e.spec.js --reporter=line --workers=1

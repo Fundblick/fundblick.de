@@ -38,6 +38,18 @@
       "termsCleared": true,
       "destinationHealthReport": "destination-health/amazgifts-clean-links.json",
       "productQualityReport": "destination-health/amazgifts-clean-quality.json"
+    },
+    "blazevideo": {
+      "approved": true,
+      "network": "awin",
+      "advertiserId": "25962",
+      "publisherId": "3106259",
+      "sources": [
+        "development/blazevideo-verified-products.json.gz.b64"
+      ],
+      "termsCleared": true,
+      "destinationHealthReport": "destination-health/blazevideo-clean-links.json",
+      "productQualityReport": "destination-health/blazevideo-clean-quality.json"
     }
   }
 }
