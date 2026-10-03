@@ -15,12 +15,13 @@ function productsForShardIds(ids){
 function assertCategory(category){
   const expected=index.filter(row=>String(row.c||'').trim()===category);
   if(!expected.length)throw new Error(`Category ${category} is empty`);
-  const ids=Loader.selectShardIds(manifest,index,category,null);
-  if(!ids.length||ids.length>Loader.MAX_QUERY_SHARDS)throw new Error(`Category ${category}: invalid shard selection (${ids.length})`);
+  const ids=Loader.selectShardIds(manifest,index,'',null,category);
+  if(!ids.length)throw new Error(`Category ${category}: invalid shard selection (${ids.length})`);
   const products=productsForShardIds(ids);
   const exact=products.filter(product=>String(product.category||'').trim()===category);
   if(!exact.length)throw new Error(`Category ${category}: selected shards contain no matching products`);
-  const expectedIds=new Set(expected.slice(0,Loader.MAX_QUERY_PRODUCTS).map(row=>String(row.i)));
+  const expectedIds=new Set(expected.map(row=>String(row.i)));
+  if(exact.length!==expectedIds.size||exact.some(p=>!expectedIds.has(String(p.id))))throw new Error(`Category ${category}: incomplete indexed product coverage`);
   if(!exact.some(product=>expectedIds.has(String(product.id))))throw new Error(`Category ${category}: index-to-shard wiring broken`);
   return {category,indexed:expected.length,loaded:exact.length,shards:ids.length};
 }

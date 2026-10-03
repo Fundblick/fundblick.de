@@ -12,17 +12,6 @@ function run(file, args = []) {
 function remove(target) {
   fs.rmSync(target, { recursive: true, force: true });
 }
-function copyTree(src, dst, topLevel = false) {
-  fs.mkdirSync(dst, { recursive: true });
-  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
-    if (topLevel && [".git", ".github", "_site", "build", "catalog", "CNAME", "docs"].includes(entry.name)) continue;
-    if (topLevel && (/^verify-.*\.js$/.test(entry.name) || /^build-.*\.js$/.test(entry.name) || /-e2e\.spec\.js$/.test(entry.name) || /^DESKTOP_HANDOFF_.*\.md$/.test(entry.name))) continue;
-    const from = path.join(src, entry.name);
-    const to = path.join(dst, entry.name);
-    if (entry.isDirectory()) copyTree(from, to, false);
-    else if (entry.isFile()) fs.copyFileSync(from, to);
-  }
-}
 
 remove(site);
 remove(catalog);
@@ -64,21 +53,5 @@ if ((amazgiftsFeed || amazgiftsArtifact) && Number(manifest.homeDealCount) !== 0
   throw new Error("Amazgifts products with UNKNOWN availability must not enter homepage deal candidates");
 }
 
-copyTree(root, site, true);
-copyTree(catalog, path.join(site, "catalog"), false);
-fs.writeFileSync(path.join(site, ".nojekyll"), "");
-
-run("node", ["development/verify-preview-indexing.js"]);
-run("node", ["development/protect-preview-indexing.js", "_site"]);
-
-for (const required of ["index.html", "search.html", "catalog/categories.json"]) {
-  if (!fs.existsSync(path.join(site, required))) throw new Error("Missing preview file: " + required);
-}
-for (const forbidden of [".git", ".github", "docs", "CNAME"]) {
-  if (fs.existsSync(path.join(site, forbidden))) throw new Error("Forbidden preview path: " + forbidden);
-}
-for (const html of ["index.html", "search.html"]) {
-  const text = fs.readFileSync(path.join(site, html), "utf8");
-  if (!text.includes("noindex,nofollow")) throw new Error("Preview indexing protection missing: " + html);
-}
+require("../package-site.js").packageSite("preview");
 console.log("Cloudflare preview package ready:", site, "catalog items:", manifest.realCount);

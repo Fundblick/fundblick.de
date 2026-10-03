@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -23,8 +24,6 @@ jobs:
     steps:
       - name: Checkout production source
         uses: actions/checkout@v4
-        with:
-          ref: main
       - name: Validate production JavaScript
         run: |
           for f in app.js i18n.js home-i18n.js deal-of-day.js home-deal.js home-extras.js home-categories.js home-polish.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js merchant-offers.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-seo-landings.js audit-seo-landing-candidates.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-merchant-offers.js verify-affiliate-routing.js verify-user-flows.js verify-google-indexability.js; do node --check "$f"; done
@@ -46,6 +45,8 @@ jobs:
           node verify-coupon-engine.js build/catalog
           node verify-affiliate-routing.js
           node verify-user-flows.js build/catalog
+          node verify-live-health.js
+          node verify-site-packaging.js
           node audit-seo-landing-candidates.js
           node build-seo-landings.js build/catalog build/seo
           node verify-google-indexability.js build/seo
@@ -93,25 +94,8 @@ jobs:
           grep -q 'FundBlickAffiliateOutbound' affiliate-outbound.js
           grep -q 'id="affiliate-awin"' datenschutz.html
           ! grep -q 'Live-Beta' index.html
-      - name: Package production files only
-        run: |
-          mkdir -p _site
-          cp index.html deal-of-day.js home-deal.js home-extras.js home-categories.js home-categories.css home-polish.js home-polish.css search.html search.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js coupon-engine.js merchant-offers.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js search-mobile.css results-paging.js results-paging.css result-card.css page-meta-i18n.js live-health.js language-links.js live-catalog-ui.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js affiliate-consent.css i18n.js app.js styles.css home.css impressum.html datenschutz.html robots.txt CNAME 404.html _site/
-          cp search-static-i18n.js category-query-router.js universal-search-intent.js search-intent-query.js search-intent-ui.js search-facet-engine-v2.js search-render-signal.js search-sort-runtime.js external-search-policy.js external-search-client.js external-search-i18n.js external-price-evidence.js external-search-ui.js external-price-confidence.js product-storage-parser.js product-fashion-attributes.js product-intelligence-core.js semantic-product-resolver.js semantic-taxonomy-adapter.js query-facet-blueprint.js query-blueprint-ui.js product-query-strategy.js product-unit-normalizer.js product-result-attribute-extractor.js product-result-deduper.js product-facet-engine.js product-constraint-ranker.js product-conflict-filter.js product-intelligence-pipeline.js external-intelligence-ui.js external-result-page.js external-search-runtime.js search-polish.css external-search.css _site/
-          cp -R build/catalog _site/catalog
-          cp -R build/seo/themen _site/themen
-          cp build/seo/sitemap.xml _site/sitemap.xml
-          test -s _site/themen/moebel/index.html
-          test -s _site/themen/pferd-reitsport/index.html
-          test -s _site/sitemap.xml
-          test ! -e _site/products.json
-          test ! -e _site/development
-          touch _site/.nojekyll
-      - name: Version production assets by content
-        run: |
-          node build-versioned-site.js
-          test -s _site/asset-manifest.json
-          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('_site/asset-manifest.json'));if(!m.assets||!Object.keys(m.assets).length)process.exit(1);for(const [src,dst] of Object.entries(m.assets)){if(src===dst||!/\.[a-f0-9]{12}\.(js|css)$/.test(dst)||!fs.existsSync('_site/'+dst))process.exit(1)};console.log('Hashed asset gate OK',Object.keys(m.assets).length)"
+      - name: Package reviewed public files and version assets
+        run: node package-site.js production
       - name: Verify packaged production dependencies
         run: node development/verify-production-package.js _site
       - name: Configure Pages
@@ -123,3 +107,12 @@ jobs:
       - name: Deploy production
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify the publicly deployed release
+        run: node verify-deployed-site.js https://fundblick.de/ build/catalog build/deployed-site-verification.json _site
+      - name: Retain public-edge verification receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: fundblick-live-verification
+          path: build/deployed-site-verification.json
+          retention-days: 7
+          if-no-files-found: error

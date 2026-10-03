@@ -4,6 +4,10 @@ on:
   push:
     branches: [development]
     paths:
+      - 'catalog-loader.js'
+      - 'live-health.js'
+      - 'results-paging.js'
+      - 'results-paging.css'
       - 'search.js'
       - 'search-sort-runtime.js'
       - 'search-polish.css'
@@ -24,6 +28,10 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - 'catalog-loader.js'
+      - 'live-health.js'
+      - 'results-paging.js'
+      - 'results-paging.css'
       - 'search.js'
       - 'search-sort-runtime.js'
       - 'search-polish.css'
