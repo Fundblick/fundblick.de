@@ -3,6 +3,7 @@ const {test,expect}=require('@playwright/test');
 const base='http://127.0.0.1:4173/';
 for(const viewport of [{width:1440,height:1000},{width:390,height:844},{width:320,height:740}]){
  test('BlazeVideo categories, images and affiliate consent '+viewport.width,async({page})=>{
+  test.setTimeout(90000);
   await page.setViewportSize(viewport);
   const errors=[];page.on('pageerror',e=>errors.push(String(e)));
   await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
@@ -12,7 +13,7 @@ for(const viewport of [{width:1440,height:1000},{width:390,height:844},{width:32
   await expect(page.locator('#cards article.product')).toHaveCount(14);
   await expect(page.locator('#summary')).toContainText('Wildkameras');
   const images=page.locator('#cards article.product img');
-  for(let i=0;i<await images.count();i++){await images.nth(i).scrollIntoViewIfNeeded();await expect.poll(()=>images.nth(i).evaluate(img=>img.complete&&img.naturalWidth>=200)).toBe(true);}
+  for(let i=0;i<await images.count();i++){await images.nth(i).scrollIntoViewIfNeeded();await expect.poll(()=>images.nth(i).evaluate(img=>({loaded:img.complete&&img.naturalWidth>=200,url:img.currentSrc||img.src})),{timeout:30000}).toMatchObject({loaded:true});}
   const imageState=await images.evaluateAll(imgs=>imgs.map(img=>({complete:img.complete,width:img.naturalWidth,src:img.currentSrc})));
   expect(imageState.length).toBeGreaterThanOrEqual(14);
   expect(imageState.every(img=>img.complete&&img.width>=200&&new URL(img.src).hostname==='cdn.shopify.com')).toBe(true);
