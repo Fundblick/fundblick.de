@@ -37,11 +37,11 @@ test('multi-merchant facets follow the remaining result set',async({page})=>{
   const errors=await openCatalog(page);
   const merchantFacet=facet(page,'Händler');
   await expect(merchantFacet).toBeVisible();
-  await expect(merchantFacet.locator('input[data-key="merchant"]')).toHaveCount(4);
+  await expect(merchantFacet.locator('input[data-key="merchant"]')).toHaveCount(3);
   await expect(merchantFacet).toContainText('Casa Moro');
   await expect(merchantFacet).toContainText('Ahipos Horses DE');
   await expect(merchantFacet).toContainText('ANTHBOT');
-  await expect(merchantFacet).toContainText('Amazgifts DE');
+  await expect(merchantFacet).not.toContainText('Amazgifts DE');
   await merchantFacet.locator('input[value="Ahipos Horses DE"]').check();
   await expect(page.locator('#summary')).toContainText('31');
   const brandFacet=facet(page,'Hersteller');

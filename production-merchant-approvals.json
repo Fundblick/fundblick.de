@@ -19,14 +19,14 @@
       ]
     },
     "amazgifts": {
-      "approved": true,
+      "approved": false,
       "network": "awin",
       "advertiserId": "87569",
       "publisherId": "3106259",
-      "sources": [
-        "development/amazgifts-products.json.gz.b64"
-      ],
-      "termsCleared": true
+      "sources": [],
+      "termsCleared": true,
+      "quarantined": true,
+      "reason": "destination-link health quarantine: production product targets fail; artifact retained for later verified promotion"
     }
   }
 }
