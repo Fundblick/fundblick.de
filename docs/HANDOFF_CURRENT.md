@@ -197,3 +197,34 @@ in both direct and affiliate modes. Merchant 301 embeds an absolute URL in the p
 Awin 302 resolves into that same broken chain. Evidence retained under
 `destination-health/amazgifts-2026-10-03-failed-sample.json`. Keep Amazgifts quarantined;
 do not rewrite feed destinations or manually promote based on this diagnostic work.
+
+## 14. Cleaned Amazgifts activation batch, 2026-10-03
+
+PR #51's destination-health gate merged at `15e265de46029f042d9fb29950bff25e54b27827`;
+its Pages release and public edge were verified at the 1,515-product baseline.
+The user subsequently authorized exhaustive cleaning and production activation of
+only fully usable, unique products, including image verification. This supersedes
+the old quarantine-only instruction for the separately pinned cleaned artifact.
+
+Read `AMAZGIFTS_VERIFIED_SELECTION_2026-10-03.md` and actual PR/deployment state.
+All 414 canonical pages were checked: 185 direct valid, 121 broken, 104 redirect
+valid, four redirect shop, zero other errors; 288 unique reachable merchant
+families. Additional full current metadata, both original consent routes and image
+qualification yields 280 eligible products; eight unavailable feed families stay
+excluded. Original 2,964-row registry/artifact remains unchanged and excluded.
+
+The new source is `development/amazgifts-verified-products.json.gz.b64`, with its
+exact reviewed pin in `production-merchant-artifacts.json`. Builds and activation
+require fresh full destination and decoded-image/metadata reports for this digest.
+No safety exemption was added. Candidate baseline is 1,795 real products and 11
+categories. Confirm merge, release and edge before claiming live; the dedicated
+branch is `codex/amazgifts-verified-catalog`. Preserve branch/PR discipline and the
+documented quarantine rollback; re-audit before the seven-day evidence expiry.
+
+Browser acceptance exposed additional actual Awin routes: before a decision the
+merchant direct URL is used; explicit grant/denial emits `cons=1`/`cons=0`. Coverage
+now derives those routes using the shared production policy/config. The final
+passing report contains 1,128 individually fetched targets: 560 original paths,
+560 consent-signal paths and eight browser-encoded Unicode direct representations.
+Every route matches the selected real merchant product and variant. Never reduce
+coverage back to the original affiliate URL alone.

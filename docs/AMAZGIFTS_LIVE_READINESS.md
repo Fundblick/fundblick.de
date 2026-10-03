@@ -2,6 +2,11 @@
 
 Stand: 2026-10-02
 
+**Neuer maßgeblicher Stand:** `AMAZGIFTS_VERIFIED_SELECTION_2026-10-03.md`.
+Nur das separat geprüfte 280-Produkte-Artefakt darf aktiviert werden; der folgende
+2.964-Varianten-Stand und seine Promotion-Anleitung sind historische Dokumentation.
+Originalartefakt weiter ausgeschlossen, tatsächlichen PR/Release-Status prüfen.
+
 **Fortschreibung 2026-10-03:** Dieser Stand ist historisch. Amazgifts ist nach
 PR #48 quarantiniert und aus Production ausgeschlossen. `termsCleared:true` ist
 bereits dokumentiert; fehlender Vertragsstatus ist nicht mehr der aktuelle Blocker.

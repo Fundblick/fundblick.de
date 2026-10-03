@@ -38,7 +38,7 @@ function contentFailure(html, finalUrl) {
   const url = new URL(finalUrl);
   if (/\/(?:404|not-found|page-not-found|password|login)(?:\/|$)/i.test(url.pathname)) return 'error-or-login-destination';
   const headings = [...html.matchAll(/<(?:title|h1)\b[^>]*>([\s\S]*?)<\/(?:title|h1)>/gi)].map(m => m[1].replace(/<[^>]+>/g, ' ')).join(' ');
-  if (/\b404\b|page\s+(?:not\s+found|unavailable)|seite\s+(?:nicht\s+gefunden|existiert\s+nicht)|nicht\s+gefunden|pagina\s+non\s+trovata|страница\s+не\s+найдена|produkt\s+nicht\s+gefunden/i.test(headings)) return 'soft-404';
+  if (/\b404\b|\bhoppla\b|page\s+(?:not\s+found|unavailable)|seite\s+(?:nicht\s+gefunden|existiert\s+nicht)|nicht\s+gefunden|pagina\s+non\s+trovata|страница\s+не\s+найдена|produkt\s+nicht\s+gefunden/i.test(headings)) return 'soft-404';
   if (/captcha|checking your browser|verify you are human|just a moment/i.test(headings)) return 'bot-challenge';
   // HTTP 200 alone is insufficient: require actual product-page evidence.
   if (!/"@type"\s*:\s*(?:"Product"|\[[^\]]*"Product")|itemtype\s*=\s*["'][^"']*schema\.org\/Product|property\s*=\s*["']og:type["'][^>]*content\s*=\s*["']product/i.test(html)) return /cf-chl-|challenge-platform/i.test(html) ? 'bot-challenge' : 'missing-product-evidence';

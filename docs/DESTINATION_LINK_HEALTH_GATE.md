@@ -2,6 +2,12 @@
 
 Stand: 2026-10-03. Implementation on a dedicated PR branch; no deployment claim.
 
+Update: PR #51 merged and its production release/edge was verified. Cleaned
+Amazgifts activation additionally requires the separately pinned unique-product
+artifact and decoded image/current metadata report; see
+`AMAZGIFTS_VERIFIED_SELECTION_2026-10-03.md`. The original variant artifact remains
+excluded. Current evidence files/approvals and actual release state are authoritative.
+
 ## Contract
 
 Structural feed validation is necessary but cannot prove live destination health.
@@ -20,6 +26,12 @@ path and variant; tracking query parameters can differ. Product metadata is an
 additional conservative signal, not a complete browser/checkout/price guarantee.
 JavaScript-only redirects and pages without readable product metadata cannot pass
 this auditor; investigate them explicitly rather than relaxing the gate silently.
+
+Coverage includes raw retained affiliate URLs and the actual links derived by
+`affiliate-link-policy.js`/`affiliate-config.js` for no decision, granted and denied
+consent. In current Awin production this means direct, `cons=1`, and `cons=0` routes.
+Omitting either consent-signal target is incomplete coverage, even if raw feed URLs
+pass. All resulting merchant product paths/variants must agree.
 
 The JSON report binds merchant key, canonical `JSON.stringify(products)` SHA-256,
 the host-policy SHA-256, auditor version, product count and complete URL coverage.
@@ -58,7 +70,7 @@ reviewed PRs. Activation of Amazgifts has no migration exemption.
 Run from repository root, on an isolated branch:
 
 ```sh
-node audit-destination-links.js amazgifts build/destination-health/amazgifts.json development/amazgifts-products.json.gz.b64
+node audit-destination-links.js amazgifts build/destination-health/amazgifts.json development/amazgifts-verified-products.json.gz.b64
 node audit-destination-links.js ahipos build/destination-health/ahipos.json development/ahipos-products-1.json development/ahipos-products-2.json
 ```
 

@@ -6,12 +6,17 @@ const path = require('node:path');
 const {auditTarget, contentFailure, publicAddress} = require('./audit-destination-links.js');
 const {linkTargets, policyDigest, validateReport, requireHealth, readProducts, MAX_AGE_MS} = require('./destination-link-health.js');
 const {canonicalProductDigest} = require('./merchant-artifact-integrity.js');
+const {productionArtifactFor} = require('./merchant-production-artifact.js');
 const policy = {merchantHosts: ['merchant.example'], affiliateHosts: ['affiliate.example'], redirectHosts: []};
-const products = [{id: '1', directUrl: 'https://merchant.example/products/1', affiliateUrl: 'https://affiliate.example/click/1'}];
+const products = [{id: '1', network:'adcell', directUrl: 'https://merchant.example/products/1', affiliateUrl: 'https://affiliate.example/click/1'}];
 const html = '<html><title>Product</title><script type="application/ld+json">{"@type":"Product","name":"Real page"}</script></html>';
 const response = (status = 200, body = html, headers = {}) => ({status, body: Buffer.from(body), headers: {'content-type': 'text/html', ...headers}});
 async function main() {
   const targets = linkTargets(products);
+  const awinRoutes=linkTargets([{...products[0],network:'awin'}]);
+  assert.equal(awinRoutes.length,4,'raw URLs plus both real Awin consent signals must be audited');
+  assert(awinRoutes.some(t=>new URL(t.url).searchParams.get('cons')==='0'));
+  assert(awinRoutes.some(t=>new URL(t.url).searchParams.get('cons')==='1'));
   const direct = targets.find(t => t.mode === 'direct'), affiliate = targets.find(t => t.mode === 'affiliate');
   const validDirect = await auditTarget(direct, policy, {request: async () => response()});
   assert.equal(validDirect.status, 'pass');
@@ -21,7 +26,7 @@ async function main() {
     const result = await auditTarget(direct, policy, {request: async () => response(status)});
     assert.equal(result.reason, `http-${status}`);
   }
-  for (const title of ['404 Not Found', 'Seite nicht gefunden', 'Page not found', 'Produkt nicht gefunden']) {
+  for (const title of ['404 Not Found', 'Hoppla!', '404 – Hoppla!', 'Seite nicht gefunden', 'Page not found', 'Produkt nicht gefunden']) {
     const result = await auditTarget(direct, policy, {request: async () => response(200, `<title>${title}</title>${html}`)});
     assert.equal(result.reason, 'soft-404');
   }
@@ -45,6 +50,16 @@ async function main() {
   const now = Date.now();
   const report = {version:1, auditorVersion:1, merchant:'example', artifactSha256:canonicalProductDigest(products), policySha256:policyDigest(policy), productCount:1, expectedTargets:2, scope:'full', status:'pass', startedAt:new Date(now-10000).toISOString(), completedAt:new Date(now).toISOString(), results:[validDirect, validAffiliate]};
   assert.equal(validateReport(report,{key:'example',products,policy,now}), report);
+  const awinProducts=[{...products[0],network:'awin'}];
+  const awinResults=[];
+  for(const target of awinRoutes)awinResults.push(await auditTarget(target,policy,{request:async u=>u.host==='affiliate.example'?response(302,'',{location:direct.url}):response()}));
+  const runtimeNow=Date.now();
+  const awinReport={...report,artifactSha256:canonicalProductDigest(awinProducts),expectedTargets:4,results:awinResults,completedAt:new Date(runtimeNow).toISOString()};
+  validateReport(awinReport,{key:'example',products:awinProducts,policy,now:runtimeNow});
+  assert.throws(()=>validateReport({...awinReport,results:awinResults.filter(r=>!r.url.includes('cons=0'))},{key:'example',products:awinProducts,policy,now:runtimeNow}),/coverage/,'omitting the actual denied-consent route must block activation');
+  const deniedResult=awinResults.find(r=>r.url.includes('cons=0'));
+  const wrongDenied={...deniedResult,finalUrl:'https://merchant.example/products/other',chain:[deniedResult.chain[0],{url:'https://merchant.example/products/other',httpStatus:200}]};
+  assert.throws(()=>validateReport({...awinReport,results:awinResults.map(r=>r===deniedResult?wrongDenied:r)},{key:'example',products:awinProducts,policy,now:runtimeNow}),/consent destination mismatch/,'denied consent cannot silently resolve to another product');
   const reject = (patch, pattern) => assert.throws(() => validateReport({...report,...patch},{key:'example',products,policy,now}),pattern);
   reject({artifactSha256:'0'.repeat(64)},/digest mismatch/);
   reject({policySha256:'0'.repeat(64)},/digest mismatch/);
@@ -55,6 +70,7 @@ async function main() {
   reject({results:[validDirect,validDirect]},/duplicate/);
   reject({scope:'sample'},/passing report/);
   reject({results:[{...validDirect,status:'fail'},validAffiliate]},/failed/);
+  reject({results:[null,validAffiliate]},/failed or missing destination/);
   reject({results:[{...validDirect,finalUrl:'https://evil.example/'},validAffiliate]},/redirect evidence/);
   reject({results:[{...validDirect,bodySha256:null},validAffiliate]},/failed/);
   const other = {...validAffiliate, finalUrl:'https://merchant.example/products/other', chain:[validAffiliate.chain[0],{url:'https://merchant.example/products/other',httpStatus:200}]};
@@ -71,7 +87,9 @@ async function main() {
   const fixture = fs.mkdtempSync(path.resolve('build','destination-test-'));
   try {
     fs.mkdirSync(path.join(fixture,'development'));
-    fs.copyFileSync('development/amazgifts-products.json.gz.b64',path.join(fixture,'development/amazgifts-products.json.gz.b64'));
+    const source=productionArtifactFor('amazgifts').source;
+    fs.copyFileSync(source,path.join(fixture,source));
+    fs.copyFileSync('production-merchant-artifacts.json',path.join(fixture,'production-merchant-artifacts.json'));
     const approvals = JSON.parse(before[0]); delete approvals.merchants.amazgifts.destinationHealthReport;
     fs.writeFileSync(path.join(fixture,'production-merchant-approvals.json'),JSON.stringify(approvals));
     for (const envPatch of [{FUNDBLICK_AMAZGIFTS_DRY_RUN:'1'},{FUNDBLICK_AMAZGIFTS_DRY_RUN:'0',FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION:'YES'}]) {

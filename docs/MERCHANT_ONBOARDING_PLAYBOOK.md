@@ -17,7 +17,7 @@ Jeder neue Händler soll weniger manuelle Sonderlogik benötigen als der vorheri
 11. Erst danach PR nach `main` und Production-Deployment.
 
 ## Stop-Gates
-- Neue/geänderte Händlerartefakte nur mit frischem vollständigem Destination-Link-Health-Bericht für exakt ihren Digest und beide Consent-Pfade aktivieren; Ablauf in `DESTINATION_LINK_HEALTH_GATE.md`. Amazgifts bleibt nach PR #48 quarantiniert. Historische Aktivierungsschritte unten sind ohne dieses zusätzliche Gate unvollständig; Vertragsklärung ist inzwischen `termsCleared:true`.
+- Neue/geänderte Händlerartefakte nur mit frischem vollständigem Destination-Link-Health-Bericht für exakt ihren Digest und beide Consent-Pfade aktivieren; Ablauf in `DESTINATION_LINK_HEALTH_GATE.md`. Der ursprüngliche Amazgifts-Feed bleibt nach PR #48 ausgeschlossen; die separat geprüfte 280-Produkte-Auswahl benötigt zusätzlich Bild-/Metadaten-Gates, siehe `AMAZGIFTS_VERIFIED_SELECTION_2026-10-03.md`. Historische Aktivierungsschritte unten sind überholt; Vertragsklärung ist inzwischen `termsCleared:true`.
 - Keine numerischen Offer-Counts als Händlername.
 - Keine simulierten Produkte in Production.
 - Keine unbekannten Taxonomiewerte ohne Registry-Eintrag.

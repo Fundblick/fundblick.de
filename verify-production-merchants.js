@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs');
 const path=require('node:path');
+const {productionArtifactFor}=require('./merchant-production-artifact.js');
 
 const root=process.argv[2]||path.join('build','catalog');
 const manifest=JSON.parse(fs.readFileSync(path.join(root,'manifest.json'),'utf8'));
@@ -36,7 +37,7 @@ const amazgiftsApproval=approvals?.merchants?.amazgifts;
 if(!amazgiftsApproval)throw new Error('Amazgifts production approval record missing');
 if(amazgiftsApproval.network!=='awin'||amazgiftsApproval.advertiserId!=='87569'||amazgiftsApproval.publisherId!=='3106259')throw new Error('Amazgifts production approval identity contract changed');
 if(!Array.isArray(amazgiftsApproval.sources))throw new Error('Amazgifts production approval sources must be an array');
-if(amazgiftsApproval.approved===true){if(amazgiftsApproval.sources.length!==1||amazgiftsApproval.sources[0]!=='development/amazgifts-products.json.gz.b64')throw new Error('Approved Amazgifts production source contract changed');}
+if(amazgiftsApproval.approved===true){if(amazgiftsApproval.sources.length!==1||amazgiftsApproval.sources[0]!==productionArtifactFor('amazgifts').source)throw new Error('Approved Amazgifts production source contract changed');}
 else if(amazgiftsApproval.sources.length!==0)throw new Error('Blocked Amazgifts must not expose a production source');
 const productionSources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 const amazgiftsSourceCount=productionSources.filter(source=>/amazgifts/i.test(String(source))).length;
@@ -44,9 +45,11 @@ if(!amazgiftsApproval?.approved&&amazgiftsSourceCount!==0)throw new Error(`Block
 if(!amazgiftsApproval?.approved&&amazgifts!==0)throw new Error(`Blocked Amazgifts merchant leaked into production: ${amazgifts} products`);
 if(amazgiftsApproval?.approved){
   if(amazgiftsSourceCount!==1)throw new Error(`Approved Amazgifts production requires exactly one explicit source, got ${amazgiftsSourceCount}`);
-  if(amazgifts!==2964)throw new Error(`Amazgifts production count must be 2964, got ${amazgifts}`);
+  const contract=productionArtifactFor('amazgifts');
+  if(amazgifts!==contract.productCount)throw new Error(`Amazgifts production count must be ${contract.productCount}, got ${amazgifts}`);
   const amazgiftsProducts=products.filter(product=>(product?.bestOffer?.merchant||product?.merchant)==='Amazgifts DE');
-  if(new Set(amazgiftsProducts.map(product=>product.id)).size!==2964)throw new Error('Amazgifts production ids are not unique');
+  if(new Set(amazgiftsProducts.map(product=>product.id)).size!==contract.productCount)throw new Error('Amazgifts production ids are not unique');
+  if(new Set(amazgiftsProducts.map(product=>product.rawAttributes?.shopifyProductId)).size!==contract.productCount)throw new Error('Amazgifts product families are not unique');
   if(!amazgiftsProducts.every(product=>String(product?.bestOffer?.network||product?.source?.network||'').toLowerCase()==='awin'))throw new Error('Every Amazgifts production offer must use AWIN');
   if(!amazgiftsProducts.every(product=>{try{const u=new URL(String(product?.bestOffer?.affiliateUrl||''));return /(^|\.)awin1\.com$/i.test(u.hostname)&&u.searchParams.get('a')==='3106259'&&u.searchParams.get('m')==='87569';}catch{return false;}}))throw new Error('Every Amazgifts production offer must preserve the verified AWIN publisher and advertiser ids');
   if(!amazgiftsProducts.every(product=>{try{return /(^|\.)amazgifts\.de$/i.test(new URL(String(product?.bestOffer?.directUrl||'')).hostname);}catch{return false;}}))throw new Error('Every Amazgifts production offer must have an Amazgifts direct URL');

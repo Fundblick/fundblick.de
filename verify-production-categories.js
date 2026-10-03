@@ -1,6 +1,7 @@
 'use strict';
 const fs=require('node:fs');
 const path=require('node:path');
+const {productionArtifactFor}=require('./merchant-production-artifact.js');
 
 const root=process.argv[2]||path.join('build','catalog');
 const file=path.join(root,'categories.json');
@@ -17,10 +18,7 @@ const expected=new Map([
   ['home.garden.robot-mower-accessories',23]
 ]);
 if(approvals?.merchants?.amazgifts?.approved===true){
-  expected.set('gifts.personalized.keychains',2271);
-  expected.set('gifts.personalized.jewelry',605);
-  expected.set('gifts.personalized.photo-gifts',74);
-  expected.set('craft.jewelry-making.supplies',14);
+  for(const [category,count] of Object.entries(productionArtifactFor('amazgifts').categoryCounts))expected.set(category,count);
 }
 for(const [id,count] of expected){
   if(counts.get(id)!==count)throw new Error(`Expected ${id}=${count}, got ${counts.get(id)??'missing'}`);
@@ -30,6 +28,6 @@ if(homeTotal!==1428)throw new Error(`Expected Casa Moro home category total 1428
 const anthbotTotal=['home.garden.robot-mowers','home.garden.robot-mower-accessories'].reduce((sum,id)=>sum+(counts.get(id)||0),0);
 if(anthbotTotal!==56)throw new Error(`Expected ANTHBOT category total 56, got ${anthbotTotal}`);
 const total=[...counts.values()].reduce((sum,count)=>sum+count,0);
-const expectedTotal=1515+(approvals?.merchants?.amazgifts?.approved===true?2964:0);
+const expectedTotal=1515+(approvals?.merchants?.amazgifts?.approved===true?productionArtifactFor('amazgifts').productCount:0);
 if(total!==expectedTotal)throw new Error(`Expected category total ${expectedTotal}, got ${total}`);
 console.log(`Production category gate OK: ${payload.categories.length} categories, total ${total}`);
