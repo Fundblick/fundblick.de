@@ -29,6 +29,7 @@ on:
       - 'live-health.js'
       - 'verify-live-health.js'
       - 'results-paging.js'
+      - 'results-paging.css'
       - 'build-versioned-site.js'
       - 'build-seo-landings.js'
       - 'verify-production-*.js'
