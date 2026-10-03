@@ -21,6 +21,26 @@ on:
       - '.github/workflows/production-pages.yml'
   pull_request:
     branches: [main]
+    paths:
+      - 'live-catalog-ui.js'
+      - 'merchant-offers.js'
+      - 'verify-merchant-offers.js'
+      - 'result-card.css'
+      - 'result-card-e2e.spec.js'
+      - 'external-search-e2e.spec.js'
+      - 'external-search*.js'
+      - 'external-price*.js'
+      - 'external-result-page.js'
+      - 'external-intelligence-ui.js'
+      - 'product-*.js'
+      - 'external-search.css'
+      - 'search.html'
+      - 'affiliate-*.js'
+      - 'production-catalog-sources.json'
+      - 'production-merchant-approvals.json'
+      - 'build-production-catalog.js'
+      - '.github/workflows/result-card-safety.yml'
+      - '.github/workflows/production-pages.yml'
 
 permissions:
   contents: read

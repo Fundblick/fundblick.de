@@ -5,6 +5,24 @@ on:
     branches: [development]
   pull_request:
     branches: [main]
+    paths:
+      - 'production-catalog-sources.json'
+      - 'production-merchant-approvals.json'
+      - 'build-production-catalog.js'
+      - 'build-live-catalog.js'
+      - 'build-versioned-site.js'
+      - 'build-seo-landings.js'
+      - 'verify-production-*.js'
+      - 'verify-live-catalog-v2.js'
+      - 'verify-google-indexability.js'
+      - 'affiliate-*.js'
+      - 'live-catalog-ui.js'
+      - 'search.html'
+      - 'index.html'
+      - 'robots.txt'
+      - 'sitemap.xml'
+      - '.github/workflows/production-release-check.yml'
+      - '.github/workflows/production-pages.yml'
 
 permissions:
   contents: read
