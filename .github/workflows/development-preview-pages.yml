@@ -42,6 +42,9 @@ jobs:
       - name: Checkout development
         uses: actions/checkout@v6
 
+      - name: Verify portable browser package
+        run: node verify-site-portability.js
+
       - name: Build portable isolated development preview
         env:
           FUNDBLICK_AMAZGIFTS_ARTIFACT: ${{ github.event_name == 'workflow_dispatch' && inputs.amazgifts_artifact_path || '' }}

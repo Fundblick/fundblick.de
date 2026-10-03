@@ -118,3 +118,25 @@ Historical `verify-search-state-v2.js` contains pre-migration inline-script/cach
 token assertions and fails already on audited main. It is not a current CI gate;
 current query/category/mobile semantics are covered by the active browser suites.
 No old assertion was silently removed just to label the audit green.
+
+## Follow-up verification and portability
+
+PR #53 merged at 9bb198b1bf0d50571d1188fd1b4a40d39fd9d530. Production Pages
+run 37143643489 succeeded, including its full post-deploy public verification.
+Development was fast-forwarded to the same commit, and its GitHub Actions builds
+passed. Cloudflare hosting remains an independently failing, unauthenticated
+external integration; dev.fundblick.de did not resolve during this audit.
+
+The Desktop verification at 2026-10-03T18:22:49.480Z compared all 1,795 public
+products, 367 shards, 82 hashed assets, six SEO landings and eight forbidden paths
+against the release and passed exact bytes after normalizing source CRLF to LF.
+This fixes cross-platform hash differences, which were not deployment drift.
+A regression check builds both LF and CRLF inputs and compares all browser bytes.
+
+Actual browser checks returned the complete independent expected counts for all
+11 categories and search health OK. Five summaries exposed internal category IDs,
+and canonical home categories retained German labels after switching to Russian.
+Reuse the existing homepage category translations through one shared module in
+homepage and search, with live language lookup and English fallback. Browser
+acceptance now compares homepage labels to result summaries and tests switching
+languages without changing the 516 home products.
