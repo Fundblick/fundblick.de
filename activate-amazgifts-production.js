@@ -2,6 +2,7 @@
 const fs=require('node:fs'),zlib=require('node:zlib');
 const {getMerchant}=require('./merchant-feed-registry.js');
 const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
+const {requireHealth}=require('./destination-link-health.js');
 const source='development/amazgifts-products.json.gz.b64';
 const dryRun=process.env.FUNDBLICK_AMAZGIFTS_DRY_RUN==='1';
 if(!dryRun&&process.env.FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION!=='YES')throw new Error('Cannot activate Amazgifts: set FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION=YES for an explicit production activation');
@@ -15,12 +16,14 @@ if(digest!==cfg.expected.artifactSha256)throw new Error(`Cannot activate Amazgif
 const approvals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
 const approval=approvals?.merchants?.amazgifts;
 if(!approval)throw new Error('Cannot activate Amazgifts: approval record missing');
-if(approval.termsCleared!==true&&!dryRun)throw new Error('Cannot activate Amazgifts: advertiser deeplink/automation terms are not explicitly cleared');
+if(approval.termsCleared!==true)throw new Error('Cannot activate Amazgifts: advertiser deeplink/automation terms are not explicitly cleared');
 if(approval.network!=='awin'||approval.advertiserId!=='87569'||approval.publisherId!=='3106259')throw new Error('Cannot activate Amazgifts: approval identity mismatch');
+requireHealth('amazgifts',products,approval);
 approval.approved=true;
 approval.termsCleared=true;
 approval.sources=[source];
 delete approval.reason;
+delete approval.quarantined;
 const sources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 if(!sources.includes(source))sources.push(source);
 if(dryRun){

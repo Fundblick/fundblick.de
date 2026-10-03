@@ -2,6 +2,13 @@
 
 Status: prepared, **not active**.
 
+2026-10-03 cross-check: ADCELL remains disabled in the actual config. Awin is
+already active (`live-awin`) and its disclosure is on the live privacy page. The
+historical inactive ADCELL page section described below is no longer present there;
+activation still requires its real disclosure and the gates below. The readiness
+verifier now checks the actual active/inactive network state rather than asserting
+that Awin is also disabled.
+
 ## Purpose
 
 FundBlick is prepared so ADCELL can later be activated without redesigning consent handling. The production configuration deliberately keeps ADCELL disabled until real publisher/program data and the final live disclosure are present.

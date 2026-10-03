@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "merchants": {
+    "casaMoro": {"merchantHosts": ["casa-moro.de", "www.casa-moro.de"], "affiliateHosts": ["www.awin1.com", "awin1.com"], "redirectHosts": []},
+    "ahipos": {"merchantHosts": ["ahipos-horses.de", "www.ahipos-horses.de"], "affiliateHosts": ["www.awin1.com", "awin1.com"], "redirectHosts": []},
+    "anthbot": {"merchantHosts": ["anthbot.com", "www.anthbot.com", "de.anthbot.com"], "affiliateHosts": ["www.awin1.com", "awin1.com"], "redirectHosts": []},
+    "amazgifts": {"merchantHosts": ["amazgifts.de", "www.amazgifts.de"], "affiliateHosts": ["www.awin1.com", "awin1.com"], "redirectHosts": []}
+  }
+}

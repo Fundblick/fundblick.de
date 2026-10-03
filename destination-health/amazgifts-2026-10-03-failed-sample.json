@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "auditorVersion": 1,
+  "merchant": "amazgifts",
+  "artifactSha256": "32ca063fc6d02a7ba6407175100e7da84f0c75731f097033b6096aff55b2d65a",
+  "policySha256": "59df1eda500f617fb1a08058cab6822ba8b8cb51a80cdd1080e4c5d244575d38",
+  "productCount": 2964,
+  "expectedTargets": 5928,
+  "scope": "sample",
+  "startedAt": "2026-10-03T15:33:48.331Z",
+  "results": [
+    {
+      "mode": "direct",
+      "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090863700&om=5615",
+      "status": "fail",
+      "checkedAt": "2026-10-03T15:33:48.720Z",
+      "reason": "http-404",
+      "finalUrl": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?om=5615&variant=40500090863700#seotidNbd77kGk5",
+      "chain": [
+        {
+          "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090863700&om=5615",
+          "httpStatus": 301
+        },
+        {
+          "url": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?om=5615&variant=40500090863700#seotidNbd77kGk5",
+          "httpStatus": 404
+        }
+      ]
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=38411703287&a=3106259&m=87569",
+      "status": "fail",
+      "checkedAt": "2026-10-03T15:33:50.173Z",
+      "reason": "http-404",
+      "finalUrl": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?aw_affid=3106259&awc=87569_1791041641_ffbf7c5b0096ef6b7f69d3614ceb818c&om=5615&source=aw&variant=40500090863700#seotidNbd77kGk5",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=38411703287&a=3106259&m=87569",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090863700&om=5615&source=aw&aw_affid=3106259&awc=87569_1791041641_ffbf7c5b0096ef6b7f69d3614ceb818c",
+          "httpStatus": 301
+        },
+        {
+          "url": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?aw_affid=3106259&awc=87569_1791041641_ffbf7c5b0096ef6b7f69d3614ceb818c&om=5615&source=aw&variant=40500090863700#seotidNbd77kGk5",
+          "httpStatus": 404
+        }
+      ]
+    },
+    {
+      "mode": "direct",
+      "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090896468&om=5615",
+      "status": "fail",
+      "checkedAt": "2026-10-03T15:33:51.459Z",
+      "reason": "http-404",
+      "finalUrl": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette#seotidIfuTjGIAI",
+      "chain": [
+        {
+          "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090896468&om=5615",
+          "httpStatus": 301
+        },
+        {
+          "url": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette#seotidIfuTjGIAI",
+          "httpStatus": 404
+        }
+      ]
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=38411703288&a=3106259&m=87569",
+      "status": "fail",
+      "checkedAt": "2026-10-03T15:33:52.840Z",
+      "reason": "http-404",
+      "finalUrl": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?aw_affid=3106259&awc=87569_1791041643_7c14423782e5c0fd67716df7ce806b8f&om=5615&source=aw&variant=40500090896468#seotidNbd77kGk5",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=38411703288&a=3106259&m=87569",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090896468&om=5615&source=aw&aw_affid=3106259&awc=87569_1791041643_7c14423782e5c0fd67716df7ce806b8f",
+          "httpStatus": 301
+        },
+        {
+          "url": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?aw_affid=3106259&awc=87569_1791041643_7c14423782e5c0fd67716df7ce806b8f&om=5615&source=aw&variant=40500090896468#seotidNbd77kGk5",
+          "httpStatus": 404
+        }
+      ]
+    },
+    {
+      "mode": "direct",
+      "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090929236&om=5615",
+      "status": "fail",
+      "checkedAt": "2026-10-03T15:33:54.148Z",
+      "reason": "http-404",
+      "finalUrl": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?om=5615&variant=40500090929236#seotidNbd77kGk5",
+      "chain": [
+        {
+          "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090929236&om=5615",
+          "httpStatus": 301
+        },
+        {
+          "url": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?om=5615&variant=40500090929236#seotidNbd77kGk5",
+          "httpStatus": 404
+        }
+      ]
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=38411703289&a=3106259&m=87569",
+      "status": "fail",
+      "checkedAt": "2026-10-03T15:33:55.525Z",
+      "reason": "http-404",
+      "finalUrl": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?aw_affid=3106259&awc=87569_1791041646_c54a860459ddc5b55cb7842fdd6ed933&om=5615&source=aw&variant=40500090929236#seotidNbd77kGk5",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=38411703289&a=3106259&m=87569",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://amazgifts.de/products/gepersonaliseerde-hart-ketting-met-foto-projectie-in-steen?variant=40500090929236&om=5615&source=aw&aw_affid=3106259&awc=87569_1791041646_c54a860459ddc5b55cb7842fdd6ed933",
+          "httpStatus": 301
+        },
+        {
+          "url": "https://amazgifts.de/https://amazgifts.de/collections/projektionskette?aw_affid=3106259&awc=87569_1791041646_c54a860459ddc5b55cb7842fdd6ed933&om=5615&source=aw&variant=40500090929236#seotidNbd77kGk5",
+          "httpStatus": 404
+        }
+      ]
+    }
+  ],
+  "completedAt": "2026-10-03T15:33:56.528Z",
+  "status": "fail",
+  "failedTargets": 6,
+  "recommendedAction": "keep-quarantined-or-review-active-merchant"
+}

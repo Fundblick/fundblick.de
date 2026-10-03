@@ -9,31 +9,39 @@ const links=fs.readFileSync('language-links.js','utf8');
 const css=fs.readFileSync('affiliate-consent.css','utf8');
 
 assert.equal(config.network,'MULTI');
-assert.equal(config.mode,'prepared');
+assert.equal(config.mode,'live-awin');
 assert.equal(config.adcell.vendorId,766,'ADCELL IAB Vendor ID must stay explicit');
 assert.equal(config.awin.vendorId,907,'Awin IAB Vendor ID must stay explicit');
-for(const [name,provider] of Object.entries({adcell:config.adcell,awin:config.awin})){
+for(const [name,provider] of Object.entries({adcell:config.adcell})){
   assert.equal(provider.enabled,false,`${name} must remain disabled until real activation`);
   assert.equal(provider.outboundEnabled,false,`${name} outbound must remain disabled until real activation`);
   assert.equal(provider.trackingEnabled,false,`${name} tracking must remain disabled until real activation`);
   assert.equal(provider.liveDisclosure,false,`${name} live disclosure must not claim active tracking while disabled`);
 }
-assert.equal(consent.canTrack(config,'granted'),false,'consent alone must never enable disabled affiliate tracking');
+assert.equal(consent.canTrack(config,'granted','adcell'),false,'consent alone must never enable disabled ADCELL tracking');
+assert.equal(consent.canTrack(config,'denied','awin'),false,'denial must block active Awin tracking');
+assert.equal(consent.canTrack(config,null,'awin'),false,'missing consent must block active Awin tracking');
+assert.equal(consent.canTrack(config,'granted','awin'),true,'active Awin may track only with explicit consent');
+for(const flag of ['enabled','outboundEnabled','trackingEnabled','liveDisclosure'])assert.equal(config.awin[flag],true,`live Awin requires ${flag}`);
 assert.equal(consent.canTrack({adcell:{enabled:true,trackingEnabled:true},awin:{enabled:false,trackingEnabled:false}},'denied'),false,'denial must block tracking');
 assert.equal(consent.canTrack({adcell:{enabled:true,trackingEnabled:true},awin:{enabled:false,trackingEnabled:false}},'granted','adcell'),true,'enabled ADCELL tracking may only pass after consent');
 assert.equal(consent.canTrack({adcell:{enabled:false,trackingEnabled:false},awin:{enabled:true,trackingEnabled:true}},'granted','awin'),true,'enabled Awin tracking may only pass after consent');
 assert.ok(Object.keys(consent.COPY).length>=20,'consent copy must cover FundBlick languages');
 assert.ok(privacy.includes('id="affiliate-networks"'),'generic affiliate privacy section missing');
-assert.ok(privacy.includes('id="affiliate-adcell"'),'ADCELL privacy section missing');
-assert.ok(privacy.includes('data-adcell-live-disclosure="false"'),'inactive ADCELL legal disclosure marker missing');
-assert.ok(privacy.includes('IAB Vendor ID 766'),'ADCELL vendor disclosure missing');
-assert.ok(privacy.includes('https://www.adcell.de/datenschutz'),'ADCELL privacy reference missing');
+assert.ok(!privacy.includes('data-adcell-live-disclosure="true"'),'disabled ADCELL must not claim active disclosure');
+// The live privacy page intentionally describes the active network. If an
+// inactive ADCELL preparation section is present, it must be accurately marked.
+if(privacy.includes('id="affiliate-adcell"')){
+  assert.ok(privacy.includes('data-adcell-live-disclosure="false"'),'inactive ADCELL legal disclosure marker missing');
+  assert.ok(privacy.includes('IAB Vendor ID 766'),'ADCELL vendor disclosure missing');
+  assert.ok(privacy.includes('https://www.adcell.de/datenschutz'),'ADCELL privacy reference missing');
+}
 assert.ok(privacy.includes('id="affiliate-awin"'),'Awin privacy section missing');
-assert.ok(privacy.includes('data-awin-live-disclosure="false"'),'inactive Awin legal disclosure marker missing');
+assert.ok(privacy.includes('data-awin-live-disclosure="true"'),'active Awin legal disclosure marker missing');
 assert.ok(privacy.includes('Vendor ID 907'),'Awin vendor disclosure missing');
 assert.ok(privacy.includes('AWIN AG'),'Awin controller identity missing');
 assert.ok(privacy.includes('https://www.awin.com/de/datenschutzerklarung'),'Awin privacy reference missing');
-assert.ok(privacy.includes('Awin ist derzeit technisch deaktiviert.'),'inactive Awin status text missing');
+assert.ok(privacy.includes('Awin ist für ausgewählte Händlerlinks aktiv.'),'active Awin status text missing');
 assert.ok(links.includes('affiliate-config.js'),'site-wide affiliate config bootstrap missing');
 assert.ok(links.includes('affiliate-consent.js'),'site-wide consent bootstrap missing');
 assert.ok(links.includes('affiliate-consent.css'),'site-wide consent styling bootstrap missing');

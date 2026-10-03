@@ -4,6 +4,7 @@ const path=require('node:path');
 const zlib=require('node:zlib');
 const {getMerchant}=require('./merchant-feed-registry.js');
 const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
+const {requireHealth}=require('./destination-link-health.js');
 const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceManifest=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
 if(!Array.isArray(sourceManifest)||!sourceManifest.length)throw new Error('production-catalog-sources.json must contain at least one source file');
@@ -15,6 +16,15 @@ const coreFile=normalize('development/core-products.json');const normalizedManif
 for(const source of normalizedManifest){if(blockedMerchantSources.has(source))throw new Error(`Production source ${source} belongs to blocked merchant ${blockedMerchantSources.get(source)}`);if(source!==coreFile&&!approvedMerchantSources.has(source))throw new Error(`Production merchant source ${source} has no explicit approval`);}for(const [source,key] of approvedMerchantSources){if(!normalizedManifest.includes(source))throw new Error(`Approved merchant source ${source} for ${key} is missing from production-catalog-sources.json`);}
 const originalRead=fs.readFileSync.bind(fs);
 function readSource(file){let raw=originalRead(file);const name=String(file);if(name.endsWith('.b64'))raw=Buffer.from(raw.toString('utf8').trim(),'base64');if(name.endsWith('.gz')||name.endsWith('.gz.b64'))raw=zlib.gunzipSync(raw);return JSON.parse(raw.toString('utf8'));}
+// Validate raw artifacts before enrichment or writing any public catalog output.
+const healthArtifacts=new Map();
+for(const file of sourceManifest){const key=normalize(file)===coreFile?'casaMoro':approvedMerchantSources.get(normalize(file));const list=healthArtifacts.get(key)||[];list.push(...readSource(file));healthArtifacts.set(key,list);}
+for(const [key,products] of healthArtifacts){
+  const approval=approvals.merchants[key];
+  if(approval?.approved!==true)throw new Error(`Merchant ${key} has no explicit production approval`);
+  if(approval?.quarantined===true)throw new Error(`Quarantined merchant ${key} cannot enter production`);
+  requireHealth(key,products,approval,{allowLegacy:true});
+}
 const combined=[];const seenIds=new Map();for(const file of sourceManifest){const normalizedFile=normalize(file);const data=readSource(normalizedFile);if(!Array.isArray(data))throw new Error(`${file} must contain an array`);
 const merchantKey=approvedMerchantSources.get(normalizedFile);
 if(merchantKey==='amazgifts'){
