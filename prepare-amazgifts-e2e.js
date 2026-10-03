@@ -11,5 +11,5 @@ for(const meta of Object.values(manifest.shards||{})){
   if(p)break;
 }
 if(!p)throw new Error('Approved Amazgifts has no production product for browser E2E');
-fs.writeFileSync('build/amazgifts-e2e-product.json',JSON.stringify({id:p.id,name:p.name,category:p.category})+'\n');
+fs.writeFileSync('build/amazgifts-e2e-product.json',JSON.stringify({id:p.id,name:p.name,category:p.category,image:p.image,directUrl:p.bestOffer.directUrl,affiliateUrl:p.bestOffer.affiliateUrl})+'\n');
 console.log('Amazgifts browser E2E fixture ready',p.id,p.name);

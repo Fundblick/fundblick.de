@@ -8,6 +8,11 @@ on:
     paths:
       - 'production-catalog-sources.json'
       - 'production-merchant-approvals.json'
+      - 'production-merchant-artifacts.json'
+      - 'merchant-production-artifact.js'
+      - 'merchant-product-quality.js'
+      - 'verify-merchant-product-quality.js'
+      - 'development/amazgifts-verified-products*'
       - 'destination-link-*.js'
       - 'audit-destination-links.js'
       - 'verify-destination-link-health.js'
@@ -58,6 +63,7 @@ jobs:
       - name: Build and validate production catalog
         run: |
           node verify-destination-link-health.js
+          node verify-merchant-product-quality.js
           node verify-merchant-feed-registry.js
           node verify-merchant-artifact-integrity.js
           node verify-amazgifts-live-readiness.js

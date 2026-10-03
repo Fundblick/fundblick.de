@@ -6,7 +6,9 @@
       "network": "awin",
       "advertiserId": "31431",
       "publisherId": "3106259",
-      "sources": ["development/core-products.json"]
+      "sources": [
+        "development/core-products.json"
+      ]
     },
     "ahipos": {
       "approved": true,
@@ -26,14 +28,16 @@
       ]
     },
     "amazgifts": {
-      "approved": false,
+      "approved": true,
       "network": "awin",
       "advertiserId": "87569",
       "publisherId": "3106259",
-      "sources": [],
+      "sources": [
+        "development/amazgifts-verified-products.json.gz.b64"
+      ],
       "termsCleared": true,
-      "quarantined": true,
-      "reason": "destination-link health quarantine: production product targets fail; artifact retained for later verified promotion"
+      "destinationHealthReport": "destination-health/amazgifts-clean-links.json",
+      "productQualityReport": "destination-health/amazgifts-clean-quality.json"
     }
   }
 }

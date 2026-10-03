@@ -6,6 +6,11 @@ on:
     paths:
       - 'production-catalog-sources.json'
       - 'production-merchant-approvals.json'
+      - 'production-merchant-artifacts.json'
+      - 'merchant-production-artifact.js'
+      - 'merchant-product-quality.js'
+      - 'verify-merchant-product-quality.js'
+      - 'development/amazgifts-verified-products*'
       - 'destination-link-*.js'
       - 'destination-link-policy.json'
       - 'destination-health/**'
@@ -41,6 +46,8 @@ jobs:
         run: node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));if(a.version!==1||!a.merchants)process.exit(1);for(const [k,m] of Object.entries(a.merchants)){if(!m.network||!m.advertiserId||!Array.isArray(m.sources))throw new Error('Invalid approval '+k);if(m.approved!==true&&m.sources.length)throw new Error('Blocked merchant '+k+' must not expose production sources');}console.log('Production merchant approvals OK')"
       - name: Build combined production catalog
         run: node build-production-catalog.js build/catalog
+      - name: Verify product image and metadata evidence
+        run: node verify-merchant-product-quality.js
       - name: Existing production catalog verification
         run: |
           node verify-live-catalog-v2.js build/catalog

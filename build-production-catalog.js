@@ -2,8 +2,8 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const zlib=require('node:zlib');
-const {getMerchant}=require('./merchant-feed-registry.js');
-const {canonicalProductDigest}=require('./merchant-artifact-integrity.js');
+const {assertProductionArtifact}=require('./merchant-production-artifact.js');
+const {requireProductQuality}=require('./merchant-product-quality.js');
 const {requireHealth}=require('./destination-link-health.js');
 const outputRoot=process.argv[2]||path.join('build','catalog');
 const sourceManifest=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8'));
@@ -24,13 +24,12 @@ for(const [key,products] of healthArtifacts){
   if(approval?.approved!==true)throw new Error(`Merchant ${key} has no explicit production approval`);
   if(approval?.quarantined===true)throw new Error(`Quarantined merchant ${key} cannot enter production`);
   requireHealth(key,products,approval,{allowLegacy:true});
+  if(key==='amazgifts'||approval.productQualityReport)requireProductQuality(key,products,approval);
 }
 const combined=[];const seenIds=new Map();for(const file of sourceManifest){const normalizedFile=normalize(file);const data=readSource(normalizedFile);if(!Array.isArray(data))throw new Error(`${file} must contain an array`);
 const merchantKey=approvedMerchantSources.get(normalizedFile);
 if(merchantKey==='amazgifts'){
-  const cfg=getMerchant('amazgifts'),digest=canonicalProductDigest(data);
-  if(data.length!==cfg.expected.products)throw new Error(`Amazgifts production artifact count mismatch: expected ${cfg.expected.products}, got ${data.length}`);
-  if(digest!==cfg.expected.artifactSha256)throw new Error(`Amazgifts production artifact digest mismatch: expected ${cfg.expected.artifactSha256}, got ${digest}`);
+  assertProductionArtifact('amazgifts',data,file);
 }
 for(const product of data){const id=String(product?.id||'').trim();if(!id)throw new Error(`${file} contains product without id`);if(seenIds.has(id))throw new Error(`Duplicate production product id ${id} in ${seenIds.get(id)} and ${file}`);seenIds.set(id,file);combined.push(product);}}
 fs.readFileSync=function(file,...args){if(normalize(file)===coreFile)return JSON.stringify(combined);return originalRead(file,...args);};process.argv[2]=outputRoot;require('./build-live-catalog.js');

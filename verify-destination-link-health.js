@@ -6,6 +6,7 @@ const path = require('node:path');
 const {auditTarget, contentFailure, publicAddress} = require('./audit-destination-links.js');
 const {linkTargets, policyDigest, validateReport, requireHealth, readProducts, MAX_AGE_MS} = require('./destination-link-health.js');
 const {canonicalProductDigest} = require('./merchant-artifact-integrity.js');
+const {productionArtifactFor} = require('./merchant-production-artifact.js');
 const policy = {merchantHosts: ['merchant.example'], affiliateHosts: ['affiliate.example'], redirectHosts: []};
 const products = [{id: '1', directUrl: 'https://merchant.example/products/1', affiliateUrl: 'https://affiliate.example/click/1'}];
 const html = '<html><title>Product</title><script type="application/ld+json">{"@type":"Product","name":"Real page"}</script></html>';
@@ -21,7 +22,7 @@ async function main() {
     const result = await auditTarget(direct, policy, {request: async () => response(status)});
     assert.equal(result.reason, `http-${status}`);
   }
-  for (const title of ['404 Not Found', 'Seite nicht gefunden', 'Page not found', 'Produkt nicht gefunden']) {
+  for (const title of ['404 Not Found', 'Hoppla!', '404 – Hoppla!', 'Seite nicht gefunden', 'Page not found', 'Produkt nicht gefunden']) {
     const result = await auditTarget(direct, policy, {request: async () => response(200, `<title>${title}</title>${html}`)});
     assert.equal(result.reason, 'soft-404');
   }
@@ -71,7 +72,9 @@ async function main() {
   const fixture = fs.mkdtempSync(path.resolve('build','destination-test-'));
   try {
     fs.mkdirSync(path.join(fixture,'development'));
-    fs.copyFileSync('development/amazgifts-products.json.gz.b64',path.join(fixture,'development/amazgifts-products.json.gz.b64'));
+    const source=productionArtifactFor('amazgifts').source;
+    fs.copyFileSync(source,path.join(fixture,source));
+    fs.copyFileSync('production-merchant-artifacts.json',path.join(fixture,'production-merchant-artifacts.json'));
     const approvals = JSON.parse(before[0]); delete approvals.merchants.amazgifts.destinationHealthReport;
     fs.writeFileSync(path.join(fixture,'production-merchant-approvals.json'),JSON.stringify(approvals));
     for (const envPatch of [{FUNDBLICK_AMAZGIFTS_DRY_RUN:'1'},{FUNDBLICK_AMAZGIFTS_DRY_RUN:'0',FUNDBLICK_CONFIRM_AMAZGIFTS_ACTIVATION:'YES'}]) {

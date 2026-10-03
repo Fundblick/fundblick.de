@@ -23,7 +23,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
       - name: Offline health evidence and rejection tests
-        run: node verify-destination-link-health.js
+        run: |
+          node verify-destination-link-health.js
+          node verify-merchant-product-quality.js
       - name: Validate actual production artifact health policy
         run: node build-production-catalog.js build/catalog
       - name: Preserve merchant and category baseline
@@ -43,7 +45,7 @@ jobs:
           MERCHANT: ${{ inputs.merchant }}
         run: |
           case "$MERCHANT" in
-            amazgifts) sources=(development/amazgifts-products.json.gz.b64) ;;
+            amazgifts) sources=(development/amazgifts-verified-products.json.gz.b64) ;;
             casaMoro) sources=(development/core-products.json) ;;
             ahipos) sources=(development/ahipos-products-1.json development/ahipos-products-2.json) ;;
             anthbot) sources=(development/anthbot-products.json.gz.b64) ;;

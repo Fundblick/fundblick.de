@@ -22,7 +22,18 @@ assert.match(search,/taxonomy=String\(raw\.category\|\|''\)/,'search must read c
 assert.match(search,/for\(const \[id,schema\] of Object\.entries\(SCHEMAS\)\)/,'search must infer schema family');
 assert.match(search,/deliveryDays,rawAttributes\}/,'search product must retain rawAttributes');
 assert.match(search,/p\.affiliateUrl=affiliateUrl;p\.directUrl=directUrl/,'search product must retain outbound URLs for live decorator');
-assert.match(search,/const tokens=routedSchema\?\[\]:interpret\(translated\)/,'canonical routed category must not be narrowed again by alias literals');
+// Execute the actual category-routing function. A historical spelling assertion
+// missed the equivalent early-return implementation now used in production.
+const runSearchSource=search.match(/function runSearch\(\)\{[^\r\n]+\}/)?.[0];
+assert.ok(runSearchSource,'search routing function missing');
+let captured=null;
+const routing={queryAliases:[],state:{query:'foto schlüsselanhänger'},routedCategory:'gifts.personalized.keychains',products:[{id:'one',family:'gifts.personalized.keychains'},{id:'two',family:'gifts.personalized.jewelry'}],schemaFor:id=>window.FB_CATEGORY_SCHEMAS[id],interpret:()=>{throw new Error('Canonical route must not reinterpret alias words');},render:()=>{captured={category:routing.category,base:routing.base};}};
+vm.runInNewContext('('+runSearchSource+')()',routing);
+assert.equal(captured.category.id,'gifts.personalized.keychains');
+assert.equal(captured.base,routing.products,'canonical route must retain the category pool for facet filtering');
+routing.routedCategory='';routing.interpret=()=>['foto'];routing.detect=()=>null;routing.queryMatch=p=>p.id==='two';
+vm.runInNewContext('('+runSearchSource+')()',routing);
+assert.deepEqual(captured.base.map(p=>p.id),['two'],'free text must still apply the query matcher');
 const categoryI18n=fs.readFileSync('category-display-i18n.js','utf8');
 assert.match(categoryI18n,/Personalisierte Schlüsselanhänger/,'German gift category label missing');
 assert.match(categoryI18n,/Personalized keychains/,'English gift category fallback missing');

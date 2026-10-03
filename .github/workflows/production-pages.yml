@@ -35,6 +35,7 @@ jobs:
           node verify-query-to-facet-integration.js
       - name: Build and validate production catalog
         run: |
+          node verify-merchant-product-quality.js
           node verify-deal-of-day.js
           node verify-merchant-offers.js
           node build-production-catalog.js build/catalog
