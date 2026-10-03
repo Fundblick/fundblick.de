@@ -19,14 +19,15 @@
       ]
     },
     "amazgifts": {
-      "approved": true,
+      "approved": false,
       "network": "awin",
       "advertiserId": "87569",
       "publisherId": "3106259",
       "sources": [
         "development/amazgifts-products.json.gz.b64"
       ],
-      "termsCleared": true
+      "termsCleared": true,
+      "quarantined": true
     }
   }
 }
