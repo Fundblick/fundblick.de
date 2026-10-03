@@ -5,6 +5,17 @@ on:
     branches: [dev/seo-landing-v1]
   pull_request:
     branches: [main]
+    paths:
+      - 'audit-seo-landing-candidates.js'
+      - 'build-seo-landings.js'
+      - 'seo-landing-e2e.spec.js'
+      - 'home-i18n.js'
+      - 'index.html'
+      - 'production-catalog-sources.json'
+      - 'production-merchant-approvals.json'
+      - 'build-production-catalog.js'
+      - '.github/workflows/seo-landing-audit.yml'
+      - '.github/workflows/production-pages.yml'
 
 permissions:
   contents: read
