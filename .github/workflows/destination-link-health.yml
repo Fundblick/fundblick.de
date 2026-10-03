@@ -1,0 +1,60 @@
+name: Destination link health gate
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      merchant:
+        description: 'Merchant to audit (full real HTTP audit, no activation)'
+        type: choice
+        options: [amazgifts, casaMoro, ahipos, anthbot]
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: destination-link-health-${{ github.ref }}-${{ inputs.merchant || 'offline' }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Offline health evidence and rejection tests
+        run: node verify-destination-link-health.js
+      - name: Validate actual production artifact health policy
+        run: node build-production-catalog.js build/catalog
+      - name: Preserve merchant and category baseline
+        run: |
+          node verify-production-merchants.js build/catalog
+          node verify-production-categories.js build/catalog
+  audit:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Full rate-limited direct and affiliate audit
+        env:
+          MERCHANT: ${{ inputs.merchant }}
+        run: |
+          case "$MERCHANT" in
+            amazgifts) sources=(development/amazgifts-products.json.gz.b64) ;;
+            casaMoro) sources=(development/core-products.json) ;;
+            ahipos) sources=(development/ahipos-products-1.json development/ahipos-products-2.json) ;;
+            anthbot) sources=(development/anthbot-products.json.gz.b64) ;;
+            *) exit 1 ;;
+          esac
+          node audit-destination-links.js "$MERCHANT" "build/destination-health/$MERCHANT.json" "${sources[@]}"
+      - name: Retain evidence, including failures and interrupted progress
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: destination-health-${{ inputs.merchant }}-${{ github.sha }}
+          path: build/destination-health/*.json
+          if-no-files-found: error
+          retention-days: 14

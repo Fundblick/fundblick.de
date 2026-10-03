@@ -6,6 +6,12 @@ on:
     paths:
       - 'production-catalog-sources.json'
       - 'production-merchant-approvals.json'
+      - 'destination-link-*.js'
+      - 'destination-link-policy.json'
+      - 'destination-health/**'
+      - 'merchant-artifact-integrity.js'
+      - 'development/anthbot-products*'
+      - 'development/amazgifts-products*'
       - 'build-production-catalog.js'
       - 'build-live-catalog.js'
       - 'development/core-products.json'

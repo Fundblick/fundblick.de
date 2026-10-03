@@ -173,3 +173,27 @@ For this project:
 ## 12. Source-of-truth rule
 
 This file is a handoff, not a substitute for repository inspection. A new agent must verify current repository state before acting. If a newer handoff exists, use the newest dated handoff together with current code and Git history.
+
+## 13. Destination-health implementation batch, 2026-10-03
+
+Verified starting main: `9bffca9a16f4f41ee688b4b20c1492cfa58dabb5` (PR #50).
+Rebuilt baseline: Casa Moro 1,428 + AHIPOS 31 + ANTHBOT 56 = 1,515 real products,
+nine categories, zero Amazgifts. Historical 1,459/seven-category documents are
+superseded; public-field allowlisting and strict consent normalization are already
+present in code. Old Amazgifts terms-clearance steps are superseded by
+`termsCleared:true` plus destination quarantine.
+
+Implementation and operating contract: `DESTINATION_LINK_HEALTH_GATE.md`.
+Dedicated branch `codex/destination-link-health-gate`; verify its PR/CI state before
+assuming merge or deployment. The build and Amazgifts activator now require real
+full, fresh, merchant/artifact/policy-bound evidence for new/changed artifacts.
+The three existing exact baseline digests have an explicit frozen migration
+exemption, not passing health evidence. Never extend this exemption. Next: audit
+existing merchants and retire it through reviewed PRs; refresh evidence and design
+monitoring/quarantine, with canary subsets requiring their own full artifact audit.
+
+Real six-request sample for the first three Amazgifts products fails with HTTP 404
+in both direct and affiliate modes. Merchant 301 embeds an absolute URL in the path;
+Awin 302 resolves into that same broken chain. Evidence retained under
+`destination-health/amazgifts-2026-10-03-failed-sample.json`. Keep Amazgifts quarantined;
+do not rewrite feed destinations or manually promote based on this diagnostic work.

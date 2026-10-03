@@ -2,6 +2,14 @@
 
 Stand: 2026-10-02
 
+**Fortschreibung 2026-10-03:** Dieser Stand ist historisch. Amazgifts ist nach
+PR #48 quarantiniert und aus Production ausgeschlossen. `termsCleared:true` ist
+bereits dokumentiert; fehlender Vertragsstatus ist nicht mehr der aktuelle Blocker.
+Strukturelle Artefaktprüfung reicht nicht zur Reaktivierung. Beide Consent-Pfade
+benötigen einen frischen vollständigen HTTP-Health-Bericht für den exakten Digest.
+Siehe `DESTINATION_LINK_HEALTH_GATE.md` und `HANDOFF_CURRENT.md`. Der reale
+Fehlerbericht vom 03.10. belegt weiterhin 404; keine Live-Readiness ableiten.
+
 ## Verifizierter Datenstand
 
 - Awin Advertiser: 87569

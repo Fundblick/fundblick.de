@@ -1,6 +1,13 @@
 {
   "version": 1,
   "merchants": {
+    "casaMoro": {
+      "approved": true,
+      "network": "awin",
+      "advertiserId": "31431",
+      "publisherId": "3106259",
+      "sources": ["development/core-products.json"]
+    },
     "ahipos": {
       "approved": true,
       "network": "awin",
