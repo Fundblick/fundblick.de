@@ -7,12 +7,18 @@
     ru:{skip:'К содержанию',brandHome:'Главная FundBlick',mainNav:'Главная навигация',categories:'Категории',dailyDeal:'Предложение дня',language:'Язык',chooseLanguage:'Выбрать язык',eyebrow:'ПОИСК ТОВАРОВ · ЦЕНЫ ПРОДАВЦОВ',headline:'Ищите. Сравнивайте предложения. Готово.',lead:'Введите товар — FundBlick покажет предложения подключённых продавцов и доступную информацию о ценах и товарах.',searchLabel:'Искать товары',searchPlaceholder:'Искать товар, бренд или модель …',searchButton:'Искать',productCategories:'Категории товаров',catLiving:'Дом и быт',catFurniture:'Мебель',catLighting:'Лампы и освещение',catDecor:'Декор',autoChecked:'проверено автоматически',noDeal:'Сегодня нет предложения, соответствующего критериям',dealNote:'Скидка и экономия указываются только при наличии надёжных данных для сравнения.',why:'ПОЧЕМУ FUNDBLICK?',how:'Как FundBlick работает для вас.',valueLead:'Меньше поисков — быстрее к подходящему предложению продавца.',step1Title:'Найдите товар',step1Text:'Введите товар, бренд или модель.',step2Title:'Сравните предложения',step2Text:'Сравните доступную информацию о ценах и товарах.',step3Title:'Перейдите к продавцу',step3Text:'Выберите подходящее предложение и перейдите непосредственно к продавцу.',topicsEyebrow:'ТЕМЫ',topicsTitle:'Откройте темы',topicsLead:'Стартовые страницы для разделов, где в текущих данных FundBlick уже достаточно реальных товаров.',topicsNav:'Темы FundBlick',topicEquestrian:'Лошади и конный спорт',topicHorseFeed:'Добавки к корму для лошадей',legal:'Правовая информация',imprint:'Выходные данные',privacy:'Конфиденциальность',affiliateNote:'Мы можем получать вознаграждение за переходы по ссылкам продавцов. Для вас цена от этого не меняется.'}
   };
   const supported=new Set(Object.keys(copy));
+  const form=document.getElementById('searchForm'),input=document.getElementById('q');
+  const feedback=document.getElementById('searchFeedback'),searchLanguage=document.getElementById('searchLanguage');
+  const emptySearch={de:'Bitte gib ein Produkt, eine Marke oder ein Modell ein.',ru:'Введите товар, бренд или модель.'};
+  function clearFeedback(){if(feedback){feedback.textContent='';feedback.hidden=true;}input?.removeAttribute('aria-invalid');}
   function saved(){try{return localStorage.getItem('fundblick-language')}catch{return null}}
   function requested(){try{return new URLSearchParams(location.search).get('lang')}catch{return null}}
   function language(){return supported.has(select.value)?select.value:(supported.has(saved())?saved():'de')}
   function apply(){
     const lang=language(),t=copy[lang]||copy.de;
     document.documentElement.lang=lang;
+    if(searchLanguage)searchLanguage.value=lang;
+    if(feedback&&!feedback.hidden)feedback.textContent=emptySearch[lang];
     document.querySelectorAll('[data-home-i18n]').forEach(el=>{const key=el.dataset.homeI18n;if(t[key])el.textContent=t[key];});
     document.querySelectorAll('[data-home-i18n-placeholder]').forEach(el=>{const key=el.dataset.homeI18nPlaceholder;if(t[key])el.setAttribute('placeholder',t[key]);});
     document.querySelectorAll('[data-home-i18n-aria]').forEach(el=>{const key=el.dataset.homeI18nAria;if(t[key])el.setAttribute('aria-label',t[key]);});
@@ -20,5 +26,13 @@
   }
   const initial=requested()||saved();if(supported.has(initial))select.value=initial;
   select.addEventListener('change',apply);
+  form?.addEventListener('submit',event=>{
+    if(!input?.value.trim()){
+      event.preventDefault();
+      if(feedback){feedback.textContent=emptySearch[language()];feedback.hidden=false;}
+      input?.setAttribute('aria-invalid','true');input?.focus();
+    }else clearFeedback();
+  });
+  input?.addEventListener('input',()=>{if(input.value.trim())clearFeedback();});
   apply();
 })();
