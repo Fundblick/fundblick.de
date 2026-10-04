@@ -3,6 +3,33 @@ const {test,expect}=require('@playwright/test');
 
 const base='http://127.0.0.1:4173/';
 
+for(const viewport of [{width:1280,height:900},{width:390,height:844}]){
+  test(`homepage search feedback and language survive navigation at ${viewport.width}px`,async({page})=>{
+    await page.setViewportSize(viewport);
+    await page.goto(base+'?lang=ru',{waitUntil:'networkidle'});
+    await expect(page.locator('#q')).not.toBeFocused();
+    await page.locator('#q').fill('   ');
+    await page.locator('#searchForm button[type="submit"]').click();
+    await expect(page).toHaveURL(/\?lang=ru$/);
+    await expect(page.locator('#searchFeedback')).toBeVisible();
+    await expect(page.locator('#searchFeedback')).toHaveText('Введите товар, бренд или модель.');
+    await expect(page.locator('#q')).toHaveAttribute('aria-invalid','true');
+    await expect(page.locator('#q')).toBeFocused();
+    await page.locator('#language').selectOption('de');
+    await expect(page.locator('#searchFeedback')).toHaveText('Bitte gib ein Produkt, eine Marke oder ein Modell ein.');
+    await page.locator('#q').fill('Mosaiktisch');
+    await expect(page.locator('#searchFeedback')).toBeHidden();
+    await expect(page.locator('#q')).not.toHaveAttribute('aria-invalid','true');
+    await page.locator('#language').selectOption('ru');
+    await page.locator('#searchForm button[type="submit"]').click();
+    await expect(page).toHaveURL(/search\.html\?/);
+    const url=new URL(page.url());
+    expect(url.searchParams.get('q')).toBe('Mosaiktisch');
+    expect(url.searchParams.get('lang')).toBe('ru');
+    await expect(page.locator('html')).toHaveAttribute('lang','ru');
+  });
+}
+
 test('homepage renders a real daily offer and sends CTA through affiliate link when available',async({page})=>{
   const errors=[];
   page.on('pageerror',error=>errors.push(String(error)));
