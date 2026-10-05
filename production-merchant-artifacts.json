@@ -11,6 +11,17 @@
         "gifts.personalized.keychains": 14
       },
       "ancestorArtifactSha256": "32ca063fc6d02a7ba6407175100e7da84f0c75731f097033b6096aff55b2d65a"
+    },
+    "blazevideo": {
+      "source": "development/blazevideo-verified-products.json.gz.b64",
+      "productCount": 16,
+      "artifactSha256": "38eb55edeb5ae0fd4dfa5ebdcddd6370da42d1c158062d3cb07fb1bcec14ca8d",
+      "identityPath": "rawAttributes.productFamilyId",
+      "categoryCounts": {
+        "electronics.cameras.trail-cameras": 14,
+        "electronics.cameras.trail-camera-accessories": 2
+      },
+      "rawFeedSha256": "0fe6b73e01142e7f6be54180ae5c353cbaa81079932a5527d8e5a15a05786791"
     }
   }
 }

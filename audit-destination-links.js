@@ -101,4 +101,4 @@ async function main() {
   if (report.status !== 'pass') process.exitCode = 1;
 }
 if (require.main === module) main().catch(err => { console.error(err.message); process.exitCode = 1; });
-module.exports = {auditTarget, contentFailure, publicAddress};
+module.exports = {auditTarget, contentFailure, publicAddress, realRequest};

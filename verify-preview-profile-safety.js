@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{spawnSync}=require('node:child_process');
+const profile=JSON.parse(fs.readFileSync('development/merchant-preview-profile.json','utf8'));
+const files=['production-catalog-sources.json','production-merchant-approvals.json','production-merchant-artifacts.json'];
+const digest=file=>crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const before=files.map(digest),dir='build/profile-rejection-tests';fs.mkdirSync(dir,{recursive:true});
+const reject=(label,mutate,pattern)=>{const copy=structuredClone(profile);mutate(copy);const input=path.join(dir,label+'.json'),output=path.join(dir,label);fs.writeFileSync(input,JSON.stringify(copy));const r=spawnSync(process.execPath,['build-production-catalog.js',output,input],{encoding:'utf8'});assert.notEqual(r.status,0,label);assert.match(r.stderr,pattern,label);assert(!fs.existsSync(path.join(output,'manifest.json')),'Rejected profile wrote public catalog');};
+reject('production-override',p=>{p.merchants.casaMoro=p.merchants.deluxehomeart;},/cannot override production/);
+reject('quarantine',p=>{p.merchants.deluxehomeart.quarantined=true;},/requires full approval/);
+reject('missing-terms',p=>{p.merchants.deluxehomeart.termsCleared=false;},/requires full approval/);
+reject('missing-links',p=>{delete p.merchants.deluxehomeart.destinationHealthReport;},/requires full approval/);
+reject('missing-quality',p=>{delete p.merchants.deluxehomeart.productQualityReport;},/requires full approval/);
+reject('missing-pin',p=>{delete p.artifacts.deluxehomeart;},/requires full approval/);
+reject('unused-pin',p=>{p.artifacts.unassigned=p.artifacts.deluxehomeart;},/Unassigned preview artifact/);
+reject('missing-sources',p=>{p.merchants.deluxehomeart.sources=[];},/requires full approval/);
+reject('wrong-provenance',p=>{p.merchants.deluxehomeart.advertiserId='999';},/provenance mismatch/);
+assert.deepEqual(files.map(digest),before,'Negative preview cases changed production settings');
+console.log('Development profile safety: production override, quarantine, missing terms/evidence/pin/source, unused pin and wrong advertiser rejected before publishing');

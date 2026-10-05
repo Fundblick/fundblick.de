@@ -1,0 +1,1233 @@
+{
+  "version": 1,
+  "auditorVersion": 1,
+  "merchant": "blazevideo",
+  "artifactSha256": "38eb55edeb5ae0fd4dfa5ebdcddd6370da42d1c158062d3cb07fb1bcec14ca8d",
+  "policySha256": "9ee36c926ddb17c63eebafd245996d3a3d07cb6ff6c15bffc81d1f52868f0809",
+  "productCount": 16,
+  "expectedTargets": 64,
+  "scope": "full",
+  "startedAt": "2026-10-03T19:25:46.976Z",
+  "results": [
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/a106w",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:47.318Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a106w",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/a106w",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 387511,
+      "bodySha256": "6ad8aad7c92a58660f3dd605d9b9d9882373d0b42fb9a7f0b42f1fc7640811f6"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45060667802&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:48.593Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a106w?source=aw&aw_affid=3106259&awc=25962_1791055559_35bcf343a77be7e045e606acb4659fb0",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45060667802&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/a106w?source=aw&aw_affid=3106259&awc=25962_1791055559_35bcf343a77be7e045e606acb4659fb0",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 387511,
+      "bodySha256": "862c4c504bcc64db7f863c759686e59411ed285bb87b92ba52445f00eb0047de"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45060667802&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:49.804Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a106w?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45060667802&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/a106w?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 387511,
+      "bodySha256": "7317ee579360edf8f3c3ae1ef7de72e94c811f43c3bd9bb654e7740c5ebda994"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45060667802&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:51.247Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a106w?source=aw&aw_affid=3106259&awc=25962_1791055562_0e5c5fd02761d8abb573e2a8a2c86fc0",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45060667802&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/a106w?source=aw&aw_affid=3106259&awc=25962_1791055562_0e5c5fd02761d8abb573e2a8a2c86fc0",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 387602,
+      "bodySha256": "8e08582f731c555451b10ee54d626be0b1e77e276ae99f824c55cee82aece218"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/2pcs-a106w-grey",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:52.383Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a106w-grey",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a106w-grey",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385908,
+      "bodySha256": "9d57c0372c74f50074895880a5d4de5ed8b6ef5d50f9a19026124512ffab82e5"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45591312447&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:53.571Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a106w-grey?source=aw&aw_affid=3106259&awc=25962_1791055564_8ed1b788d9190e6b5155a0653d79f801",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45591312447&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a106w-grey?source=aw&aw_affid=3106259&awc=25962_1791055564_8ed1b788d9190e6b5155a0653d79f801",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385908,
+      "bodySha256": "41dd5febc9180e3966015aaca067d2c7b0805119b3ca54691ee448fbf13088af"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45591312447&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:54.798Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a106w-grey?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45591312447&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a106w-grey?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385908,
+      "bodySha256": "bf27ae60a488e6b6bf42df08e9ca520d6ebd5e518319f1ec0971e01779c12d07"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45591312447&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:56.276Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a106w-grey?source=aw&aw_affid=3106259&awc=25962_1791055567_1dfcc5a4e5112807044b28e88e668010",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45591312447&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a106w-grey?source=aw&aw_affid=3106259&awc=25962_1791055567_1dfcc5a4e5112807044b28e88e668010",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385908,
+      "bodySha256": "eae6affd311598021eac88aa8c7e7b39606d5527b28b7f24ffca19d19fee852e"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/a252-green",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:57.419Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a252-green",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/a252-green",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385437,
+      "bodySha256": "5623ef15c61ba9e067ec1dd1dc81c2104eb62a69429566c79357d62695cefebe"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=31294258539&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:58.638Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a252-green?source=aw&aw_affid=3106259&awc=25962_1791055570_2ea4141c6e7a8a5d0ca336ee49faf6fb",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=31294258539&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/a252-green?source=aw&aw_affid=3106259&awc=25962_1791055570_2ea4141c6e7a8a5d0ca336ee49faf6fb",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385437,
+      "bodySha256": "1450382286c9616e4e903d58754ea7d95089024720691cf36f95f81bf5239968"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=31294258539&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:25:59.849Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a252-green?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=31294258539&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/a252-green?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385437,
+      "bodySha256": "b5a1e8d77f2bc13f888473014e48dc6eb3523ea9852a63b40340ddd9bf7b2e88"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=31294258539&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:01.060Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/a252-green?source=aw&aw_affid=3106259&awc=25962_1791055572_2d3564222ec540fc926e9be2bee6b783",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=31294258539&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/a252-green?source=aw&aw_affid=3106259&awc=25962_1791055572_2d3564222ec540fc926e9be2bee6b783",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385437,
+      "bodySha256": "41681110b9185699ea82a9f10cd87ca32b47a306ea6d2a090290549e68bec48c"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:02.199Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 395678,
+      "bodySha256": "f5d392486ed403e7c2fcc39b9948ace9d86b45e22efd64e55cd9a3e0524c36c3"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=33694410761&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:03.454Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter?source=aw&aw_affid=3106259&awc=25962_1791055574_3fa70ae9cb13c09149e11f691a08a4e8",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=33694410761&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter?source=aw&aw_affid=3106259&awc=25962_1791055574_3fa70ae9cb13c09149e11f691a08a4e8",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 395678,
+      "bodySha256": "54e91ed1291bcb3832260f111895e62639c74ad75515d9d1b7b8ef4028e3c7df"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=33694410761&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:04.665Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=33694410761&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 395727,
+      "bodySha256": "a570f26fcd1fc57d66bf44b36ba119c58f75f1e4e044cce899e9681326952733"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=33694410761&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:05.926Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter?source=aw&aw_affid=3106259&awc=25962_1791055577_2a1386f8082f146c230c3ab1316be200",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=33694410761&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-a252-24mp-1296p-solarpanel-kits-3w-8000mah-mit-bewegungsmelder-nachtsicht-maximale-entfernung-bis-75-fusse-0-3s-trigger-geschwindigkeit-ip66-wasserdichter?source=aw&aw_affid=3106259&awc=25962_1791055577_2a1386f8082f146c230c3ab1316be200",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 395727,
+      "bodySha256": "7ed409895478c137c619c16a4245e33b3948df9a64642200643d1fabd4cca6b0"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/2pcs-a252-green",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:07.059Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a252-green",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a252-green",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385055,
+      "bodySha256": "dd86b6aab88383ba972b5df2cb82adf2785e43ed7ae4dea32ebecea9f753995a"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=31184682089&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:08.282Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a252-green?source=aw&aw_affid=3106259&awc=25962_1791055579_4c73a7914cfb39fae5e68df44f37ca47",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=31184682089&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a252-green?source=aw&aw_affid=3106259&awc=25962_1791055579_4c73a7914cfb39fae5e68df44f37ca47",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385055,
+      "bodySha256": "a3bebb6b1e06ac0872c7be457f08d28608be76847389cb4d0efd8d96520d689c"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=31184682089&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:09.474Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a252-green?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=31184682089&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a252-green?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 384964,
+      "bodySha256": "1a6f9309eab36c23609704a107014822f469e0d93e8a09843b17a8ca62e844c4"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=31184682089&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:10.702Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-a252-green?source=aw&aw_affid=3106259&awc=25962_1791055582_714226b6cfda3e1aa2b3dbc6721e671d",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=31184682089&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-a252-green?source=aw&aw_affid=3106259&awc=25962_1791055582_714226b6cfda3e1aa2b3dbc6721e671d",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 385055,
+      "bodySha256": "34fb9a005e72e793d3d828eea487153588fc9911095ba431d3e27e55e527960a"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/camera-blazedistance",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:11.836Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/camera-blazedistance",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/camera-blazedistance",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 383766,
+      "bodySha256": "78110b3bc5945ed5cbd8f1cb6f28a430db610a4649ef3a1646812c99335d86b9"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45537300170&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:13.053Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/camera-blazedistance?source=aw&aw_affid=3106259&awc=25962_1791055584_3c53c171ac459de47c66aaf552e99186",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45537300170&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/camera-blazedistance?source=aw&aw_affid=3106259&awc=25962_1791055584_3c53c171ac459de47c66aaf552e99186",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 383766,
+      "bodySha256": "ac593f969cbcea0b90c8816c13e0b01ff6af535f8a4cbeb5270eafcccb0bdc61"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45537300170&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:14.340Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/camera-blazedistance?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45537300170&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/camera-blazedistance?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 383675,
+      "bodySha256": "6b9d3a141378e77b76ef947d1220b7ff1bf88dffb3d3a9ebc152b17ec0e0bd26"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45537300170&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:15.577Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/camera-blazedistance?source=aw&aw_affid=3106259&awc=25962_1791055586_623906d787752d32c2d193af3f5a6273",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45537300170&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/camera-blazedistance?source=aw&aw_affid=3106259&awc=25962_1791055586_623906d787752d32c2d193af3f5a6273",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 383675,
+      "bodySha256": "4ec40342a0f25dea035db43bf2d7202df9c1fcb8354ff1595c266a11911e9001"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:16.722Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 391667,
+      "bodySha256": "f9abab66220c91513f21a5bc209fc986cfdea7c782b439afc1e0f4ba8ec19211"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46001400247&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:17.984Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262?source=aw&aw_affid=3106259&awc=25962_1791055589_43cdc44e50a0206b6219a38a55e84d1b",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46001400247&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262?source=aw&aw_affid=3106259&awc=25962_1791055589_43cdc44e50a0206b6219a38a55e84d1b",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 391709,
+      "bodySha256": "7eaacaae95a9e21693fff726d3b35b76527b6b7a85d2dd9e1e3446dd98e5eb41"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46001400247&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:19.184Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46001400247&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 391667,
+      "bodySha256": "540eaf30825db9012b90bb20d410293c83dfb2361b2f3436cfabd1ead1d0aba5"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46001400247&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:20.450Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262?source=aw&aw_affid=3106259&awc=25962_1791055591_5e43a909b1ae13afed00edad5d522094",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46001400247&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wildkamera-64mp-2304-1296p-mit-bewegungsmelder-nachtsicht-max-entfernung-bis-90-fusse-0-1s-schnelle-trigger-geschwindigkeit-ip66-wasserdichter-a262?source=aw&aw_affid=3106259&awc=25962_1791055591_5e43a909b1ae13afed00edad5d522094",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 391758,
+      "bodySha256": "4916682249056615f3bf323f2fbbfad37382e9b55a3345ee230266f2972a7bb6"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/solarpanel-bl8000",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:21.600Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/solarpanel-bl8000",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/solarpanel-bl8000",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 295534,
+      "bodySha256": "a211cb80494fffdcf1d95017f28d29f740f1ddd498a03ed0a7268ed91e28bae6"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45944483102&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:22.785Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/solarpanel-bl8000?source=aw&aw_affid=3106259&awc=25962_1791055594_04b8e27f61cec3622491a6bee6cb0599",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45944483102&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/solarpanel-bl8000?source=aw&aw_affid=3106259&awc=25962_1791055594_04b8e27f61cec3622491a6bee6cb0599",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 295534,
+      "bodySha256": "1180bac1952d5e3382118288bf8d1316bad7764fd145000768bd36e19cd665f7"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45944483102&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:24.080Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/solarpanel-bl8000?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45944483102&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/solarpanel-bl8000?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 295534,
+      "bodySha256": "5bf2220dc37f0990a2d7e878e2c9a3ebeb289aa8d59e1b201afa8a80710c2117"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45944483102&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:25.280Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/solarpanel-bl8000?source=aw&aw_affid=3106259&awc=25962_1791055596_bef3fbb8acdca8353b9dee785af49b31",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45944483102&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/solarpanel-bl8000?source=aw&aw_affid=3106259&awc=25962_1791055596_bef3fbb8acdca8353b9dee785af49b31",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 295485,
+      "bodySha256": "8f1c75730438038332a8e2d418a63fcc11bc84f365c4e6a79bd1fdae5a725ed3"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:26.560Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 291718,
+      "bodySha256": "8a6428d0b70e714fe11c49d580c00b5ecfd6632b2e473ff9da10c8e2f7738b8e"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=41472234200&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:27.745Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera?source=aw&aw_affid=3106259&awc=25962_1791055599_140ceb6ff3827003d3d1b73801f8be67",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=41472234200&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera?source=aw&aw_affid=3106259&awc=25962_1791055599_140ceb6ff3827003d3d1b73801f8be67",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 291718,
+      "bodySha256": "40ba6a0550532851f5890fb83efe6ab2f93d65b08be8659e33f07f304a01e670"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=41472234200&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:28.973Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=41472234200&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 291718,
+      "bodySha256": "cc5fa053f3b90151396f7d4a5f49e7857dc1b9abe7de0de9363a0bf9265e23d1"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=41472234200&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:30.163Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera?source=aw&aw_affid=3106259&awc=25962_1791055601_ddd7edf598cc40d0cb48b6a3f8a0d086",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=41472234200&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/angellicht-halterung-dicke-faltbare-edelstahlhalterung-360-verstellbar-universalgewindeanschluss-1-4-206mm-fur-solarpanel-wildkamera?source=aw&aw_affid=3106259&awc=25962_1791055601_ddd7edf598cc40d0cb48b6a3f8a0d086",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 291718,
+      "bodySha256": "1c0f69d053d7f3f6d0286db449a38106c74449cf601b41de3197e4eb27384ec8"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/t306-green",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:31.293Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t306-green",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/t306-green",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 366216,
+      "bodySha256": "aca011bfa7cbdcc3570118b4437384aa28a1bd32da3cf15793f68423afede046"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46020062950&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:32.478Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t306-green?source=aw&aw_affid=3106259&awc=25962_1791055603_8437e9eeea45183166c8dee33ac1012a",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46020062950&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/t306-green?source=aw&aw_affid=3106259&awc=25962_1791055603_8437e9eeea45183166c8dee33ac1012a",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 366216,
+      "bodySha256": "fac0b2311ce8daa5eeb51e1b011030ddee82e39bc88f80eaecdac793ca3d07d3"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46020062950&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:33.694Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t306-green?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46020062950&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/t306-green?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 366216,
+      "bodySha256": "23b6c7b73255b426064adac878aceab6d9831867123ab931859224ee315a6c0e"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46020062950&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:34.879Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t306-green?source=aw&aw_affid=3106259&awc=25962_1791055606_ffb03422181ea2174a0cf7cac022fcd3",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46020062950&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/t306-green?source=aw&aw_affid=3106259&awc=25962_1791055606_ffb03422181ea2174a0cf7cac022fcd3",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 366216,
+      "bodySha256": "927473eb6e177139b5bb09a1e2e30a9f46b500053c298f84c925e66466a77a80"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/2pcs-t306-green",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:36.192Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-t306-green",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-t306-green",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 369155,
+      "bodySha256": "44ff7f6e417388c123bc885a33f4e64145d6034abd8e720792bbaae14ca57cb4"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46020062951&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:37.565Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-t306-green?source=aw&aw_affid=3106259&awc=25962_1791055608_1e7ff255be3f21ad24e043b1ea4e0b03",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46020062951&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-t306-green?source=aw&aw_affid=3106259&awc=25962_1791055608_1e7ff255be3f21ad24e043b1ea4e0b03",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 369246,
+      "bodySha256": "0636030ef26a8145dbc05b71f9a650059b3d4071571f58b87e223ddb787d04e3"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46020062951&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:38.873Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-t306-green?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46020062951&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-t306-green?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 369246,
+      "bodySha256": "8d0c8196a3b739b6b791e1082402672bc427f01424c38c0549fb4dfdabffb01a"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=46020062951&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:40.058Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2pcs-t306-green?source=aw&aw_affid=3106259&awc=25962_1791055611_e82312adaa6c13bee91d78f3d075cb37",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=46020062951&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2pcs-t306-green?source=aw&aw_affid=3106259&awc=25962_1791055611_e82312adaa6c13bee91d78f3d075cb37",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 369246,
+      "bodySha256": "ffa873fac6af8a0e253923df3bcc51ffa3951cc3753c568a3b9103b540a8c665"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:41.206Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 413997,
+      "bodySha256": "a1366df89ddd5d1b1495be18a9c7e5d7b8c19e2e578da99c8ad7cd47e5733ff3"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45778828267&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:42.398Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055613_5e86bb8a2cce70fddd66c8a2996ffc5f",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45778828267&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055613_5e86bb8a2cce70fddd66c8a2996ffc5f",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 413997,
+      "bodySha256": "24d83340d3e201025f79431edd72fc99b59bdcf5f2c8b2fbdf1f3e4d8fd9efb6"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45778828267&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:43.609Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45778828267&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 413997,
+      "bodySha256": "d9b6c54b8cef7a0f9219bbae2d8f403caee2cc918fd06ac27835f93447f5712f"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45778828267&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:44.823Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055616_af3c9b913bad964c750c8f26d3a3810a",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45778828267&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055616_af3c9b913bad964c750c8f26d3a3810a",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 413906,
+      "bodySha256": "ad7dcae2b142e536be3caa1ee3ea55311a5a6b1dc3de4487dd8a433d2636e450"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:46.060Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 412721,
+      "bodySha256": "ac446f3dff949472f73a12f527ab01817a4e5f01a858cce8ff1993fa88d9c1c7"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45984300763&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:47.282Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055618_89069d576da43527cb0b51dbb958eb0f",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45984300763&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055618_89069d576da43527cb0b51dbb958eb0f",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 412721,
+      "bodySha256": "0b9758ae9fbf5ce8d6c19d358394d107c4b54f7506ea88ab4cea0fa9b7a5e0ed"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45984300763&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:48.486Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45984300763&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 412812,
+      "bodySha256": "07814f7cba2b4ee1da29d2ba0a4e7b4758cd254aa49077888920bd25d00a23a3"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45984300763&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:49.755Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055621_6d32962c162cdad19b653fd323daf330",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45984300763&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-pack-t326-wildkamera-64mp-4k-full-hd-video-mit-audio-und-bewegungsmelder-nachtsicht-max-entfernung-bis-zu-100ft-0-1s-ausl-segeschwindigkeit-wasserdicht-ip66?source=aw&aw_affid=3106259&awc=25962_1791055621_6d32962c162cdad19b653fd323daf330",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 412721,
+      "bodySha256": "07148ca0aebf0018ee02004e145b3f8519c6472a14b9f8fe1d068b74cab139a0"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:50.896Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 365001,
+      "bodySha256": "3fbdf8aaba0dacffd3d6900416bf43ca832116aefbf2b2987e50877b9c47c582"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=32166929639&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:52.104Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p?source=aw&aw_affid=3106259&awc=25962_1791055623_a8ee1c738210e0a5ff3255d7ff7fcff1",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=32166929639&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p?source=aw&aw_affid=3106259&awc=25962_1791055623_a8ee1c738210e0a5ff3255d7ff7fcff1",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 365001,
+      "bodySha256": "c57fa1269c9fd5c2fa4ceb2d6453281a27ef42519bb39ed21824da125dbdb716"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=32166929639&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:53.289Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=32166929639&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 365036,
+      "bodySha256": "bee486564921bf169f6c28297fa5e684b5f4ca381d56c8446477e6eae602211c"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=32166929639&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:54.528Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p?source=aw&aw_affid=3106259&awc=25962_1791055625_f7ad2a8a213b0f879a5204b525756701",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=32166929639&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/piege-photographique-wifi-et-bluetooth-photo-32mp-video-1296p?source=aw&aw_affid=3106259&awc=25962_1791055625_f7ad2a8a213b0f879a5204b525756701",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 365001,
+      "bodySha256": "4f596c0e9b614228301653e935809fdc48037936c76edb69b74d30b2c09838d6"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:55.967Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 394192,
+      "bodySha256": "5ba70537339679cceda1657ca445f0a5bf01dabe3854f34af55b3ede06220962"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45720649988&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:57.513Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot?source=aw&aw_affid=3106259&awc=25962_1791055628_b1205a84af775662da723d61c7e44ee0",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45720649988&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot?source=aw&aw_affid=3106259&awc=25962_1791055628_b1205a84af775662da723d61c7e44ee0",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 394283,
+      "bodySha256": "d3c005560caca94bf9518f1f0ef69aacc18b835a7131cbb362aad1f673a476bc"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45720649988&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:58.719Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45720649988&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 394283,
+      "bodySha256": "ea135207fc20c217f64d3db5b30f9ed9ef5204130eec58c07e87e7f601139bc3"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=45720649988&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:26:59.944Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot?source=aw&aw_affid=3106259&awc=25962_1791055631_7cfa4265fb0693693532e2c168376412",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=45720649988&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/bundle-wildkamera-wlan-fotofalle-jagdkamera-wildtierkamera-32mp-1296p-0-1s-schnelle-trigger-geschwindigkeit-nachtsicht-bewegungsmelder-110-pir-ip66-wasserdichter-w600-rot?source=aw&aw_affid=3106259&awc=25962_1791055631_7cfa4265fb0693693532e2c168376412",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 394283,
+      "bodySha256": "a6f92ae2d599828bc5349d041d5c2096141500e22a09c0cbebb4580b3d6b7335"
+    },
+    {
+      "mode": "direct",
+      "url": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:27:01.079Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600",
+      "chain": [
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 373178,
+      "bodySha256": "756a6fa927567401e38ad6e3fc654a20bc82cbc8d7c5ee2478a951f4b6185cd3"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=32512876701&a=3106259&m=25962",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:27:02.272Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600?source=aw&aw_affid=3106259&awc=25962_1791055633_b175dc7455c9789b5a9c42359b3934d9",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=32512876701&a=3106259&m=25962",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600?source=aw&aw_affid=3106259&awc=25962_1791055633_b175dc7455c9789b5a9c42359b3934d9",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 373178,
+      "bodySha256": "af7d5a90258553c558867be1a0eb41fd48f2adfb96b8c030e882c2e2c6f92677"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=32512876701&a=3106259&m=25962&cons=0",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:27:03.486Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600?source=aw&aw_affid=3106259&awc=",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=32512876701&a=3106259&m=25962&cons=0",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600?source=aw&aw_affid=3106259&awc=",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 373178,
+      "bodySha256": "9326ddb72e31a620b8e776a576ff7f0abfb792b9929117d8a8ec3f68f48856ce"
+    },
+    {
+      "mode": "affiliate",
+      "url": "https://www.awin1.com/pclick.php?p=32512876701&a=3106259&m=25962&cons=1",
+      "status": "pass",
+      "checkedAt": "2026-10-03T19:27:04.694Z",
+      "httpStatus": 200,
+      "finalUrl": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600?source=aw&aw_affid=3106259&awc=25962_1791055636_3788f3011e2114ce03758be0e21f4598",
+      "chain": [
+        {
+          "url": "https://www.awin1.com/pclick.php?p=32512876701&a=3106259&m=25962&cons=1",
+          "httpStatus": 302
+        },
+        {
+          "url": "https://www.blazevideos.de/products/2-tlg-wifi-und-bluetooth-fotofalle-32mp-video-1296p-ip66-wasserdicht-w600?source=aw&aw_affid=3106259&awc=25962_1791055636_3788f3011e2114ce03758be0e21f4598",
+          "httpStatus": 200
+        }
+      ],
+      "bodyBytes": 373178,
+      "bodySha256": "8ad08cc377ec3af3bde71027cea160592de066a3a8f248aab8030a20ca739e39"
+    }
+  ],
+  "completedAt": "2026-10-03T19:27:05.696Z",
+  "status": "pass",
+  "failedTargets": 0,
+  "recommendedAction": "eligible-for-reviewed-activation"
+}
