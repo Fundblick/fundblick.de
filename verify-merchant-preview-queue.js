@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {checkpoint}=require('./audit-merchant-preview-links.js');
+const now=Date.now(),target={mode:'direct',url:'https://example.com/products/real'};
+const expected={version:1,auditorVersion:1,merchant:'test',artifactSha256:'artifact',policySha256:'policy',productCount:1,expectedTargets:1};
+const report={...expected,scope:'full',status:'incomplete',startedAt:new Date(now-1000).toISOString(),results:[{...target,status:'fail',checkedAt:new Date(now-500).toISOString(),reason:'http-502'}]};
+assert.equal(checkpoint(report,expected,[target],now),report);
+assert.equal(report.results[0].status,'fail','Resumption must retain observed failures');
+for(const change of [{scope:'sample'},{status:'pass'},{artifactSha256:'other'},{policySha256:'other'},{startedAt:new Date(now+1).toISOString()},{startedAt:new Date(now-8*86400000).toISOString()},{results:[report.results[0],report.results[0]]},{results:[{...report.results[0],url:'https://example.com/other'}]},{results:[{...report.results[0],checkedAt:new Date(now+1).toISOString()}]}])assert.throws(()=>checkpoint({...report,...change},expected,[target],now));
+const {gtin}=require('./prepare-merchant-preview-artifact.js');
+assert.equal(gtin('5744001242384'),'5744001242384');assert.equal(gtin('5744001242385'),'');assert.equal(gtin(''),'');assert.equal(gtin('12345'),'');
+console.log('Preview audit resumption: exact artifact/policy/target identity, original time bounds, duplicate/stale/sample rejection and retained failures passed');

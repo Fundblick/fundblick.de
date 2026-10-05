@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "merchant": "deluxehomeart",
+  "sourceRows": 592,
+  "sourceSha256": "82cf6bf9da23d59dd9dcb677ca7940da00d5ab7d83b2e76b2341c7df646ead76",
+  "selectedProductCount": 589,
+  "selectedArtifactSha256": "304c07176fd5eae0b19d9f3429a7bbd51543e8d09269672024963a9dcd8405fb",
+  "excluded": [
+    {
+      "id": "awin-120411-55306647732598",
+      "reason": "metadata-http-502"
+    },
+    {
+      "id": "awin-120411-55389532258678",
+      "reason": "live-price-mismatch"
+    },
+    {
+      "id": "awin-120411-55306770153846",
+      "reason": "nonunique-original-product-route"
+    }
+  ]
+}

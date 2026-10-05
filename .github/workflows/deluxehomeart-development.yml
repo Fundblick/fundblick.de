@@ -1,0 +1,88 @@
+name: DeluxeHomeart Development acceptance
+on:
+  pull_request:
+    branches: [development, main]
+    paths:
+      - '*deluxehomeart*'
+      - '*merchant*.js'
+      - '*csv.js'
+      - 'audit-*.js'
+      - 'destination-link-*.js'
+      - 'destination-link-policy.json'
+      - 'destination-health/**'
+      - 'development/**'
+      - 'build-*.js'
+      - 'home-facet-classifier.js'
+      - 'facet-schemas.js'
+      - 'search.js'
+      - 'taxonomy-*.js'
+      - '.github/workflows/deluxehomeart-development.yml'
+  push:
+    branches: [development]
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Existing safety and classification regressions
+        run: |
+          node verify-deluxehomeart-normalizer.js
+          node verify-merchant-preview-queue.js
+          node verify-preview-profile-safety.js
+          node verify-home-facets.js
+          node verify-taxonomy-registry.js
+          node verify-taxonomy-i18n.js
+          node verify-facet-engine-v2.js
+          node verify-category-query-router.js
+          node verify-merchant-feed-registry.js
+          node verify-merchant-artifact-integrity.js
+          node verify-destination-link-health.js
+          node verify-merchant-product-quality.js
+          node verify-public-catalog-boundary.js
+          node verify-affiliate-consent.js
+          node verify-merchant-offers.js
+          node verify-query-to-facet-integration.js
+          node verify-site-portability.js
+          node verify-documentation-boundary.js
+      - name: Build unchanged production and check existing user flows
+        run: |
+          node build-production-catalog.js build/catalog
+          node verify-production-merchants.js build/catalog
+          node verify-production-categories.js build/catalog
+          node verify-live-catalog-v2.js build/catalog
+          node verify-user-flows.js build/catalog
+          node package-site.js production
+          node development/verify-production-package.js _site
+          node prepare-amazgifts-e2e.js
+      - name: Browser runtime
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve isolated package
+        run: |
+          node development/serve-local-preview.js _site 4173 >/tmp/fundblick-deluxe-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4173/search.html >/dev/null && break; sleep 1; done
+      - name: Existing merchant and category browser regressions
+        run: npx playwright test home-categories-e2e.spec.js result-card-e2e.spec.js facet-orchestration-e2e.spec.js search-relevance-e2e.spec.js --reporter=line --workers=1
+      - name: Build fully qualified Development and verify all additions
+        run: |
+          node development/build-cloudflare-preview.js
+          node verify-deluxehomeart-preview.js
+          node verify-live-catalog-v2.js build/catalog
+          node verify-user-flows.js build/catalog
+          node development/verify-preview-indexing.js
+      - name: New merchant desktop, mobile, Russian and consent acceptance
+        run: npx playwright test deluxehomeart-e2e.spec.js --reporter=line --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deluxehomeart-development-acceptance
+          path: |
+            test-results
+            _site
+          retention-days: 7

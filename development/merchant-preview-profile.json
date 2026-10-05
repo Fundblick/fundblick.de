@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "mode": "preview",
+  "merchants": {
+    "deluxehomeart": {
+      "approved": true,
+      "network": "awin",
+      "advertiserId": "120411",
+      "publisherId": "3106259",
+      "sources": [
+        "development/deluxehomeart-preview-products.json.gz.b64"
+      ],
+      "termsCleared": true,
+      "destinationHealthReport": "destination-health/deluxehomeart-preview-links.json",
+      "productQualityReport": "destination-health/deluxehomeart-preview-quality.json"
+    }
+  },
+  "artifacts": {
+    "deluxehomeart": {
+      "source": "development/deluxehomeart-preview-products.json.gz.b64",
+      "productCount": 589,
+      "artifactSha256": "304c07176fd5eae0b19d9f3429a7bbd51543e8d09269672024963a9dcd8405fb",
+      "identityPath": "rawAttributes.shopifyProductId",
+      "categoryCounts": {
+        "home.decor": 548,
+        "home.lighting": 41
+      }
+    }
+  }
+}
