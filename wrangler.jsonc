@@ -1,6 +1,10 @@
 {
   "name": "fundblick-development",
   "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "node development/build-cloudflare-preview.js"
+  },
+  "previews": {},
   "observability": {
     "enabled": true
   },

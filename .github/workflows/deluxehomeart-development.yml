@@ -9,6 +9,7 @@ on:
       - 'audit-*.js'
       - 'destination-link-*.js'
       - 'destination-link-policy.json'
+      - 'wrangler.jsonc'
       - 'destination-health/**'
       - 'development/**'
       - 'build-*.js'
