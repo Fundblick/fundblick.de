@@ -41,6 +41,7 @@ jobs:
           node verify-category-query-router.js
           node verify-merchant-feed-registry.js
           node verify-merchant-artifact-integrity.js
+          node verify-amazgifts-live-readiness.js
           node verify-destination-link-health.js
           node verify-merchant-product-quality.js
           node verify-public-catalog-boundary.js
