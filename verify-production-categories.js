@@ -25,10 +25,11 @@ for(const [id,count] of expected){
   if(counts.get(id)!==count)throw new Error(`Expected ${id}=${count}, got ${counts.get(id)??'missing'}`);
 }
 const homeTotal=['home.living','home.furniture','home.lighting','home.decor'].reduce((sum,id)=>sum+(counts.get(id)||0),0);
-if(homeTotal!==1428)throw new Error(`Expected Casa Moro home category total 1428, got ${homeTotal}`);
+const deluxeCount=approvals?.merchants?.deluxehomeart?.approved===true?productionArtifactFor('deluxehomeart').productCount:0;
+if(homeTotal!==1428+deluxeCount)throw new Error(`Expected home category total ${1428+deluxeCount}, got ${homeTotal}`);
 const anthbotTotal=['home.garden.robot-mowers','home.garden.robot-mower-accessories'].reduce((sum,id)=>sum+(counts.get(id)||0),0);
 if(anthbotTotal!==56)throw new Error(`Expected ANTHBOT category total 56, got ${anthbotTotal}`);
 const total=[...counts.values()].reduce((sum,count)=>sum+count,0);
-const expectedTotal=1515+(approvals?.merchants?.blazevideo?.approved===true?productionArtifactFor('blazevideo').productCount:0)+(approvals?.merchants?.amazgifts?.approved===true?productionArtifactFor('amazgifts').productCount:0);
+const expectedTotal=1515+deluxeCount+(approvals?.merchants?.blazevideo?.approved===true?productionArtifactFor('blazevideo').productCount:0)+(approvals?.merchants?.amazgifts?.approved===true?productionArtifactFor('amazgifts').productCount:0);
 if(total!==expectedTotal)throw new Error(`Expected category total ${expectedTotal}, got ${total}`);
 console.log(`Production category gate OK: ${payload.categories.length} categories, total ${total}`);

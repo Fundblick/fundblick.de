@@ -40,7 +40,7 @@ test('multi-merchant facets follow the remaining result set',async({page})=>{
   const errors=await openCatalog(page);
   const merchantFacet=facet(page,'Händler');
   await expect(merchantFacet).toBeVisible();
-  await expect(merchantFacet.locator('input[data-key="merchant"]')).toHaveCount(3+Number(amazgiftsApproved)+Number(blazevideoApproved));
+  await expect(merchantFacet.locator('input[data-key="merchant"]')).toHaveCount(Object.values(approvals.merchants).filter(m=>m.approved===true&&m.sources.length>0).length);
   await expect(merchantFacet).toContainText('Casa Moro');
   await expect(merchantFacet).toContainText('Ahipos Horses DE');
   await expect(merchantFacet).toContainText('ANTHBOT');
@@ -48,6 +48,8 @@ test('multi-merchant facets follow the remaining result set',async({page})=>{
   else await expect(merchantFacet).not.toContainText('Amazgifts DE');
   if(blazevideoApproved)await expect(merchantFacet).toContainText('BlazeVideo DE');
   else await expect(merchantFacet).not.toContainText('BlazeVideo DE');
+  if(approvals.merchants.deluxehomeart?.approved===true)await expect(merchantFacet).toContainText('Deluxehomeartshop DE');
+  else await expect(merchantFacet).not.toContainText('Deluxehomeartshop DE');
   await merchantFacet.locator('input[value="Ahipos Horses DE"]').check();
   await expect(page.locator('#summary')).toContainText('31');
   const brandFacet=facet(page,'Hersteller');

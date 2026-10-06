@@ -16,8 +16,16 @@ if(profilePath){
  const profile=JSON.parse(fs.readFileSync(profilePath,'utf8'));
  if(profile.version!==1||profile.mode!=='preview'||!profile.merchants||Array.isArray(profile.merchants)||!Object.keys(profile.merchants).length||!profile.artifacts||Array.isArray(profile.artifacts))throw new Error('Only an explicit version-1 preview merchant profile is supported');
  for(const [key,approval] of Object.entries(profile.merchants)){
-  if(approvals.merchants[key]||pinnedMerchants[key])throw new Error('Preview profile cannot override production merchant '+key);
+  if(approvals.merchants[key]&&!pinnedMerchants[key])throw new Error('Preview profile cannot override production merchant '+key);
   if(approval.approved!==true||approval.quarantined===true||approval.termsCleared!==true||!approval.destinationHealthReport||!approval.productQualityReport||!Array.isArray(approval.sources)||!approval.sources.length||!profile.artifacts[key])throw new Error('Preview merchant requires full approval, terms, pinned artifact and real evidence: '+key);
+  const previewProducts=approval.sources.flatMap(file=>require('./destination-link-health.js').readProducts(file));
+  if(previewProducts.some(p=>p.source?.network!==approval.network||String(p.source?.advertiserId)!==String(approval.advertiserId)))throw new Error('Preview source provenance mismatch: '+key);
+  if(approvals.merchants[key]||pinnedMerchants[key]){
+   const same=(a,b)=>require('node:util').isDeepStrictEqual(a,b);
+   if(!same(approval,approvals.merchants[key])||!same(profile.artifacts[key],pinnedMerchants[key])||!approval.sources.every(source=>sourceManifest.includes(source)))throw new Error('Preview profile cannot override production merchant '+key);
+   console.log('Preview merchant already promoted with identical approval and pin: '+key);
+   continue;
+  }
   previewKeys.add(key);approvals.merchants[key]=approval;pinnedMerchants[key]=profile.artifacts[key];
   sourceManifest.push(...approval.sources);
  }

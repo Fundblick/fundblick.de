@@ -11,11 +11,16 @@ const cards=page=>page.locator('#cards article.product');
 async function open(page,query='',lang='de'){await page.goto(base+'search.html?lang='+lang+(query?'&q='+encodeURIComponent(query):''),{waitUntil:'networkidle'});await expect(cards(page).first()).toBeVisible();await expect(page.locator('html')).toHaveAttribute('data-search-health','ok');}
 async function merchant(page,count=products.length){await page.locator('#filters input[data-key="merchant"][value="Deluxehomeartshop DE"]').check();if(count!==null)await expect(cards(page)).toHaveCount(count);}
 async function mobileFilters(page){if(await page.locator('.mobile-filter-toggle').isVisible())await page.locator('.mobile-filter-toggle').click();}
-test('Development includes every existing product and only qualified merchant additions',async({page})=>{
+test('Homepage categories include the complete qualified merchant catalog',async({page})=>{
  const baseline=JSON.parse(fs.readFileSync('build/production-baseline/categories.json','utf8')).categories;
- const counts=Object.fromEntries(baseline.map(c=>[c.id,c.count]));for(const p of products)counts[p.category]=(counts[p.category]||0)+1;
- const response=await page.goto(base+'?lang=de',{waitUntil:'networkidle'});expect(response.headers()['x-robots-tag']).toContain('noindex');
- await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content',/noindex/);
+ const counts=Object.fromEntries(baseline.map(c=>[c.id,c.count]));
+ const approvals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
+ if(approvals.merchants.deluxehomeart?.approved!==true)for(const p of products)counts[p.category]=(counts[p.category]||0)+1;
+ const response=await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
+ if(process.env.FUNDBLICK_E2E_PRODUCTION==='1'){
+  expect(response.headers()['x-robots-tag']||'').not.toContain('noindex');
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','index,follow');
+ }else{expect(response.headers()['x-robots-tag']).toContain('noindex');await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content',/noindex/);}
  const nav=page.getByRole('navigation',{name:'Produktkategorien'});
  await expect(nav.locator('a[data-live-category="true"]')).toHaveCount(Object.keys(counts).length);
  for(const [id,count] of Object.entries(counts))await expect(nav.locator('a[data-catalog-category="'+id+'"]')).toHaveAttribute('title',count+' '+(count===1?'Produkt':'Produkte'));

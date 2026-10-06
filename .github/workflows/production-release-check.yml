@@ -101,6 +101,7 @@ jobs:
           node verify-live-health.js
           node verify-site-packaging.js
           node prepare-amazgifts-e2e.js
+          node build-production-catalog.js build/production-baseline
           node audit-seo-landing-candidates.js
           node build-seo-landings.js build/catalog build/seo
           node verify-google-indexability.js build/seo
@@ -167,4 +168,4 @@ jobs:
           cat /tmp/fundblick-release-http.log
           exit 1
       - name: Browser tests against hashed production files
-        run: npx playwright test result-card-e2e.spec.js external-search-e2e.spec.js search-relevance-e2e.spec.js --reporter=line --workers=1
+        run: FUNDBLICK_E2E_PRODUCTION=1 npx playwright test result-card-e2e.spec.js external-search-e2e.spec.js search-relevance-e2e.spec.js deluxehomeart-e2e.spec.js --reporter=line --workers=1
