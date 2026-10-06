@@ -11,7 +11,10 @@ const approval=profile.merchants.deluxehomeart,products=approval.sources.flatMap
 requireHealth('deluxehomeart',products,approval);requireProductQuality('deluxehomeart',products,approval);
 assertProductionArtifact('deluxehomeart',products,approval.sources[0],{version:1,merchants:profile.artifacts});
 const productionSources=JSON.parse(fs.readFileSync('production-catalog-sources.json','utf8')),productionApprovals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
-assert(!productionApprovals.merchants.deluxehomeart);assert(!productionSources.some(s=>s.includes('deluxehomeart')));
+if(productionApprovals.merchants.deluxehomeart){
+ assert.deepEqual(productionApprovals.merchants.deluxehomeart,approval,'Promoted preview approval must match production');
+ for(const source of approval.sources){assert(productionSources.includes(source));assertProductionArtifact('deluxehomeart',readProducts(source),source);}
+}else assert(!productionSources.some(s=>s.includes('deluxehomeart')));
 const selection=JSON.parse(fs.readFileSync('development/deluxehomeart-preview-selection.json','utf8')),config=getMerchant('deluxehomeart');assert.equal(selection.sourceRows,config.expected.products);assert.equal(selection.sourceSha256,config.expected.rawFeedSha256);assert.equal(selection.selectedProductCount,products.length);assert.equal(selection.selectedArtifactSha256,canonicalProductDigest(products));assert.equal(selection.excluded.length+products.length,selection.sourceRows);assert.equal(new Set([...products.map(p=>p.id),...selection.excluded.map(p=>p.id)]).size,selection.sourceRows);
 const allIds=new Set();for(const p of products){assert(!allIds.has(p.id));allIds.add(p.id);assert.notEqual(p.merchantVariantId,'55306770153846');assert.notEqual(p.merchantVariantId,'55389532258678');assert.equal(p.testData,false);assert.equal(p.source.advertiserId,'120411');assert.equal(p.source.network,'awin');assert.equal(p.shippingCost,null);assert.equal(p.deliveryDays,null);assert.equal(typeof p.description,'string');const family=inferFamily(p),a=classify(p);assert.notEqual(family,'furniture');assert.equal(p.category,'home.'+family);assert(registry.families[family].types.includes(a.type));assert(!Array.isArray(a.type));}
 for(const p of products.filter(p=>p.brand==='Ikon Copenhagen'))assert.equal(classify(p).type,'Steh- / Tischlampe');

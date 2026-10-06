@@ -17,6 +17,7 @@ async function main(){
  assert.equal(products.length,actual.itemCount);assert.equal(new Set(products.map(p=>p.id)).size,actual.itemCount);
  const localProducts=Object.values(expected.shards).flatMap(s=>JSON.parse(fs.readFileSync(path.join(catalogRoot,s.file))));
  const localById=new Map(localProducts.map(p=>[p.id,p]));for(const p of products)assert.deepEqual(p,localById.get(p.id),'Full public product matches reviewed build: '+p.id);
+ const deluxe=require('./verify-deluxehomeart-production.js').verify(products);
  const categories=JSON.parse(await get('catalog/categories.json'));assert.deepEqual(categories,JSON.parse(fs.readFileSync(path.join(catalogRoot,'categories.json'))));
  assert.deepEqual(JSON.parse(await get('catalog/'+actual.homeDealFile)),JSON.parse(fs.readFileSync(path.join(catalogRoot,expected.homeDealFile))));
  const assets=JSON.parse(await get('asset-manifest.json'));
@@ -33,7 +34,7 @@ async function main(){
  const forbidden=['AGENTS.md','production-merchant-approvals.json','development/amazgifts-products.json.gz.b64','destination-health/amazgifts-clean-links.json','cloudflare/brave-search-worker.js','node_modules/package.json','.git/HEAD','products.json'];
  for(const file of forbidden)await get(file,404);
  const merchants={};for(const p of products)merchants[p.merchant]=(merchants[p.merchant]||0)+1;
- const result={verifiedAt:new Date().toISOString(),origin:origin.href,realProducts:products.length,merchants,categories:categories.categories.length,shards:Object.keys(actual.shards).length,hashedAssets:Object.keys(assets.assets).length,seoLandings:landingUrls.length,forbiddenPathsChecked:forbidden.length,allPublicProductsMatchReviewedBuild:true,allAssetsMatchRelease:!!expectedSite,searchIndexSha256:actual.searchIndexSha256};
+ const result={verifiedAt:new Date().toISOString(),origin:origin.href,realProducts:products.length,deluxehomeartProducts:deluxe,merchants,categories:categories.categories.length,shards:Object.keys(actual.shards).length,hashedAssets:Object.keys(assets.assets).length,seoLandings:landingUrls.length,forbiddenPathsChecked:forbidden.length,allPublicProductsMatchReviewedBuild:true,allAssetsMatchRelease:!!expectedSite,searchIndexSha256:actual.searchIndexSha256};
  fs.mkdirSync(path.dirname(receipt),{recursive:true});fs.writeFileSync(receipt,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result,null,2));
 }
 // A successful upload can precede edge propagation. Retry complete real checks,
