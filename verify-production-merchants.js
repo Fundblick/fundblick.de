@@ -89,4 +89,5 @@ if(blazeApproval?.approved===true){
   if(p.inStock!==null||p.bestOffer.availability!=='UNKNOWN'||p.shippingCost!==null||p.bestOffer.promotions.length)throw new Error('BlazeVideo production must preserve unknown logistics and omit unverified coupons');
  }
 }else if(blaze)throw new Error('Unapproved BlazeVideo products leaked into production');
-console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, Amazgifts ${amazgifts}, BlazeVideo ${blaze}, total ${products.length}`);
+const deluxe=require('./verify-deluxehomeart-production.js').verify(products);
+console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, Amazgifts ${amazgifts}, BlazeVideo ${blaze}, DeluxeHomeart ${deluxe}, total ${products.length}`);

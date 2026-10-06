@@ -8,18 +8,21 @@ function verify(baseDir,previewDir,profileFile){
  assert.equal(profile.version,1);assert.equal(profile.mode,'preview');
  const actual=new Map(preview.products.map(p=>[p.id,p]));const expectedIds=new Set(baseline.products.map(p=>p.id));
  for(const p of baseline.products)assert.deepEqual(actual.get(p.id),p,'Existing merchant changed in preview: '+p.id);
+ const productionApprovals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
  let additions=0;
  for(const [key,a] of Object.entries(profile.merchants)){
   assert.equal(a.approved,true);assert.equal(a.termsCleared,true);assert.notEqual(a.quarantined,true);
   const products=a.sources.flatMap(readProducts);
   for(const source of a.sources)assertProductionArtifact(key,readProducts(source),source,{version:1,merchants:profile.artifacts});
+  const promoted=productionApprovals.merchants[key]?.approved===true;
   for(const p of products){
-   assert(!expectedIds.has(p.id),'Duplicate preview identity');expectedIds.add(p.id);
+   if(promoted)assert(expectedIds.has(p.id),'Promoted product missing from production baseline');
+   else {assert(!expectedIds.has(p.id),'Duplicate preview identity');expectedIds.add(p.id);}
    const live=actual.get(p.id);assert(live,'Missing preview product '+p.id);assert.equal(live.testData,false);assert.equal(live.simulatedOffers,false);
    for(const field of ['name','brand','price','currency','category','image','directUrl','affiliateUrl','inStock'])assert.deepEqual(live[field],p[field],p.id+' '+field);
    assert.equal(live.offers.length,1);assert.equal(live.bestOffer.merchantId,a.advertiserId);
   }
-  additions+=products.length;
+  if(!promoted)additions+=products.length;
  }
  assert.equal(preview.products.length,baseline.products.length+additions);assert.deepEqual([...actual.keys()].sort(),[...expectedIds].sort());
  const categories=JSON.parse(fs.readFileSync(path.join(previewDir,'categories.json'),'utf8')).categories;

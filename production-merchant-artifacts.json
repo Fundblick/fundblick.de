@@ -22,6 +22,16 @@
         "electronics.cameras.trail-camera-accessories": 2
       },
       "rawFeedSha256": "0fe6b73e01142e7f6be54180ae5c353cbaa81079932a5527d8e5a15a05786791"
+    },
+    "deluxehomeart": {
+      "source": "development/deluxehomeart-preview-products.json.gz.b64",
+      "productCount": 589,
+      "artifactSha256": "304c07176fd5eae0b19d9f3429a7bbd51543e8d09269672024963a9dcd8405fb",
+      "identityPath": "rawAttributes.shopifyProductId",
+      "categoryCounts": {
+        "home.decor": 548,
+        "home.lighting": 41
+      }
     }
   }
 }
