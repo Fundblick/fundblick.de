@@ -2,8 +2,9 @@
 const {test,expect}=require('@playwright/test');
 const approvals=JSON.parse(require('node:fs').readFileSync('production-merchant-approvals.json','utf8'));
 const expectedCategories={'home.living':516,'home.furniture':394,'home.lighting':268,'home.decor':250,'pet.equestrian':29,'pet.dog':1,'health.supplements':1,'home.garden.robot-mowers':33,'home.garden.robot-mower-accessories':23};
-if(approvals.merchants.amazgifts.approved===true)Object.assign(expectedCategories,require('./merchant-production-artifact.js').productionArtifactFor('amazgifts').categoryCounts);
-if(approvals.merchants.blazevideo?.approved===true)Object.assign(expectedCategories,require('./merchant-production-artifact.js').productionArtifactFor('blazevideo').categoryCounts);
+for(const [key,contract] of Object.entries(require('./production-merchant-artifacts.json').merchants)){
+ if(approvals.merchants[key]?.approved===true)for(const [category,count] of Object.entries(contract.categoryCounts))expectedCategories[category]=(expectedCategories[category]||0)+count;
+}
 
 const base='http://127.0.0.1:4173/';
 
