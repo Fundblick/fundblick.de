@@ -2,6 +2,12 @@
 const path=require('node:path');
 
 const merchants={
+  deluxehomeart:{
+    key:'deluxehomeart',merchant:'Deluxehomeartshop DE',network:'awin',advertiserId:'120411',publisherId:'3106259',preferredFeedId:'110455',
+    inputPattern:/120411-110455-.*\.csv(?:\.gz)?$/i,normalizer:'./deluxehomeart-feed-normalizer.js',
+    expected:{advertiserRows:592,products:592,rawFeedSha256:'82cf6bf9da23d59dd9dcb677ca7940da00d5ab7d83b2e76b2341c7df646ead76'},
+    catalogCategories:['home.decor','home.lighting']
+  },
   amazgifts:{
     key:'amazgifts',
     merchant:'Amazgifts DE',

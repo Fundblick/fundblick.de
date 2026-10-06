@@ -27,7 +27,7 @@ assert.match(search,/p\.affiliateUrl=affiliateUrl;p\.directUrl=directUrl/,'searc
 const runSearchSource=search.match(/function runSearch\(\)\{[^\r\n]+\}/)?.[0];
 assert.ok(runSearchSource,'search routing function missing');
 let captured=null;
-const routing={queryAliases:[],state:{query:'foto schlüsselanhänger'},routedCategory:'gifts.personalized.keychains',products:[{id:'one',family:'gifts.personalized.keychains'},{id:'two',family:'gifts.personalized.jewelry'}],schemaFor:id=>window.FB_CATEGORY_SCHEMAS[id],interpret:()=>{throw new Error('Canonical route must not reinterpret alias words');},render:()=>{captured={category:routing.category,base:routing.base};}};
+const routing={window,queryAliases:[],state:{query:'foto schlüsselanhänger'},routedCategory:'gifts.personalized.keychains',products:[{id:'one',family:'gifts.personalized.keychains'},{id:'two',family:'gifts.personalized.jewelry'}],schemaFor:id=>window.FB_CATEGORY_SCHEMAS[id],interpret:()=>{throw new Error('Canonical route must not reinterpret alias words');},render:()=>{captured={category:routing.category,base:routing.base};}};
 vm.runInNewContext('('+runSearchSource+')()',routing);
 assert.equal(captured.category.id,'gifts.personalized.keychains');
 assert.equal(captured.base,routing.products,'canonical route must retain the category pool for facet filtering');
