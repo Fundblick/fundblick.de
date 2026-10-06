@@ -48,7 +48,8 @@ for(const [key,products] of healthArtifacts){
 const combined=[];const seenIds=new Map();for(const file of sourceManifest){const normalizedFile=normalize(file);const data=readSource(normalizedFile);if(!Array.isArray(data))throw new Error(`${file} must contain an array`);
 const merchantKey=approvedMerchantSources.get(normalizedFile);
 if(merchantKey==='amazgifts'||pinnedMerchants[merchantKey]){
-  assertProductionArtifact(merchantKey,data,file,{version:1,merchants:pinnedMerchants});
+  if(previewKeys.has(merchantKey))assertProductionArtifact(merchantKey,data,file,{version:1,merchants:pinnedMerchants});
+  else assertProductionArtifact(merchantKey,data,file);
 }
 for(const product of data){const id=String(product?.id||'').trim();if(!id)throw new Error(`${file} contains product without id`);if(seenIds.has(id))throw new Error(`Duplicate production product id ${id} in ${seenIds.get(id)} and ${file}`);seenIds.set(id,file);combined.push(product);}}
 fs.readFileSync=function(file,...args){if(normalize(file)===coreFile)return JSON.stringify(combined);return originalRead(file,...args);};process.argv[2]=outputRoot;require('./build-live-catalog.js');

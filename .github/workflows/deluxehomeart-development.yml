@@ -9,6 +9,7 @@ on:
       - 'audit-*.js'
       - 'destination-link-*.js'
       - 'destination-link-policy.json'
+      - 'wrangler.jsonc'
       - 'destination-health/**'
       - 'development/**'
       - 'build-*.js'
@@ -23,7 +24,7 @@ permissions:
   contents: read
 jobs:
   acceptance:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +42,7 @@ jobs:
           node verify-category-query-router.js
           node verify-merchant-feed-registry.js
           node verify-merchant-artifact-integrity.js
+          node verify-amazgifts-live-readiness.js
           node verify-destination-link-health.js
           node verify-merchant-product-quality.js
           node verify-public-catalog-boundary.js
