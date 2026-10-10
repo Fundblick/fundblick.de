@@ -37,6 +37,7 @@
   const count=document.createElement('b');count.className='mobile-filter-count';count.hidden=true;
   filter.append(filterText,count);
   const sortButton=document.createElement('button');sortButton.type='button';sortButton.className='mobile-sort-toggle';sortButton.textContent='↕ '+tx('sort');
+  const sortControl=sort.closest('label');sortButton.setAttribute('aria-controls','sort');sortButton.setAttribute('aria-expanded','false');
   tools.append(filter,sortButton);heading.insertAdjacentElement('afterend',tools);
 
   const actions=document.createElement('div');actions.className='mobile-filter-actions';
@@ -62,7 +63,7 @@
   filter.addEventListener('click',()=>{panel.dataset.mobileTouched='1';panel.open=!panel.open;updateExpanded();if(panel.open)panel.scrollIntoView({behavior:'smooth',block:'start'});});
   apply.addEventListener('click',()=>{panel.dataset.mobileTouched='1';panel.open=false;updateExpanded();heading.scrollIntoView({behavior:'smooth',block:'start'});});
   panel.addEventListener('toggle',updateExpanded);
-  sortButton.addEventListener('click',()=>{sort.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>sort.focus({preventScroll:true}),180);});
+  sortButton.addEventListener('click',()=>{const open=sortControl.classList.toggle('mobile-sort-open');sortButton.setAttribute('aria-expanded',String(open));if(open){sort.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>sort.focus({preventScroll:true}),180);}});
   const observer=new MutationObserver(updateCount);observer.observe(chips,{childList:true,subtree:true});
   if(results){const resultObserver=new MutationObserver(updateApply);resultObserver.observe(results,{childList:true,subtree:true});}
   mq.addEventListener?.('change',adapt);adapt();updateCount();

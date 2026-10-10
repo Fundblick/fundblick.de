@@ -27,6 +27,8 @@ for(const width of [1440,390,320])test('Photography filters, sorting and cache r
  const merchant=page.locator('#filters input[data-key="merchant"][value="SIRUI DE"]');await merchant.check();
  const type=page.locator('#filters input[data-key="type"][value="Objektiv"]');await expect(type).toHaveCount(1);await type.check();
  if(width<800)await page.locator('.mobile-filter-apply').click();
+ if(width<800){await page.locator('.mobile-sort-toggle').click();await expect(page.locator('.mobile-sort-toggle')).toHaveAttribute('aria-expanded','true');}
+ await expect(page.locator('#sort')).toBeVisible();
  await page.locator('#sort').selectOption('price-asc');
  await expect.poll(()=>cards(page).evaluateAll(nodes=>nodes.map(n=>Number(n.querySelector('.price strong').textContent.replace(/[^0-9,]/g,'').replace(',','.'))))).toEqual(lenses.map(p=>p.price).sort((a,b)=>a-b));
  await page.reload({waitUntil:'networkidle'});await expect(cards(page)).toHaveCount(lenses.length);
