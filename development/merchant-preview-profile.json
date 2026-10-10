@@ -40,17 +40,17 @@
     },
     "sirui": {
       "source": "development/sirui-preview-products.json.gz.b64",
-      "productCount": 492,
-      "artifactSha256": "e84ea3d9e2eb2581e6e6b24d3e50851e77af04567837713a3ee729f776ae983d",
+      "productCount": 861,
+      "artifactSha256": "30c48fedca6f187e938b707f319b3201115702dccc78d90fa3263aa267409d74",
       "identityPath": "merchantVariantId",
       "categoryCounts": {
-        "electronics.photo.lenses": 342,
-        "electronics.photo.tripods": 57,
-        "electronics.photo.lighting": 26,
-        "electronics.photo.accessories": 24,
-        "electronics.photo.tripod-heads": 14,
-        "electronics.photo.filters": 27,
-        "electronics.photo.optics": 2
+        "electronics.photo.lenses": 650,
+        "electronics.photo.tripods": 93,
+        "electronics.photo.lighting": 30,
+        "electronics.photo.accessories": 26,
+        "electronics.photo.tripod-heads": 30,
+        "electronics.photo.filters": 28,
+        "electronics.photo.optics": 4
       }
     }
   }

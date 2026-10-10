@@ -11,7 +11,7 @@ requireHealth('sirui',products,approval);requireProductQuality('sirui',products,
 assertProductionArtifact('sirui',products,approval.sources[0],{version:1,merchants:profile.artifacts});
 const selection=JSON.parse(fs.readFileSync('development/sirui-preview-selection.json'));
 assert.equal(selection.sourceRows,923);assert.equal(selection.selectedProductCount,products.length);assert.equal(selection.selectedArtifactSha256,canonicalProductDigest(products));assert.equal(selection.excluded.length+products.length,923);assert.equal(new Set([...products.map(p=>p.id),...selection.excluded.map(p=>p.id)]).size,923);
-assert(products.every(p=>p.active&&p.inStock===true&&p.source.advertiserId==='128645'&&p.category.startsWith('electronics.photo.')));
+assert(products.every(p=>p.active&&typeof p.inStock==='boolean'&&p.availability===(p.inStock?'IN_STOCK':'OUT_OF_STOCK')&&p.source.advertiserId==='128645'&&p.category.startsWith('electronics.photo.')));
 assert.equal(new Set(products.map(p=>p.id)).size,products.length);
 assert(products.every(p=>new URL(p.directUrl).searchParams.get('variant')===p.merchantVariantId));
 const production=JSON.parse(fs.readFileSync('production-merchant-approvals.json'));

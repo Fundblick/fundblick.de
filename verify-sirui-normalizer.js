@@ -9,6 +9,8 @@ assert(validate([{...p,affiliateUrl:p.affiliateUrl.replace('3106259','999')}]).l
 assert(validate([{...p,directUrl:link.replace('123','456')}]).length);
 assert.equal(normalizeRow({...row,price:'199 USD'}).price,null);
 assert.equal(normalizeRow({...row,availability:'preorder'}).inStock,null);
+const unavailable=normalizeRow({...row,availability:'out_of_stock'});assert.equal(unavailable.active,true);assert.equal(unavailable.inStock,false);assert.equal(unavailable.availability,'OUT_OF_STOCK');assert.equal(normalizeRow({...row,availability:'preorder'}).active,false);
+const bware=normalizeRow({...row,title:'B-WARE SIRUI Objektiv',condition:'new'});assert.equal(bware.rawAttributes.condition,'b-stock');assert.equal(bware.rawAttributes.feedCondition,'new');assert.equal(bware.rawAttributes.facets.condition,'B-Ware');
 assert.equal(classify('Adapter für Objektiv').category,'electronics.photo.accessories');
 assert.equal(classify('Carbon Dreibeinstativ mit Kugelkopf').category,'electronics.photo.tripods');
 assert.equal(classify('UV-Filter für Objektiv').category,'electronics.photo.filters');

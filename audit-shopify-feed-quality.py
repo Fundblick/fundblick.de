@@ -40,7 +40,7 @@ def run(candidates,feed,output,host):
     grouped={}
     for p in products:
         if p['merchantVariantId'] in covered: continue
-        if p['inStock'] is not True: report['blocked'][p['merchantVariantId']]='source-not-in-stock';continue
+        if type(p['inStock']) is not bool: report['blocked'][p['merchantVariantId']]='source-availability-unknown';continue
         base=p['directUrl'].split('?')[0];grouped.setdefault(base,[]).append(p)
     url_cache={}
     cache_file=out.parent/'response-cache.json'
@@ -78,7 +78,8 @@ def run(candidates,feed,output,host):
             for p in items:
                 try:
                     v=variants.get(p['merchantVariantId'])
-                    if not v or v['available'] is not True or v.get('requires_selling_plan'): raise ValueError('variant-unavailable-or-subscription')
+                    if not v or v.get('requires_selling_plan'): raise ValueError('variant-missing-or-subscription')
+                    if type(v.get('available')) is not bool or v['available'] != p['inStock']: raise ValueError('source-availability-mismatch')
                     if v['price']/100!=p['price']: raise ValueError('source-price-mismatch')
                     # The full source title must preserve the same current model and options.
                     if p['name']!=v['name']: raise ValueError('source-variant-title-mismatch')
@@ -90,7 +91,7 @@ def run(candidates,feed,output,host):
                     with Image.open(io.BytesIO(image)) as im:
                         im.load();w,h=im.size;fmt=im.format;hist=im.convert('L').resize((128,128)).histogram();total=sum(hist);entropy=-sum((n/total)*math.log2(n/total) for n in hist if n)
                     if min(w,h)<200 or fmt not in ('JPEG','PNG','WEBP','AVIF') or entropy<.1: raise ValueError('invalid-or-blank-image')
-                    passed.append({'id':p['id'],'variantId':p['merchantVariantId'],'merchantProductId':str(live['id']),'status':'pass','checkedAt':stamp(),'price':p['price'],'currency':'EUR','available':True,'finalProductUrl':p['directUrl'],'metadataSha256':sha,'barcode':v.get('barcode',''),'sku':v.get('sku',''),'sourceProductType':live.get('type',''),'image':{'url':p['image'],'status':'pass','httpStatus':200,'decoded':True,'format':fmt,'width':w,'height':h,'bodyBytes':len(image),'bodySha256':imsha,'entropy':entropy}})
+                    passed.append({'id':p['id'],'variantId':p['merchantVariantId'],'merchantProductId':str(live['id']),'status':'pass','checkedAt':stamp(),'price':p['price'],'currency':'EUR','available':v['available'],'finalProductUrl':p['directUrl'],'metadataSha256':sha,'barcode':v.get('barcode',''),'sku':v.get('sku',''),'sourceProductType':live.get('type',''),'image':{'url':p['image'],'status':'pass','httpStatus':200,'decoded':True,'format':fmt,'width':w,'height':h,'bodyBytes':len(image),'bodySha256':imsha,'entropy':entropy}})
                 except Exception as e: blocked[p['merchantVariantId']]=str(e)
         except Exception as e:
             for p in items: blocked[p['merchantVariantId']]=str(e)

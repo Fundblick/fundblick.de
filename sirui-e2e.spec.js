@@ -26,12 +26,14 @@ for(const width of [1440,390,320])test('Photography filters, sorting and cache r
  if(width<800)await page.locator('.mobile-filter-toggle').click();
  const merchant=page.locator('#filters input[data-key="merchant"][value="SIRUI DE"]');await merchant.check();
  const type=page.locator('#filters input[data-key="type"][value="Objektiv"]');await expect(type).toHaveCount(1);await type.check();
+ const available=lenses.filter(p=>p.inStock===true);await page.locator('#filters input[data-key="shipping"][value="Sofort lieferbar"]').check();await expect(cards(page)).toHaveCount(available.length);
+ await expect(page.locator('#cards .availability-status.is-out-of-stock')).toHaveCount(0);
  if(width<800)await page.locator('.mobile-filter-apply').click();
  if(width<800){await page.locator('.mobile-sort-toggle').click();await expect(page.locator('.mobile-sort-toggle')).toHaveAttribute('aria-expanded','true');}
  await expect(page.locator('#sort')).toBeVisible();
  await page.locator('#sort').selectOption('price-asc');
- await expect.poll(()=>cards(page).evaluateAll(nodes=>nodes.map(n=>Number(n.querySelector('.price strong').textContent.replace(/[^0-9,]/g,'').replace(',','.'))))).toEqual(lenses.map(p=>p.price).sort((a,b)=>a-b));
- await page.reload({waitUntil:'networkidle'});await expect(cards(page)).toHaveCount(lenses.length);
+ await expect.poll(()=>cards(page).evaluateAll(nodes=>nodes.map(n=>Number(n.querySelector('.price strong').textContent.replace(/[^0-9,]/g,'').replace(',','.'))))).toEqual(available.map(p=>p.price).sort((a,b)=>a-b));
+ await page.reload({waitUntil:'networkidle'});await expect(cards(page)).toHaveCount(available.length);
  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width+1);expect(errors).toEqual([]);
 });
 test('Source image and exact variant remain bound across consent decisions without real tracking',async({page,context})=>{
@@ -50,4 +52,11 @@ test('Source image and exact variant remain bound across consent decisions witho
 test('Russian photography categories and own types are translated',async({page})=>{
  await page.goto(base+'search.html?category=electronics.photo.lenses&lang=ru',{waitUntil:'networkidle'});
  const type=page.locator('#filters input[data-key="type"][value="Objektiv"]');await expect(type.locator('xpath=..')).toContainText('Объективы');await type.check();await expect(type).toHaveValue('Objektiv');await expect(cards(page).first().locator('.product-type')).toContainText('Объективы');
+});
+test('Unavailable variants stay searchable and display their verified status after reload',async({page})=>{
+ const p=products.find(p=>p.inStock===false);expect(p).toBeDefined();
+ await page.goto(base+'search.html?q='+encodeURIComponent(p.name)+'&lang=de',{waitUntil:'networkidle'});
+ const card=cards(page).filter({hasText:p.name}).first();await expect(card.locator('h2')).toHaveText(p.name);
+ await expect(card.locator('.availability-status')).toHaveText('Derzeit nicht lieferbar');await expect(card.locator('.merchant-link')).toHaveAttribute('href',p.directUrl);
+ await page.reload({waitUntil:'networkidle'});await expect(card.locator('.availability-status')).toHaveText('Derzeit nicht lieferbar');
 });

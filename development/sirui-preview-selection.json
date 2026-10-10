@@ -1,440 +1,48 @@
 {
   "sourceRows": 923,
   "sourceSha256": "e095b9d1a1c286cacb2d5e527003b22f16286dc7c07215d63354cda439751359",
-  "selectedProductCount": 492,
-  "selectedArtifactSha256": "e84ea3d9e2eb2581e6e6b24d3e50851e77af04567837713a3ee729f776ae983d",
+  "selectedProductCount": 861,
+  "selectedArtifactSha256": "30c48fedca6f187e938b707f319b3201115702dccc78d90fa3263aa267409d74",
+  "availabilityCounts": {
+    "inStock": 492,
+    "outOfStock": 369
+  },
   "excluded": [
     {
       "id": "awin-128645-47256355569980",
       "reason": "HTTP Error 404: Not Found"
     },
     {
-      "id": "awin-128645-47256374804796",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256535990588",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256536056124",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256536088892",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256536121660",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256536187196",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256536219964",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52069295718716",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52069295751484",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256545919292",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256628592956",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256634917180",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256688361788",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256688394556",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256700977468",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256701043004",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256701075772",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684583801148",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684583997756",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684584259900",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592451900",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592550204",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592714044",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592812348",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592845116",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592910652",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592943420",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51684592877884",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556554044",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556619580",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556652348",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556586812",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556685116",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556750652",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556783420",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556717884",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556816188",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556881724",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556914492",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556848956",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556947260",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761557012796",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761557045564",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51761556980028",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256735154492",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256800002364",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256821465404",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256821498172",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256830345532",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256830378300",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256832278844",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256837816636",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256840405308",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256840438076",
-      "reason": "source-not-in-stock"
-    },
-    {
       "id": "awin-128645-47256858657084",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256892539196",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256900239676",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256911511868",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47256916918588",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257010569532",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257015255356",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257031475516",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257033507132",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257042583868",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257234637116",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257236930876",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257298043196",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257306497340",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257307382076",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257313018172",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257417515324",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-47257422397756",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257481019708",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257485279548",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257557369148",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257561006396",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257653412156",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257659998524",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257689391420",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257696108860",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257705185596",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-47257777602876",
       "reason": "HTTP Error 404: Not Found"
     },
     {
-      "id": "awin-128645-47257783271740",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257785762108",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257797361980",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257814204732",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47257988170044",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258030309692",
-      "reason": "source-not-in-stock"
-    },
-    {
       "id": "awin-128645-47258044498236",
       "reason": "HTTP Error 404: Not Found"
     },
     {
-      "id": "awin-128645-47258072351036",
-      "reason": "source-not-in-stock"
-    },
-    {
       "id": "awin-128645-47258074677564",
-      "reason": "source-not-in-stock"
+      "reason": "HTTP Error 404: Not Found"
     },
     {
       "id": "awin-128645-47258076840252",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258094797116",
-      "reason": "source-not-in-stock"
+      "reason": "HTTP Error 404: Not Found"
     },
     {
       "id": "awin-128645-47258116489532",
       "reason": "HTTP Error 404: Not Found"
     },
     {
-      "id": "awin-128645-47258121666876",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258123731260",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258126057788",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258130874684",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258136543548",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258144244028",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258156990780",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-47258159153468",
-      "reason": "source-not-in-stock"
-    },
-    {
       "id": "awin-128645-50604065259836",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604065292604",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604065325372",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50976308592956",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604065489212",
-      "reason": "source-not-in-stock"
+      "reason": "source-price-mismatch"
     },
     {
       "id": "awin-128645-50604067488060",
@@ -442,1291 +50,211 @@
     },
     {
       "id": "awin-128645-50604067520828",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604067750204",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604067782972",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51589790957884",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51589790990652",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604068766012",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52305960468796",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604068798780",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604068831548",
-      "reason": "source-not-in-stock"
+      "reason": "HTTP Error 404: Not Found"
     },
     {
       "id": "awin-128645-50604069880124",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604071289148",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52069285232956",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604071256380",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604071321916",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604071387452",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50604071420220",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52069285265724",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705391124796",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705391190332",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705391386940",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705391518012",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705391714620",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705391845692",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705392009532",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705392042300",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705392107836",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-50705392173372",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52069285527868",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-51551906758972",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-51551906791740",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-51643813036348",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-51643813069116",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51643813429564",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-51643813462332",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52012121784636",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230176964924",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230176997692",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230177095996",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230240895292",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230366527804",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230366560572",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230366593340",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230366626108",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230366658876",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771638588",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771671356",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771704124",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771736892",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771769660",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771802428",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771835196",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771867964",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771900732",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771933500",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771966268",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230771999036",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772031804",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772064572",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772097340",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772130108",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772162876",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772195644",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772228412",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772261180",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772293948",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772326716",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772359484",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772392252",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772425020",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772457788",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772490556",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772523324",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772556092",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772588860",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772621628",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772654396",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772687164",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772719932",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772752700",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772785468",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772818236",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772851004",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772883772",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772916540",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772949308",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230772982076",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773014844",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773047612",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773080380",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773113148",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773145916",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773178684",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773211452",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773244220",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773276988",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773309756",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773342524",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773375292",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773408060",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773440828",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773473596",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773506364",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773539132",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773571900",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773604668",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773637436",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773670204",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773702972",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773735740",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773768508",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773801276",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773834044",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773866812",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52230773899580",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615410492",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615443260",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615476028",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615508796",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615541564",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615574332",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615607100",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615639868",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615672636",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615705404",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615738172",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615770940",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615803708",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615836476",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615869244",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615902012",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615934780",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271615967548",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616000316",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616033084",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616065852",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616098620",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616131388",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616164156",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616196924",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616229692",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616262460",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616295228",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616327996",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616360764",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616393532",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616426300",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616459068",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616491836",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616524604",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616557372",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616590140",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616622908",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616655676",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616688444",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616721212",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616753980",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616786748",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616819516",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616852284",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616885052",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616917820",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616950588",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271616983356",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617016124",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617048892",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617081660",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617114428",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617147196",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617179964",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617212732",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617245500",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617278268",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617311036",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617343804",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617376572",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617409340",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271617442108",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271649161532",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271649194300",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271649227068",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654568252",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654601020",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654633788",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654666556",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654699324",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654764860",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654797628",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654830396",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271654863164",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271666495804",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-52271666528572",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271666561340",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271666594108",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271666626876",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271666659644",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271666692412",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271666725180",
       "reason": "source-variant-title-mismatch"
     },
     {
-      "id": "awin-128645-52271666757948",
-      "reason": "source-not-in-stock"
-    },
-    {
       "id": "awin-128645-52271666790716",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271666823484",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271666856252",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271666889020",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271666921788",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271666954556",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271666987324",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667020092",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667052860",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667085628",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667118396",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667151164",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667183932",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667216700",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667249468",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667282236",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667315004",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667347772",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667380540",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667413308",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667446076",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667478844",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667511612",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667544380",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667577148",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271667609916",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667642684",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667675452",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667708220",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667740988",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667773756",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667806524",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667839292",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667872060",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667904828",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667937596",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271667970364",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668003132",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668035900",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668068668",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668101436",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668134204",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668166972",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668199740",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668232508",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668265276",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668298044",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668330812",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668363580",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668396348",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52271668429116",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271693824316",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271693857084",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271693889852",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271693922620",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271693988156",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694020924",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694053692",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694086460",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694151996",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694184764",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694217532",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694250300",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694283068",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694315836",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694348604",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694381372",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694414140",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694446908",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694479676",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694545212",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694577980",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694610748",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694643516",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694676284",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694709052",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694741820",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694774588",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694807356",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694840124",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694872892",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694905660",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694938428",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271694971196",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695003964",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695036732",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695069500",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695102268",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695135036",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695167804",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695200572",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695233340",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695266108",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695298876",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695331644",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695364412",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695397180",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695429948",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695462716",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695495484",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695528252",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695561020",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695593788",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52271695626556",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52502150512956",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-52502150578492",
-      "reason": "source-not-in-stock"
+      "reason": "source-variant-title-mismatch"
     },
     {
       "id": "awin-128645-52661849260348",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-52661849358652",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-52661849751868",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     },
     {
       "id": "awin-128645-52661849948476",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-53174974153020",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391386940",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391419708",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391452476",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391485244",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391518012",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391550780",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391583548",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391616316",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391649084",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391681852",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391714620",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391747388",
-      "reason": "source-not-in-stock"
-    },
-    {
-      "id": "awin-128645-54353391878460",
-      "reason": "source-not-in-stock"
+      "reason": "source-availability-mismatch"
     }
   ]
 }
