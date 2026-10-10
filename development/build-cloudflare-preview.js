@@ -37,6 +37,7 @@ if (amazgiftsArtifact) {
   run("node", ["build-production-catalog.js", "build/catalog", merchantProfile]);
   run("node", ["verify-development-merchants.js", "build/production-baseline", "build/catalog", merchantProfile]);
   run("node", ["verify-deluxehomeart-preview.js"]);
+  if(JSON.parse(fs.readFileSync(path.join(root,merchantProfile))).merchants.sirui)run("node", ["verify-sirui-preview.js"]);
   console.log("Development preview catalog mode: qualified additions to unchanged production baseline");
 } else {
   run("node", ["build-production-catalog.js", "build/catalog"]);

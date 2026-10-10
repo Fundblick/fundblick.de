@@ -15,7 +15,7 @@ test('Homepage categories include the complete qualified merchant catalog',async
  const baseline=JSON.parse(fs.readFileSync('build/production-baseline/categories.json','utf8')).categories;
  const counts=Object.fromEntries(baseline.map(c=>[c.id,c.count]));
  const approvals=JSON.parse(fs.readFileSync('production-merchant-approvals.json','utf8'));
- if(approvals.merchants.deluxehomeart?.approved!==true)for(const p of products)counts[p.category]=(counts[p.category]||0)+1;
+ for(const [key,approval] of Object.entries(profile.merchants))if(approvals.merchants[key]?.approved!==true)for(const p of approval.sources.flatMap(readProducts))counts[p.category]=(counts[p.category]||0)+1;
  const response=await page.goto(base+'?lang=de',{waitUntil:'networkidle'});
  if(process.env.FUNDBLICK_E2E_PRODUCTION==='1'){
   expect(response.headers()['x-robots-tag']||'').not.toContain('noindex');

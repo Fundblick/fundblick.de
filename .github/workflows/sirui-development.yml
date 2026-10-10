@@ -1,0 +1,70 @@
+name: SIRUI Development acceptance
+on:
+  pull_request:
+    branches: [development, main]
+    paths:
+      - '*sirui*'
+      - '*destination*'
+      - '*photography*'
+      - '*merchant*.js'
+      - 'affiliate-structure-audit.js'
+      - 'category-labels.js'
+      - 'facet-schemas.js'
+      - 'home-facet-classifier.js'
+      - 'taxonomy-*.js'
+      - 'development/**'
+      - 'destination-health/**'
+      - '.github/workflows/sirui-development.yml'
+permissions:
+  contents: read
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Import, zero-tracking audit and unchanged safety contracts
+        run: |
+          node verify-sirui-normalizer.js
+          node verify-safe-destination-audit.js
+          node verify-sirui-preview.js
+          node verify-destination-link-health.js
+          node verify-merchant-product-quality.js
+          node verify-merchant-preview-queue.js
+          node verify-preview-profile-safety.js
+          node verify-merchant-feed-registry.js
+          node verify-taxonomy-registry.js
+          node verify-taxonomy-i18n.js
+          node verify-home-facets.js
+          node verify-facet-engine-v2.js
+          node verify-category-query-router.js
+          node verify-affiliate-consent.js
+          node verify-affiliate-routing.js
+          node verify-documentation-boundary.js
+          node verify-public-catalog-boundary.js
+      - name: Isolated Development package and exact baseline preservation
+        run: |
+          node development/build-cloudflare-preview.js
+          node verify-sirui-preview.js
+          node verify-user-flows.js build/catalog
+          node development/verify-preview-indexing.js
+      - name: Browser runtime
+        run: |
+          npm install --no-save @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve isolated package
+        run: |
+          node development/serve-local-preview.js _site 4173 >/tmp/fundblick-sirui-http.log 2>&1 &
+          for i in {1..20}; do curl -fsS http://127.0.0.1:4173/search.html >/dev/null && break; sleep 1; done
+      - name: Desktop, mobile, return navigation, language, image and intercepted consent routes
+        run: npx playwright test sirui-e2e.spec.js deluxehomeart-e2e.spec.js --reporter=line --workers=1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sirui-development-acceptance
+          path: |
+            test-results
+            _site
+          retention-days: 7

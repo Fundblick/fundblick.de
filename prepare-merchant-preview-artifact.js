@@ -21,6 +21,7 @@ function prepare(key,feed,qualityFile,sourceFile,reportFile){
   const r=evidence.get(p.merchantVariantId);
   if(audit.blocked[p.merchantVariantId]||r?.status!=='pass'){excluded.push({id:p.id,reason:audit.blocked[p.merchantVariantId]||r?.reason||'missing-evidence'});continue;}
   if(r.id!==p.id||r.price!==p.price||r.currency!==p.currency||r.available!==true||r.image?.url!==p.image||r.finalProductUrl!==p.directUrl)throw new Error('Source/verified metadata mismatch '+p.id);
+  if(normalizer.verifiedCategory){const tax=normalizer.verifiedCategory(p,r);if(!tax){excluded.push({id:p.id,reason:'unclassified-verified-main-item'});continue;}p.category=tax.category;Object.assign(p.rawAttributes,{productType:tax.productType,sourceProductType:r.sourceProductType,taxonomyFamily:tax.family});}
   p.productGroupId='shopify-'+config.advertiserId+'-'+r.merchantProductId;
   p.gtin=gtin(r.barcode);p.mpn=String(r.sku||'');
   Object.assign(p.rawAttributes,{shopifyProductId:r.merchantProductId,verifiedFinalProductUrl:r.finalProductUrl,metadataSha256:r.metadataSha256});
@@ -32,7 +33,7 @@ function prepare(key,feed,qualityFile,sourceFile,reportFile){
  for(const file of [sourceFile,reportFile])fs.mkdirSync(path.dirname(file),{recursive:true});
  fs.writeFileSync(sourceFile,zlib.gzipSync(JSON.stringify(accepted),{level:9}).toString('base64')+'\n');
  fs.writeFileSync(reportFile,JSON.stringify(report)+'\n');
- const contract={source:sourceFile,productCount:accepted.length,artifactSha256:report.artifactSha256,identityPath:'rawAttributes.shopifyProductId',categoryCounts:accepted.reduce((a,p)=>(a[p.category]=(a[p.category]||0)+1,a),{})};
+ const contract={source:sourceFile,productCount:accepted.length,artifactSha256:report.artifactSha256,identityPath:config.artifactIdentityPath||'rawAttributes.shopifyProductId',categoryCounts:accepted.reduce((a,p)=>(a[p.category]=(a[p.category]||0)+1,a),{})};
  console.log(JSON.stringify({sourceRows:candidates.length,accepted:accepted.length,excluded,contract,qualityReport:reportFile},null,2));
  return {products:accepted,contract,excluded};
 }

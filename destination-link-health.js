@@ -58,6 +58,7 @@ function allowedUrl(raw, hosts) {
 }
 function validateReport(report, {key, products, policy = policyFor(key), now = Date.now()}) {
   const fail = reason => { throw new Error(`Destination health ${key}: ${reason}`); };
+  if(report?.version===2)return require('./safe-destination-report.js').validateSafeReport(report,{key,products,policy,now});
   if (report?.version !== 1 || report.auditorVersion !== AUDITOR_VERSION || report.merchant !== key || report.scope !== 'full' || report.status !== 'pass') fail('missing full passing report');
   if (report.artifactSha256 !== canonicalProductDigest(products) || report.policySha256 !== policyDigest(policy)) fail('artifact/policy digest mismatch');
   const started = Date.parse(report.startedAt), finished = Date.parse(report.completedAt);

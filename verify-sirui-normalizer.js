@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {normalizeRow,validate,verifiedCategory}=require('./sirui-feed-normalizer.js');
+const {classify}=require('./photography-product-classifier.js');
+const link='https://siruishop.de/products/lens?variant=123';
+const row={advertiser_id:'128645',id:'123',title:'SIRUI Objektiv - 35mm / E',brand:'SIRUI',price:'199.00 EUR',availability:'in_stock',link,aw_deep_link:'https://www.awin1.com/cread.php?awinmid=128645&awinaffid=3106259&ued='+encodeURIComponent(link),image_link:'https://cdn.shopify.com/photo.jpg',description:'.box { color: red; } Test'};
+const p=normalizeRow(row);assert.deepEqual(validate([p]),[]);assert.equal(p.name,row.title);assert.equal(p.description,'');assert.equal(p.price,199);
+assert(validate([{...p,affiliateUrl:p.affiliateUrl.replace('3106259','999')}]).length);
+assert(validate([{...p,directUrl:link.replace('123','456')}]).length);
+assert.equal(normalizeRow({...row,price:'199 USD'}).price,null);
+assert.equal(normalizeRow({...row,availability:'preorder'}).inStock,null);
+assert.equal(classify('Adapter für Objektiv').category,'electronics.photo.accessories');
+assert.equal(classify('Carbon Dreibeinstativ mit Kugelkopf').category,'electronics.photo.tripods');
+assert.equal(classify('UV-Filter für Objektiv').category,'electronics.photo.filters');
+assert.equal(classify('Unknown model'),null);
+assert.equal(verifiedCategory({...p,name:'Model only'},{sourceProductType:'Dreibeinstativ'}).category,'electronics.photo.tripods');
+console.log('SIRUI source identity, original links, variants, prices and main-item category checks passed');

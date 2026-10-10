@@ -13,6 +13,18 @@
       "termsCleared": true,
       "destinationHealthReport": "destination-health/deluxehomeart-preview-links.json",
       "productQualityReport": "destination-health/deluxehomeart-preview-quality.json"
+    },
+    "sirui": {
+      "approved": true,
+      "network": "awin",
+      "advertiserId": "128645",
+      "publisherId": "3106259",
+      "sources": [
+        "development/sirui-preview-products.json.gz.b64"
+      ],
+      "termsCleared": true,
+      "destinationHealthReport": "destination-health/sirui-preview-links.json",
+      "productQualityReport": "destination-health/sirui-preview-quality.json"
     }
   },
   "artifacts": {
@@ -24,6 +36,21 @@
       "categoryCounts": {
         "home.decor": 548,
         "home.lighting": 41
+      }
+    },
+    "sirui": {
+      "source": "development/sirui-preview-products.json.gz.b64",
+      "productCount": 492,
+      "artifactSha256": "e84ea3d9e2eb2581e6e6b24d3e50851e77af04567837713a3ee729f776ae983d",
+      "identityPath": "merchantVariantId",
+      "categoryCounts": {
+        "electronics.photo.lenses": 342,
+        "electronics.photo.tripods": 57,
+        "electronics.photo.lighting": 26,
+        "electronics.photo.accessories": 24,
+        "electronics.photo.tripod-heads": 14,
+        "electronics.photo.filters": 27,
+        "electronics.photo.optics": 2
       }
     }
   }
