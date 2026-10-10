@@ -1,9 +1,10 @@
 'use strict';
 (function(root){
   const registry={
-    version:4,
+    version:5,
     principle:'canonical-product-type-plus-facets',
     families:{
+      photography:{label:'Foto & Video',types:['Objektiv','Stativ','Stativkopf','Fotobeleuchtung','Objektivfilter','Foto- / Videozubehör','Fernglas / Spektiv']},
       furniture:{label:'Möbel',types:['Hocker','Mosaiktisch','Beistelltisch','Bistrotisch','Couchtisch','Esstisch / Gartentisch','Stuhl','Bank','Sessel / Sofa','Kommode / Schrank','Regal','Paravent / Raumteiler']},
       lighting:{label:'Beleuchtung',types:['Hänge- / Pendelleuchte','Wandlampe','Deckenleuchte','Steh- / Tischlampe','Laterne','Windlicht','Teelichthalter','Lampenfassung / Anschluss','Lichterkette','Batterien','Fernbedienung']},
       decor:{label:'Dekoration',types:['Vase / Blumentopf','Figur','Spiegel','Kissen / Sitzkissen','Schale / Tablett','Wanddekoration','Haken / Hakenleiste','Korb','Teppich','Fliese','Kerze / Kerzenhalter','LED-Kerze','LED-Dekolicht','Dose / Box / Schmuckkasten']},

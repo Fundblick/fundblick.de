@@ -1,0 +1,260 @@
+{
+  "sourceRows": 923,
+  "sourceSha256": "e095b9d1a1c286cacb2d5e527003b22f16286dc7c07215d63354cda439751359",
+  "selectedProductCount": 861,
+  "selectedArtifactSha256": "30c48fedca6f187e938b707f319b3201115702dccc78d90fa3263aa267409d74",
+  "availabilityCounts": {
+    "inStock": 492,
+    "outOfStock": 369
+  },
+  "excluded": [
+    {
+      "id": "awin-128645-47256355569980",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-47256858657084",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-47257422397756",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-47257777602876",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-47258044498236",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-47258074677564",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-47258076840252",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-47258116489532",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-50604065259836",
+      "reason": "source-price-mismatch"
+    },
+    {
+      "id": "awin-128645-50604067488060",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-50604067520828",
+      "reason": "HTTP Error 404: Not Found"
+    },
+    {
+      "id": "awin-128645-50604069880124",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-51551906758972",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-51551906791740",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-51643813036348",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-51643813069116",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666528572",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666594108",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666659644",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666725180",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666790716",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666856252",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666921788",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271666987324",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667052860",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667118396",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667183932",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667249468",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667315004",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667380540",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667446076",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667511612",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667577148",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667642684",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667675452",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667708220",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667740988",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667773756",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667806524",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667839292",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667872060",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667904828",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667937596",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271667970364",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668003132",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668035900",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668068668",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668101436",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668134204",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668166972",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668199740",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668232508",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668265276",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668298044",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668330812",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668363580",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668396348",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52271668429116",
+      "reason": "source-variant-title-mismatch"
+    },
+    {
+      "id": "awin-128645-52661849260348",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-52661849358652",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-52661849751868",
+      "reason": "source-availability-mismatch"
+    },
+    {
+      "id": "awin-128645-52661849948476",
+      "reason": "source-availability-mismatch"
+    }
+  ]
+}

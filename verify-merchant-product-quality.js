@@ -23,6 +23,13 @@ reject(r=>{r.results[0].image.bodySha256='missing';},/decoded image/);
 reject(r=>{r.results[0].price+=1;},/metadata mismatch/);
 reject(r=>{r.results[0].variantId='other';},/metadata mismatch/);
 reject(r=>{r.results[0].available=false;},/metadata mismatch/);
+// V2 verifies availability agreement, including genuine unavailable variants.
+const unavailable=structuredClone(products),mixed=structuredClone(report);mixed.version=2;
+for(const p of unavailable){p.inStock=true;p.availability='IN_STOCK';}
+unavailable[0].inStock=false;unavailable[0].availability='OUT_OF_STOCK';mixed.results[0].available=false;mixed.artifactSha256=canonicalProductDigest(unavailable);
+validateQualityReport(mixed,{key,products:unavailable,now});
+for(const state of [true,null,'false']){const bad=structuredClone(mixed);bad.results[0].available=state;assert.throws(()=>validateQualityReport(bad,{key,products:unavailable,now}),/metadata mismatch/);}
+const legacy=structuredClone(mixed);legacy.version=1;assert.throws(()=>validateQualityReport(legacy,{key,products:unavailable,now}),/metadata mismatch/);
 reject(r=>{r.startedAt=new Date(now-MAX_AGE_MS-1).toISOString();},/stale/);
 reject(r=>{r.artifactSha256='0'.repeat(64);},/digest mismatch/);
 assert.throws(()=>requireProductQuality(key,products,{}),/report required/);
