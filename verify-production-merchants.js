@@ -90,4 +90,21 @@ if(blazeApproval?.approved===true){
  }
 }else if(blaze)throw new Error('Unapproved BlazeVideo products leaked into production');
 const deluxe=require('./verify-deluxehomeart-production.js').verify(products);
-console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, Amazgifts ${amazgifts}, BlazeVideo ${blaze}, DeluxeHomeart ${deluxe}, total ${products.length}`);
+const siruiApproval=approvals?.merchants?.sirui;
+const sirui=counts.get('SIRUI DE')||0;
+if(siruiApproval?.approved===true){
+ const contract=productionArtifactFor('sirui');
+ const selected=products.filter(p=>(p.bestOffer?.merchant||p.merchant)==='SIRUI DE');
+ if(sirui!==861||sirui!==contract.productCount||new Set(selected.map(p=>p.id)).size!==sirui)throw new Error('SIRUI production count or IDs mismatch');
+ const inStock=selected.filter(p=>p.inStock===true&&p.availability==='IN_STOCK').length;
+ const outOfStock=selected.filter(p=>p.inStock===false&&p.availability==='OUT_OF_STOCK').length;
+ if(inStock!==492||outOfStock!==369||inStock+outOfStock!==sirui)throw new Error('SIRUI verified stock counts mismatch');
+ const counted={};
+ for(const p of selected){
+  counted[p.category]=(counted[p.category]||0)+1;
+  const offer=p.bestOffer||{},direct=new URL(offer.directUrl),affiliate=new URL(offer.affiliateUrl);
+  if(!['siruishop.de','www.siruishop.de'].includes(direct.hostname)||!['awin1.com','www.awin1.com'].includes(affiliate.hostname)||affiliate.searchParams.get('m')!=='128645'||affiliate.searchParams.get('a')!=='3106259'||offer.network!=='awin')throw new Error('SIRUI merchant or affiliate origin mismatch');
+ }
+ if(JSON.stringify(Object.entries(counted).sort())!==JSON.stringify(Object.entries(contract.categoryCounts).sort()))throw new Error('SIRUI category breakdown mismatch');
+}else if(sirui)throw new Error('Unapproved SIRUI products leaked into production');
+console.log(`Production merchant gate OK: Casa Moro ${casa}, AHIPOS ${ahipos}, ANTHBOT ${anthbot}, Amazgifts ${amazgifts}, BlazeVideo ${blaze}, DeluxeHomeart ${deluxe}, SIRUI ${sirui}, total ${products.length}`);
