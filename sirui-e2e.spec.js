@@ -60,3 +60,26 @@ test('Unavailable variants stay searchable and display their verified status aft
  await expect(card.locator('.availability-status')).toHaveText('Derzeit nicht lieferbar');await expect(card.locator('.merchant-link')).toHaveAttribute('href',p.directUrl);
  await page.reload({waitUntil:'networkidle'});await expect(card.locator('.availability-status')).toHaveText('Derzeit nicht lieferbar');
 });
+
+for(const width of [1440,390])test('Merchant buttons align across stock states at '+width+'px',async({page})=>{
+ await page.setViewportSize({width,height:1000});
+ const category=[...new Set(products.map(p=>p.category))].find(id=>{
+  const entries=products.filter(p=>p.category===id);
+  return entries.some(p=>p.inStock===true)&&entries.some(p=>p.inStock===false);
+ });
+ expect(category).toBeDefined();
+ await page.goto(base+'search.html?category='+encodeURIComponent(category)+'&lang=de',{waitUntil:'networkidle'});
+ await expect(cards(page)).toHaveCount(products.filter(p=>p.category===category).length);
+ const stocked=cards(page).filter({has:page.locator('.availability-status.is-in-stock')}).first();
+ const unavailable=cards(page).filter({has:page.locator('.availability-status.is-out-of-stock')}).first();
+ await expect(stocked.locator('.merchant-link')).toBeVisible();
+ await expect(unavailable.locator('.merchant-link')).toBeVisible();
+ const metrics=async card=>card.locator('.merchant-link').evaluate(link=>{
+  const button=link.getBoundingClientRect(),article=link.closest('article.product').getBoundingClientRect(),price=link.closest('.price').getBoundingClientRect();
+  return {width:button.width,bottomGap:article.bottom-button.bottom,priceOffset:button.top-price.top};
+ });
+ const available=await metrics(stocked),out=await metrics(unavailable);
+ expect(Math.abs(available.width-out.width)).toBeLessThanOrEqual(1);
+ if(width>760)expect(Math.abs(available.bottomGap-out.bottomGap)).toBeLessThanOrEqual(2);
+ else expect(Math.abs(available.priceOffset-out.priceOffset)).toBeLessThanOrEqual(3);
+});
