@@ -103,7 +103,7 @@ if(siruiApproval?.approved===true){
  for(const p of selected){
   counted[p.category]=(counted[p.category]||0)+1;
   const offer=p.bestOffer||{},direct=new URL(offer.directUrl),affiliate=new URL(offer.affiliateUrl);
-  if(!['siruishop.de','www.siruishop.de'].includes(direct.hostname)||!['awin1.com','www.awin1.com'].includes(affiliate.hostname)||affiliate.searchParams.get('m')!=='128645'||affiliate.searchParams.get('a')!=='3106259'||offer.network!=='awin')throw new Error('SIRUI merchant or affiliate origin mismatch');
+  if(!['siruishop.de','www.siruishop.de'].includes(direct.hostname)||!['awin1.com','www.awin1.com'].includes(affiliate.hostname)||affiliate.pathname!=='/cread.php'||affiliate.searchParams.get('awinmid')!=='128645'||affiliate.searchParams.get('awinaffid')!=='3106259'||affiliate.searchParams.get('ued')!==direct.href||offer.network!=='awin')throw new Error('SIRUI merchant or affiliate origin mismatch');
  }
  if(JSON.stringify(Object.entries(counted).sort())!==JSON.stringify(Object.entries(contract.categoryCounts).sort()))throw new Error('SIRUI category breakdown mismatch');
 }else if(sirui)throw new Error('Unapproved SIRUI products leaked into production');
