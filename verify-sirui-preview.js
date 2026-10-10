@@ -15,5 +15,10 @@ assert(products.every(p=>p.active&&typeof p.inStock==='boolean'&&p.availability=
 assert.equal(new Set(products.map(p=>p.id)).size,products.length);
 assert(products.every(p=>new URL(p.directUrl).searchParams.get('variant')===p.merchantVariantId));
 const production=JSON.parse(fs.readFileSync('production-merchant-approvals.json'));
-assert.equal(production.merchants.sirui,undefined,'SIRUI remains isolated until reviewed release');
-console.log('SIRUI preview: '+products.length+' qualified source variants, pinned artifact, full safe destinations and decoded images; production remains isolated');
+if(production.merchants.sirui){
+  assert.deepEqual(production.merchants.sirui,approval,'Production SIRUI approval must exactly match reviewed preview');
+  const pin=JSON.parse(fs.readFileSync('production-merchant-artifacts.json'));
+  assert.deepEqual(pin.merchants.sirui,profile.artifacts.sirui,'Production pin must exactly match reviewed preview');
+  assert(JSON.parse(fs.readFileSync('production-catalog-sources.json')).includes(approval.sources[0]),'Production must explicitly include approved SIRUI source');
+}else assert.equal(production.merchants.sirui,undefined,'SIRUI remains isolated until reviewed release');
+console.log('SIRUI preview: '+products.length+' qualified source variants, pinned artifact, full safe destinations and decoded images; production isolation/promotion match verified');
