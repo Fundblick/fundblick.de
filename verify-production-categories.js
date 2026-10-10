@@ -21,6 +21,7 @@ if(approvals?.merchants?.blazevideo?.approved===true){for(const [category,count]
 if(approvals?.merchants?.amazgifts?.approved===true){
   for(const [category,count] of Object.entries(productionArtifactFor('amazgifts').categoryCounts))expected.set(category,count);
 }
+if(approvals?.merchants?.sirui?.approved===true){for(const [category,count] of Object.entries(productionArtifactFor('sirui').categoryCounts))expected.set(category,count);}
 for(const [id,count] of expected){
   if(counts.get(id)!==count)throw new Error(`Expected ${id}=${count}, got ${counts.get(id)??'missing'}`);
 }
@@ -30,6 +31,6 @@ if(homeTotal!==1428+deluxeCount)throw new Error(`Expected home category total ${
 const anthbotTotal=['home.garden.robot-mowers','home.garden.robot-mower-accessories'].reduce((sum,id)=>sum+(counts.get(id)||0),0);
 if(anthbotTotal!==56)throw new Error(`Expected ANTHBOT category total 56, got ${anthbotTotal}`);
 const total=[...counts.values()].reduce((sum,count)=>sum+count,0);
-const expectedTotal=1515+deluxeCount+(approvals?.merchants?.blazevideo?.approved===true?productionArtifactFor('blazevideo').productCount:0)+(approvals?.merchants?.amazgifts?.approved===true?productionArtifactFor('amazgifts').productCount:0);
+const expectedTotal=1515+deluxeCount+(approvals?.merchants?.blazevideo?.approved===true?productionArtifactFor('blazevideo').productCount:0)+(approvals?.merchants?.amazgifts?.approved===true?productionArtifactFor('amazgifts').productCount:0)+(approvals?.merchants?.sirui?.approved===true?productionArtifactFor('sirui').productCount:0);
 if(total!==expectedTotal)throw new Error(`Expected category total ${expectedTotal}, got ${total}`);
 console.log(`Production category gate OK: ${payload.categories.length} categories, total ${total}`);
