@@ -17,6 +17,15 @@ window.FB_CATEGORY_SCHEMAS={
  'craft.jewelry-making.supplies':{label:'Schmuckzubehör',icon:'📿',terms:['craft.jewelry-making.supplies','schmuck bastelzubehör','perlenkettenzubehör','perlenkettenzubehoer','schmuckzubehör','schmuckzubehoer'],facets:[{key:'productType',label:L('type','Produkttyp'),type:'multi',values:['Schmuckzubehör']}]},
  'gifts.personalized.other':{label:'Personalisierte Geschenke',icon:'🎁',terms:['gifts.personalized.other','personalisiertes geschenk','personalisierte geschenke'],facets:[{key:'productType',label:L('type','Produkttyp'),type:'multi',values:['Sonstiges personalisiertes Geschenk']}]}
 };
+for(const [slug,type,terms] of [
+ ['lenses','Objektiv',['objektiv','objektive','lens','lenses']],
+ ['tripods','Stativ',['stativ','stative','tripod','monopod']],
+ ['tripod-heads','Stativkopf',['stativkopf','kugelkopf','videokopf','tripod head']],
+ ['lighting','Fotobeleuchtung',['fotobeleuchtung','led-dauerlicht','softbox','led-panel']],
+ ['filters','Objektivfilter',['objektivfilter','uv-filter','polfilter','lens filter']],
+ ['accessories','Foto- / Videozubehör',['fotozubehör','videozubehör','makroschlitten','objektivadapter']],
+ ['optics','Fernglas / Spektiv',['fernglas','ferngläser','spektiv','binoculars']]
+]){const id='electronics.photo.'+slug;window.FB_CATEGORY_SCHEMAS[id]={label:window.FundBlickCategoryLabels?.getLabel(id,FB_LANG)||type,icon:'📷',terms:[id,...terms],facets:[{key:'type',label:L('type','Produkttyp'),type:'multi',values:[type]}]};}
 /* Only expose attributes that can be supported by real feed text/data. */
 window.FB_COMMON_FACETS=[{key:'price',label:L('price','Produktpreis'),type:'price'},{key:'brand',label:L('brand','Hersteller / Marke'),type:'brand'},{key:'merchant',label:L('merchant','Händler'),type:'multi'}];
 window.FB_detectCategory=function(query){const q=String(query||'').toLocaleLowerCase('de');let best=null,bestLen=0;for(const [key,s] of Object.entries(window.FB_CATEGORY_SCHEMAS)){for(const term of s.terms){if(q.includes(term)&&term.length>bestLen){best={id:key,key,...s};bestLen=term.length}}}return best;};

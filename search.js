@@ -159,7 +159,7 @@
     return norm(clean).split(/[^\p{L}\p{N}]+/u).filter(x=>x.length>1);
   }
 
-  function queryMatch(p,tokens){if(category&&p.family!==category.id)return false;const hay=norm([p.name,p.brand,p.category,p.rawAttributes?.productType,p.rawAttributes?.sourceProductType,p.attrs?.type,p.attrs?.color,p.description].join(' '));return tokens.every(t=>hay.includes(t))}
+  function queryMatch(p,tokens){if(category&&p.family!==category.id&&p.category!==category.id)return false;const hay=norm([p.name,p.brand,p.category,p.rawAttributes?.productType,p.rawAttributes?.sourceProductType,p.attrs?.type,p.attrs?.color,p.description].join(' '));return tokens.every(t=>hay.includes(t))}
   function visiblePrice(p){return p.totalPriceKnown?p.totalPrice:p.price}
   function filtered(skip){return base.filter(p=>{if(state.min!==null&&visiblePrice(p)<state.min||state.max!==null&&visiblePrice(p)>state.max)return false;if(skip!=='brand'&&state.brands.size&&!state.brands.has(p.brand))return false;return Object.entries(state.facets).every(([key,set])=>skip===key||facetMatches(p,key,set))})}
   function schemaPool(){const commonKeys=new Set((window.FB_COMMON_FACETS||[]).map(f=>f.key));return base.filter(p=>{if(state.min!==null&&visiblePrice(p)<state.min||state.max!==null&&visiblePrice(p)>state.max)return false;if(state.brands.size&&!state.brands.has(p.brand))return false;return Object.entries(state.facets).every(([key,set])=>!set?.size||!commonKeys.has(key)||facetMatches(p,key,set))})}

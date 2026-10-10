@@ -32,6 +32,21 @@
         "home.decor": 548,
         "home.lighting": 41
       }
+    },
+    "sirui": {
+      "source": "development/sirui-preview-products.json.gz.b64",
+      "productCount": 861,
+      "artifactSha256": "30c48fedca6f187e938b707f319b3201115702dccc78d90fa3263aa267409d74",
+      "identityPath": "merchantVariantId",
+      "categoryCounts": {
+        "electronics.photo.lenses": 650,
+        "electronics.photo.tripods": 93,
+        "electronics.photo.lighting": 30,
+        "electronics.photo.accessories": 26,
+        "electronics.photo.tripod-heads": 30,
+        "electronics.photo.filters": 28,
+        "electronics.photo.optics": 4
+      }
     }
   }
 }

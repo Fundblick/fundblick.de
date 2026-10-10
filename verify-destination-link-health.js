@@ -20,7 +20,7 @@ async function main() {
   const direct = targets.find(t => t.mode === 'direct'), affiliate = targets.find(t => t.mode === 'affiliate');
   const validDirect = await auditTarget(direct, policy, {request: async () => response()});
   assert.equal(validDirect.status, 'pass');
-  const validAffiliate = await auditTarget(affiliate, policy, {request: async u => u.host === 'affiliate.example' ? response(302, '', {location: direct.url}) : response()});
+  const validAffiliate = await auditTarget(affiliate, policy, {offlineFixture:true,request: async u => u.host === 'affiliate.example' ? response(302, '', {location: direct.url}) : response()});
   assert.equal(validAffiliate.status, 'pass'); assert.equal(validAffiliate.chain.length, 2);
   for (const status of [404,410,429,500,503]) {
     const result = await auditTarget(direct, policy, {request: async () => response(status)});
@@ -52,7 +52,7 @@ async function main() {
   assert.equal(validateReport(report,{key:'example',products,policy,now}), report);
   const awinProducts=[{...products[0],network:'awin'}];
   const awinResults=[];
-  for(const target of awinRoutes)awinResults.push(await auditTarget(target,policy,{request:async u=>u.host==='affiliate.example'?response(302,'',{location:direct.url}):response()}));
+  for(const target of awinRoutes)awinResults.push(await auditTarget(target,policy,{offlineFixture:true,request:async u=>u.host==='affiliate.example'?response(302,'',{location:direct.url}):response()}));
   const runtimeNow=Date.now();
   const awinReport={...report,artifactSha256:canonicalProductDigest(awinProducts),expectedTargets:4,results:awinResults,completedAt:new Date(runtimeNow).toISOString()};
   validateReport(awinReport,{key:'example',products:awinProducts,policy,now:runtimeNow});

@@ -17,6 +17,12 @@ function publicAddress(address) {
   return net.isIP(address) === 6 && /^[23]/i.test(address) && !/^2001:(?:0:|db8:)/i.test(address);
 }
 async function realRequest(url) {
+  if(['awin1.com','www.awin1.com'].includes(url.hostname))throw Error('real-tracking-requests-disabled');
+  if(process.env.HTTPS_PROXY||process.env.https_proxy){
+    const {promisify}=require('node:util'),execFile=promisify(require('node:child_process').execFile);
+    const {stdout}=await execFile('python3',[path.join(__dirname,'destination-proxy-request.py'),url.href],{cwd:__dirname,timeout:20000,maxBuffer:6*1024*1024});
+    const response=JSON.parse(stdout);response.body=Buffer.from(response.body,'base64');return response;
+  }
   const addresses = await dns.lookup(url.hostname, {all: true});
   if (!addresses.length || addresses.some(a => !publicAddress(a.address))) throw new Error('non-public-address');
   const pinned = addresses[0];
@@ -44,9 +50,10 @@ function contentFailure(html, finalUrl) {
   if (!/"@type"\s*:\s*(?:"Product"|\[[^\]]*"Product")|itemtype\s*=\s*["'][^"']*schema\.org\/Product|property\s*=\s*["']og:type["'][^>]*content\s*=\s*["']product/i.test(html)) return /cf-chl-|challenge-platform/i.test(html) ? 'bot-challenge' : 'missing-product-evidence';
   return null;
 }
-async function auditTarget(target, policy, {request = realRequest} = {}) {
+async function auditTarget(target, policy, {request = realRequest, offlineFixture = false} = {}) {
   const chain = []; const visited = new Set(); let current = target.url;
   try {
+    if(target.mode==='affiliate'&&(!offlineFixture||request===realRequest))throw new Error('real-tracking-requests-disabled');
     allowedUrl(current, target.mode === 'direct' ? policy.merchantHosts : policy.affiliateHosts);
     for (let hop = 0; hop <= 8; hop++) {
       const allowed = target.mode === 'direct' ? policy.merchantHosts : [...policy.merchantHosts, ...policy.affiliateHosts, ...policy.redirectHosts];
@@ -73,32 +80,10 @@ async function auditTarget(target, policy, {request = realRequest} = {}) {
   }
 }
 async function main() {
-  const [key, output, ...sources] = process.argv.slice(2);
-  if (!key || !output || !sources.length) throw new Error('Usage: node audit-destination-links.js <merchant> <report.json> <source...>');
-  const products = sources.flatMap(readProducts), policy = policyFor(key), targets = linkTargets(products);
-  const limit = Number(process.env.FUNDBLICK_LINK_AUDIT_LIMIT || targets.length);
-  const delay = Number(process.env.FUNDBLICK_LINK_AUDIT_DELAY_MS || 1000);
-  if (!Number.isInteger(limit) || limit < 1 || !Number.isFinite(delay) || delay < 1000) throw new Error('Invalid audit limit/delay (minimum delay 1000ms)');
-  const report = {version: 1, auditorVersion: AUDITOR_VERSION, merchant: key, artifactSha256: canonicalProductDigest(products), policySha256: policyDigest(policy), productCount: products.length, expectedTargets: targets.length, scope: limit >= targets.length ? 'full' : 'sample', startedAt: new Date().toISOString(), results: []};
-  fs.mkdirSync(path.dirname(output), {recursive: true});
-  for (const target of targets.slice(0, limit)) {
-    report.results.push(await auditTarget(target, policy));
-    // Save diagnostic progress; interrupted audits can never pass validation.
-    fs.writeFileSync(output, JSON.stringify({...report, status: 'incomplete'}, null, 2) + '\n');
-    console.log(`${report.results.length}/${Math.min(limit, targets.length)} ${target.mode}: ${report.results.at(-1).reason || 'pass'}`);
-    await new Promise(resolve => setTimeout(resolve, delay));
-  }
-  report.completedAt = new Date().toISOString();
-  report.status = report.scope === 'full' && report.results.every(r => r.status === 'pass') ? 'pass' : 'fail';
-  report.failedTargets = report.results.filter(r => r.status !== 'pass').length;
-  if (report.status === 'pass') {
-    try { validateReport(report, {key, products, policy}); }
-    catch (err) { report.status = 'fail'; report.reason = err.message; }
-  }
-  report.recommendedAction = report.status === 'pass' ? 'eligible-for-reviewed-activation' : 'keep-quarantined-or-review-active-merchant';
-  fs.writeFileSync(output, JSON.stringify(report, null, 2) + '\n');
-  console.log(`Destination audit ${key}: ${report.status}, ${report.failedTargets} failed, ${report.scope}`);
-  if (report.status !== 'pass') process.exitCode = 1;
+ const [key,output,...sources]=process.argv.slice(2);
+ if(!key||!output||!sources.length)throw Error('Usage: node audit-destination-links.js <merchant> <report> <source...>');
+ if(process.env.FUNDBLICK_LINK_AUDIT_LIMIT)throw Error('Partial audits cannot satisfy full coverage');
+ await require('./audit-merchant-preview-links.js').run(key,output,sources);
 }
 if (require.main === module) main().catch(err => { console.error(err.message); process.exitCode = 1; });
 module.exports = {auditTarget, contentFailure, publicAddress, realRequest};

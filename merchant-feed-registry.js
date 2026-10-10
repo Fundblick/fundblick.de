@@ -2,6 +2,13 @@
 const path=require('node:path');
 
 const merchants={
+  sirui:{
+    key:'sirui',merchant:'SIRUI DE',network:'awin',advertiserId:'128645',publisherId:'3106259',preferredFeedId:'F4133',artifactIdentityPath:'merchantVariantId',
+    inputPattern:/SIRUI_128645_F4133_.*\.csv(?:\.gz)?$/i,normalizer:'./sirui-feed-normalizer.js',
+    expected:{advertiserRows:923,products:923,inStock:498,rawFeedSha256:'e095b9d1a1c286cacb2d5e527003b22f16286dc7c07215d63354cda439751359'},
+    catalogCategories:['lenses','tripods','tripod-heads','lighting','filters','accessories','optics'].map(s=>'electronics.photo.'+s)
+  },
+
   deluxehomeart:{
     key:'deluxehomeart',merchant:'Deluxehomeartshop DE',network:'awin',advertiserId:'120411',publisherId:'3106259',preferredFeedId:'110455',
     inputPattern:/120411-110455-.*\.csv(?:\.gz)?$/i,normalizer:'./deluxehomeart-feed-normalizer.js',

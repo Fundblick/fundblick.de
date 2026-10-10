@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       merchant:
-        description: 'Merchant to audit (full real HTTP audit, no activation)'
+        description: 'Merchant to audit (direct HTTP and offline affiliate audit; zero tracking requests)'
         type: choice
         options: [amazgifts, casaMoro, ahipos, anthbot, blazevideo]
         required: true
@@ -25,6 +25,7 @@ jobs:
       - name: Offline health evidence and rejection tests
         run: |
           node verify-destination-link-health.js
+          node verify-safe-destination-audit.js
           node verify-merchant-product-quality.js
       - name: Validate actual production artifact health policy
         run: node build-production-catalog.js build/catalog
@@ -40,7 +41,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Full rate-limited direct and affiliate audit
+      - name: Full direct HTTP and offline affiliate structure audit
         env:
           MERCHANT: ${{ inputs.merchant }}
         run: |
