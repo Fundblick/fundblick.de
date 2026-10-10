@@ -62,6 +62,18 @@
       "termsCleared": true,
       "destinationHealthReport": "destination-health/deluxehomeart-preview-links.json",
       "productQualityReport": "destination-health/deluxehomeart-preview-quality.json"
+    },
+    "sirui": {
+      "approved": true,
+      "network": "awin",
+      "advertiserId": "128645",
+      "publisherId": "3106259",
+      "sources": [
+        "development/sirui-preview-products.json.gz.b64"
+      ],
+      "termsCleared": true,
+      "destinationHealthReport": "destination-health/sirui-preview-links.json",
+      "productQualityReport": "destination-health/sirui-preview-quality.json"
     }
   }
 }
