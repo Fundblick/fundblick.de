@@ -3,7 +3,7 @@ name: Search Console report
 on:
   workflow_dispatch:
   schedule:
-    - cron: '17 5 * * *'
+    - cron: '17 5 * * 1' # budget guard: weekly instead of daily
 
 permissions:
   contents: read
