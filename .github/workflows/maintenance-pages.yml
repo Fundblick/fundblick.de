@@ -1,0 +1,72 @@
+name: FundBlick voruebergehend offline (Wartungsseite)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/maintenance-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: fundblick-production-pages
+  cancel-in-progress: true
+
+jobs:
+  maintenance:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Create isolated maintenance artifact (no merchant data)
+        shell: bash
+        run: |
+          mkdir -p _site
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="de">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <meta name="robots" content="noindex,nofollow,noarchive">
+            <title>FundBlick – Vorübergehend nicht erreichbar</title>
+            <style>
+              :root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+              *{box-sizing:border-box}
+              body{margin:0;min-height:100vh;background:#f5f8f5;color:#163d28;display:grid;place-items:center;padding:24px}
+              main{width:min(100%,520px);text-align:center;background:#fff;border:1px solid #e0e9e0;border-radius:18px;padding:44px 28px;box-shadow:0 12px 40px #14381e0c}
+              h1{font-size:clamp(1.55rem,5vw,2.1rem);margin:0 0 18px}
+              p{font-size:1.05rem;line-height:1.6;color:#43574a;margin:0}
+              .brand{font-weight:800;font-size:1.2rem;margin-bottom:28px}
+            </style>
+          </head>
+          <body>
+            <main>
+              <div class="brand">FundBlick</div>
+              <h1>Vorübergehend nicht erreichbar</h1>
+              <p>FundBlick befindet sich derzeit im Wartungsmodus. Die Plattform steht vorübergehend nicht zur Verfügung.</p>
+            </main>
+          </body>
+          </html>
+          HTML
+          cp _site/index.html _site/404.html
+          printf 'User-agent: *\nDisallow: /\n' > _site/robots.txt
+          printf 'fundblick.de\n' > _site/CNAME
+          touch _site/.nojekyll
+          test "$(find _site -type f | wc -l)" -eq 5
+          ! grep -R -i 'affiliate\|merchant\|products.json\|http://' _site/
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Upload isolated maintenance artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Publish maintenance page
+        id: deployment
+        uses: actions/deploy-pages@v4
