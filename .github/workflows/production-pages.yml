@@ -1,12 +1,8 @@
 name: Publish FundBlick production
 
 on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - '.github/workflows/**'
-      - 'docs/**'
-      - '**/*.md'
+  # Wartungsphase: automatische Live-Wiederveroeffentlichung voruebergehend gesperrt.
+  # Die vollstaendigen Sicherheitspruefungen bleiben fuer manuelle Releases erhalten.
   workflow_dispatch:
 
 permissions:
