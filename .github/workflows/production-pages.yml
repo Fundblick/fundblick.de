@@ -28,11 +28,17 @@ jobs:
     steps:
       - name: Checkout production source
         uses: actions/checkout@v4
+      - name: Detect temporary maintenance mode
+        id: maintenance
+        run: |
+          if [ -f MAINTENANCE_MODE ]; then echo "active=true" >> "$GITHUB_OUTPUT"; else echo "active=false" >> "$GITHUB_OUTPUT"; fi
       - name: Current homepage and language navigation contracts
+        if: steps.maintenance.outputs.active != 'true'
         run: |
           node verify-homepage.js
           node verify-language-navigation.js
       - name: Validate production JavaScript
+        if: steps.maintenance.outputs.active != 'true'
         run: |
           for f in home-i18n.js deal-of-day.js home-deal.js home-categories.js search-i18n.js facet-schemas.js category-display-i18n.js common-facet-defs.js category-aliases.js search-intent.js search-state-guard.js catalog-loader.js image-fallback.js search.js coupon-engine.js merchant-offers.js search-relevance.js facet-value-i18n.js common-filter-i18n.js search-mobile.js results-paging.js page-meta-i18n.js live-health.js language-links.js equestrian-search-extension.js equestrian-taxonomy-i18n.js affiliate-config.js affiliate-consent-version.js affiliate-consent.js affiliate-link-policy.js affiliate-outbound.js live-catalog-ui.js build-live-catalog.js build-production-catalog.js build-seo-landings.js audit-seo-landing-candidates.js build-versioned-site.js verify-live-catalog-v2.js verify-production-merchants.js verify-production-categories.js verify-deal-of-day.js verify-production-deal.js verify-coupon-engine.js verify-merchant-offers.js verify-affiliate-routing.js verify-user-flows.js verify-google-indexability.js; do node --check "$f"; done
           for f in search-static-i18n.js taxonomy-value-i18n.js category-query-router.js universal-search-intent.js search-intent-query.js search-intent-ui.js search-facet-engine-v2.js search-render-signal.js search-sort-runtime.js external-search-policy.js external-search-client.js external-search-i18n.js external-price-evidence.js external-search-ui.js external-price-confidence.js product-storage-parser.js product-fashion-attributes.js product-intelligence-core.js semantic-product-resolver.js semantic-taxonomy-adapter.js query-facet-blueprint.js query-blueprint-ui.js product-query-strategy.js product-unit-normalizer.js product-result-attribute-extractor.js product-result-deduper.js product-facet-engine.js product-constraint-ranker.js product-conflict-filter.js product-intelligence-pipeline.js external-intelligence-ui.js external-result-page.js external-search-runtime.js verify-query-facet-blueprint.js verify-query-to-facet-integration.js verify-generic-semantic-facets.js; do node --check "$f"; done
@@ -41,6 +47,7 @@ jobs:
           node verify-generic-semantic-facets.js
           node verify-query-to-facet-integration.js
       - name: Build and validate production catalog
+        if: steps.maintenance.outputs.active != 'true'
         run: |
           node verify-merchant-product-quality.js
           node verify-deal-of-day.js
@@ -63,6 +70,7 @@ jobs:
           node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('build/catalog/manifest.json'));if(m.dataMode!=='real'||m.realCount<1000||m.simulatedCount!==0)process.exit(1);console.log('Real production gate OK',m.realCount)"
           ! grep -R -E 'DemoMarkt|ShopTest|PreisDemo|FundBlick Simulator|Test-Gutschein' development/core-products.json development/ahipos-products-1.json development/ahipos-products-2.json build/catalog
       - name: Verify production wiring
+        if: steps.maintenance.outputs.active != 'true'
         run: |
           grep -q 'data-catalog-url="catalog-live"' search.html
           grep -q 'merchant-offers.js' search.html
@@ -103,9 +111,37 @@ jobs:
           grep -q 'id="affiliate-awin"' datenschutz.html
           ! grep -q 'Live-Beta' index.html
       - name: Package reviewed public files and version assets
+        if: steps.maintenance.outputs.active != 'true'
         run: node package-site.js production
       - name: Verify packaged production dependencies
+        if: steps.maintenance.outputs.active != 'true'
         run: node development/verify-production-package.js _site
+      - name: Package maintenance-only site without public products
+        if: steps.maintenance.outputs.active == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp CNAME _site/CNAME
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="de">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <meta name="robots" content="noindex,nofollow,noarchive">
+            <meta name="theme-color" content="#f6f9f5">
+            <title>FundBlick – vorübergehend nicht verfügbar</title>
+            <style>html{font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#f6f9f5;color:#233829}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;box-sizing:border-box}main{max-width:560px;text-align:center}h1{font-size:clamp(2rem,6vw,3rem);margin:0 0 18px}p{font-size:1.125rem;line-height:1.6}.brand{font-weight:750;color:#357f48;letter-spacing:.02em;margin-bottom:26px}</style>
+          </head>
+          <body><main data-site-status="fundblick-temporary-maintenance-20261018"><div class="brand">FundBlick</div><h1>Wir überarbeiten unsere Plattform.</h1><p>FundBlick ist vorübergehend nicht öffentlich verfügbar. Vielen Dank für Ihr Verständnis.</p></main></body>
+          </html>
+          HTML
+          cp _site/index.html _site/404.html
+          printf 'User-agent: *\nDisallow: /\n' > _site/robots.txt
+          touch _site/.nojekyll
+          test "$(find _site -maxdepth 1 -type f | wc -l)" -eq 5
+          test ! -e _site/search.html
+          test ! -e _site/catalog
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload production artifact
@@ -115,9 +151,28 @@ jobs:
       - name: Deploy production
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify maintenance page and unavailable search route
+        if: steps.maintenance.outputs.active == 'true'
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            root_code="$(curl -LsS -H 'Cache-Control: no-cache' -o /tmp/fundblick-maint-root.html -w '%{http_code}' https://fundblick.de/)"
+            if [ "$root_code" = "200" ] && grep -q 'fundblick-temporary-maintenance-20261018' /tmp/fundblick-maint-root.html; then
+              search_code="$(curl -LsS -H 'Cache-Control: no-cache' -o /tmp/fundblick-maint-search.html -w '%{http_code}' 'https://fundblick.de/search.html?maintenance-check=1')"
+              if [ "$search_code" = "404" ] && grep -q 'fundblick-temporary-maintenance-20261018' /tmp/fundblick-maint-search.html; then
+                echo 'Temporary maintenance verified; no product/search UI published.'
+                exit 0
+              fi
+            fi
+            sleep 5
+          done
+          echo 'Maintenance deployment could not be verified on the public custom domain.'
+          exit 1
       - name: Verify the publicly deployed release
+        if: steps.maintenance.outputs.active != 'true'
         run: node verify-deployed-site.js https://fundblick.de/ build/catalog build/deployed-site-verification.json _site
       - name: Retain public-edge verification receipt
+        if: steps.maintenance.outputs.active != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: fundblick-live-verification
